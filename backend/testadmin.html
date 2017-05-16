@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                refresh();
+                $("form").submit(function(event){
+                    event.preventDefault();
+                    $.post($(this).attr("action"),$(this).find("[name]"),function(data,status){
+                        if(data.err){
+                            $("#message").append("Error : "+data.err);
+                        }
+                        else{
+                            if(data=="")$("#message").html("Successful");
+                            else $("#message").html(JSON.stringify(data));
+                        }
+                        refresh();
+                    });
+                });
+            });
+            var refresh=function(){
+                $("#list").empty();
+                $.post("post/list",function(data,status){
+                    for(var i=0;i<data.length;i++){
+                        $("#list").append(JSON.stringify(data[i])+"<br><br>");
+                    }
+                });
+            };
+        </script>
+    </head>
+    <body>
+        <div class="container" id="list"></div>
+        <div class="container" id="message">
+            <!-- <div class="well"></div> -->
+        </div>
+        <div class="container">
+            <div class="panel-group">
+                <div class="container">
+                    <form action="post/addStudent" method="post">
+                        <input class="form-control" type="number" name="id" placeholder="ID" required>
+                        <input class="form-control" type="text" name="firstname" placeholder="Firstname" required>
+                        <input class="form-control" type="text" name="lastname" placeholder="Lastname" required>
+                        <input class="form-control" type="text" name="nickname" placeholder="Nickname" required>
+                        <input class="form-control" type="number" name="grade" placeholder="Grade" required>
+                        <button class="btn btn-default" type="submit">post/addStudent</button>
+                    </form>
+                    <br><br><br>
+                </div>
+                <div class="container">
+                    <form action="post/password" method="post">
+                        <input class="form-control" type="number" name="id" placeholder="ID" required>
+                        <input class="form-control" type="password" name="pass" placeholder="Password" required>
+                        <button class="btn btn-default" type="submit">post/password</button>
+                    </form>
+                    <br><br><br>
+                </div>
+                <div class="container">
+                    <form action="post/name" method="post">
+                        <input class="form-control" type="number" name="id" placeholder="ID" required>
+                        <button class="btn btn-default" type="submit">post/name</button>
+                    </form>
+                    <br><br><br>
+                </div>
+                <div class="container">
+                    <form action="post/status" method="post">
+                        <input class="form-control" type="number" name="id" placeholder="ID" required>
+                        <button class="btn btn-default" type="submit">post/status</button>
+                    </form>
+                    <br><br><br>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
