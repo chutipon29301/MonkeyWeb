@@ -3,39 +3,74 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="style.css">
+        <!-- <link rel="stylesheet" type="text/css" href="style.css"> -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script>
             $(document).ready(function(){
                 refresh();
+                $.post("post/getConfig",function(data){
+                    for(var prop in data){
+                        if(data.hasOwnProperty(prop)){
+                            $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").val(data[prop]);
+                        }
+                    }
+                });
+                // $("[action=\"editStudent\"] [type=\"reset\"]").click(function(){
+                //     event.preventDefault();
+                //     $.post($(this).attr("action"),$(this).find("[name]"),function(data,status){
+                //         $("#message").empty();
+                //         if(data.err){
+                //             $("#message").append("<div id=\"danger\"></div>");
+                //             $("#danger").addClass("alert alert-danger").append("Error : "+data.err);
+                //         }
+                //         else{
+                //             $("#message").append("<div id=\"success\"></div>");
+                //             $("#success").addClass("alert alert-success");
+                //             if($.isEmptyObject(data))$("#success").append("Successful");
+                //             else $("#success").html(JSON.stringify(data));
+                //         }
+                //         refresh();
+                //     });
+                // })
                 $("form").submit(function(event){
                     event.preventDefault();
                     $.post($(this).attr("action"),$(this).find("[name]"),function(data,status){
+                        $("#message").empty();
                         if(data.err){
-                            $("#message").append("Error : "+data.err);
+                            $("#message").append("<div id=\"danger\"></div>");
+                            $("#danger").addClass("alert alert-danger").append("Error : "+data.err);
                         }
                         else{
-                            if(data=="")$("#message").html("Successful");
-                            else $("#message").html(JSON.stringify(data));
+                            $("#message").append("<div id=\"success\"></div>");
+                            $("#success").addClass("alert alert-success");
+                            if($.isEmptyObject(data))$("#success").append("Successful");
+                            else $("#success").html(JSON.stringify(data));
                         }
                         refresh();
                     });
                 });
             });
             var refresh=function(){
-                $("#list").empty();
-                $.post("post/list",function(data,status){
+                $("#listUser").empty();
+                $.post("debug/listUser",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#list").append(JSON.stringify(data[i])+"<br><br>");
+                        $("#listUser").append(JSON.stringify(data[i])+"<br><br>");
                     }
                 });
+                // $("#listCourse").empty();
+                // $.post("post/allCourse",function(data,status){
+                //     for(var i=0;i<data.length;i++){
+                //         $("#listCourse").append(JSON.stringify(data[i])+"<br><br>");
+                //     }
+                // });
             };
         </script>
     </head>
     <body>
-        <div class="container" id="list"></div>
+        <div class="container" style="border:1px solid black" id="listUser"></div>
+        <div class="container" style="border:1px solid black" id="listCourse"></div>
         <div class="container" id="message">
             <!-- <div class="well"></div> -->
         </div>
@@ -43,7 +78,7 @@
             <div class="panel-group">
                 <div class="container">
                     <form action="post/addStudent" method="post">
-                        <input class="form-control" type="number" name="id" placeholder="ID" required>
+                        <input class="form-control" type="password" name="password" placeholder="Password" required>
                         <input class="form-control" type="text" name="firstname" placeholder="Firstname" required>
                         <input class="form-control" type="text" name="lastname" placeholder="Lastname" required>
                         <input class="form-control" type="text" name="nickname" placeholder="Nickname" required>
@@ -53,26 +88,70 @@
                     <br><br><br>
                 </div>
                 <div class="container">
+                    <form action="post/removeStudent" method="post">
+                        <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                        <button class="btn btn-default" type="submit">post/removeStudent</button>
+                    </form>
+                    <br><br><br>
+                </div>
+                <div class="container">
+                    <form action="post/addStudentGrade" method="post">
+                        <input class="form-control" type="number" name="toAdd" placeholder="toAdd" required>
+                        <button class="btn btn-default" type="submit">post/addStudentGrade</button>
+                    </form>
+                    <br><br><br>
+                </div>
+                <div class="container">
+                    <form action="post/addTutor" method="post">
+                        <input class="form-control" type="password" name="password" placeholder="Password" required>
+                        <input class="form-control" type="text" name="firstname" placeholder="Firstname" required>
+                        <input class="form-control" type="text" name="lastname" placeholder="Lastname" required>
+                        <input class="form-control" type="text" name="nickname" placeholder="Nickname" required>
+                        <input class="form-control" type="email" name="email" placeholder="Email" required>
+                        <input class="form-control" type="text" name="nicknameEng" placeholder="Nickname in English" required>
+                        <button class="btn btn-default" type="submit">post/addTutor</button>
+                    </form>
+                    <br><br><br>
+                </div>
+                <div class="container">
+                    <form action="post/removeTutor" method="post">
+                        <input class="form-control" type="number" name="tutorID" placeholder="tutorID" required>
+                        <button class="btn btn-default" type="submit">post/removeTutor</button>
+                    </form>
+                    <br><br><br>
+                </div>
+                <div class="container">
                     <form action="post/password" method="post">
-                        <input class="form-control" type="number" name="id" placeholder="ID" required>
-                        <input class="form-control" type="password" name="pass" placeholder="Password" required>
+                        <input class="form-control" type="number" name="userID" placeholder="userID" required>
+                        <input class="form-control" type="password" name="password" placeholder="Password" required>
                         <button class="btn btn-default" type="submit">post/password</button>
                     </form>
                     <br><br><br>
                 </div>
                 <div class="container">
                     <form action="post/name" method="post">
-                        <input class="form-control" type="number" name="id" placeholder="ID" required>
+                        <input class="form-control" type="number" name="userID" placeholder="userID" required>
                         <button class="btn btn-default" type="submit">post/name</button>
                     </form>
                     <br><br><br>
                 </div>
                 <div class="container">
                     <form action="post/status" method="post">
-                        <input class="form-control" type="number" name="id" placeholder="ID" required>
+                        <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
                         <button class="btn btn-default" type="submit">post/status</button>
                     </form>
                     <br><br><br>
+                </div>
+                <div class="container">
+                    <form action="post/editConfig" method="post">
+                        <input class="form-control" type="number" name="year" placeholder="year" required>
+                        <input class="form-control" type="number" name="quarter" placeholder="quarter" required>
+                        <input class="form-control" type="text" name="courseMaterialPath" placeholder="courseMaterialPath" required>
+                        <input class="form-control" type="text" name="receiptPath" placeholder="receiptPath" required>
+                        <input class="form-control" type="number" name="nextStudentID" placeholder="nextStudentID" required>
+                        <input class="form-control" type="number" name="nextTutorID" placeholder="nextTutorID" required>
+                        <button class="btn btn-default" type="submit">post/editConfig</button>
+                    </form>
                 </div>
             </div>
         </div>
