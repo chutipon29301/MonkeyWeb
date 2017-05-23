@@ -26,12 +26,12 @@
 <div class="container">
   <div class="container col-md-4 col-md-offset-4">
     <div class="form-group">
-      <label for="usr">ID:</label>
-      <input type="text" class="form-control" id="usr">
+      <label for="usr">ID: <span hidden="true" style="color:#F00">*required</span></label>
+      <input type="text" class="form-control" id="usr" required>
     </div>
     <div class="form-group">
-      <label for="pwd">Password:</label>
-      <input type="password" class="form-control" id="pwd">
+      <label for="pwd">Password: <span hidden="true" style="color:#F00" id="">*required</span></label>
+      <input type="password" class="form-control" id="pwd" required>
     </div>
     <div class="form-group">
       <button class="btn btn-default form-control loginBtn" id="loginBtn"> Login </button>
@@ -49,5 +49,9 @@
 
 <!-- Include all compiled plugins (below), or include individual files as needed --> 
 <script src="public/js/bootstrap.js"></script>
+
+<script>
+
+</script>
 </body>
 </html>
