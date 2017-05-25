@@ -1,7 +1,6 @@
 function loginSubmit() {
 	"use strict";
 
-	console.log("Hello World");
 	var user = document.getElementById("usr");
 	var pwd = document.getElementById("pwd");
 
@@ -31,13 +30,19 @@ function login(user, pwd) {
 		} else {
 			console.log(data);
 			if (data.verified) {
-				log("Pass");
+				self.location = "\home.html";
 			} else {
 				log("Wrong");
 			}
 		}
 	});
 
+}
+
+function clesrInput(){
+	var user = document.getElementById("usr");
+	var pwd = document.getElementById("pwd");
+	
 }
 
 function log(text) {

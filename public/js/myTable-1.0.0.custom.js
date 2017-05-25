@@ -1,4 +1,4 @@
 // JavaScript Documen
 function cilck(){
-    console.log("Hello World")
+    console.log("Hello World");
 }
