@@ -9,8 +9,14 @@
 <!-- TemplateEndEditable -->
 <link href="public/css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="public/css/w3.css" rel="stylesheet" type="text/css">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="public/js/jquery-1.11.3.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="public/js/bootstrap.js"></script>
+<!-- TemplateBeginEditable name="script" -->
+<!--add more script-->
+<!-- TemplateEndEditable -->
 </head>
-
 <body>
 <nav class="navbar navbar-default">
   <div class="container-fluid"> 
@@ -58,10 +64,5 @@
     </div>
   </div>
 </div>
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
-<script src="public/js/jquery-1.11.3.min.js"></script> 
-
-<!-- Include all compiled plugins (below), or include individual files as needed --> 
-<script src="public/js/bootstrap.js"></script>
 </body>
 </html>
