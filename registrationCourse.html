@@ -2,8 +2,6 @@
 <html lang="en"><!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>Untitled Document</title>
 <!-- InstanceEndEditable -->
@@ -25,7 +23,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="defaultNavbar1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="registrationCourse.html">Registration<span class="sr-only">(current)</span></a></li>
+        <li><a href="/registrationCourse.html">Registration<span class="sr-only">(current)</span></a></li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Course<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="#">Action</a></li>
@@ -55,7 +53,7 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
- <div class="container">
+  <div class="container">
     <form class="form-horizontal">
       <div class="form-group">
         <label class="control-label col-md-2">ชื่อ:</label>
@@ -69,19 +67,19 @@
         <label class="control-label col-md-2">ชั้น:</label>
         <div class="col-md-8">
           <select class="form-control" id="level">
-          <option>ประถม 1</option>
-          <option>ประถม 2</option>
-          <option>ประถม 3</option>
-          <option>ประถม 4</option>
-          <option>ประถม 5</option>
-          <option>ประถม 6</option>
-          <option>มัธยม 1</option>
-          <option>มัธยม 2</option>
-          <option>มัธยม 3</option>
-          <option>มัธยม 4</option>
-          <option>มัธยม 5</option>
-          <option>มัธยม 6</option>
-        </select>
+            <option>ประถม 1</option>
+            <option>ประถม 2</option>
+            <option>ประถม 3</option>
+            <option>ประถม 4</option>
+            <option>ประถม 5</option>
+            <option>ประถม 6</option>
+            <option>มัธยม 1</option>
+            <option>มัธยม 2</option>
+            <option>มัธยม 3</option>
+            <option>มัธยม 4</option>
+            <option>มัธยม 5</option>
+            <option>มัธยม 6</option>
+          </select>
         </div>
       </div>
     </form>
@@ -113,44 +111,46 @@
       </tr>
     </table>
   </div>
-  <div class="table-responsive w3-hide-medium w3-hide-large">
-    <table class="table table-bordered">
-      <thead>
+  <div class="container">
+    <div class="table-responsive w3-hide-medium w3-hide-large">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th></th>
+            <th>SAT</th>
+            <th>SUN</th>
+          </tr>
+        </thead>
         <tr>
-          <th></th>
-          <th>SAT</th>
-          <th>SUN</th>
+          <td>8-10</td>
+          <td></td>
+          <td></td>
         </tr>
-      </thead>
-      <tr>
-        <td>8-10</td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>10-12</td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>13-15</td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>15-17</td>
-        <td></td>
-        <td></td>
-      </tr>
-    </table>
+        <tr>
+          <td>10-12</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>13-15</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>15-17</td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
   </div>
-  <div class="container text-center">
-    <h3 class="col-md-offset-8">รวมเป็นเงิน xxxxx บาท</h3>
+  <div class="container text-center col-md-10 col-md-offset-1">
+    <h3 align="right">รวมเป็นเงิน xxxxx บาท</h3>
   </div>
   <br>
-  <div class="container">
-    <a href="registrationHybrid.html"><button class="btn btn-default col-sm-offset-9 col-sm-2">Next</button></a>
-  </div>
+  <div class="container col-md-10 col-md-offset-1" align="right"> <a href="registrationHybrid.html">
+    <button class="btn btn-default">Next</button>
+    </a> </div>
   <!-- InstanceEndEditable -->
   <div class="row">
     <div class="text-center col-md-6 col-md-offset-3">
@@ -161,6 +161,7 @@
 </div>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
 <script src="public/js/jquery-1.11.3.min.js"></script> 
+
 <!-- Include all compiled plugins (below), or include individual files as needed --> 
 <script src="public/js/bootstrap.js"></script>
 </body>
