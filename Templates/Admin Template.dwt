@@ -1,13 +1,12 @@
 <!doctype html>
 <html lang="en">
-<!-- InstanceBegin template="/Templates/Admin Template.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
-<!-- InstanceBeginEditable name="doctitle" -->
-<title>All Course</title>
-<!-- InstanceEndEditable -->
-<!-- InstanceBeginEditable name="head" -->
-<!-- InstanceEndEditable -->
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>Untitled Document</title>
+<!-- TemplateEndEditable -->
+<!-- TemplateBeginEditable name="head" -->
+<!-- TemplateEndEditable -->
 <link href="public/css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="public/css/w3.css" rel="stylesheet" type="text/css">
 </head>
@@ -30,29 +29,7 @@
   </div>
   <!-- /.container-fluid --> 
 </nav>
-<div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="col-md-4 col-md-offset-2">
-    <h1>Course</h1>
-  </div>
-  <div class="table-responsive col-md-8 col-md-offset-2">
-    <table class="table">
-      <thead>
-        <tr>
-          <th class="col-md-2">CourseName</th>
-          <th class="col-md-2">Day</th>
-          <th class="col-md-3">Time</th>
-          <th class="col-md-1">Tutor</th>
-        </tr>
-      </thead>
-      <tr>
-        <td>MP456x</td>
-        <td>TUE</td>
-        <td>8.00-10.00</td>
-        <td>BENG</td>
-      </tr>
-    </table>
-  </div>
-  <!-- InstanceEndEditable -->
+<div class="container-fluid"> <!-- TemplateBeginEditable name="body" --> body <!-- TemplateEndEditable -->
   <div class="row">
     <div class="text-center col-md-6 col-md-offset-3">
       <h5>Monkey</h5>
@@ -66,5 +43,4 @@
 <!-- Include all compiled plugins (below), or include individual files as needed --> 
 <script src="public/js/bootstrap.js"></script>
 </body>
-<!-- InstanceEnd -->
 </html>
