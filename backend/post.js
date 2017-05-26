@@ -80,6 +80,8 @@ var run=function(app,db){
 
     //OK {userID,password} return {verified}
     app.post("/post/password",function(req,res){
+        console.log(req.body);
+        console.log("[PAGE REQUEST] post/password FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         var userID=parseInt(req.body.userID);
         var password=req.body.password;
         userDB.findOne({_id:userID,password:password},function(err,result){
@@ -116,15 +118,28 @@ var run=function(app,db){
             }
         });
     });
-    //TODO TEST course {grade(1-13)} return {course:[{courseID,courseName,day}]} grade 1-12 TODO if(10-12)incl13
+    //OK {grade(1-13)} return {course:[{courseID,courseName,day}]}
+    // app.post("/post/gradeCourse",function(req,res){
+    //     var grade=parseInt(req.body.grade);
+    //     var output=[];
+    //     configDB.findOne({},function(err,config){
+    //         var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
+    //         courseDB.find({grade:{$bitsAllSet:[grade-1]}}).toArray(function(err,result){
+    //             for(var i=0;i<result.length;i++){
+    //                 output.push({courseID:result[i]._id,courseName:result[i].subject+gradeToString(result[i].grade)+result[i].level,day:result[i].day});
+    //             }
+    //             res.send({course:output});
+    //         });
+    //     });
+    // });
     app.post("/post/gradeCourse",function(req,res){
-        var grade=req.body.grade;
+        var grade=parseInt(req.body.grade);
+        var output=[];
         configDB.findOne({},function(err,config){
             var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
             courseDB.find({grade:{$bitsAllSet:[grade-1]}}).toArray(function(err,result){
-                var output=[];
                 for(var i=0;i<result.length;i++){
-                    output.append({courseID:result[i]._id,courseName:result[i].subject+result[i].grade+result[i].level,day:result[i].day});
+                    output.push({courseID:result[i]._id,courseName:result[i].subject+gradeToString(result[i].grade)+result[i].level,day:result[i].day});
                 }
                 res.send({course:output});
             });
@@ -132,7 +147,7 @@ var run=function(app,db){
     });
 
 
-    //TODO course {studentID,[courseID]} return {err}
+    //TODO course {studentID,[courseID]} return {}
     app.post("/post/addStudentCourse",function(req,res){
         var studentID=req.body.studentID;
         var courseID=req.body.courseID;
@@ -147,80 +162,35 @@ var run=function(app,db){
             }
         });
     });
-    //TODO course {id,[course._id]} return {err}
+    //TODO course {studentID,[courseID]} return {}
     app.post("/post/removeStudentCourse",function(req,res){
-        userDB.findOne({_id:id},function(err,result){
-            if(result==null){
-                res.send({err:"ID doesn't exist."});
-            }
-            else{
-                //
-            }
-        });
+        //
     });
 
-    //TODO Date {id,[skillDay]} return {err}
+    //TODO Date {studentID,[day]} return {}
     app.post("/post/addSkillDay",function(req,res){
-        var id=req.body.id;
-        userDB.findOne({_id:id},function(err,result){
-            if(result==null){
-                res.send({err:"ID doesn't exist."});
-            }
-            else{
-                //
-            }
-        });
+        //
     });
-    //TODO Date {id,[skillDay]} return {err}
+    //TODO Date {studentID,[day]} return {}
     app.post("/post/removeSkillDay",function(req,res){
-        userDB.findOne({_id:id},function(err,result){
-            if(result==null){
-                res.send({err:"ID doesn't exist."});
-            }
-            else{
-                //
-            }
-        });
+        //
     });
 
-    //TODO Date {id,[hybridDay]} return {err}
+    //TODO Date {studentID,[day]} return {}
     app.post("/post/addHybridDay",function(req,res){
-        var id=req.body.id;
-        userDB.findOne({_id:id},function(err,result){
-            if(result==null){
-                res.send({err:"ID doesn't exist."});
-            }
-            else{
-                //
-            }
-        });
+        //
     });
-    //TODO Date {id,[hybridDay]} return {err}
+    //TODO Date {studentID,[day]} return {}
     app.post("/post/removeHybridDay",function(req,res){
-        userDB.findOne({_id:id},function(err,result){
-            if(result==null){
-                res.send({err:"ID doesn't exist."});
-            }
-            else{
-                //
-            }
-        });
+        //
     });
 
 
-    //TODO configPath/File {id,file} return {err}
+    //TODO configPath/File {studentID,file} return {}
     app.post("/post/submitReceipt",function(req,res){
-        var id=req.body.id;
-        userDB.findOne({_id:id},function(err,result){
-            if(result==null){
-                res.send({err:"ID doesn't exist."});
-            }
-            else{
-                //
-            }
-        });
+        //
     });
-    //TODO course {} return {err,[course]}
+    //TODO course {} return {[courseID,subject,[grade],level,day,[tutor],[student]]}
     app.post("/post/allCourse",function(req,res){
         var output=[];
         configDB.findOne({},function(err,config){
@@ -235,48 +205,67 @@ var run=function(app,db){
             });
         });
     });
-    //TODO {} return {err,[{firstname,lastname,nickname,student._id}]}
+    //TODO TEST {} return {student:[{studentID,firstname,lastname,nickname}]}
     app.post("/post/allStudent",function(req,res){
-        userDB.findOne({_id:id},function(err,result){
-            if(result==null){
-                res.send({err:"ID doesn't exist."});
+        var output=[];
+        userDB.find({position:"student"}).toArray(function(err,result){
+            for(i=0;i<result.length;i++){
+                output.push({studentID:result[i]._id,
+                    firstname:result[i].firstname,
+                    lastname:result[i].lastname,
+                    nickname:result[i].nickname
+                });
             }
-            else{
-                //
-            }
+            res.send({student:output});
         });
     });
-    //TODO {id} return {err,[{student}]}
+    //TODO TEST {studentID} return {grade,registrationState,skillDay,hybridDay,balance,status}
     app.post("/post/studentProfile",function(req,res){
-        userDB.findOne({_id:id},function(err,result){
+        var studentID=parseInt(req.body.studentID);
+        userDB.findOne({_id:studentID},function(err,result){
             if(result==null){
-                res.send({err:"ID doesn't exist."});
+                res.send({err:"The requested ID doesn't exist."});
             }
             else{
-                //
+                if(result.position=="student"){
+                    var request=require("request");
+                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
+                        console.log("==[Body]==");
+                        body=JSON.parse(body);
+                        console.log(body);
+                        console.log(typeof(body));
+                        console.log("==[Result.student]==");
+                        console.log(result.student);
+                        console.log(typeof(result.student));
+                        res.send(Object.assign(body,result.student));
+                    });
+                    // res.send(result.student);
+                }
+                else res.send({err:"The requested ID isn't a student."});
             }
         });
     });
 
 
-    //OK {password,firstname,lastname,nickname,grade} return {}
+    //OK {password,firstname,lastname,nickname,grade(1-12)} return {}
     app.post("/post/addStudent",function(req,res){
         console.log("[REQUEST] addStudent");
+        var password=req.body.password;
+        var firstname=req.body.firstname;
+        var lastname=req.body.lastname;
+        var nickname=req.body.nickname;
+        var grade=parseInt(req.body.grade);
+        var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         configDB.findOne({},function(err,config){
-            var password=req.body.password;
-            var firstname=req.body.firstname;
-            var lastname=req.body.lastname;
-            var nickname=req.body.nickname;
-            var grade=parseInt(req.body.grade);
             userDB.findOne({firstname:firstname,lastname:lastname},function(err,result){
                 if(result==null){
                     userDB.insertOne({
                         _id:config.nextStudentID,password:password,position:"student",
                         firstname:firstname,lastname:lastname,nickname:nickname,
-                        student:{grade:grade,registrationState:"registered",course:[],skillDay:[],hybridDay:[],status:"active"}
+                        student:{grade:grade,registrationState:"registered",skillDay:[],hybridDay:[],balance:balance,status:"active"}
                     },function(err,result){
                         configDB.updateOne({},{$inc:{nextStudentID:1}});
-                        // res.send({});
+                        // res.send({}); TODO
                         res.send(result.ops);
                     });
                 }
@@ -301,21 +290,22 @@ var run=function(app,db){
     //OK {password,firstname,lastname,nickname,email,nicknameEng} return {}
     app.post("/post/addTutor",function(req,res){
         console.log("[REQUEST] addTutor");
+        var password=req.body.password;
+        var firstname=req.body.firstname;
+        var lastname=req.body.lastname;
+        var nickname=req.body.nickname;
+        var email=req.body.email;
+        var nicknameEng=req.body.nicknameEng;
         configDB.findOne({},function(err,config){
-            var password=req.body.password;
-            var firstname=req.body.firstname;
-            var lastname=req.body.lastname;
-            var nickname=req.body.nickname;
-            var email=req.body.email;
-            var nicknameEng=req.body.nicknameEng;
             userDB.findOne({firstname:firstname,lastname:lastname},function(err,result){
                 if(result==null){
                     userDB.insertOne({
                         _id:config.nextTutorID,password:password,position:"tutor",
                         firstname:firstname,lastname:lastname,nickname:nickname,
-                        tutor:{email:email,nicknameEng:nicknameEng}
+                        tutor:{email:email,nicknameEng:nicknameEng,status:"active"}
                     },function(err,result){
                         configDB.updateOne({},{$inc:{nextTutorID:1}});
+                        // res.send({}); TODO
                         res.send(result.ops);
                     });
                 }
@@ -337,7 +327,7 @@ var run=function(app,db){
         });
     });
 
-    //TODO TEST {subject,[grade],level,day,[tutor],[student]} return {}
+    //TODO {subject,[grade],level,day,[tutor],[student]} return {}
     app.post('/post/addCourse',function(req,res){
         var subject=req.body.subject;
         var grade=req.body.grade;
@@ -353,7 +343,7 @@ var run=function(app,db){
     });
 
 
-    //OK {} return {_id,courseMaterialPath,receiptPath,year,quarter,nextStudentID,nextTutorID}
+    //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID}
     app.post('/post/getConfig',function(req,res){
         configDB.findOne({},function(err,config){
             res.send(config);
