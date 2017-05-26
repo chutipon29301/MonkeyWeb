@@ -70,20 +70,19 @@
   <div class="container-fluid" align="center">
     <div class="galleria"> <img src="public/images/news/0.JPG"> <img src="public/images/news/1.JPG"> <img src="public/images/news/2.JPG"> <img src="public/images/news/3.JPG"> <img src="public/images/news/4.JPG"> </div>
   </div>
-<!--  <div class="text-center"><a href="home2.html">Click here to fullscreen</a></div>-->
+  <div class="text-center"><a onClick="FS()">Click here to fullscreen</a></div>
   <br>
   <script>
-	  Galleria.loadTheme('public/galleria/themes/classic/galleria.classic.min.js');
+	  Galleria.loadTheme('public/galleria/themes/fullscreen/galleria.fullscreen.min.js');
 	  Galleria.run('.galleria',{extend:function(){
 		  this.setOptions('transition','fade');
 		  this.play(3000);
 	  }});
-	  $(".galleria").dblclick(function(){
+	  $("body").dblclick(function(){
 		  console.log("back");
-		  self.location="\home2.html";
+		  self.location="\home.html";
 	  });
-	</script> 
-  <!-- InstanceEndEditable -->
+	</script><!-- InstanceEndEditable -->
   <div class="row">
     <div class="text-center col-md-6 col-md-offset-3">
       <h5>Monkey</h5>
