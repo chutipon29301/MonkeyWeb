@@ -57,16 +57,14 @@ function clearInput() {
 	pwd.value = "";
 }
 
-function encrypt(text){
+function encrypt(text) {
 	"use strict";
 	return CryptoJS.SHA3(text);
 }
 
-function writeCookie(user, pass) {
-
-}
-
-function log(text) {
+function writeUserCookie(user, pwd) {
 	"use strict";
-	console.log(text);
+	document.cookie = "monkeyWebUser=" + user + "monkeyWebPassword" + encrypt(pwd).toString;
 }
+
+
