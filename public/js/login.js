@@ -21,14 +21,15 @@ function loginSubmit() {
 function login(user, pwd) {
 	"use strict";
 	log("Username:" + user + ",Password:" + pwd);
+	log(JSON.stringify(encrypt(pwd)));
 	$.post("http://192.168.1.135/post/password", {
 		userID: user,
-		password: pwd
+		password: JSON.stringify(encrypt(pwd))
 	}, function (data) {
 		if (data.err) {
 			log("Invalid");
 		} else {
-			console.log(data);
+			log(data);
 			if (data.verified) {
 				self.location = "\home.html";
 			} else {
@@ -37,16 +38,24 @@ function login(user, pwd) {
 			}
 		}
 	});
-
 }
 
-function clearInput(){
+function clearInput() {
 	"use strict";
 	var user = document.getElementById("usr");
 	var pwd = document.getElementById("pwd");
-	
+
 	user.value = "";
 	pwd.value = "";
+}
+
+function encrypt(text){
+	"use strict";
+	return CryptoJS.SHA3(text);
+}
+
+function writeCookie(user, pass) {
+
 }
 
 function log(text) {
