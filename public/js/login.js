@@ -33,16 +33,20 @@ function login(user, pwd) {
 				self.location = "\home.html";
 			} else {
 				log("Wrong");
+				clearInput();
 			}
 		}
 	});
 
 }
 
-function clesrInput(){
+function clearInput(){
+	"use strict";
 	var user = document.getElementById("usr");
 	var pwd = document.getElementById("pwd");
 	
+	user.value = "";
+	pwd.value = "";
 }
 
 function log(text) {
