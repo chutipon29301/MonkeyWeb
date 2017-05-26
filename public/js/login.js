@@ -29,10 +29,10 @@ function loginSubmit() {
 function login(user, pwd) {
 	"use strict";
 	log("Username:" + user + ",Password:" + pwd);
-	log(JSON.stringify(encrypt(pwd)));
+	log(encrypt(pwd).toString());
 	$.post("http://192.168.1.135/post/password", {
 		userID: user,
-		password: JSON.stringify(encrypt(pwd))
+		password: encrypt(pwd).toString()
 	}, function (data) {
 		if (data.err) {
 			log("Invalid");
