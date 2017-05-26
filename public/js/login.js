@@ -8,9 +8,17 @@ function loginSubmit() {
 		document.getElementById("usrReq").style.visibility = "visible";
 		document.getElementById("usrFromGroup").classList.add("has-error");
 	}
+	if (user.value.length !== 0) {
+		document.getElementById("usrReq").style.visibility = "hidden";
+		document.getElementById("usrFromGroup").className = "form-group";
+	}
 	if (pwd.value.length === 0) {
-		document.getElementById("usrReq").style.visibility = "visible";
-		document.getElementById("usrFromGroup").classList.add("has-error");
+		document.getElementById("pwdReq").style.visibility = "visible";
+		document.getElementById("pwdFromGroup").classList.add("has-error");
+	}
+	if (pwd.value.length !== 0) {
+		document.getElementById("pwdReq").style.visibility = "hidden";
+		document.getElementById("pwdFromGroup").className = "form-group";
 	}
 
 	if (pwd.value.length !== 0 && user.value.length !== 0) {
