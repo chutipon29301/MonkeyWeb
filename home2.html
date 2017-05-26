@@ -78,9 +78,11 @@
 		  this.setOptions('transition','fade');
 		  this.play(3000);
 	  }});
-	  $("body").dblclick(function(){
-		  console.log("back");
-		  self.location="\home.html";
+	  $(document).ready(function(){
+		  $("body").dblclick(function(){
+			  console.log("back");
+			  self.location="\home.html";
+		  });
 	  });
 	</script><!-- InstanceEndEditable -->
 </div>

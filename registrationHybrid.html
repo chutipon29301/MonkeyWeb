@@ -6,6 +6,7 @@
 <title>Hybrid Registration</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
+<link href="public/css/style.css" rel="stylesheet" type="text/css">
 <!-- InstanceEndEditable -->
 <link href="public/css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="public/css/w3.css" rel="stylesheet" type="text/css">
@@ -61,14 +62,20 @@
   <div class="container">
     <form class="form-horizontal">
       <div class="form-group">
-        <label class="control-label col-md-2">Skill:</label>
-        <div class="col-md-4">
+        <label class="control-label col-md-1 col-md-offset-1">Skill:</label>
+        <div class="col-md-3">
+          <select class="form-control" id="station">
+            <option>สยาม</option>
+            <option>สาย 3</option>
+          </select>
+        </div>
+        <div class="col-md-3">
           <select class="form-control" id="skillday">
             <option>เสาร์</option>
             <option>อาทิตย์</option>
           </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <select class="form-control" id="skilltime">
             <option>9.00-10.00</option>
             <option>9.30-10.30</option>

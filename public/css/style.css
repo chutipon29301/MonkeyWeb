@@ -4,3 +4,6 @@
 .loginBtn{
 	margin-top: 20px;
 }
+#usr,#pwd,#nname,#name,#sname,#level,#station,#skillday,#skilltime{
+	border-radius: 8px
+}
