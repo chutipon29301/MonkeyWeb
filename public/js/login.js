@@ -39,6 +39,7 @@ function login(user, pwd) {
 		} else {
 			log(data);
 			if (data.verified) {
+				writeUserCookie(user, pwd);
 				self.location = "\home.html";
 			} else {
 				log("Wrong");
@@ -64,7 +65,7 @@ function encrypt(text) {
 
 function writeUserCookie(user, pwd) {
 	"use strict";
-	document.cookie = "monkeyWebUser=" + user + "monkeyWebPassword" + encrypt(pwd).toString;
+	writeCookie("monkeyWebUser=" + user + "monkeyWebPassword" + encrypt(pwd).toString());
 }
 
 

@@ -7,6 +7,10 @@
 <!-- TemplateEndEditable -->
 <!-- TemplateBeginEditable name="head" -->
 <!-- TemplateEndEditable -->
+<script src="public/js/global-1.0.0.custom.js" type="text/javascript"></script>
+<script>
+	checkLogin();
+</script>
 <link href="public/css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="public/css/w3.css" rel="stylesheet" type="text/css">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
