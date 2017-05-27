@@ -78,9 +78,11 @@
 		  this.setOptions('transition','fade');
 		  this.play(3000);
 	  }});
-	  $(".galleria").dblclick(function(){
-		  console.log("back");
-		  self.location="\home2.html";
+	  $(document).ready(function(){
+		  $(".galleria").dblclick(function(){
+			  console.log("back");
+			  self.location="\home2.html";
+		  });
 	  });
 	</script> 
   <!-- InstanceEndEditable -->
