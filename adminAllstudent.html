@@ -13,6 +13,7 @@
 <script>
 	checkLogin();
 </script>
+<script src="/public/js/admin.js"></script>
 <link href="public/css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="public/css/w3.css" rel="stylesheet" type="text/css">
 <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -43,11 +44,14 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
+<script>
+	getAllStudentContent();
+</script>
   <div class="col-md-4 col-md-offset-2">
     <h1>Student</h1>
   </div>
   <div class="table-responsive col-md-8 col-md-offset-2">
-    <table class="table">
+    <table class="table" id="allStudentTable">
       <thead>
         <tr>
           <th class="col-md-1">ID</th>
@@ -58,14 +62,6 @@
           <th class="col-md-1">HB</th>
         </tr>
       </thead>
-      <tr>
-        <td>99991</td>
-        <td>เต๋า</td>
-        <td>ณัฐพงษ์</td>
-        <td>พูลเกษม</td>
-        <td>true</td>
-        <td>true</td>
-      </tr>
     </table>
   </div>
   <!-- InstanceEndEditable -->
@@ -74,7 +70,7 @@
   <div class="row">
     <div class="text-center center-block">
       <h4>Monkey </h4>
-      <p>Copyright &copy; 2017 &middot; All Rights Reserved &middot;</p>
+      <p>Copyright &copy; 2017 &middot; All Rights Reserved</p>
     </div>
   </div>
 </div>
