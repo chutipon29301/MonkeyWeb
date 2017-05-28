@@ -30,7 +30,7 @@ function login(user, pwd) {
 	"use strict";
 	log("Username:" + user + ",Password:" + pwd);
 	log(encrypt(pwd).toString());
-	$.post("http://192.168.1.135/post/password", {
+	$.post("post/password", {
 		userID: user,
 		password: encrypt(pwd).toString()
 	}, function (data) {
@@ -40,7 +40,9 @@ function login(user, pwd) {
 			log(data);
 			if (data.verified) {
 				writeUserCookie(user, pwd);
-				self.location = "\home.html";
+				log(document.cookie);
+//				self.location = "\home.html";
+				self.location = "\home";
 			} else {
 				log("Wrong");
 				clearInput();
@@ -66,7 +68,7 @@ function encrypt(text) {
 function writeUserCookie(user, pwd) {
 	"use strict";
 	writeCookie("monkeyWebUser=" + user);
-	writeCookie("monkeyWebPassword=" + encrypt(pwd).toString())
+	writeCookie("monkeyWebPassword=" + encrypt(pwd).toString());
 }
 
 

@@ -59,14 +59,41 @@ var run=function(app,db){
         });
     };
 
+    var pagedata=function(fileName){
+        var fs=require("fs-extra");
+        var data=fs.readFileSync(path.join(__dirname,"../",fileName+".html")).toString();
+        return data.replace(/public\//g,"").replace(/\.html/g,"");
+    };
+    var addPage=function(pageName){
+        app.get("/"+pageName,function(req,res){
+            console.log("[PAGE REQUEST] "+pageName+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+            res.send(pagedata(pageName))
+        });
+    };
+    addPage("login");
+    addPage("registrationCourse");
+    addPage("home");
+    addPage("home2");
     app.get("/",function(req,res){
         console.log("[PAGE REQUEST] index FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        res.sendFile(path.join(__dirname,"../","login.html"));
+        // res.sendFile(path.join(__dirname,"../","login.html"));
+        res.send(pagedata("login"))
     });
-    app.get("/regis",function(req,res){
-        console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        res.sendFile(path.join(__dirname,"../","registrationCourse.html"));
-    });
+    // app.get("/registrationCourse",function(req,res){
+    //     console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+    //     // res.sendFile(path.join(__dirname,"../","registrationCourse.html"));
+    //     res.send(pagedata("registrationCourse"))
+    // });
+    // app.get("/home",function(req,res){
+    //     console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+    //     // res.sendFile(path.join(__dirname,"../","home.html"));
+    //     res.send(pagedata("home"))
+    // });
+    // app.get("/login",function(req,res){
+    //     console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+    //     // res.sendFile(path.join(__dirname,"../","login.html"));
+    //     res.send(pagedata("login"))
+    // });
     app.get("/testadmin",function(req,res){
         console.log("[PAGE REQUEST] testadmin FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         res.sendFile(path.join(__dirname,"testadmin.html"));

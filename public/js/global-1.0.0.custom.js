@@ -32,7 +32,8 @@ function checkLogin() {
 		} else {
 			log(data);
 			if (!data.verified) {
-				self.location = "\login.html";
+				//				self.location = "\login.html";
+				self.location = "\login";
 				log("Wrong");
 			}
 		}
@@ -56,5 +57,6 @@ function logout() {
 	log("Logout");
 	deleteCookie("monkeyWebUser");
 	deleteCookie("monkeyWebPassword");
-	self.location = "\login.html";
+//	self.location = "\login.html";
+	self.location = "\login";
 }
