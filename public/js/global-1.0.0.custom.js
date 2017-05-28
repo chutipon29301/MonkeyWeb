@@ -3,38 +3,38 @@ function log(text) {
 	console.log(text);
 }
 
-function writeCookie(text) {
+function writeCookie(key, value) {
 	"use strict";
-	document.cookie = text;
-	log(document.cookie);
+	document.cookie = key + "=" + value;
+	log("[writeCookie()] -> " + key + "wrote");
 }
 
 function deleteCookie(key) {
 	"use strict";
 	document.cookie = key + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+	log("[deleteCookie()] -> " + key + "deleted");
 }
 
 function checkLogin() {
 	"use strict";
-	log(document.cookie);
 	var cookie = getCookieDict();
+	var user = cookie.monkeyWebUser;
+	var pwd = cookie.monkeyWebPassword;
+	log("[checkLogin()] : cookie -> ");
 	log(cookie);
-	var user = cookie["monkeyWebUser"];
-	var pwd = cookie["monkeyWebPassword"];
-	log(pwd);
-
-	$.post("http://192.168.1.135/post/password", {
+	$.post("/post/password", {
 		userID: user,
 		password: pwd
 	}, function (data) {
 		if (data.err) {
-			log("Invalid");
+			log("[checkLogin()] : post/return => Error");
 		} else {
+			log("[checkLogin()] : post/return => ");
 			log(data);
 			if (!data.verified) {
+				log("[checkLogin()] : redirecting to login.html");
 				//				self.location = "\login.html";
 				self.location = "\login";
-				log("Wrong");
 			}
 		}
 	});
@@ -44,6 +44,7 @@ function checkLogin() {
 function getCookieDict() {
 	"use strict";
 	var allcookies = document.cookie;
+	log(allcookies);
 	var dict = {};
 	var cookiearray = allcookies.split('; ');
 	for (var i = 0; i < cookiearray.length; i++) {

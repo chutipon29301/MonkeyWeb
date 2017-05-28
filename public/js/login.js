@@ -67,8 +67,6 @@ function encrypt(text) {
 
 function writeUserCookie(user, pwd) {
 	"use strict";
-	writeCookie("monkeyWebUser=" + user);
-	writeCookie("monkeyWebPassword=" + encrypt(pwd).toString());
+	writeCookie("monkeyWebUser", user);
+	writeCookie("monkeyWebPassword", encrypt(pwd).toString());
 }
-
-

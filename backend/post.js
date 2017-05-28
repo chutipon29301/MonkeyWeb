@@ -74,6 +74,9 @@ var run=function(app,db){
     addPage("registrationCourse");
     addPage("home");
     addPage("home2");
+    addPage("adminAllcourse");
+    addPage("adminAllstudent");
+    addPage("adminAllstudentprofile");
     app.get("/",function(req,res){
         console.log("[PAGE REQUEST] index FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         // res.sendFile(path.join(__dirname,"../","login.html"));
