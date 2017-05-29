@@ -22,6 +22,13 @@ function getAllStudentContent() {
 				cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
 				cell5.innerHTML = "<td>" + "isCR" + "</td>";
 				cell6.innerHTML = "<td>" + "isHB" + "</td>";
+				
+				var clickHandler = function(row){
+					return function(){
+						log(row.getElementsByTagName("td")[0].innerHTML);
+					};
+				};
+				row.onclick = clickHandler(row);
 			}
 		}
 	});
