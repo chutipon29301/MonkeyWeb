@@ -16,7 +16,7 @@ function log(text) {
 function writeCookie(key, value) {
 	"use strict";
 	document.cookie = key + "=" + value;
-	log("[writeCookie()] -> " + key + "wrote");
+	log("[writeCookie()] -> " + key + " wrote");
 }
 
 /**
@@ -26,7 +26,7 @@ function writeCookie(key, value) {
 function deleteCookie(key) {
 	"use strict";
 	document.cookie = key + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-	log("[deleteCookie()] -> " + key + "deleted");
+	log("[deleteCookie()] -> " + key + " deleted");
 }
 
 
