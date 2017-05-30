@@ -28,7 +28,6 @@ function getAllStudentContent() {
 						log(row.getElementsByTagName("td")[0].innerHTML);
 						writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
 						self.location = "\adminAllstudentprofile";
-//						self.location = "\adminAllstudentprofile";
 					};
 				};
 				row.onclick = clickHandler(row);
@@ -38,5 +37,8 @@ function getAllStudentContent() {
 }
 
 function getStudentProfile(){
-	
+	var cookie = getCookieDict();
+	var studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
+	document.getElementById("studentID").innerHTML = "ID: " + studentID;
+//	log(document.getElementById("studentID").innerHTML);
 }
