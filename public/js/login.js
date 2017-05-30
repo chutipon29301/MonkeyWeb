@@ -45,7 +45,9 @@ function login(user, pwd) {
 				self.location = "\home";
 			} else {
 				log("Wrong");
+				alert("ID and password do not match.");
 				clearInput();
+
 			}
 		}
 	});
