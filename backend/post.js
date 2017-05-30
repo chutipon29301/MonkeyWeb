@@ -185,7 +185,7 @@ var run=function(app,db){
                         inHybrid:result[i].student.hybridDay.length!=0
                     });
                 });
-            }
+            })}
             res.send({student:output});
         });
     });

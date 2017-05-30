@@ -60,6 +60,59 @@ function checkLogin() {
 }
 
 /**
+ * Check whether user is student
+ * if user is not student, logout
+ */
+function checkIDStudent() {
+	"use strict";
+	var cookie = getCookieDict();
+	var user = cookie.monkeyWebUser;
+	log("[checkLogin()] : cookie -> ");
+	log(cookie);
+	$.post("/post/position", {
+		userID: user
+	}, function (data) {
+		if (data.err) {
+			log("[checkLogin()] : post/return => Error");
+		} else {
+			log("[checkLogin()] : post/return => ");
+			log(data);
+			if (data.position != "student") {
+				log("[checkLogin()] : redirecting to login");
+				logout();
+			}
+		}
+	});
+}
+
+/**
+ * Check whether user is tutor
+ * if user is not tutor, logout
+ */
+function checkIDTutor() {
+	"use strict";
+	var cookie = getCookieDict();
+	var user = cookie.monkeyWebUser;
+	log("[checkLogin()] : cookie -> ");
+	log(cookie);
+	$.post("/post/position", {
+		userID: user
+	}, function (data) {
+		if (data.err) {
+			log("[checkLogin()] : post/return => Error");
+		} else {
+			log("[checkLogin()] : post/return => ");
+			log(data);
+			if (data.position != "tutor") {
+				log("[checkLogin()] : redirecting to login");
+				logout();
+			}
+		}
+	});
+}
+
+
+/**
  * Generate object of document.cookie
  * @return dict object of document.cookie
  */
