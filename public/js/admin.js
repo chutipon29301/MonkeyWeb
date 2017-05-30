@@ -9,7 +9,7 @@ function getAllStudentContent() {
 			var student = data.student;
 			var table = document.getElementById("allStudentTable");
 			for(var i = 0; i < student.length; i++){
-				var row = table.insertRow(i + 1);
+				var row = table.insertRow(i);
 				var cell1 = row.insertCell(0);
 				var cell2 = row.insertCell(1);
 				var cell3 = row.insertCell(2);
@@ -28,11 +28,15 @@ function getAllStudentContent() {
 						log(row.getElementsByTagName("td")[0].innerHTML);
 						writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
 						self.location = "\adminAllstudentprofile";
-//						self.location = "\adminAllstudentprofile.html";
+//						self.location = "\adminAllstudentprofile";
 					};
 				};
 				row.onclick = clickHandler(row);
 			}
 		}
 	});
+}
+
+function getStudentProfile(){
+	
 }

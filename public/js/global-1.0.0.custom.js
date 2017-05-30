@@ -51,8 +51,8 @@ function checkLogin() {
 			log("[checkLogin()] : post/return => ");
 			log(data);
 			if (!data.verified) {
-				log("[checkLogin()] : redirecting to login.html");
-				//				self.location = "\login.html";
+				log("[checkLogin()] : redirecting to login");
+				//				self.location = "\login";
 				self.location = "\login";
 			}
 		}
@@ -84,6 +84,6 @@ function logout() {
 	log("Logout");
 	deleteCookie("monkeyWebUser");
 	deleteCookie("monkeyWebPassword");
-//	self.location = "\login.html";
+//	self.location = "\login";
 	self.location = "\login";
 }
