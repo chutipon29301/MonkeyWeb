@@ -61,6 +61,17 @@ var run=function(app,db){
             });
         });
     };
+    /*var pagedata=function(fileName){
+        var fs=require("fs-extra");
+        var data=fs.readFileSync(path.join(__dirname,"../",fileName+".html")).toString();
+        return data.replace(/public\//g,"").replace(/\.html/g,"");
+    };
+    var addPage=function(pageName){
+        app.get("/"+pageName,function(req,res){
+            console.log("[PAGE REQUEST] "+pageName+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+            res.send(pagedata(pageName))
+        });
+    };*/
     var addPage=function(page,url){
         if(url==undefined)url="/"+page;
         app.get(url,function(req,res){
@@ -68,9 +79,15 @@ var run=function(app,db){
             res.sendFile(path.join(__dirname,"../",page+".html"));
         });
     };
-
+  
     addPage("login","/");
     addPage("login");
+    addPage("registrationCourse");
+    addPage("home");
+    addPage("home2");
+    addPage("adminAllcourse");
+    addPage("adminAllstudent");
+    addPage("adminAllstudentprofile");
     app.get("/testadmin",function(req,res){
         console.log("[PAGE REQUEST] testadmin FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         res.sendFile(path.join(__dirname,"testadmin.html"));
