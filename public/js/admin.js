@@ -27,7 +27,8 @@ function getAllStudentContent() {
 					return function(){
 						log(row.getElementsByTagName("td")[0].innerHTML);
 						writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
-						log(document.cookie);
+						self.location = "\adminAllstudentprofile";
+//						self.location = "\adminAllstudentprofile.html";
 					};
 				};
 				row.onclick = clickHandler(row);
