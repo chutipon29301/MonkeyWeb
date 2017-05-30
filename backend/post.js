@@ -6,7 +6,6 @@ var run=function(app,db){
     var configDB=db.collection("config");
     // var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
-    // in function var courseDB=db.collection("CRXXQX");
     var userDB=db.collection("user");
 
     var gradeToString=function(bit){
@@ -47,10 +46,14 @@ var run=function(app,db){
         }
         return output;
     };
-    var getCourseName=function(id,callback){
+    var getCourseDB=function(callback){
         configDB.findOne({},function(err,config){
-            var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
-            courseDB.findOne({_id:id},function(err,result){
+            callback(db.collection("CR"+config.year+"Q"+config.quarter));
+        });
+    };
+    var getCourseName=function(courseID,callback){
+        getCourseDB(function(courseDB){
+            courseDB.findOne({_id:courseID},function(err,result){
                 var subject=result.subject;
                 var grade=result.grade;
                 var level=result.level;
@@ -58,15 +61,16 @@ var run=function(app,db){
             });
         });
     };
+    var addPage=function(page,url){
+        if(url==undefined)url="/"+page;
+        app.get(url,function(req,res){
+            console.log("[PAGE REQUEST] "+page+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+            res.sendFile(path.join(__dirname,"../",page+".html"));
+        });
+    };
 
-    app.get("/",function(req,res){
-        console.log("[PAGE REQUEST] index FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        res.sendFile(path.join(__dirname,"../","login.html"));
-    });
-    app.get("/regis",function(req,res){
-        console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        res.sendFile(path.join(__dirname,"../","registrationCourse.html"));
-    });
+    addPage("login","/");
+    addPage("login");
     app.get("/testadmin",function(req,res){
         console.log("[PAGE REQUEST] testadmin FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         res.sendFile(path.join(__dirname,"testadmin.html"));
@@ -78,6 +82,7 @@ var run=function(app,db){
 
     // All post will return {err} if error occurs
 
+    // User Information
     //OK {userID,password} return {verified}
     app.post("/post/password",function(req,res){
         console.log(req.body);
@@ -105,48 +110,95 @@ var run=function(app,db){
             }
         });
     });
-    //OK {studentID} return {status}
+    //OK {userID} return {position}
+    app.post("/post/position",function(req,res){
+        var userID=parseInt(req.body.userID);
+        userDB.findOne({_id:userID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested ID doesn't exist."});
+            }
+            else res.send({position:result.position});
+        });
+    });
+    //OK {userID} return {status}
     app.post("/post/status",function(req,res){
+        var userID=parseInt(req.body.userID);
+        userDB.findOne({_id:userID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested ID doesn't exist."});
+            }
+            else if(result.position=="student")res.send({status:result.student.status});
+            else res.send({status:result.tutor.status});
+        });
+    });
+
+    // Student Information
+    //TODO {} return {student:[{studentID,firstname,lastname,nickname}]}
+    app.post("/post/allStudent",function(req,res){
+        var output=[];
+        var events = require("events");
+        var eventEmitter = new events.EventEmitter();
+        // getCourseDB(function(courseDB){
+        //     courseDB.find({grade:{$bitsAllSet:[grade-1]}}).toArray(function(err,result){
+        //         var c=0;
+        //         eventEmitter.on("finish",function(){
+        //             c++;
+        //             if(c==result.length)res.send({course:output});
+        //         });
+        //         for(var i=0;i<result.length;i++){
+        //             (function(courseID,day,tutor){
+        //                 getCourseName(courseID,function(courseName){
+        //                     output.push({courseID:courseID,courseName:courseName,day:day,tutor:tutor});
+        //                     eventEmitter.emit("finish");
+        //                 });
+        //             })(result[i]._id,result[i].day,result[i].tutor);
+        //         }
+        //     });
+        // });
+
+        userDB.find({position:"student"}).toArray(function(err,result){
+            for(i=0;i<result.length;i++){
+                getCourseDB(function(courseDB){
+                    courseDB.find({student:{$all:[result[i]._id]}}).toArray(function(err,course){
+                    output.push({studentID:result[i]._id,
+                        firstname:result[i].firstname,
+                        lastname:result[i].lastname,
+                        nickname:result[i].nickname,
+                        inCourse:course.length!=0,
+                        inHybrid:result[i].student.hybridDay.length!=0
+                    });
+                });
+            }
+            res.send({student:output});
+        });
+    });
+    //TODO TEST {studentID} return {grade,registrationState,skillDay,hybridDay,balance,status,firstname,lastname,nickname,course}
+    app.post("/post/studentProfile",function(req,res){
         var studentID=parseInt(req.body.studentID);
+        var output={};
         userDB.findOne({_id:studentID},function(err,result){
             if(result==null){
                 res.send({err:"The requested ID doesn't exist."});
             }
             else{
-                if(result.position=="student")res.send({status:result.student.status});
+                if(result.position=="student"){
+                    output=result.student;
+                    var request=require("request");
+                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
+                        body=JSON.parse(body);
+                        output=Object.assign(output,body);
+                        getCourseDB(function(courseDB){
+                            // find course that contain this student
+                            // courseDB.find({});
+                        });
+                    });
+                }
                 else res.send({err:"The requested ID isn't a student."});
             }
         });
     });
-    //OK {grade(1-13)} return {course:[{courseID,courseName,day}]}
-    // app.post("/post/gradeCourse",function(req,res){
-    //     var grade=parseInt(req.body.grade);
-    //     var output=[];
-    //     configDB.findOne({},function(err,config){
-    //         var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
-    //         courseDB.find({grade:{$bitsAllSet:[grade-1]}}).toArray(function(err,result){
-    //             for(var i=0;i<result.length;i++){
-    //                 output.push({courseID:result[i]._id,courseName:result[i].subject+gradeToString(result[i].grade)+result[i].level,day:result[i].day});
-    //             }
-    //             res.send({course:output});
-    //         });
-    //     });
-    // });
-    app.post("/post/gradeCourse",function(req,res){
-        var grade=parseInt(req.body.grade);
-        var output=[];
-        configDB.findOne({},function(err,config){
-            var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
-            courseDB.find({grade:{$bitsAllSet:[grade-1]}}).toArray(function(err,result){
-                for(var i=0;i<result.length;i++){
-                    output.push({courseID:result[i]._id,courseName:result[i].subject+gradeToString(result[i].grade)+result[i].level,day:result[i].day});
-                }
-                res.send({course:output});
-            });
-        });
-    });
 
-
+    // Student Timetable
     //TODO course {studentID,[courseID]} return {}
     app.post("/post/addStudentCourse",function(req,res){
         var studentID=req.body.studentID;
@@ -166,7 +218,6 @@ var run=function(app,db){
     app.post("/post/removeStudentCourse",function(req,res){
         //
     });
-
     //TODO Date {studentID,[day]} return {}
     app.post("/post/addSkillDay",function(req,res){
         //
@@ -175,7 +226,6 @@ var run=function(app,db){
     app.post("/post/removeSkillDay",function(req,res){
         //
     });
-
     //TODO Date {studentID,[day]} return {}
     app.post("/post/addHybridDay",function(req,res){
         //
@@ -185,68 +235,7 @@ var run=function(app,db){
         //
     });
 
-
-    //TODO configPath/File {studentID,file} return {}
-    app.post("/post/submitReceipt",function(req,res){
-        //
-    });
-    //TODO course {} return {[courseID,subject,[grade],level,day,[tutor],[student]]}
-    app.post("/post/allCourse",function(req,res){
-        var output=[];
-        configDB.findOne({},function(err,config){
-            var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
-            courseDB.find().forEach(function(result){
-                output.push({courseID:result._id,
-                    subject:result.subject,grade:result.grade,level:result.level,
-                    day:result.day,tutor:result.tutor,student:result.student
-                });
-            },function(err){
-                res.send({course:output});
-            });
-        });
-    });
-    //TODO TEST {} return {student:[{studentID,firstname,lastname,nickname}]}
-    app.post("/post/allStudent",function(req,res){
-        var output=[];
-        userDB.find({position:"student"}).toArray(function(err,result){
-            for(i=0;i<result.length;i++){
-                output.push({studentID:result[i]._id,
-                    firstname:result[i].firstname,
-                    lastname:result[i].lastname,
-                    nickname:result[i].nickname
-                });
-            }
-            res.send({student:output});
-        });
-    });
-    //TODO TEST {studentID} return {grade,registrationState,skillDay,hybridDay,balance,status}
-    app.post("/post/studentProfile",function(req,res){
-        var studentID=parseInt(req.body.studentID);
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    var request=require("request");
-                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
-                        console.log("==[Body]==");
-                        body=JSON.parse(body);
-                        console.log(body);
-                        console.log(typeof(body));
-                        console.log("==[Result.student]==");
-                        console.log(result.student);
-                        console.log(typeof(result.student));
-                        res.send(Object.assign(body,result.student));
-                    });
-                    // res.send(result.student);
-                }
-                else res.send({err:"The requested ID isn't a student."});
-            }
-        });
-    });
-
-
+    // User Management
     //OK {password,firstname,lastname,nickname,grade(1-12)} return {}
     app.post("/post/addStudent",function(req,res){
         console.log("[REQUEST] addStudent");
@@ -286,7 +275,7 @@ var run=function(app,db){
             }
         });
     });
-
+    //TODO ADD editStudent
     //OK {password,firstname,lastname,nickname,email,nicknameEng} return {}
     app.post("/post/addTutor",function(req,res){
         console.log("[REQUEST] addTutor");
@@ -326,7 +315,47 @@ var run=function(app,db){
             }
         });
     });
+    //TODO ADD editTutor
 
+    // Course
+    //TODO course {} return {[courseID,subject,[grade],level,day,[tutor],[student]]}
+    app.post("/post/allCourse",function(req,res){
+        var output=[];
+        getCourseDB(function(courseDB){
+            courseDB.find().forEach(function(result){
+                output.push({courseID:result._id,
+                    subject:result.subject,grade:result.grade,level:result.level,
+                    day:result.day,tutor:result.tutor,student:result.student
+                });
+            },function(err){
+                res.send({course:output});
+            });
+        });
+    });
+    //OK {grade(1-13)} return {course:[{courseID,courseName,day}]}
+    app.post("/post/gradeCourse",function(req,res){
+        var grade=parseInt(req.body.grade);
+        var output=[];
+        var events = require("events");
+        var eventEmitter = new events.EventEmitter();
+        getCourseDB(function(courseDB){
+            courseDB.find({grade:{$bitsAllSet:[grade-1]}}).toArray(function(err,result){
+                var c=0;
+                eventEmitter.on("finish",function(){
+                    c++;
+                    if(c==result.length)res.send({course:output});
+                });
+                for(var i=0;i<result.length;i++){
+                    (function(courseID,day,tutor){
+                        getCourseName(courseID,function(courseName){
+                            output.push({courseID:courseID,courseName:courseName,day:day,tutor:tutor});
+                            eventEmitter.emit("finish");
+                        });
+                    })(result[i]._id,result[i].day,result[i].tutor);
+                }
+            });
+        });
+    });
     //TODO {subject,[grade],level,day,[tutor],[student]} return {}
     app.post('/post/addCourse',function(req,res){
         var subject=req.body.subject;
@@ -334,15 +363,22 @@ var run=function(app,db){
         var level=req.body.level;
         var tutor=req.body.tutor;
         var day=req.body.day;
-        configDB.findOne({},function(err,config){
-            var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
+        getCourseDB(function(courseDB){
             courseDB.insertOne({subject:subject,grade:grade,level:level,day:day,tutor:[],student:[],submission:[]},function(err,result){
                 console.log(result);
             });
         });
     });
+    //TODO ADD removeCourse
+    //TODO ADD editCourse
 
+    // Reciept
+    //TODO configPath/File {studentID,file} return {}
+    app.post("/post/submitReceipt",function(req,res){
+        //
+    });
 
+    // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID}
     app.post('/post/getConfig',function(req,res){
         configDB.findOne({},function(err,config){
@@ -378,8 +414,7 @@ var run=function(app,db){
         });
     });
     app.post("/debug/listCourse",function(req,res){
-        configDB.findOne({},function(err,config){
-            var courseDB=db.collection("CR"+config.year+"Q"+config.quarter);
+        getCourseDB(function(courseDB){
             courseDB.find().toArray(function(err,result){
                 res.send(result);
             });
