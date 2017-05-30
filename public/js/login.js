@@ -41,7 +41,7 @@ function login(user, pwd) {
 			if (data.verified) {
 				writeUserCookie(user, pwd);
 				log(document.cookie);
-//				self.location = "\home.html";
+//				self.location = "\home";
 				self.location = "\home";
 			} else {
 				log("Wrong");

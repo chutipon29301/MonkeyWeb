@@ -28,11 +28,15 @@ function getAllStudentContent() {
 						log(row.getElementsByTagName("td")[0].innerHTML);
 						writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
 						self.location = "\adminAllstudentprofile";
-//						self.location = "\adminAllstudentprofile.html";
+//						self.location = "\adminAllstudentprofile";
 					};
 				};
 				row.onclick = clickHandler(row);
 			}
 		}
 	});
+}
+
+function getStudentProfile(){
+	
 }
