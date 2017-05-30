@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="js/sha3.js"></script>
         <script>
             $(document).ready(function(){
                 refresh();
@@ -36,7 +37,15 @@
                 // })
                 $("form").submit(function(event){
                     event.preventDefault();
-                    $.post($(this).attr("action"),$(this).find("[name]"),function(data,status){
+                    // var input=$(this).find("[name]");
+                    var input={};
+                    $(this).find("[name]").each(function(){
+                        if($(this).attr("type")=="password")input[$(this).attr("name")]=CryptoJS.SHA3($(this).val()).toString();
+                        else if($(this).attr("type")=="number")input[$(this).attr("name")]=parseInt($(this).val());
+                        else input[$(this).attr("name")]=$(this).val();
+                    });
+                    console.log(input);
+                    $.post($(this).attr("action"),input,function(data,status){
                         $("#message").empty();
                         if(data.err){
                             $("#message").append("<div id=\"danger\"></div>");
@@ -59,12 +68,18 @@
                         $("#listUser").append(JSON.stringify(data[i])+"<br><br>");
                     }
                 });
-                // $("#listCourse").empty();
+                $("#listCourse").empty();
                 // $.post("post/allCourse",function(data,status){
-                //     for(var i=0;i<data.length;i++){
-                //         $("#listCourse").append(JSON.stringify(data[i])+"<br><br>");
+                //     for(var i=0;i<data.course.length;i++){
+                //         $("#listCourse").append(JSON.stringify(data.course[i])+"<br><br>");
                 //     }
                 // });
+                $.post("debug/listCourse",function(data,status){
+                    for(var i=0;i<data.length;i++){
+                        $("#listCourse").append(JSON.stringify(data[i])+"<br><br>");
+                        $("#listCourse").append(new Date(data[i].day).toString()+"<br><br>");
+                    }
+                });
             };
         </script>
     </head>
@@ -77,6 +92,66 @@
         <div class="container">
             <div class="panel-group">
                 <div class="container">
+                    <form action="post/password" method="post">
+                        <input class="form-control" type="number" name="userID" placeholder="userID" required>
+                        <input class="form-control" type="text" name="password" placeholder="Password" required>
+                        <button class="btn btn-default" type="submit">post/password</button>
+                    </form>
+                    <br>
+                </div>
+                <div class="container">
+                    <form action="post/name" method="post">
+                        <input class="form-control" type="number" name="userID" placeholder="userID" required>
+                        <button class="btn btn-default" type="submit">post/name</button>
+                    </form>
+                    <br>
+                </div>
+                <div class="container">
+                    <form action="post/status" method="post">
+                        <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                        <button class="btn btn-default" type="submit">post/status</button>
+                    </form>
+                    <br>
+                </div>
+                <div class="container">
+                    <form action="post/gradeCourse" method="post">
+                        <input class="form-control" type="number" name="grade" placeholder="grade" required>
+                        <button class="btn btn-default" type="submit">post/gradeCourse</button>
+                    </form>
+                    <br>
+                </div>
+                <br><br>
+
+                <p>addStudentCourse TODO</p>
+                <p>removeStudentCourse TODO</p>
+                <br>
+                <p>addSkillDay TODO</p>
+                <p>removeSkillDay TODO</p>
+                <br>
+                <p>addHybridDay TODO</p>
+                <p>removeHybridDay TODO</p>
+                <br><br>
+
+                <p>submitReceipt TODO</p>
+                <p>allCourse TODO</p>
+                <!-- <p>allStudent TOTEST</p> -->
+                <div class="container">
+                    <form action="post/allStudent" method="post">
+                        <button class="btn btn-default" type="submit">post/allStudent</button>
+                    </form>
+                    <br>
+                </div>
+                <!-- <p>studentProfile TOTEST</p> -->
+                <div class="container">
+                    <form action="post/studentProfile" method="post">
+                        <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                        <button class="btn btn-default" type="submit">post/studentProfile</button>
+                    </form>
+                    <br>
+                </div>
+                <br><br>
+
+                <div class="container">
                     <form action="post/addStudent" method="post">
                         <input class="form-control" type="password" name="password" placeholder="Password" required>
                         <input class="form-control" type="text" name="firstname" placeholder="Firstname" required>
@@ -85,22 +160,16 @@
                         <input class="form-control" type="number" name="grade" placeholder="Grade" required>
                         <button class="btn btn-default" type="submit">post/addStudent</button>
                     </form>
-                    <br><br><br>
+                    <br>
                 </div>
                 <div class="container">
                     <form action="post/removeStudent" method="post">
                         <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
                         <button class="btn btn-default" type="submit">post/removeStudent</button>
                     </form>
-                    <br><br><br>
+                    <br>
                 </div>
-                <div class="container">
-                    <form action="post/addStudentGrade" method="post">
-                        <input class="form-control" type="number" name="toAdd" placeholder="toAdd" required>
-                        <button class="btn btn-default" type="submit">post/addStudentGrade</button>
-                    </form>
-                    <br><br><br>
-                </div>
+                <br>
                 <div class="container">
                     <form action="post/addTutor" method="post">
                         <input class="form-control" type="password" name="password" placeholder="Password" required>
@@ -111,36 +180,24 @@
                         <input class="form-control" type="text" name="nicknameEng" placeholder="Nickname in English" required>
                         <button class="btn btn-default" type="submit">post/addTutor</button>
                     </form>
-                    <br><br><br>
+                    <br>
                 </div>
                 <div class="container">
                     <form action="post/removeTutor" method="post">
                         <input class="form-control" type="number" name="tutorID" placeholder="tutorID" required>
                         <button class="btn btn-default" type="submit">post/removeTutor</button>
                     </form>
-                    <br><br><br>
+                    <br>
                 </div>
+                <br>
+                <p>addCourse TODO</p>
+                <br><br>
+
                 <div class="container">
-                    <form action="post/password" method="post">
-                        <input class="form-control" type="number" name="userID" placeholder="userID" required>
-                        <input class="form-control" type="password" name="password" placeholder="Password" required>
-                        <button class="btn btn-default" type="submit">post/password</button>
+                    <form action="post/getConfig" method="post">
+                        <button class="btn btn-default" type="submit">post/getConfig</button>
                     </form>
-                    <br><br><br>
-                </div>
-                <div class="container">
-                    <form action="post/name" method="post">
-                        <input class="form-control" type="number" name="userID" placeholder="userID" required>
-                        <button class="btn btn-default" type="submit">post/name</button>
-                    </form>
-                    <br><br><br>
-                </div>
-                <div class="container">
-                    <form action="post/status" method="post">
-                        <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
-                        <button class="btn btn-default" type="submit">post/status</button>
-                    </form>
-                    <br><br><br>
+                    <br>
                 </div>
                 <div class="container">
                     <form action="post/editConfig" method="post">
@@ -152,6 +209,14 @@
                         <input class="form-control" type="number" name="nextTutorID" placeholder="nextTutorID" required>
                         <button class="btn btn-default" type="submit">post/editConfig</button>
                     </form>
+                    <br>
+                </div>
+                <div class="container">
+                    <form action="post/addStudentGrade" method="post">
+                        <input class="form-control" type="number" name="toAdd" placeholder="toAdd" required>
+                        <button class="btn btn-default" type="submit">post/addStudentGrade</button>
+                    </form>
+                    <br>
                 </div>
             </div>
         </div>

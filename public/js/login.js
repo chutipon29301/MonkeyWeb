@@ -29,32 +29,46 @@ function loginSubmit() {
 function login(user, pwd) {
 	"use strict";
 	log("Username:" + user + ",Password:" + pwd);
-	$.post("http://192.168.1.135/post/password", {
+	log(encrypt(pwd).toString());
+	$.post("post/password", {
 		userID: user,
-		password: pwd
+		password: encrypt(pwd).toString()
 	}, function (data) {
 		if (data.err) {
 			log("Invalid");
 		} else {
-			console.log(data);
+			log(data);
 			if (data.verified) {
-				self.location = "\home.html";
+				writeUserCookie(user, pwd);
+				log(document.cookie);
+//				self.location = "\home.html";
+				self.location = "\home";
 			} else {
 				log("Wrong");
 				alert("ID and password do not match.");
+				clearInput();
+
 			}
 		}
 	});
-
 }
 
-function clesrInput(){
+function clearInput() {
+	"use strict";
 	var user = document.getElementById("usr");
 	var pwd = document.getElementById("pwd");
-	
+
+	user.value = "";
+	pwd.value = "";
 }
 
-function log(text) {
+function encrypt(text) {
 	"use strict";
-	console.log(text);
+	return CryptoJS.SHA3(text);
+}
+
+function writeUserCookie(user, pwd) {
+	"use strict";
+	writeCookie("monkeyWebUser", user);
+	writeCookie("monkeyWebPassword", encrypt(pwd).toString());
 }

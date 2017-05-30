@@ -1,7 +1,7 @@
 var availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
 $(document).ready(function(){
-$("#level").change(function(){
+$("#level").change(function(){ /* level table changed and gen table */
 	genTable()
 	availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
@@ -78,11 +78,28 @@ $("#level").change(function(){
 				}
 			}
 		}
+		updateTable(availableCourse);
 	});
 });
 });
 
-function genTable(){
+function updateTable(course){ /* update table after gen to change from blank to recieved data */
+	var i
+	for (i in course){
+		if(course[i]!=false){
+			var temp = document.getElementsByClassName("btn-"+i.slice(0,3)+" "+i.slice(3,i.length-1)+"."+i[i.length-1])
+			var j
+			for(j=0;j<temp.length;j++){
+			var rep = temp[j].className;
+			rep.replace(/btn-basic disabled/g,"btn btn-default");
+			temp[j].className = rep;
+			temp[j].innerHTML = course[i].courseName;
+			}
+		}
+	}
+}
+
+function genTable(){ /* gen blank table at first */
 	var satTable = document.getElementsByClassName("btn-sat")
 	var sunTable = document.getElementsByClassName("btn-sun")
 	var i
@@ -98,7 +115,7 @@ function genTable(){
 	}
 
 }
-function calculate(btn){
+function calculate(btn){ /* run after click btn in HTML to switch between select and non-select */
 	var i;
 	var all_same=document.getElementsByClassName(btn.className.split(' ')[0]+' '+btn.className.split(' ')[1]);
 	for (i = 0;i<all_same.length;i++){
@@ -131,10 +148,22 @@ function calculate(btn){
 			all_same[i].className=raw;
 		}
 	}
-	document.getElementById	('show_price').innerHTML = document.getElementsByClassName('btn-success').length*6000/2
+	var temp = btn.className.split(' ')
+	var dayHour = temp[0].slice(temp[0].length-3,temp[0].length) + temp[1]
+	dayHour.replace(/./g,'');
+	if (availableCourse[dayHour!=false]){
+		if(btn.className.indexOf("btn-success")!=-1){
+			availableCourse[dayHour]["select"] = true
+		}
+		else{
+			availableCourse[dayHour]["select"] = false	
+		}
+	}
+	document.getElementById	('show_price').innerHTML = document.getElementsByClassName('btn-success').length*6000/2;
+	nextCheck();
 }
 
-function deselect(btn){	
+function deselect(btn){	 /* sub function to deselect duo btn if both is selected */
 	var i;
 	var all_same=document.getElementsByClassName(btn.className.split(' ')[0]+' '+btn.className.split(' ')[1]);
 	for (i = 0;i<all_same.length;i++){
@@ -147,5 +176,36 @@ function deselect(btn){
 			raw = raw.replace(/btn-success/g,"btn-default");
 			all_same[i].className=raw;
 		}
+	}
+}
+
+function nextCheck(){ /* check next btn */
+	var i
+	var check = false
+	for(i in availableCourse){
+		if (availableCourse[i]!=false){
+			if (availableCourse[i].select==true && availableCourse[i].tutor.nicknameEng!="Hybrid"){
+				check = true;
+			}
+		}
+	}
+	if(check){
+		document.getElementById("next-btn").className = "btn btn-default";
+	}
+}
+
+function next(gg){
+	if(gg.className.indexOf("disabled")==-1){
+		var i
+		var cookie=""
+		for(i in availableCourse){
+			if (availableCourse[i]!=false){
+				if(availableCourse[i].select){
+					cookie+=availableCourse[i].courseName+i+" ";
+				}			
+			}
+		}
+		writeCookie("regisCourse",cookie);
+		self.location = "registrationHybrid.html";
 	}
 }
