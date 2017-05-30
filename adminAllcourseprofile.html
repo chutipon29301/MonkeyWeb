@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Student Profile</title>
+<title>Course Profile</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <!-- InstanceEndEditable -->
@@ -13,7 +14,6 @@
 <script>
 	checkLogin();
 </script>
-
 <link href="/css/style.css" rel="stylesheet" type="text/css">
 <script src="/js/admin.js"></script>
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
@@ -46,64 +46,32 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="col-md-10 col-md-offset-1">
-    <h1>Student ID</h1>
-    <h3>StudentName</h3>
+  <div class="col-md-8 col-md-offset-2">
+    <h1>Course Name</h1>
+    <h3>Tutor Name</h3>
+    <br>
   </div>
-  <div class="container-fluid">
-    <div class="table-responsive col-md-10 col-md-offset-1">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th></th>
-            <th>8:00-10:00</th>
-            <th>10:00-12:00</th>
-            <th>13:00-15:00</th>
-            <th>15:00-17:00</th>
-            <th>16:00-18:00</th>
-          </tr>
-        </thead>
-        <tr>
-          <td>TUE</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td>THU</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td>SAT</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td>SUN</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </div>
+  <div>
+  	<p class="col-md-1 col-md-offset-2">Day:Saturday</p>
+  	<p class="col-md-1">10.00-12.00</p>
+  	<button class="btn btn-default col-md-1 col-md-offset-4" type="button">SHEET</button>
+  	<button class="btn btn-default col-md-1" type="button">EDIT</button>
   </div>
-  <div class="btn-group col-md-offset-10">
-    <button type="button" class="btn btn-default">ADD</button>
-    <button type="button" class="btn btn-default">REMOVE</button>
+  <div class="table-responsive col-md-8 col-md-offset-2">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-md-2">ID</th>
+          <th class="col-md-2">Nickname</th>
+          <th class="col-md-2">Name</th>
+          <th class="col-md-2">Surname</th>
+        </tr>
+      </thead>
+      <thead  id="allStudentInCourseTable">
+      </thead>
+    </table>
   </div>
-  <!-- InstanceEndEditable -->
-</div>
+  <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
     <div class="text-center center-block">
@@ -113,4 +81,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
