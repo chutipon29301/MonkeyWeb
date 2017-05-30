@@ -17,6 +17,7 @@
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <!-- Include all compiled plugins (below), or include individual files as needed -->
+<!-- InstanceBeginEditable name="script" --><script type="text/javascript" src="public/js/regHyCal.js"></script><!--add more script--><!-- InstanceEndEditable -->
 <script src="js/bootstrap.js"></script>
 <!-- InstanceBeginEditable name="script" --><!--add more script--><!-- InstanceEndEditable -->
 </head>
@@ -81,6 +82,7 @@
         </div>
         <div class="col-md-3">
           <select class="form-control" id="skilltime">
+           	<option>กรุณาเลือกเวลาเรียน</option>
             <option>9.00-10.00</option>
             <option>9.30-10.30</option>
             <option>10.00-11.00</option>
@@ -96,7 +98,7 @@
       </div>
     </form>
   </div>
-  <div class="table-responsive w3-hide-small col-md-10 col-md-offset-1">
+  <div class="table-responsive w3-hide-small w3-hide-medium col-md-10 col-md-offset-1">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -105,89 +107,106 @@
           <th>10:00-12:00</th>
           <th>13:00-15:00</th>
           <th>15:00-17:00</th>
-          <th>16:00-18:00</th>
         </tr>
       </thead>
       <tr>
         <td>TUE</td>
+		<td></td>
         <td></td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-tue 15.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-tue 15.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>THU</td>
+       <td></td>
         <td></td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-thu 15.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-thu 15.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>SAT</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-sat 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sat 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sat 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sat 13.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sat 15.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>SUN</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-sun 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sun 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sun 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sun 13.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
+        <button type="button" class="btn-sun 15.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
     </table>
   </div>
-  <div class="table-responsive w3-hide-medium w3-hide-large">
+  <div class="table-responsive w3-hide-large">
     <table class="table table-bordered">
       <thead>
         <tr>
           <th></th>
           <th>TUE</th>
           <th>THU</th>
+        </tr>
+      </thead>
+      <tr>
+  
+      <tr>
+        <td>15-17</td>
+        <td><button type="button" class="btn-tue 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br><button type="button" class="btn-tue 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-thu 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-thu 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+   
+      </tr>
+
+    </table>
+  </div>
+  <div class="table-responsive w3-hide-large">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th></th>
           <th>SAT</th>
           <th>SUN</th>
         </tr>
       </thead>
       <tr>
         <td>8-10</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-sat 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-sat 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-sun 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>10-12</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-sat 10.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-sat 10.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 10.1 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-sun 10.2 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>13-15</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-sat 13.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-sat 13.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 13.1 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-sun 13.2 btn btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>15-17</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-tue 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br><button type="button" class="btn-tue 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-thu 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-thu 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
-      <tr>
-        <td>16-18</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
+
     </table>
   </div>
   <div class="container col-md-10 col-md-offset-1" align="right"> <a href="registrationHybrid">
