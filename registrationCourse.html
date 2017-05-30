@@ -6,6 +6,7 @@
 <title>Untitled Document</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
+
 <script type="text/javascript" src="public/js/myTable-1.0.0.custom.js"></script>
 <link href="public/css/style.css" rel="stylesheet" type="text/css">
 <!-- InstanceEndEditable -->
@@ -15,7 +16,7 @@
 <script src="public/js/jquery-1.11.3.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="public/js/bootstrap.js"></script>
-<!-- InstanceBeginEditable name="script" --><!--add more script--><!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="script" --><script type="text/javascript" src="public/js/regCrCal.js"></script> <!--add more script--><!-- InstanceEndEditable -->
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -57,6 +58,7 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
+
   <div class="container">
     <form class="form-horizontal">
       <div class="form-group">
@@ -70,19 +72,20 @@
       <div class="form-group">
         <label class="control-label col-md-2">ชั้น:</label>
         <div class="col-md-8">
-          <select class="form-control" id="level">
-            <option>ประถม 1</option>
-            <option>ประถม 2</option>
-            <option>ประถม 3</option>
-            <option>ประถม 4</option>
-            <option>ประถม 5</option>
-            <option>ประถม 6</option>
-            <option>มัธยม 1</option>
-            <option>มัธยม 2</option>
-            <option>มัธยม 3</option>
-            <option>มัธยม 4</option>
-            <option>มัธยม 5</option>
-            <option>มัธยม 6</option>
+          <select name="level" class="form-control" id="level" >
+           <option value="null">กรุณาเลือกชั้นเรียน</option>
+            <option value="1">ประถม 1</option>
+            <option value="2">ประถม 2</option>
+            <option value="3">ประถม 3</option>
+            <option value="4">ประถม 4</option>
+            <option value="5">ประถม 5</option>
+            <option value="6">ประถม 6</option>
+            <option value="7">มัธยม 1</option>
+            <option value="8">มัธยม 2</option>
+            <option value="9">มัธยม 3</option>
+            <option value="10">มัธยม 4</option>
+            <option value="11">มัธยม 5</option>
+            <option value="12">มัธยม 6</option>
           </select>
         </div>
       </div>
@@ -101,17 +104,25 @@
       </thead>
       <tr>
         <td>SAT</td>
-        <td><button class="btn btn-default" onClick="cilck();">Button for test</button></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-sat 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sat 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sat 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sat 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sat 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sat 13.2 btn btn-basic disabled  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sat 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sat 15.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
       </tr>
       <tr>
         <td>SUN</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><button type="button" class="btn-sun 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sun 10.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sun 10.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sun 13.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sun 13.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sun 15.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
+        <button type="button" class="btn-sun 15.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
       </tr>
     </table>
   </div>
@@ -127,29 +138,37 @@
         </thead>
         <tr>
           <td>8-10</td>
-          <td></td>
-          <td></td>
+          <td><button type="button" class="btn-sat 8.1 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sat 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sun 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
         </tr>
         <tr>
           <td>10-12</td>
-          <td></td>
-          <td></td>
+          <td><button type="button" class="btn-sat 10.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sat 10.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sun 10.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sun 10.2 btn btn-basic disabled col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
         </tr>
         <tr>
           <td>13-15</td>
-          <td></td>
-          <td></td>
+          <td><button type="button" class="btn-sat 13.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sat 13.2 btn btn-basic disabled col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sun 13.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sun 13.2 btn btn-basic disabled col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
         </tr>
         <tr>
           <td>15-17</td>
-          <td></td>
-          <td></td>
+          <td><button type="button" class="btn-sat 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sat 15.2 btn btn-basic disabled col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sun 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sun 15.2 btn btn-basic disabled col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
         </tr>
       </table>
     </div>
   </div>
   <div class="container text-center col-md-10 col-md-offset-1">
-    <h3 align="right">รวมเป็นเงิน xxxxx บาท</h3>
+    <h3 align="right">รวมเป็นเงิน <label id="show_price">0</label> บาท</h3>
   </div>
   <br>
   <div class="container col-md-10 col-md-offset-1" align="right"> <a href="registrationHybrid.html">
