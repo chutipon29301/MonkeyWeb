@@ -13,6 +13,9 @@
 <script>
 	checkLogin();
 </script>
+
+<link href="/css/style.css" rel="stylesheet" type="text/css">
+<script src="/js/admin.js"></script>
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -31,29 +34,8 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="defaultNavbar1">
       <ul class="nav navbar-nav">
-        <li><a href="../registrationCourse">Registration<span class="sr-only">(current)</span></a></li>
-        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Course<span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
-        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Hybrid<span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
+        <li><a href="../adminAllcourse">All Course<span class="sr-only">(current)</span></a></li>
+        <li><a href="../adminAllstudent">All Student<span class="sr-only">(current)</span></a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#" onClick="logout();"><span class="glyphicon glyphicon-log-out"></span>Log out</a></li>
@@ -69,7 +51,7 @@
   <div class="row">
     <div class="text-center center-block">
       <h4>Monkey </h4>
-      <p>Copyright &copy; 2017 &middot; All Rights Reserved &middot;</p>
+      <p>Copyright &copy; 2017 &middot; All Rights Reserved</p>
     </div>
   </div>
 </div>

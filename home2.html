@@ -1,12 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
-<!-- TemplateBeginEditable name="doctitle" -->
-<title>Untitled Document</title>
-<!-- TemplateEndEditable -->
-<!-- TemplateBeginEditable name="head" -->
-<!-- TemplateEndEditable -->
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Monkey Home</title>
+<style>
+.galleria {
+	max-width: 71vw;
+	height: 90vh;
+	background: #000
+}
+</style>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="js/jquery-1.11.3.min.js"></script>
 <script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
@@ -17,9 +24,9 @@
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="js/bootstrap.js"></script>
-<!-- TemplateBeginEditable name="script" -->
-<!--add more script-->
-<!-- TemplateEndEditable -->
+<!-- InstanceBeginEditable name="script" -->
+<script src="galleria/galleria-1.5.7.min.js"></script>
+<!-- InstanceEndEditable -->
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -27,11 +34,11 @@
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#defaultNavbar1"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
-      <a class="navbar-brand" href="../home">Monkey</a></div>
+      <a class="navbar-brand" href="home">Monkey</a></div>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="defaultNavbar1">
       <ul class="nav navbar-nav">
-        <li><a href="../registrationCourse">Registration<span class="sr-only">(current)</span></a></li>
+        <li><a href="registrationCourse">Registration<span class="sr-only">(current)</span></a></li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Course<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="#">Action</a></li>
@@ -63,7 +70,25 @@
   </div>
   <!-- /.container-fluid --> 
 </nav>
-<div class="container-fluid"> <!-- TemplateBeginEditable name="body" --> body <!-- TemplateEndEditable -->
+<div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
+  <div class="container-fluid" align="center">
+    <div class="galleria"> <img src="images/news/0.PNG"> <img src="images/news/1.PNG"> <img src="images/news/2.PNG"> <img src="images/news/3.PNG"> <img src="images/news/4.PNG"><img src="images/news/5.PNG"><img src="images/news/6.PNG"><img src="images/news/7.PNG"><img src="images/news/8.PNG"> </div>
+  </div>
+  <div class="text-center"><a onClick="FS()">Click here to fullscreen</a></div>
+  <br>
+  <script>
+	  Galleria.loadTheme('galleria/themes/fullscreen/galleria.fullscreen.min.js');
+	  Galleria.run('.galleria',{extend:function(){
+		  this.setOptions('transition','fade');
+		  this.play(10000);
+	  }});
+	  $(document).ready(function(){
+		  $("body").dblclick(function(){
+			  console.log("back");
+			  self.location="\home";
+		  });
+	  });
+	</script><!-- InstanceEndEditable -->
 </div>
 <div class="container">
   <div class="row">
@@ -74,4 +99,4 @@
   </div>
 </div>
 </body>
-</html>
+<!-- InstanceEnd --></html>
