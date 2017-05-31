@@ -22,7 +22,9 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="js/bootstrap.js"></script>
 <!-- InstanceBeginEditable name="script" -->
-<!--add more script-->
+<script type="text/javascript" src="http://static.fusioncharts.com/code/latest/fusioncharts.js"></script>
+<script type="text/javascript" src="http://static.fusioncharts.com/code/latest/themes/fusioncharts.theme.fint.js?cacheBust=56"></script>
+<script type="text/javascript" src="js/fusionChart.js"></script>
 <!-- InstanceEndEditable -->
 </head>
 <body>
@@ -47,10 +49,13 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
- <div class="col-md-8 col-md-offset-2">
- 	<h1>Meeting Plan</h1>
+ <div align="center">
+ 	<h1>Gantt Chart</h1>
  </div>
-  <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;mode=WEEK&amp;height=700&amp;wkst=2&amp;hl=th&amp;bgcolor=%23ffffff&amp;src=gg-pichate%40mkyhybrid.com&amp;color=%232952A3&amp;ctz=Asia%2FBangkok" style="border-width:0" height="768px" frameborder="0" class="col-md-8 col-md-offset-2"></iframe>
+ <div align="center">
+ 	<div id="fusionchart"></div>
+ </div>
+<!--  <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;mode=WEEK&amp;height=700&amp;wkst=2&amp;hl=th&amp;bgcolor=%23ffffff&amp;src=gg-pichate%40mkyhybrid.com&amp;color=%232952A3&amp;ctz=Asia%2FBangkok" style="border-width:0" height="768px" frameborder="0" class="col-md-8 col-md-offset-2"></iframe>-->
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
