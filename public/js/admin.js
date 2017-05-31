@@ -20,8 +20,8 @@ function getAllStudentContent() {
 				cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
 				cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
 				cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
-				cell5.innerHTML = "<td>" + student[i].inCourse + "</td>";
-				cell6.innerHTML = "<td>" + student[i].inHybrid + "</td>";
+				cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+				cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 				
 				var clickHandler = function(row){
 					return function(){
@@ -40,5 +40,18 @@ function getStudentProfile(){
 	var cookie = getCookieDict();
 	var studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
 	document.getElementById("studentID").innerHTML = "ID: " + studentID;
-//	log(document.getElementById("studentID").innerHTML);
+	$.post("post/studentProfile", {
+		studentID: studentID,
+	}, function (data) {
+		if (data.err) {
+			log("Invalid");
+		} else {
+			log(data);
+			document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
+		}
+	});
+}
+
+function getAllCourse(){
+	
 }
