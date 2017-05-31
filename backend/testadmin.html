@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
         <script src="js/sha3.js"></script>
         <script>
             $(document).ready(function(){
@@ -179,6 +180,21 @@
                 </div>
 
                 <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#tutorInformation">
+                        <div class="panel-title">Tutor Information</div>
+                    </div>
+                    <div id="tutorInformation" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <form action="post/tutorNickname" method="post"><!-- TODO TEST -->
+                                <input class="form-control" type="number" name="tutorID" placeholder="tutorID" required>
+                                <button class="btn btn-default" type="submit">post/tutorNickname</button>
+                            </form>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
                     <div class="panel-heading" data-toggle="collapse" data-target="#userManagement">
                         <div class="panel-title">User Management</div>
                     </div>
@@ -227,12 +243,16 @@
                     </div>
                     <div id="course" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <p>allCourse TODO</p>
+                            <form action="post/allCourse" method="post">
+                                <button class="btn btn-default" type="submit">post/allCourse</button>
+                            </form>
                             <br>
                             <form action="post/gradeCourse" method="post">
                                 <input class="form-control" type="number" name="grade" placeholder="grade" required>
                                 <button class="btn btn-default" type="submit">post/gradeCourse</button>
                             </form>
+                            <br>
+                            <p>courseInfo TODO</p>
                             <br>
                             <p>addCourse TODO</p>
                             <br>

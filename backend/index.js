@@ -15,14 +15,14 @@ app.use(function(req, res, next) {// Allow access from other domain
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.listen(8080);
+app.listen(80);
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
         console.error("[ERROR] "+err.message);
         return;
     }
-//     db.dropDatabase();
+    // db.dropDatabase();
     // db.collection("user").deleteMany({position:"student"});
     // db.dropCollection("user");
     // var moment=require("moment");
@@ -155,7 +155,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
                 courseMaterialPath:"",receiptPath:"",
                 nextStudentID:17001,nextTutorID:99001
             },function(err){
-                require("opn")("http://127.0.0.1:8080/firstConfig");
+                require("opn")("http://127.0.0.1/firstConfig");
                 console.log("[WARNING] Please update path/year/quarter");
                 configDB.findOne({},function(err,config){
                     console.log(config);
