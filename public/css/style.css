@@ -4,6 +4,11 @@
 .loginBtn{
 	margin-top: 20px;
 }
+.galleria {
+	max-width: 71vw;
+	height: 90vh;
+	background: #000
+}
 #usr,#pwd,#nname,#name,#sname,#level,#station,#skillday,#skilltime{
 	border-radius: 8px
 }
