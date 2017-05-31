@@ -22,7 +22,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         console.error("[ERROR] "+err.message);
         return;
     }
-    // db.dropDatabase();
+//     db.dropDatabase();
     // db.collection("user").deleteMany({position:"student"});
     // db.dropCollection("user");
     // var moment=require("moment");

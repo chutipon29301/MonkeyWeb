@@ -195,8 +195,8 @@ var run=function(app,db){
         userDB.find({position:"student"}).toArray(function(err,result){
             var c=0;
             eventEmitter.on("finish",function(){
-                c++;
                 if(c==result.length)res.send({student:output});
+				c++;
             });
             for(i=0;i<result.length;i++){
                 (function(studentID,firstname,lastname,nickname,inHybrid){
@@ -214,6 +214,7 @@ var run=function(app,db){
                     });
                 })(result[i]._id,result[i].firstname,result[i].lastname,result[i].nickname,result[i].student.hybridDay.length!=0);
             }
+			eventEmitter.emit("finish");
         });
     });
     //TODO TEST {studentID} return {grade,registrationState,skillDay,hybridDay,balance,status,firstname,lastname,nickname,course}
@@ -228,8 +229,9 @@ var run=function(app,db){
                 if(result.position=="student"){
                     output=result.student;
                     var request=require("request");
-                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
+                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
                         body=JSON.parse(body);
+                        console.log("pass JSON parse body");
                         output=Object.assign(output,body);
                         getCourseDB(function(courseDB){
                             courseDB.find({student:{$all:[studentID]}}).toArray(function(err,course){

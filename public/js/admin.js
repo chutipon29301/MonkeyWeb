@@ -20,15 +20,14 @@ function getAllStudentContent() {
 				cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
 				cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
 				cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
-				cell5.innerHTML = "<td>" + "isCR" + "</td>";
-				cell6.innerHTML = "<td>" + "isHB" + "</td>";
+				cell5.innerHTML = "<td>" + student[i].inCourse + "</td>";
+				cell6.innerHTML = "<td>" + student[i].inHybrid + "</td>";
 				
 				var clickHandler = function(row){
 					return function(){
 						log(row.getElementsByTagName("td")[0].innerHTML);
 						writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
 						self.location = "\adminAllstudentprofile";
-//						self.location = "\adminAllstudentprofile";
 					};
 				};
 				row.onclick = clickHandler(row);
@@ -38,5 +37,8 @@ function getAllStudentContent() {
 }
 
 function getStudentProfile(){
-	
+	var cookie = getCookieDict();
+	var studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
+	document.getElementById("studentID").innerHTML = "ID: " + studentID;
+//	log(document.getElementById("studentID").innerHTML);
 }
