@@ -79,7 +79,7 @@ var run=function(app,db){
             res.sendFile(path.join(__dirname,"../",page+".html"));
         });
     };
-  
+
     addPage("login","/");
     addPage("login");
     addPage("registrationCourse");
@@ -88,6 +88,26 @@ var run=function(app,db){
     addPage("adminAllcourse");
     addPage("adminAllstudent");
     addPage("adminAllstudentprofile");
+    app.get("/",function(req,res){
+        console.log("[PAGE REQUEST] index FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+        // res.sendFile(path.join(__dirname,"../","login.html"));
+        res.send(pagedata("login"))
+    });
+    // app.get("/registrationCourse",function(req,res){
+    //     console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+    //     // res.sendFile(path.join(__dirname,"../","registrationCourse.html"));
+    //     res.send(pagedata("registrationCourse"))
+    // });
+    // app.get("/home",function(req,res){
+    //     console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+    //     // res.sendFile(path.join(__dirname,"../","home.html"));
+    //     res.send(pagedata("home"))
+    // });
+    // app.get("/login",function(req,res){
+    //     console.log("[PAGE REQUEST] regis FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+    //     // res.sendFile(path.join(__dirname,"../","login.html"));
+    //     res.send(pagedata("login"))
+    // });
     app.get("/testadmin",function(req,res){
         console.log("[PAGE REQUEST] testadmin FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         res.sendFile(path.join(__dirname,"testadmin.html"));
