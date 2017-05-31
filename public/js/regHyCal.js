@@ -1,3 +1,34 @@
+$(document).ready(function(){
+	var cookie = getCookieDict();
+	console.log(cookie)
+	var regCourse = cookie.regisCourse.split(" ");
+	console.log(regCourse)
+	var i
+	for(i=0;i<regCourse.length;i++){
+		var temp = regCourse[i].split(":")[1];
+		var all1_disabled = document.getElementsByClassName("btn-"+temp.slice(0,3)+" "+temp.slice(3,temp.length-1)+".1")
+		console.log(all1_disabled)
+		console.log(all1_disabled.length)
+		var all2_disabled = document.getElementsByClassName("btn-"+temp.slice(0,3)+" "+temp.slice(3,temp.length-1)+".2")
+		var j
+		for(j=0;j<all1_disabled.length;j++){
+			var ini_class = all1_disabled[j].className
+			console.log(ini_class)
+			ini_class = ini_class.replace(/btn-default/g,"btn-basic disabled")
+			console.log(ini_class)
+			all1_disabled[j].className=ini_class
+		}
+		for(j=0;j<all2_disabled.length;j++){
+			var ini_class = all2_disabled[j].className
+			ini_class = ini_class.replace(/btn-default/g,"btn-basic disabled")
+			all2_disabled[j].className=ini_class
+		}
+	}
+})
+
+
+
+
 function calculate(btn){ /* run after click btn in HTML to switch between select and non-select */
 	var i;
 	var all_same=document.getElementsByClassName(btn.className.split(' ')[0]+' '+btn.className.split(' ')[1]);

@@ -120,12 +120,12 @@ function getCookieDict() {
 	"use strict";
 	var allcookies = document.cookie;
 	log(allcookies);
-	var dict = {};
+	var obj = {};
 	var cookiearray = allcookies.split('; ');
 	for (var i = 0; i < cookiearray.length; i++) {
-		dict[cookiearray[i].split('=')[0]] = cookiearray[i].split('=')[1];
+		obj[cookiearray[i].split('=')[0]] = cookiearray[i].split('=')[1];
 	}
-	return dict;
+	return obj;
 }
 
 /**
