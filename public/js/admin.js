@@ -8,7 +8,7 @@ function getAllStudentContent() {
 			log(data);
 			var student = data.student;
 			var table = document.getElementById("allStudentTable");
-			for(var i = 0; i < student.length; i++){
+			for (var i = 0; i < student.length; i++) {
 				var row = table.insertRow(i);
 				var cell1 = row.insertCell(0);
 				var cell2 = row.insertCell(1);
@@ -22,9 +22,9 @@ function getAllStudentContent() {
 				cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
 				cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
 				cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
-				
-				var clickHandler = function(row){
-					return function(){
+
+				var clickHandler = function (row) {
+					return function () {
 						log(row.getElementsByTagName("td")[0].innerHTML);
 						writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
 						self.location = "\adminAllstudentprofile";
@@ -36,7 +36,7 @@ function getAllStudentContent() {
 	});
 }
 
-function getStudentProfile(){
+function getStudentProfile() {
 	var cookie = getCookieDict();
 	var studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
 	document.getElementById("studentID").innerHTML = "ID: " + studentID;
@@ -48,10 +48,21 @@ function getStudentProfile(){
 		} else {
 			log(data);
 			document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
+			document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
+			document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
+			document.getElementById("studentStatus").innerHTML = "STAGE: " + data.status;
 		}
 	});
 }
 
-function getAllCourse(){
-	
+function getAllCourse() {
+
+}
+
+function getLetterGrade(grade) {
+	if (grade <= 6) {
+		return "P" + grade;
+	} else {
+		return "M" + (grade - 6);
+	}
 }

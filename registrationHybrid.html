@@ -6,7 +6,6 @@
 <title>Hybrid Registration</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
-<link href="css/style.css" rel="stylesheet" type="text/css">
 <!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="js/jquery-1.11.3.min.js"></script>
@@ -15,6 +14,7 @@
 	checkLogin();
 	checkIDStudent();
 </script>
+<link href="/css/style.css" rel="stylesheet" type="text/css">
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -38,7 +38,7 @@
           <ul class="dropdown-menu" role="menu">
             <li><a href="#">Action</a></li>
             <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
+			  <li><a href="#">Something else here</a></li>
             <li class="divider"></li>
             <li><a href="#">Separated link</a></li>
             <li class="divider"></li>
@@ -72,12 +72,12 @@
         <label class="control-label col-md-1 col-md-offset-1">Skill:</label>
         <div class="col-md-3">
           <select class="form-control" id="station">
-            <option>สยาม</option>
-            <option>สาย 3</option>
+            <option value="1">สยาม</option>
+            <option value="2">สาย 3</option>
           </select>
         </div>
         <div class="col-md-3">
-          <select class="form-control" id="skillday">
+          <select class="form-control disabled" id="skillday">
             <option>เสาร์</option>
             <option>อาทิตย์</option>
           </select>
@@ -134,9 +134,9 @@
         <td><button type="button" class="btn-sat 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
         <button type="button" class="btn-sat 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sat 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sat 13.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <button type="button" class="btn-sat 13.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sat 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sat 15.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <button type="button" class="btn-sat 15.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>SUN</td>
@@ -145,9 +145,9 @@
         <td><button type="button" class="btn-sun 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
         <button type="button" class="btn-sun 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sun 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sun 13.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <button type="button" class="btn-sun 13.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sun 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sun 15.2 btn btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <button type="button" class="btn-sun 15.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
     </table>
   </div>
@@ -161,16 +161,13 @@
         </tr>
       </thead>
       <tr>
-  
-      <tr>
         <td>15-17</td>
         <td><button type="button" class="btn-tue 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br><button type="button" class="btn-tue 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-thu 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
         <button type="button" class="btn-thu 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
    
       </tr>
-
-    </table>
+	</table>
   </div>
   <div class="table-responsive w3-hide-large">
     <table class="table table-bordered">
@@ -204,9 +201,9 @@
       </tr>
       <tr>
         <td>15-17</td>
-        <td><button type="button" class="btn-tue 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br><button type="button" class="btn-tue 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
-        <td><button type="button" class="btn-thu 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-thu 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br><button type="button" class="btn-sat 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
+        <button type="button" class="btn-sun 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
 
     </table>
