@@ -6,7 +6,7 @@ $("#level").change(function(){ /* level table changed and gen table */
 	availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
 	var grade = $(this).val()
-	$.post("http://192.168.1.135/post/gradeCourse",{grade:grade}, function (arrayCourse) {		
+	$.post("http://192.168.1.135/post/gradeCourse",{grade:parseInt(grade)}, function (arrayCourse) {		
 		var i
 		for(i=0;i<arrayCourse.length;i++){
 			if (arrayCourse[i].day.getDay()==6){
@@ -201,11 +201,15 @@ function next(gg){
 		for(i in availableCourse){
 			if (availableCourse[i]!=false){
 				if(availableCourse[i].select){
-					cookie+=availableCourse[i].courseName+i+" ";
+					cookie+=availableCourse[i].courseName+":"+i+" ";
 				}			
 			}
 		}
+		cookie = "MP123a:sat81 PS4a:sun101"
 		writeCookie("regisCourse",cookie);
 		self.location = "registrationHybrid.html";
 	}
+			cookie = "MP123a:sat81 PS4a:sun101"
+		writeCookie("regisCourse",cookie);
+		self.location = "registrationHybrid.html";
 }
