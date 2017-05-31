@@ -65,7 +65,7 @@ function redirectLocation(user){
 					self.location = "\home";
 					break;
 				case "tutor":
-					self.location = "\adminAllcourse";
+					self.location = "\adminHome";
 					break;
 				default:
 					break;
