@@ -3,85 +3,98 @@ var availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,s
 $(document).ready(function(){
 $("#level").change(function(){ /* level table changed and gen table */
 	genTable()
+	document.getElementById	('show_price').innerHTML = 0;
 	availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
 	var grade = $(this).val()
-	$.post("http://192.168.1.135/post/gradeCourse",{grade:parseInt(grade)}, function (arrayCourse) {		
-		var i
-		for(i=0;i<arrayCourse.length;i++){
-			if (arrayCourse[i].day.getDay()==6){
-				if(arrayCourse[i].day.getHours()==8){
-					if(availableCourse.sat81==false){
-						availableCourse.sat81 = arrayCourse[i]
-					}
-					else if(availableCourse.sat82==false){
-						availableCourse.sat82 = arrayCourse[i]
-					}
+	if(grade != "0"){
+		if(parseInt(grade)>=10){
+			$.post("post/gradeCourse",{grade:13}, function (arrayCourse){
+				updateAvaiCr(arrayCourse)
+			} );
+		}
+		$.post("post/gradeCourse",{grade:parseInt(grade)}, function (arrayCourse){
+			updateAvaiCr(arrayCourse)
+			updateTable(availableCourse);
+		} );
+	}
+});
+});
+
+function updateAvaiCr(arrayCourse){	
+	var i
+	for(i=0;i<arrayCourse.course.length;i++){
+		arrayCourse.course[i].day = new Date(arrayCourse.course[i].day);
+		if (arrayCourse.course[i].day.getDay()==6){
+			if(arrayCourse.course[i].day.getHours()==8){
+				if(availableCourse.sat81==false){
+					availableCourse.sat81 = arrayCourse.course[i]
 				}
-				if(arrayCourse[i].day.getHours()==10){
-					if(availableCourse.sat101==false){
-						availableCourse.sat101 = arrayCourse[i]
-					}
-					else if(availableCourse.sat102==false){
-						availableCourse.sat102 = arrayCourse[i]
-					}
-				}
-				if(arrayCourse[i].day.getHours()==13){
-					if(availableCourse.sat131==false){
-						availableCourse.sat131 = arrayCourse[i]
-					}
-					else if(availableCourse.sat132==false){
-						availableCourse.sat132 = arrayCourse[i]
-					}
-				}
-				if(arrayCourse[i].day.getHours()==15){
-					if(availableCourse.sat151==false){
-						availableCourse.sat151 = arrayCourse[i]
-					}
-					else if(availableCourse.sat152==false){
-						availableCourse.sat152 = arrayCourse[i]
-					}
+				else if(availableCourse.sat82==false){
+					availableCourse.sat82 = arrayCourse.course[i]
 				}
 			}
-			if (arrayCourse[i].day.getDay()==0){
-				if(arrayCourse[i].day.getHours()==8){
-					if(availableCourse.sun81==false){
-						availableCourse.sun81 = arrayCourse[i]
-					}
-					else if(availableCourse.sun82==false){
-						availableCourse.sun82 = arrayCourse[i]
-					}
+			if(arrayCourse.course[i].day.getHours()==10){
+				if(availableCourse.sat101==false){
+					availableCourse.sat101 = arrayCourse.course[i]
 				}
-				if(arrayCourse[i].day.getHours()==10){
-					if(availableCourse.sun101==false){
-						availableCourse.sun101 = arrayCourse[i]
-					}
-					else if(availableCourse.sun102==false){
-						availableCourse.sun102 = arrayCourse[i]
-					}
+				else if(availableCourse.sat102==false){
+					availableCourse.sat102 = arrayCourse.course[i]
 				}
-				if(arrayCourse[i].day.getHours()==13){
-					if(availableCourse.sun131==false){
-						availableCourse.sun131 = arrayCourse[i]
-					}
-					else if(availableCourse.sun132==false){
-						availableCourse.sun132 = arrayCourse[i]
-					}
+			}
+			if(arrayCourse.course[i].day.getHours()==13){
+				if(availableCourse.sat131==false){
+					availableCourse.sat131 = arrayCourse.course[i]
 				}
-				if(arrayCourse[i].day.getHours()==15){
-					if(availableCourse.sun151==false){
-						availableCourse.sun151 = arrayCourse[i]
-					}
-					else if(availableCourse.sun152==false){
-						availableCourse.sun152 = arrayCourse[i]
-					}
+				else if(availableCourse.sat132==false){
+					availableCourse.sat132 = arrayCourse.course[i]
+				}
+			}
+			if(arrayCourse.course[i].day.getHours()==15){
+				if(availableCourse.sat151==false){
+					availableCourse.sat151 = arrayCourse.course[i]
+				}
+				else if(availableCourse.sat152==false){
+					availableCourse.sat152 = arrayCourse.course[i]
 				}
 			}
 		}
-		updateTable(availableCourse);
-	});
-});
-});
+		if (arrayCourse.course[i].day.getDay()==0){
+			if(arrayCourse.course[i].day.getHours()==8){
+				if(availableCourse.sun81==false){
+					availableCourse.sun81 = arrayCourse.course[i]
+				}
+				else if(availableCourse.sun82==false){
+					availableCourse.sun82 = arrayCourse.course[i]
+				}
+			}
+			if(arrayCourse.course[i].day.getHours()==10){
+				if(availableCourse.sun101==false){
+					availableCourse.sun101 = arrayCourse.course[i]
+				}
+				else if(availableCourse.sun102==false){
+					availableCourse.sun102 = arrayCourse.course[i]
+				}
+			}
+			if(arrayCourse.course[i].day.getHours()==13){
+				if(availableCourse.sun131==false){
+					availableCourse.sun131 = arrayCourse.course[i]
+				}
+				else if(availableCourse.sun132==false){
+					availableCourse.sun132 = arrayCourse.course[i]
+				}
+			}
+			if(arrayCourse.course[i].day.getHours()==15){
+				if(availableCourse.sun151==false){
+					availableCourse.sun151 = arrayCourse.course[i]
+				}
+				else if(availableCourse.sun152==false){
+					availableCourse.sun152 = arrayCourse.course[i]
+				}
+			}	
+		}
+	}
+}
 
 function updateTable(course){ /* update table after gen to change from blank to recieved data */
 	var i
@@ -90,10 +103,10 @@ function updateTable(course){ /* update table after gen to change from blank to 
 			var temp = document.getElementsByClassName("btn-"+i.slice(0,3)+" "+i.slice(3,i.length-1)+"."+i[i.length-1])
 			var j
 			for(j=0;j<temp.length;j++){
-			var rep = temp[j].className;
-			rep.replace(/btn-basic disabled/g,"btn btn-default");
-			temp[j].className = rep;
-			temp[j].innerHTML = course[i].courseName;
+				var rep = temp[j].className;
+				rep = rep.replace(/btn-basic disabled/g,"btn btn-default");
+				temp[j].className = rep;
+				temp[j].innerHTML = course[i].courseName;
 			}
 		}
 	}
@@ -150,9 +163,12 @@ function calculate(btn){ /* run after click btn in HTML to switch between select
 	}
 	var temp = btn.className.split(' ')
 	var dayHour = temp[0].slice(temp[0].length-3,temp[0].length) + temp[1]
-	dayHour.replace(/./g,'');
-	if (availableCourse[dayHour!=false]){
+	console.log(dayHour)
+	dayHour = dayHour.replace('.','');
+	console.log(dayHour)
+	if (availableCourse[dayHour]!=false){
 		if(btn.className.indexOf("btn-success")!=-1){
+			console.log(availableCourse[dayHour])
 			availableCourse[dayHour]["select"] = true
 		}
 		else{
@@ -184,13 +200,18 @@ function nextCheck(){ /* check next btn */
 	var check = false
 	for(i in availableCourse){
 		if (availableCourse[i]!=false){
+			console.log(availableCourse[i].select)
 			if (availableCourse[i].select==true && availableCourse[i].tutor.nicknameEng!="Hybrid"){
 				check = true;
+				console.log(check)
 			}
 		}
 	}
 	if(check){
-		document.getElementById("next-btn").className = "btn btn-default";
+		document.getElementById("next").className = "btn btn-default";
+	}
+	else{
+		document.getElementById("next").className = "btn btn-basic disabled";
 	}
 }
 
@@ -205,11 +226,7 @@ function next(gg){
 				}			
 			}
 		}
-		cookie = "MP123a:sat81 PS4a:sun101"
 		writeCookie("regisCourse",cookie);
-		self.location = "registrationHybrid.html";
+		self.location = "registrationHybrid";
 	}
-			cookie = "MP123a:sat81 PS4a:sun101"
-		writeCookie("regisCourse",cookie);
-		self.location = "registrationHybrid.html";
 }
