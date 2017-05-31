@@ -133,7 +133,7 @@ var run=function(app,db){
     });
 
     // Student Information
-    //TODO {} return {student:[{studentID,firstname,lastname,nickname}]}
+    //TODO TEST {} return {student:[{studentID,firstname,lastname,nickname,inCourse,inHybrid}]}
     app.post("/post/allStudent",function(req,res){
         var output=[];
         var events = require("events");
@@ -155,21 +155,28 @@ var run=function(app,db){
         //         }
         //     });
         // });
-
         userDB.find({position:"student"}).toArray(function(err,result){
+            var c=0;
+            eventEmitter.on("finish",function(){
+                c++;
+                if(c==result.length)res.send({student:output});
+            });
             for(i=0;i<result.length;i++){
-                getCourseDB(function(courseDB){
-                    courseDB.find({student:{$all:[result[i]._id]}}).toArray(function(err,course){
-                    output.push({studentID:result[i]._id,
-                        firstname:result[i].firstname,
-                        lastname:result[i].lastname,
-                        nickname:result[i].nickname,
-                        inCourse:course.length!=0,
-                        inHybrid:result[i].student.hybridDay.length!=0
+                (function(studentID,firstname,lastname,nickname,inHybrid){
+                    getCourseDB(function(courseDB){
+                        courseDB.find({student:{$all:[studentID]}}).toArray(function(err,course){
+                            output.push({studentID:studentID,
+                                firstname:firstname,
+                                lastname:lastname,
+                                nickname:nickname,
+                                inCourse:course.length!=0,
+                                inHybrid:inHybrid
+                            });
+                            eventEmitter.emit("finish");
+                        });
                     });
-                });
+                })(result[i]._id,result[i].firstname,result[i].lastname,result[i].nickname,result[i].student.hybridDay.length!=0);
             }
-            res.send({student:output});
         });
     });
     //TODO TEST {studentID} return {grade,registrationState,skillDay,hybridDay,balance,status,firstname,lastname,nickname,course}
@@ -188,6 +195,12 @@ var run=function(app,db){
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
                         getCourseDB(function(courseDB){
+                            courseDB.find({student:{$all:[studentID]}}).toArray(function(err,course){
+                                for(var i=0;i<course.length;i++){
+                                    output.courseID.push(course[i]._id);
+                                }
+                                res.send(output);
+                            });
                             // find course that contain this student
                             // courseDB.find({});
                         });
