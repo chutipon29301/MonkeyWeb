@@ -4,6 +4,23 @@
 .loginBtn{
 	margin-top: 20px;
 }
+.galleria {
+	max-width: 71vw;
+	height: 90vh;
+	background: #000
+}
 #usr,#pwd,#nname,#name,#sname,#level,#station,#skillday,#skilltime{
 	border-radius: 8px
+}
+#allStudentTable tr:hover{
+	background-color: #d0dbed
+}
+#allStudentTable tr:active{
+	background-color: #a8aeb7
+}
+#allCourseTable tr:hover{
+	background-color: #d0dbed
+}
+#allCourseTable tr:active{
+	background-color: #a8aeb7
 }

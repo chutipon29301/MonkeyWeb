@@ -20,7 +20,6 @@ function loginSubmit() {
 		document.getElementById("pwdReq").style.visibility = "hidden";
 		document.getElementById("pwdFromGroup").className = "form-group";
 	}
-
 	if (pwd.value.length !== 0 && user.value.length !== 0) {
 		login(parseInt(user.value), pwd.value);
 	}
@@ -41,13 +40,35 @@ function login(user, pwd) {
 			if (data.verified) {
 				writeUserCookie(user, pwd);
 				log(document.cookie);
-//				self.location = "\home.html";
-				self.location = "\home";
+				redirectLocation(user);
 			} else {
 				log("Wrong");
 				alert("ID and password do not match.");
 				clearInput();
 
+			}
+		}
+	});
+}
+
+function redirectLocation(user){
+	log("in redirection");
+	$.post("post/position", {
+		userID: user,
+	}, function (data) {
+		if (data.err) {
+			log("Invalid");
+		} else {
+			log(data);
+			switch(data.position){
+				case "student":
+					self.location = "\home";
+					break;
+				case "tutor":
+					self.location = "\adminAllcourse";
+					break;
+				default:
+					break;
 			}
 		}
 	});

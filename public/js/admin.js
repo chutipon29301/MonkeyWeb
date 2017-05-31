@@ -9,7 +9,7 @@ function getAllStudentContent() {
 			var student = data.student;
 			var table = document.getElementById("allStudentTable");
 			for(var i = 0; i < student.length; i++){
-				var row = table.insertRow(i + 1);
+				var row = table.insertRow(i);
 				var cell1 = row.insertCell(0);
 				var cell2 = row.insertCell(1);
 				var cell3 = row.insertCell(2);
@@ -20,19 +20,25 @@ function getAllStudentContent() {
 				cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
 				cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
 				cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
-				cell5.innerHTML = "<td>" + "isCR" + "</td>";
-				cell6.innerHTML = "<td>" + "isHB" + "</td>";
+				cell5.innerHTML = "<td>" + student[i].inCourse + "</td>";
+				cell6.innerHTML = "<td>" + student[i].inHybrid + "</td>";
 				
 				var clickHandler = function(row){
 					return function(){
 						log(row.getElementsByTagName("td")[0].innerHTML);
 						writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
 						self.location = "\adminAllstudentprofile";
-//						self.location = "\adminAllstudentprofile.html";
 					};
 				};
 				row.onclick = clickHandler(row);
 			}
 		}
 	});
+}
+
+function getStudentProfile(){
+	var cookie = getCookieDict();
+	var studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
+	document.getElementById("studentID").innerHTML = "ID: " + studentID;
+//	log(document.getElementById("studentID").innerHTML);
 }
