@@ -25,8 +25,19 @@
 	background-color: #a8aeb7
 }
 #mobiletable td{
-	font-size: large
+/*	font-size: 2vh;*/
+	vertical-align: middle;
+	
+	
+}
+#mobiletable th{
+/*	font-size: 2vh;*/
+	vertical-align: middle;
 }
 #mobiletable button{
-	font-size: large
+/*
+	font-size: 2vh;
+	height: 6vh;
+*/
+	vertical-align: middle;
 }
