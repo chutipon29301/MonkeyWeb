@@ -1,9 +1,11 @@
   FusionCharts.ready(function(){
+    var w=window.innerWidth*0.85;
+    var h=window.innerHeight*0.6;
     var fusioncharts = new FusionCharts({
     type: 'gantt',
     renderAt: 'fusionchart',
-    width: '1300',
-    height: '400',
+    width: w,
+    height: h,
     dataFormat: 'json',
     dataSource: {
         "chart": {

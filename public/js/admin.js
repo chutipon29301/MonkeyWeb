@@ -50,7 +50,7 @@ function getStudentProfile() {
 			document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
 			document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
 			document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
-			document.getElementById("studentStatus").innerHTML = "STAGE: " + data.status;
+			document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
 		}
 	});
 }

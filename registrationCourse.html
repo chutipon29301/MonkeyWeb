@@ -2,14 +2,13 @@
 <html lang="en"><!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>Course Registration</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
-
 <script type="text/javascript" src="js/myTable-1.0.0.custom.js"></script>
 <link href="css/style.css" rel="stylesheet" type="text/css">
-
 <!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="js/jquery-1.11.3.min.js"></script>
@@ -23,7 +22,8 @@
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="js/bootstrap.js"></script>
-<!-- InstanceBeginEditable name="script" --><script type="text/javascript" src="/js/regCrCal.js"></script> <!--add more script--><!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="script" -->
+<script type="text/javascript" src="public/js/regCrCal.js"></script> <!--add more script--><!-- InstanceEndEditable -->
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -68,7 +68,6 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-
   <div class="container">
     <form class="form-horizontal">
       <div class="form-group">
@@ -136,8 +135,7 @@
       </tr>
     </table>
   </div>
-  <div class="container">
-    <div class="table-responsive w3-hide-large">
+    <div class="table-responsive w3-hide-large" id="mobiletable">
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -148,11 +146,11 @@
         </thead>
         <tr>
           <td>8-10</td>
-          <td><button type="button" class="btn-sat 8.1 btn btn-default  col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sat 8.2 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
-          <td><button type="button" class="btn-sun 8.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
-        </tr>
+          <td><button type="button" class="btn-sat 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sat 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sun 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
+        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-xs-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        </tr>     
         <tr>
           <td>10-12</td>
           <td><button type="button" class="btn-sat 10.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
@@ -176,7 +174,6 @@
         </tr>
       </table>
     </div>
-  </div>
   <div class="container text-center col-md-10 col-md-offset-1">
     <h3 align="right">รวมเป็นเงิน <label id="show_price">0</label> บาท</h3>
   </div>
@@ -184,7 +181,6 @@
   <div class="container col-md-10 col-md-offset-1" align="right">
     <button id="next" class="btn btn-basic disabled" onClick="this.blur(); next(this);">Next</button>
     </div>
-
   <!-- InstanceEndEditable -->
 </div>
 <div class="container">

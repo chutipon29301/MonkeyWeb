@@ -96,6 +96,7 @@ var run=function(app,db){
     addPage("registrationHybrid");
     addPage("home");
     addPage("home2");
+    addPage("adminHome");
     addPage("adminAllcourse");
     addPage("adminAllstudent");
     addPage("adminAllstudentprofile");
