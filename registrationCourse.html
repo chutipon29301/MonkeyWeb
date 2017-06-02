@@ -74,15 +74,15 @@
       <div class="form-group">
         <label class="control-label col-md-2">ชื่อ:</label>
         <div class="col-md-8">
-          <input id="nname" type="text" class="form-control" placeholder="Enter Nickname">
-          <input id="name" type="text" class="form-control" placeholder="Enter Name">
-          <input id="sname" type="text" class="form-control" placeholder="Enter Surname">
+			<p id="nname" class="form-control-static"></p>
+          <p id="name" class="form-control-static"></p>
+          <p id="sname" class="form-control-static"></p>
         </div>
       </div>
       <div class="form-group">
         <label class="control-label col-md-2">ชั้น:</label>
         <div class="col-md-8">
-          <select name="level" class="form-control" id="level" >
+          <select name="level" class="form-control" id="level" disabled>
            <option value="0">กรุณาเลือกชั้นเรียน</option>
             <option value="1">ประถม 1</option>
             <option value="2">ประถม 2</option>
@@ -114,25 +114,25 @@
       </thead>
       <tr>
         <td>SAT</td>
-        <td><button type="button" class="btn-sat 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sat 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
-        <td><button type="button" class="btn-sat 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sat 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
-        <td><button type="button" class="btn-sat 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sat 13.2 btn btn-basic disabled  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
-        <td><button type="button" class="btn-sat 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sat 15.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sat 8.1 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sat 8.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
+        <td><button type="button" class="btn-sat 10.1 btn btn-basic disabled  col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sat 10.2 btn btn-basic disabled  col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
+        <td><button type="button" class="btn-sat 13.1 btn btn-basic disabled  col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sat 13.2 btn btn-basic disabled  col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
+        <td><button type="button" class="btn-sat 15.1 btn btn-basic disabled  col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sat 15.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
       </tr>
       <tr>
         <td>SUN</td>
-        <td><button type="button" class="btn-sun 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
-        <td><button type="button" class="btn-sun 10.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sun 10.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
-        <td><button type="button" class="btn-sun 13.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sun 13.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
-        <td><button type="button" class="btn-sun 15.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MP123a</button>
-        <button type="button" class="btn-sun 15.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">MP123a</button></td>
+        <td><button type="button" class="btn-sun 8.1 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
+        <td><button type="button" class="btn-sun 10.1 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sun 10.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
+        <td><button type="button" class="btn-sun 13.1 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sun 13.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
+        <td><button type="button" class="btn-sun 15.1 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button>
+        <button type="button" class="btn-sun 15.2 btn btn-basic disabled col-md-6" onClick="this.blur(); calculate(this)">Blank</button></td>
       </tr>
     </table>
   </div>
@@ -148,31 +148,31 @@
         </thead>
         <tr>
           <td>8-10</td>
-          <td><button type="button" class="btn-sat 8.1 btn btn-default  col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sat 8.2 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
-          <td><button type="button" class="btn-sun 8.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sat 8.1 btn btn-basic disabled  col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sat 8.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
+          <td><button type="button" class="btn-sun 8.1 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sun 8.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
         </tr>
         <tr>
           <td>10-12</td>
-          <td><button type="button" class="btn-sat 10.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sat 10.2 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
-          <td><button type="button" class="btn-sun 10.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sun 10.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sat 10.1 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sat 10.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
+          <td><button type="button" class="btn-sun 10.1 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sun 10.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
         </tr>
         <tr>
           <td>13-15</td>
-          <td><button type="button" class="btn-sat 13.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sat 13.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
-          <td><button type="button" class="btn-sun 13.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sun 13.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sat 13.1 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sat 13.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
+          <td><button type="button" class="btn-sun 13.1 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sun 13.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
         </tr>
         <tr>
           <td>15-17</td>
-          <td><button type="button" class="btn-sat 15.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sat 15.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
-          <td><button type="button" class="btn-sun 15.1 btn btn-default col-12" onClick="this.blur(); calculate(this)">MP123a</button><br>
-        <button type="button" class="btn-sun 15.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">MP123a</button></td>
+          <td><button type="button" class="btn-sat 15.1 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sat 15.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
+          <td><button type="button" class="btn-sun 15.1 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button><br>
+        <button type="button" class="btn-sun 15.2 btn btn-basic disabled col-12" onClick="this.blur(); calculate(this)">Blank</button></td>
         </tr>
       </table>
     </div>

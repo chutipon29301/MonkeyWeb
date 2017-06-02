@@ -1,12 +1,22 @@
 var availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
 $(document).ready(function(){
-$("#level").change(function(){ /* level table changed and gen table */
+	var ckydict = getCookieDict()
+	if ( ckydict.regisCourse != undefined || ckydict.regisCourse=='' ){
+		deleteCookie("regisCourse")
+	}
+	if ( ckydict.name == undefined || ckydict.name == ''){
+		self.location = "registrationName"
+	}
+	$('#nname').html(ckydict.name.split(' ')[0])
+	$('#name').html(ckydict.name.split(' ')[1])
+	$('#sname').html(ckydict.name.split(' ')[2])
+	$('#level').val(ckydict.level)
 	genTable()
 	document.getElementById	('show_price').innerHTML = 0;
 	availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
-	var grade = $(this).val()
+	var grade = $('#level').val()
 	if(grade != "0"){
 		if(parseInt(grade)>=10){
 			$.post("post/gradeCourse",{grade:13}, function (arrayCourse){
@@ -18,7 +28,6 @@ $("#level").change(function(){ /* level table changed and gen table */
 			updateTable(availableCourse);
 		} );
 	}
-});
 });
 
 function updateAvaiCr(arrayCourse){	
