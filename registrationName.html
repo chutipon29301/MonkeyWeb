@@ -4,9 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Monkey Home</title>
+<title>Course Registration</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
+
+<script type="text/javascript" src="js/myTable-1.0.0.custom.js"></script>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+
 <!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <link href="/css/style.css" rel="stylesheet" type="text/css">
@@ -20,9 +24,7 @@
 	checkIDStudent();
 </script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<!-- InstanceBeginEditable name="script" -->
-<script src="galleria/galleria-1.5.7.min.js"></script>
-<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="script" --><script type="text/javascript" src="js/regNmCal.js"></script><!--add more script--><!-- InstanceEndEditable -->
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -62,22 +64,45 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="container-fluid" align="center">
-    <div class="galleria"> <img src="images/news/0.PNG"> <img src="images/news/1.PNG"> <img src="images/news/2.PNG"> <img src="images/news/3.PNG"> <img src="images/news/4.PNG"><img src="images/news/5.PNG"><img src="images/news/6.PNG"><img src="images/news/7.PNG"><img src="images/news/8.PNG"> </div>
+
+  <div class="container">
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label class="control-label col-md-2">ชื่อ:</label>
+        <div class="col-md-8">
+          <input id="nname" type="text" class="form-control" placeholder="ชื่อเล่น (ภาษาไทย)">
+          <input id="name" type="text" class="form-control" placeholder="ชื่อจริง (ภาษาไทย)">
+          <input id="sname" type="text" class="form-control" placeholder="นามสกุล (ภาษาไทย)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2">ชั้น:</label>
+        <div class="col-md-8">
+          <select name="level" class="form-control" id="level" >
+           <option value="0">กรุณาเลือกชั้นเรียน</option>
+            <option value="1">ประถม 1</option>
+            <option value="2">ประถม 2</option>
+            <option value="3">ประถม 3</option>
+            <option value="4">ประถม 4</option>
+            <option value="5">ประถม 5</option>
+            <option value="6">ประถม 6</option>
+            <option value="7">มัธยม 1</option>
+            <option value="8">มัธยม 2</option>
+            <option value="9">มัธยม 3</option>
+            <option value="10">มัธยม 4</option>
+            <option value="11">มัธยม 5</option>
+            <option value="12">มัธยม 6</option>
+          </select>
+        </div>
+      </div>
+    </form>
   </div>
-  <script>
-	  Galleria.loadTheme('galleria/themes/fullscreen/galleria.fullscreen.min.js');
-	  Galleria.run('.galleria',{extend:function(){
-		  this.setOptions('transition','fade');
-		  this.play(10000);
-	  }});
-	  $(document).ready(function(){
-		  $("body").dblclick(function(){
-			  console.log("back");
-			  self.location="\home";
-		  });
-	  });
-	</script><!-- InstanceEndEditable --> </div>
+  
+  <div class="container col-md-10 col-md-offset-1" align="right">
+    <button id="next" class="btn btn-basic disabled" onClick="this.blur(); next(this);">Next</button>
+    </div>
+
+  <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
     <div class="text-center center-block">
