@@ -6,7 +6,7 @@
 }
 .galleria {
 	max-width: 80vw;
-	height: 45vw;
+	height: 60vw;
 	background: #000
 }
 #usr,#pwd,#nname,#name,#sname,#level,#station,#skillday,#skilltime{
@@ -23,21 +23,4 @@
 }
 #allCourseTable tr:active{
 	background-color: #a8aeb7
-}
-#mobiletable td{
-/*	font-size: 2vh;*/
-	vertical-align: middle;
-	
-	
-}
-#mobiletable th{
-/*	font-size: 2vh;*/
-	vertical-align: middle;
-}
-#mobiletable button{
-/*
-	font-size: 2vh;
-	height: 6vh;
-*/
-	vertical-align: middle;
 }

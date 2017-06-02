@@ -8,6 +8,7 @@ $(document).ready(function(){
 	if ( ckydict.name == undefined || ckydict.name == ''){
 		self.location = "registrationName"
 	}
+	console.log(ckydict.name)
 	$('#nname').html(ckydict.name.split(' ')[0])
 	$('#name').html(ckydict.name.split(' ')[1])
 	$('#sname').html(ckydict.name.split(' ')[2])
@@ -238,4 +239,8 @@ function next(gg){
 		writeCookie("regisCourse",cookie);
 		self.location = "registrationHybrid";
 	}
+}
+
+function back(gg){
+	self.location = "registrationName";
 }

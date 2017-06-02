@@ -219,3 +219,7 @@ function deselect(btn){	 /* sub function to deselect duo btn if both is selected
 		}
 	}
 }
+
+function back(gg){
+	self.location = "registrationCourse"
+}
