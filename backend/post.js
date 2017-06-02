@@ -98,8 +98,9 @@ var run=function(app,db){
     addPage("home2");
     addPage("adminHome");
     addPage("adminAllcourse");
+    addPage("adminCoursedescription");
     addPage("adminAllstudent");
-    addPage("adminAllstudentprofile");
+    addPage("adminStudentprofile");
     app.get("/testadmin",function(req,res){
         console.log("[PAGE REQUEST] testadmin FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         res.sendFile(path.join(__dirname,"testadmin.html"));
