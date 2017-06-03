@@ -22,7 +22,7 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
 <script type="text/javascript" src="js/myTable-1.0.0.custom.js"></script>
-<script type="text/javascript" src="public/js/regCrCal.js"></script>
+<script type="text/javascript" src="js/regCrCal.js"></script>
 <!-- InstanceEndEditable -->
 </head>
 <body>
@@ -68,16 +68,16 @@
       <div class="form-group">
         <label class="control-label col-md-2">ชื่อ:</label>
         <div class="col-md-8">
-          <input id="nname" type="text" class="form-control" placeholder="Enter Nickname">
-          <input id="name" type="text" class="form-control" placeholder="Enter Name">
-          <input id="sname" type="text" class="form-control" placeholder="Enter Surname">
+			<p id="nname" class="form-control-static"></p>
+          <p id="name" class="form-control-static"></p>
+          <p id="sname" class="form-control-static"></p>
         </div>
       </div>
       <div class="form-group">
         <label class="control-label col-md-2">ชั้น:</label>
         <div class="col-md-8">
-          <select name="level" class="form-control" id="level" >
-            <option value="0">กรุณาเลือกชั้นเรียน</option>
+          <select name="level" class="form-control" id="level" disabled>
+           <option value="0">กรุณาเลือกชั้นเรียน</option>
             <option value="1">ประถม 1</option>
             <option value="2">ประถม 2</option>
             <option value="3">ประถม 3</option>
@@ -183,7 +183,10 @@
       บาท</h3>
   </div>
   <br>
-  <div class="container col-md-10 col-md-offset-1" align="right">
+  <div class="container col-md-5 col-md-offset-1"align="left" >
+ 	<button id="back" class="btn btn-default" onClick="this.blur(); back(this);">Back</button>
+  </div>
+  <div class="container col-md-4 col-md-offset-1"align="right" >
     <button id="next" class="btn btn-basic disabled" onClick="this.blur(); next(this);">Next</button>
   </div>
   <!-- InstanceEndEditable --> </div>

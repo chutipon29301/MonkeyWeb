@@ -94,6 +94,7 @@ var run=function(app,db){
     addPage("login");
     addPage("registrationCourse");
     addPage("registrationHybrid");
+	addPage("registrationName");
     addPage("home");
     addPage("home2");
     addPage("adminHome");
