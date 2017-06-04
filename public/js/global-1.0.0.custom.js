@@ -150,8 +150,8 @@ function setStudentNavName() {
 		userID: user
 	}, function (data) {
 		if (data.err) {
-			document.getElementById("navStudentName").innerHTML = "null";
-			log("[setStudentNavName()] => Set student name in navigation bar to : null");
+			document.getElementById("navStudentName").innerHTML = " ";
+			log("[setStudentNavName()] => Set student name in navigation bar to :  ");
 		} else {
 			document.getElementById("studentNavNameSmall").innerHTML = data.firstname;
 			document.getElementById("studentNavNameLarge").innerHTML = data.firstname;
