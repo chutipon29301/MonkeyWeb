@@ -29,7 +29,6 @@ function deleteCookie(key) {
 	log("[deleteCookie()] -> " + key + " deleted");
 }
 
-
 /**
  * Check whether user is login from value store in document.cookie
  * if user is not login, redirect to login page
@@ -56,7 +55,6 @@ function checkLogin() {
 			}
 		}
 	});
-
 }
 
 /**
@@ -110,7 +108,6 @@ function checkIDTutor() {
 		}
 	});
 }
-
 
 /**
  * Generate object of document.cookie

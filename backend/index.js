@@ -16,15 +16,15 @@ app.use(function(req, res, next) {// Allow access from other domain
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.listen(8080);
 //app.listen(80);
+app.listen(8080);
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
         console.error("[ERROR] "+err.message);
         return;
     }
-    // db.dropDatabase();
+//     db.dropDatabase();
     // db.collection("user").deleteMany({position:"student"});
     // db.dropCollection("user");
     // var moment=require("moment");

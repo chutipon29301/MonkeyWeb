@@ -104,6 +104,7 @@ var run=function(app,db){
     addPage("registrationCourse");
     addPage("registrationHybrid");
 	addPage("registrationName");
+    addPage("registrationReceipt");
 	addPage("studentProfile");
     addPage("home");
     addPage("home2");
@@ -195,7 +196,8 @@ var run=function(app,db){
                                 lastname:result[i].lastname,
                                 nickname:result[i].nickname,
                                 inCourse:course.length!=0,
-                                inHybrid:result[i].student.hybridDay.length!=0
+//                                inHybrid:result[i].student.hybridDay.length!=0
+                                inHybrid:true
                             };
                             eventEmitter.emit("finish");
                         });
@@ -217,7 +219,7 @@ var run=function(app,db){
                 if(result.position=="student"){
                     output=result.student;
                     var request=require("request");
-                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
+                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
                         output.courseID=[];
