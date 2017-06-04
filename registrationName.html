@@ -7,10 +7,6 @@
 <title>Course Registration</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
-
-<script type="text/javascript" src="js/myTable-1.0.0.custom.js"></script>
-<link href="css/style.css" rel="stylesheet" type="text/css">
-
 <!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <link href="/css/style.css" rel="stylesheet" type="text/css">
@@ -24,7 +20,11 @@
 	checkIDStudent();
 </script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<!-- InstanceBeginEditable name="script" --><script type="text/javascript" src="js/regNmCal.js"></script><!--add more script--><!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="script" -->
+<script type="text/javascript" src="js/regNmCal.js"></script>
+<script type="text/javascript" src="js/myTable-1.0.0.custom.js"></script>
+<!--add more script-->
+<!-- InstanceEndEditable -->
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -55,7 +55,7 @@
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li class="w3-hide-small w3-hide-medium"><a class="studentName">StudentName</a></li>
+        <li class="w3-hide-small w3-hide-medium"><a href="studentProfile" class="studentName">StudentName</a></li>
         <li><a href="#" onClick="logout();"><span class="glyphicon glyphicon-log-out"></span>Log out</a></li>
       </ul>
     </div>
@@ -64,7 +64,6 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-
   <div class="container">
     <form class="form-horizontal">
       <div class="form-group">
@@ -79,7 +78,7 @@
         <label class="control-label col-md-2">ชั้น:</label>
         <div class="col-md-8">
           <select name="level" class="form-control" id="level" >
-           <option value="0">กรุณาเลือกชั้นเรียน</option>
+            <option value="0">กรุณาเลือกชั้นเรียน</option>
             <option value="1">ประถม 1</option>
             <option value="2">ประถม 2</option>
             <option value="3">ประถม 3</option>
@@ -97,11 +96,9 @@
       </div>
     </form>
   </div>
-  
   <div class="container col-md-10 col-md-offset-1" align="right">
     <button id="next" class="btn btn-basic disabled" onClick="this.blur(); next(this);">Next</button>
-    </div>
-
+  </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
