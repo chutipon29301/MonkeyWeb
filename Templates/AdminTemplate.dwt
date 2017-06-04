@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- TemplateBeginEditable name="doctitle" -->
 <title>Untitled Document</title>
 <!-- TemplateEndEditable -->
 <!-- TemplateBeginEditable name="head" -->
 <!-- TemplateEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+<link href="css/w3.css" rel="stylesheet" type="text/css">
+<link href="/css/style.css" rel="stylesheet" type="text/css">
 <script src="js/jquery-1.11.3.min.js"></script>
+<script src="js/bootstrap.js"></script>
 <script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
 <script>
 	checkLogin();
 	checkIDTutor();
 </script>
-<link href="/css/style.css" rel="stylesheet" type="text/css">
 <script src="/js/admin.js"></script>
-<link href="css/bootstrap.css" rel="stylesheet" type="text/css">
-<link href="css/w3.css" rel="stylesheet" type="text/css">
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="js/bootstrap.js"></script>
 <!-- TemplateBeginEditable name="script" -->
 <!--add more script-->
 <!-- TemplateEndEditable -->

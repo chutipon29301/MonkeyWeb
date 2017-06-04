@@ -5,8 +5,8 @@
 	margin-top: 20px;
 }
 .galleria {
-	max-width: 71vw;
-	height: 90vh;
+	max-width: 80vw;
+	height: 60vw;
 	background: #000
 }
 #usr,#pwd,#nname,#name,#sname,#level,#station,#skillday,#skilltime{
