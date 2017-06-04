@@ -1,3 +1,4 @@
+
 console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
@@ -27,6 +28,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.dropCollection("user");
     // var moment=require("moment");
     // db.collection("user").insertOne({day:moment(0).hour(8).day(6).toDate()});
+    // db.collection("CR60Q2").deleteOne({grade:"12"});
     // db.collection("user").insertOne({day:moment(0).hour(9).day(6).toDate()});
     // db.collection("user").insertOne({day:moment(0).hour(6).day(6).toDate()});
     // db.collection("user").insertOne({day:moment(0).hour(7).day(6).toDate()});
@@ -153,7 +155,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         if(config==null){
             configDB.insertOne({_id:"config",year:60,quarter:2,
                 courseMaterialPath:"",receiptPath:"",
-                nextStudentID:17001,nextTutorID:99001
+                nextStudentID:17001,nextTutorID:99001,maxHybridSeat:40
             },function(err){
                 require("opn")("http://127.0.0.1/firstConfig");
                 console.log("[WARNING] Please update path/year/quarter");

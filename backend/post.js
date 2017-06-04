@@ -2,6 +2,7 @@ console.log("[START] post.js");
 var run=function(app,db){
     var events=require("events");
     var moment=require("moment");
+    var ObjectID=require('mongodb').ObjectID;
     var path=require("path");
 
     var configDB=db.collection("config");
@@ -38,6 +39,13 @@ var run=function(app,db){
             if(bit&(1<<i)){
                 output.push(i+1);
             }
+        }
+        return output;
+    };
+    var gradeArrayToBit=function(array){
+        var output=0;
+        for(var i=0;i<array.length;i++){
+            output|=(1<<(array[i]-1));
         }
         return output;
     };
@@ -277,7 +285,7 @@ var run=function(app,db){
     });
 
     // User Management
-    //OK {password,firstname,lastname,nickname,grade(1-12)} return {}
+    //OK {password,firstname,lastname,nickname,grade(1-12),email,phone} return {}
     app.post("/post/addStudent",function(req,res){
         console.log("[REQUEST] addStudent");
         var password=req.body.password;
@@ -285,21 +293,18 @@ var run=function(app,db){
         var lastname=req.body.lastname;
         var nickname=req.body.nickname;
         var grade=parseInt(req.body.grade);
+        var email=req.body.email;
+        var phone=req.body.phone;
         var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         configDB.findOne({},function(err,config){
-            userDB.findOne({firstname:firstname,lastname:lastname},function(err,result){
-                if(result==null){
-                    userDB.insertOne({
-                        _id:config.nextStudentID,password:password,position:"student",
-                        firstname:firstname,lastname:lastname,nickname:nickname,
-                        student:{grade:grade,registrationState:"registered",skillDay:[],hybridDay:[],balance:balance,status:"active"}
-                    },function(err,result){
-                        configDB.updateOne({},{$inc:{nextStudentID:1}});
-                        // res.send({}); TODO
-                        res.send(result.ops);
-                    });
-                }
-                else res.send({err:"Student is already exists."});
+            userDB.insertOne({
+                _id:config.nextStudentID,password:password,position:"student",
+                firstname:firstname,lastname:lastname,nickname:nickname,
+                student:{grade:grade,registrationState:"unregistered",skillDay:[],balance:balance,status:"active",email:email,phone:phone}
+            },function(err,result){
+                configDB.updateOne({},{$inc:{nextStudentID:1}});
+                // res.send({}); TODO
+                res.send(result.ops);
             });
         });
     });
@@ -411,21 +416,60 @@ var run=function(app,db){
             });
         });
     });
-    //TODO ADD courseInfo
-    //TODO {subject,[grade],level,day,[tutor],[student]} return {}
-    app.post('/post/addCourse',function(req,res){
-        var subject=req.body.subject;
-        var grade=req.body.grade;
-        var level=req.body.level;
-        var tutor=req.body.tutor;
-        var day=req.body.day;
+    //TODO {courseID} return {courseName,day,[tutor],[student]}
+    app.post("/post/courseInfo",function(req,res){
+        var courseID=req.body.courseID;
+        console.log("ID : ",courseID);
         getCourseDB(function(courseDB){
-            courseDB.insertOne({subject:subject,grade:grade,level:level,day:day,tutor:[],student:[],submission:[]},function(err,result){
-                console.log(result);
+            courseDB.findOne({_id:ObjectID(courseID)},function(err,result){
+                if(result==null)res.send({err:"No course found"});
+                else{
+                    console.log(result);
+                    getCourseName(courseID,function(courseName){
+                        res.send({courseName:courseName,day:result.day,tutor:result.tutor,student:result.student});
+                    });
+                }
             });
         });
     });
-    //TODO ADD removeCourse
+    //TODO {subject,[grade],level,day,[tutor]} return {}
+    app.post('/post/addCourse',function(req,res){
+        // console.log("==================");
+        // console.log(req.body);
+        // return;
+        var subject=req.body.subject;
+        var grade=req.body.grade;
+        for(var i=0;i<grade.length;i++){
+            grade[i]=parseInt(grade[i]);
+        }
+        grade=gradeArrayToBit(grade);
+        var level=req.body.level;
+        var day=parseInt(req.body.day);
+        var tutor=req.body.tutor;
+        for(var i=0;i<tutor.length;i++){
+            tutor[i]=parseInt(tutor[i]);
+        }
+        var courseID=new ObjectID().toString();
+        getCourseDB(function(courseDB){
+            courseDB.insertOne({_id:courseID,subject:subject,grade:grade,level:level,day:day,tutor:tutor,student:[],submission:[]},function(err,result){
+                console.log(result.ops);
+                res.send(result.ops);//TODO ret {}
+            });
+        });
+    });
+    //TODO {courseID} return {}
+    app.post("/post/removeCourse",function(req,res){
+        var courseID=req.body.courseID;
+        getCourseDB(function(courseDB){
+            courseDB.findOne({_id:courseDB},function(err,result){
+                if(result==null)res.send({err:"The requested course doesn't exist."});
+                else{
+                    courseDB.deleteOne({_id:courseID});
+                    res.send({});
+                }
+            });
+        });
+    });
     //TODO ADD editCourse
 
     // Reciept
@@ -441,7 +485,7 @@ var run=function(app,db){
             res.send(config);
         });
     });
-    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID} return {}
+    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,maxHybridSeat} return {}
     app.post('/post/editConfig',function(req,res){
         configDB.updateOne({},{
             year:parseInt(req.body.year),
@@ -449,7 +493,8 @@ var run=function(app,db){
             courseMaterialPath:req.body.courseMaterialPath,
             receiptPath:req.body.receiptPath,
             nextStudentID:parseInt(req.body.nextStudentID),
-            nextTutorID:parseInt(req.body.nextTutorID)
+            nextTutorID:parseInt(req.body.nextTutorID),
+            maxHybridSeat:parseInt(req.body.maxHybridSeat)
         },function(){
             configDB.findOne({},function(err,config){
                 console.log(config);
