@@ -46,9 +46,9 @@ function checkLogin() {
 		password: pwd
 	}, function (data) {
 		if (data.err) {
-			log("[checkLogin()] : post/return => Error");
+			log("[checkLogin()] : post/password => Error");
 		} else {
-			log("[checkLogin()] : post/return => ");
+			log("[checkLogin()] : post/password => ");
 			log(data);
 			if (!data.verified) {
 				log("[checkLogin()] : redirecting to login");
@@ -73,9 +73,9 @@ function checkIDStudent() {
 		userID: user
 	}, function (data) {
 		if (data.err) {
-			log("[checkLogin()] : post/return => Error");
+			log("[checkLogin()] : post/position => Error");
 		} else {
-			log("[checkLogin()] : post/return => ");
+			log("[checkLogin()] : post/position => ");
 			log(data);
 			if (data.position != "student") {
 				log("[checkLogin()] : redirecting to login");
@@ -99,9 +99,9 @@ function checkIDTutor() {
 		userID: user
 	}, function (data) {
 		if (data.err) {
-			log("[checkLogin()] : post/return => Error");
+			log("[checkLogin()] : post/position => Error");
 		} else {
-			log("[checkLogin()] : post/return => ");
+			log("[checkLogin()] : post/position => ");
 			log(data);
 			if (data.position != "tutor") {
 				log("[checkLogin()] : redirecting to login");
@@ -133,8 +133,29 @@ function getCookieDict() {
  */
 function logout() {
 	"use strict";
-	log("Logout");
+	log("[Logout()] : redirection to login page");
 	deleteCookie("monkeyWebUser");
 	deleteCookie("monkeyWebPassword");
 	self.location = "\login";
+}
+
+/**
+ * Set student name to navigation bar
+ */
+function setStudentNavName() {
+	"use strict";
+	var cookie = getCookieDict();
+	var user = cookie.monkeyWebUser;
+	$.post("post/name", {
+		userID: user
+	}, function (data) {
+		if (data.err) {
+			document.getElementById("navStudentName").innerHTML = "null";
+			log("[setStudentNavName()] => Set student name in navigation bar to : null");
+		} else {
+			document.getElementById("studentNavNameSmall").innerHTML = data.firstname;
+			document.getElementById("studentNavNameLarge").innerHTML = data.firstname;
+			log("[setStudentNavName()] => Set student name in navigation bar to : " + data.firstname);
+		}
+	});
 }
