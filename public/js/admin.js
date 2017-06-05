@@ -1,5 +1,5 @@
 /**
- * Get data for generating table by calling function generateHtmlTable
+ * Get data for generating table by calling function generateStudentHtmlTable
  */
 function getAllStudentContent() {
     "use strict";
@@ -8,7 +8,7 @@ function getAllStudentContent() {
             log("[getAllStudentContent()] : post/return => Error");
         } else {
             log("[getAllStudentContent()] : post/return => ");
-            generateHtmlTable(filterData(data.student));
+            generateStudentHtmlTable(filterData(data.student));
         }
     });
 }
@@ -17,7 +17,7 @@ function getAllStudentContent() {
  * Generate Html element from data
  * @param student information to fill in table
  */
-function generateHtmlTable(student) {
+function generateStudentHtmlTable(student) {
     "use strict";
     var table = document.getElementById("allStudentTable");
     for (var i = 0; i < student.length; i++) {
@@ -46,10 +46,57 @@ function generateHtmlTable(student) {
     }
 }
 
-function getTable() {
-
+/**
+ * Generate element for adminAllcourse page
+ */
+function getAllCourseContent() {
+    "use strict";
+    $.post("/post/allCourse", "", function (data) {
+        if (data.err) {
+            log("[getAllCourseContent()] : post/return => Error");
+        } else {
+            log("[getAllCourseContent()] : post/return => ");
+            generateStudentHtmlTable(filterData(data.student));
+        }
+    });
 }
 
+/**
+ * Generate Html element from data
+ * @param student information to fill in table
+ */
+function generateStudentHtmlTable(student) {
+    "use strict";
+    var table = document.getElementById("allStudentTable");
+    for (var i = 0; i < student.length; i++) {
+        var row = table.insertRow(i);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
+        cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
+        cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
+        cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
+        cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+        cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
+
+        var clickHandler = function (row) {
+            return function () {
+                log(row.getElementsByTagName("td")[0].innerHTML);
+                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+                self.location = "/adminStudentprofile";
+            };
+        };
+        row.onclick = clickHandler(row);
+    }
+}
+
+/**
+ * Update allStudent table
+ */
 function optionSelected() {
     var selectBox = document.getElementById("studentMainFilter");
     var selectData = [];
@@ -73,7 +120,7 @@ function optionSelected() {
 /**
  *
  * @param data array of student info
- * @returns {*}
+ * @returns {*} array of student to display in table
  */
 function filterData(data) {
     var selectBox = document.getElementById("studentMainFilter");
@@ -89,7 +136,6 @@ function filterData(data) {
             return data.filter(function (option) {
                 return true;
             });
-            break;
             break;
         default:
             return data;
@@ -123,12 +169,6 @@ function getStudentProfile() {
     });
 }
 
-/**
- * Generate element for adminAllcourse page
- */
-function getAllCourse() {
-    //prepare for generate course for allCoursePage
-}
 
 /**
  * Convert number grade to string grade
