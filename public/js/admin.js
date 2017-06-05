@@ -1,5 +1,5 @@
 /**
- * Generate element for adminAllstudent page
+ * Get data for generating table by calling function generateHtmlTable
  */
 function getAllStudentContent() {
     "use strict";
@@ -14,6 +14,10 @@ function getAllStudentContent() {
     });
 }
 
+/**
+ * Generate Html element from data
+ * @param data information to fill in table
+ */
 function generateHtmlTable(data) {
     "use strict";
     var student = data.student;

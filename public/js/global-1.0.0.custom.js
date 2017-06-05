@@ -112,7 +112,7 @@ function checkIDTutor() {
 
 /**
  * Generate object of document.cookie
- * @return dict object of document.cookie
+ * @return {object} object of document.cookie
  */
 function getCookieDict() {
     "use strict";
