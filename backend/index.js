@@ -29,7 +29,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.dropCollection("user");
     // var moment=require("moment");
     // db.collection("user").insertOne({day:moment(0).hour(8).day(6).toDate()});
-    // db.collection("CR60Q2").deleteOne({grade:"12"});
+    // db.collection("CR60Q2").deleteOne({grade:[11,12]});
     // db.collection("user").insertOne({day:moment(0).hour(9).day(6).toDate()});
     // db.collection("user").insertOne({day:moment(0).hour(6).day(6).toDate()});
     // db.collection("user").insertOne({day:moment(0).hour(7).day(6).toDate()});

@@ -465,7 +465,7 @@ var run=function(app,db){
     app.post("/post/removeCourse",function(req,res){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
-            courseDB.findOne({_id:courseDB},function(err,result){
+            courseDB.findOne({_id:courseID},function(err,result){
                 if(result==null)res.send({err:"The requested course doesn't exist."});
                 else{
                     courseDB.deleteOne({_id:courseID});
