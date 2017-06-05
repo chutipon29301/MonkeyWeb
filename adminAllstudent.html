@@ -55,14 +55,13 @@
     <table class="table">
       <tr>
         <td><h1>Student</h1></td>
-        <td><h3>Filter: </h3></td>
-        <td><select class="form-control" id="studentFilter">
-            <option>active</option>
-            <option>drop</option>
-            <option>option 3</option>
-            <option>option 4</option>
+        <td><lable>Filter: </lable></td>
+        <td><select class="form-control" id="studentMainFilter" onChange="optionSelected();">
+            <option>status</option>
+            <option>grade</option>
+            <option>year</option>
           </select></td>
-        <td><select class="form-control" id="studentFilter">
+        <td><select class="form-control" id="studentSubFilter">
             <option>active</option>
             <option>drop</option>
             <option>option 3</option>

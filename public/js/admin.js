@@ -48,6 +48,33 @@ function generateHtmlTable(data) {
     }
 }
 
+function optionSelected() {
+    var selectBox = document.getElementById("studentMainFilter");
+    var selectData = [];
+    switch (selectBox.options[selectBox.selectedIndex].value) {
+        case "status":
+            selectData = ["active", "inactive", "drop"];
+            break;
+        case "grade":
+            selectData = ["P1", "P2", "P3", "P4", "P5", "P6", "M1", "M2", "M3", "M4", "M5", "M6"];
+            break;
+        case "year":
+            selectData = ["2015", "2016", "2017", "2018"];
+            break;
+        default:
+            break;
+    }
+    var textInnerHtml = "";
+    for(var i = 0; i < selectData.length; i++){
+        textInnerHtml += "<option>" + selectData[i] + "</option>";
+    }
+    document.getElementById("studentSubFilter").innerHTML = textInnerHtml;
+}
+
+function filterTable() {
+
+}
+
 /**
  * Generate element for studentProfile page
  */
@@ -65,6 +92,8 @@ function getStudentProfile() {
             log(data);
             document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
             document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
+            document.getElementById("email").innerHTML = "e-mail: " + data.email;
+            document.getElementById("phone").innerHTML = "phone: " + data.phone;
             document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
             document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
         }
@@ -72,10 +101,10 @@ function getStudentProfile() {
 }
 
 /**
- * Fenerate element for adminAllcourse page
+ * Generate element for adminAllcourse page
  */
 function getAllCourse() {
-
+    //prepare for generate course for allCoursePage
 }
 
 /**
