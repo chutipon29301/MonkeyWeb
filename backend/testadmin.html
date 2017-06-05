@@ -93,6 +93,7 @@
                         }
                         else input[$(this).attr("name")]=getValue(this);
                     });
+                    console.log("===>",$(this).attr("action"));
                     console.log(input);
                     $.post($(this).attr("action"),input,function(data,status){
                         console.log(data);
@@ -347,6 +348,10 @@
                             </form>
                             <br>
                             <p>removeCourse TODO</p>
+                            <form action="post/removeCourse" method="post">
+                                <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
+                                <button class="btn btn-default" type="submit">post/removeCourse</button>
+                            </form>
                             <br>
                             <p>editCourse TODO</p>
                             <br>
