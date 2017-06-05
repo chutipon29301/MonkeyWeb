@@ -164,7 +164,7 @@ function loadRegistrationPage(){
 	"use strict";
 	var cookie = getCookieDict();
 	var user = cookie.monkeyWebUser;
-	$.post("post/status", {
+	$.post("post/registrationState", {
 		userID: user
 	}, function (data) {
 		if (data.err) {
@@ -174,8 +174,12 @@ function loadRegistrationPage(){
 			log(data);
 			switch (data.status){
 				case "unregistered":
+					log("[loadRegistrationPage()] : redirection to registrationName");
+					self.location = "/registrationName";
 					break;
 				case "untransfered":
+					log("[loadRegistrationPage()] : redirection to registrationReciept")
+					self.location = "/registrationReciept";
 					break;
 				case "transfered":
 					break;

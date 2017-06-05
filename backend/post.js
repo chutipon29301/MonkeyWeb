@@ -173,7 +173,17 @@ var run=function(app,db){
             else res.send({status:result.tutor.status});
         });
     });
-
+    //OK {userID} return {registrationState}
+    app.post("/post/registrationState",function(req,res){
+        var userID=parseInt(req.body.userID);
+        userDB.findOne({_id:userID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested ID doesn't exist."});
+            }
+            else if(result.position=="student")res.send({status:result.student.registrationState});
+            else res.send({err:"The requested ID isn't a student."});
+        });
+    });
 
 
     // Student Information
