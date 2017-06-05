@@ -180,7 +180,7 @@ var run=function(app,db){
             if(result==null){
                 res.send({err:"The requested ID doesn't exist."});
             }
-            else if(result.position=="student")res.send({status:result.student.registrationState});
+            else if(result.position=="student")res.send({registrationState:result.student.registrationState});
             else res.send({err:"The requested ID isn't a student."});
         });
     });

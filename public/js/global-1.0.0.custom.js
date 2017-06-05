@@ -172,7 +172,7 @@ function loadRegistrationPage(){
 		} else {
 			log("[loadRegistrationPage()] : post/status =>");
 			log(data);
-			switch (data.status){
+			switch (data.registrationState){
 				case "unregistered":
 					log("[loadRegistrationPage()] : redirection to registrationName");
 					self.location = "/registrationName";
