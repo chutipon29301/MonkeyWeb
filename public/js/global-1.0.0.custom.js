@@ -156,3 +156,36 @@ function setStudentNavName() {
 		}
 	});
 }
+
+/**
+ * Load registration page from status of student
+ */
+function loadRegistrationPage(){
+	"use strict";
+	var cookie = getCookieDict();
+	var user = cookie.monkeyWebUser;
+	$.post("post/status", {
+		userID: user
+	}, function (data) {
+		if (data.err) {
+			log("[loadRegistrationPage()] : post/status => Error");
+		} else {
+			log("[loadRegistrationPage()] : post/status =>");
+			log(data);
+			switch (data.status){
+				case "unregistered":
+					break;
+				case "untransfered":
+					break;
+				case "transfered":
+					break;
+				case "rejected":
+					break;
+				case "registered":
+					break;
+				default:
+					break;
+			}
+		}
+	});
+}
