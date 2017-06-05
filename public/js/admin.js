@@ -5,22 +5,20 @@ function getAllStudentContent() {
     "use strict";
     $.post("/post/allStudent", "", function (data) {
         if (data.err) {
-            log("[getAllStudent()] : post/return => Error");
+            log("[getAllStudentContent()] : post/return => Error");
         } else {
-            log("[getAllStudent()] : post/return => ");
-            log(data);
-            generateHtmlTable(data);
+            log("[getAllStudentContent()] : post/return => ");
+            generateHtmlTable(filterData(data.student));
         }
     });
 }
 
 /**
  * Generate Html element from data
- * @param data information to fill in table
+ * @param student information to fill in table
  */
-function generateHtmlTable(data) {
+function generateHtmlTable(student) {
     "use strict";
-    var student = data.student;
     var table = document.getElementById("allStudentTable");
     for (var i = 0; i < student.length; i++) {
         var row = table.insertRow(i);
@@ -48,6 +46,10 @@ function generateHtmlTable(data) {
     }
 }
 
+function getTable() {
+
+}
+
 function optionSelected() {
     var selectBox = document.getElementById("studentMainFilter");
     var selectData = [];
@@ -58,22 +60,43 @@ function optionSelected() {
         case "grade":
             selectData = ["P1", "P2", "P3", "P4", "P5", "P6", "M1", "M2", "M3", "M4", "M5", "M6"];
             break;
-        case "year":
-            selectData = ["2015", "2016", "2017", "2018"];
-            break;
         default:
             break;
     }
     var textInnerHtml = "";
-    for(var i = 0; i < selectData.length; i++){
+    for (var i = 0; i < selectData.length; i++) {
         textInnerHtml += "<option>" + selectData[i] + "</option>";
     }
     document.getElementById("studentSubFilter").innerHTML = textInnerHtml;
 }
 
-function filterTable() {
-
+/**
+ *
+ * @param data array of student info
+ * @returns {*}
+ */
+function filterData(data) {
+    var selectBox = document.getElementById("studentMainFilter");
+    var filterOption = document.getElementById("studentSubFilter");
+    var option = filterOption.options[filterOption.selectedIndex].value;
+    switch (selectBox.options[selectBox.selectedIndex].value) {
+        case "status":
+            return data.filter(function (option) {
+                return true;
+            });
+            break;
+        case "grade":
+            return data.filter(function (option) {
+                return true;
+            });
+            break;
+            break;
+        default:
+            return data;
+            break;
+    }
 }
+
 
 /**
  * Generate element for studentProfile page
