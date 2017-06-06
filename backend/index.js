@@ -16,11 +16,7 @@ app.use(function(req, res, next) {// Allow access from other domain
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-<<<<<<< HEAD
 app.listen(8080);
-=======
-app.listen(80);
->>>>>>> 6deaa931a23cc01aa7719a7c61ef47fa26cc3b4c
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
