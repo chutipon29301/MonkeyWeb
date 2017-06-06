@@ -2,6 +2,7 @@
  * Use to log text to console
  * @param text text to be log in console
  */
+var $ = require("request");
 function log(text) {
     "use strict";
     console.log(text);
