@@ -104,6 +104,7 @@ var run=function(app,db){
     addPage("registrationCourse");
     addPage("registrationHybrid");
 	addPage("registrationName");
+	addPage("registrationSkill");
     addPage("registrationReceipt");
 	addPage("studentProfile");
     addPage("home");
