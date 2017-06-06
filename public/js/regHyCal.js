@@ -1,9 +1,15 @@
 $(document).ready(function(){
+	modal = document.getElementById('id01');
 	var cookie = getCookieDict();
 	console.log(cookie.regisCourse)
 	if(cookie.regisCourse == undefined || cookie.regisCourse == ''){
 		self.location = "registrationCourse";
 	}
+	cookie.name = decodeURIComponent(cookie.name)
+	$('#nname').html(cookie.name.split(' ')[0])
+	$('#name').html(cookie.name.split(' ')[1])
+	$('#sname').html(cookie.name.split(' ')[2])
+	$('#grade').val(cookie.grade)
 	genTable()
 	genTableCookie()
 	var daytoDis = ['sat','sun']
@@ -84,11 +90,13 @@ $(document).ready(function(){
 
 	$("#station").change(function(){
 		if ($(this).val() == "2"){
+			$('#skilltime').val('0')
 			document.getElementById('skillday').disabled = true
 			document.getElementById('skillday').style = "visibility:hidden"
 			document.getElementById('skilltime').disabled = true
 			document.getElementById('skilltime').style = "visibility:hidden"
 			document.getElementById('skilltime').value = "0"
+
 		}
 		else{
 			document.getElementById('skillday').disabled = false
@@ -97,7 +105,7 @@ $(document).ready(function(){
 			document.getElementById('skilltime').style = ""
 		}
 	})
-	$("#skilltime,#skillday").change(function(){
+	$("#skilltime,#skillday,#station").change(function(){
 		genTable()
 		genTableCookie()
 		var skilltime = $("#skilltime").val();
@@ -131,6 +139,27 @@ $(document).ready(function(){
 		}
 	})
 })
+
+function next(){
+	var cookie = getCookieDict()
+	var course = cookie.regisCourse.split(' ')
+	var printCr = ''
+	var i
+	console.log(course)
+	for(i=0;i<course.length;i++){
+		printCr+=course[i].slice(0,course[i].length-1)
+		printCr+='<br>'
+	}
+	$('#cr').html(printCr)
+	var printHb = '' 
+
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
 
 function genTableCookie(){
 	var cookie = getCookieDict();
