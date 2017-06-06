@@ -7,7 +7,7 @@ var run=function(app,db){
     var path=require("path");
 
     var configDB=db.collection("config");
-    // var hybridSeatDB=db.collection("hybridSeat");
+    var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
     var userDB=db.collection("user");
 
@@ -99,7 +99,7 @@ var run=function(app,db){
         });
     };
 
-    addPage("login","/");
+    // addPage("login","/");
     addPage("login");
     addPage("registrationCourse");
     addPage("registrationHybrid");
@@ -140,7 +140,7 @@ var run=function(app,db){
             }
         });
     });
-    //OK {userID} return {firstname,lastname,nickname}
+    //OK {userID} return {firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn}
     app.post("/post/name",function(req,res){
         var userID=parseInt(req.body.userID);
         userDB.findOne({_id:userID},function(err,result){
@@ -148,7 +148,9 @@ var run=function(app,db){
                 res.send({err:"The requested ID doesn't exist."});
             }
             else{
-                res.send({firstname:result.firstname,lastname:result.lastname,nickname:result.nickname});
+                res.send({firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
+                    firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn
+                });
             }
         });
     });
@@ -173,17 +175,6 @@ var run=function(app,db){
             else res.send({status:result.tutor.status});
         });
     });
-    //OK {userID} return {registrationState}
-    app.post("/post/registrationState",function(req,res){
-        var userID=parseInt(req.body.userID);
-        userDB.findOne({_id:userID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else if(result.position=="student")res.send({registrationState:result.student.registrationState});
-            else res.send({err:"The requested ID isn't a student."});
-        });
-    });
 
 
     // Student Information
@@ -206,7 +197,7 @@ var run=function(app,db){
                                 lastname:result[i].lastname,
                                 nickname:result[i].nickname,
                                 inCourse:course.length!=0,
-//                                inHybrid:result[i].student.hybridDay.length!=0
+                                // inHybrid:result[i].student.hybridDay.length!=0
                                 inHybrid:true
                             };
                             eventEmitter.emit("finish");
@@ -217,7 +208,7 @@ var run=function(app,db){
             eventEmitter.emit("finish");
         });
     });
-    //TODO TEST {studentID} return {grade,registrationState,skillDay,hybridDay,balance,status,firstname,lastname,nickname,[courseID]}
+    //TODO TEST {studentID} return {grade,registrationState,[skillDay],[balance],status,email,phone,firstname,lastname,nickname,[courseID],[hybridDay]}
     app.post("/post/studentProfile",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var output={};
@@ -229,7 +220,7 @@ var run=function(app,db){
                 if(result.position=="student"){
                     output=result.student;
                     var request=require("request");
-                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
+                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
                         output.courseID=[];
@@ -247,26 +238,76 @@ var run=function(app,db){
             }
         });
     });
+    //OK {studentID} return {registrationState}
+    app.post("/post/registrationState",function(req,res){
+        var studentID=parseInt(req.body.studentID);
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested ID doesn't exist."});
+            }
+            else if(result.position=="student")res.send({registrationState:result.student.registrationState});
+            else res.send({err:"The requested ID isn't a student."});
+        });
+    });
 
     // Student Timetable
     //TODO course {studentID,[courseID]} return {}
     app.post("/post/addStudentCourse",function(req,res){
-        var studentID=req.body.studentID;
+        var studentID=parseInt(req.body.studentID);
         var courseID=req.body.courseID;
+        var eventEmitter=new events.EventEmitter();
+        //TODO var errOutput=[];
         userDB.findOne({_id:studentID},function(err,result){
             if(result==null){
-                res.send({err:"ID doesn't exist."});
+                res.send({err:"The requested student ID doesn't exist."});
             }
             else{
-                //TODO TEST
-                userDB.updateOne({_id:studentID},{$addToSet:{course:{$each:courseID}}},function(err,result){
-                });
+                if(result.position=="student"){
+                    var c=0;
+                    eventEmitter.on("finish",function(){
+                        if(c==courseID.length)res.send({});
+                        c++;
+                    });
+                    getCourseDB(function(courseDB){
+                        for(var i=0;i<courseID.length;i++){
+                            courseDB.updateOne({_id:courseID[i]},{$addToSet:{student:studentID}});
+                            eventEmitter.emit("finish");
+                        }
+                        eventEmitter.emit("finish");
+                    });
+                }
+                else res.send({err:"The requested ID isn't a student."});
             }
         });
     });
     //TODO course {studentID,[courseID]} return {}
     app.post("/post/removeStudentCourse",function(req,res){
-        //
+        var studentID=parseInt(req.body.studentID);
+        var courseID=req.body.courseID;
+        var eventEmitter=new events.EventEmitter();
+        //TODO var errOutput=[];
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested student ID doesn't exist."});
+            }
+            else{
+                if(result.position=="student"){
+                    var c=0;
+                    eventEmitter.on("finish",function(){
+                        if(c==courseID.length)res.send({});
+                        c++;
+                    });
+                    getCourseDB(function(courseDB){
+                        for(var i=0;i<courseID.length;i++){
+                            courseDB.updateOne({_id:courseID[i]},{$pull:{student:studentID}});
+                            eventEmitter.emit("finish");
+                        }
+                        eventEmitter.emit("finish");
+                    });
+                }
+                else res.send({err:"The requested ID isn't a student."});
+            }
+        });
     });
     //TODO Date {studentID,[day]} return {}
     app.post("/post/addSkillDay",function(req,res){
@@ -446,7 +487,7 @@ var run=function(app,db){
             });
         });
     });
-    //TODO {subject,[grade],level,day,[tutor]} return {}
+    //OK {subject,[grade],level,day,[tutor]} return {}
     app.post('/post/addCourse',function(req,res){
         // console.log("==================");
         // console.log(req.body);
@@ -471,7 +512,7 @@ var run=function(app,db){
             });
         });
     });
-    //TODO {courseID} return {}
+    //OK {courseID} return {}
     app.post("/post/removeCourse",function(req,res){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
@@ -533,6 +574,11 @@ var run=function(app,db){
             courseDB.find().toArray(function(err,result){
                 res.send(result);
             });
+        });
+    });
+    app.post("/debug/listHybridSeat",function(req,res){
+        hybridSeatDB.find().toArray(function(err,result){
+            res.send(result);
         });
     });
 }
