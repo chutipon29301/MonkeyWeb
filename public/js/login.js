@@ -64,10 +64,10 @@ function redirectLocation(user){
 			log(data);
 			switch(data.position){
 				case "student":
-					self.location = "\home";
+					self.location = "/home";
 					break;
 				case "tutor":
-					self.location = "\adminHome";
+					self.location = "/adminHome";
 					break;
 				default:
 					break;
