@@ -1,4 +1,3 @@
-var $ = require("request");
 //noinspection JSUnusedLocalSymbols
 function loginSubmit() {
 	"use strict";
@@ -69,7 +68,7 @@ function redirectLocation(user){
 				case "tutor":
 					self.location = "/adminHome";
 					break;
-				case "admin"
+				case "admin":
 					self.location="/testadmin";
 				default:
 					break;

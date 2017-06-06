@@ -2,7 +2,6 @@
  * Use to log text to console
  * @param text text to be log in console
  */
-var $ = require("request");
 function log(text) {
     "use strict";
     console.log(text);
@@ -169,7 +168,7 @@ function loadRegistrationPage() {
     let cookie = getCookieDict();
     let user = cookie.monkeyWebUser;
     $.post("post/registrationState", {
-        userID: user
+        studentID: user
     }, function (data) {
         if (data.err) {
             log("[loadRegistrationPage()] : post/status => Error");
