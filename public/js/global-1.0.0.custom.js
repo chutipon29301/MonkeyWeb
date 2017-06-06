@@ -59,6 +59,7 @@ function checkLogin() {
     });
 }
 
+//noinspection JSUnusedLocalSymbols
 /**
  * Check whether user is student
  * if user is not student, logout
@@ -85,6 +86,7 @@ function checkIDStudent() {
     });
 }
 
+//noinspection JSUnusedLocalSymbols
 /**
  * Check whether user is tutor
  * if user is not tutor, logout
@@ -135,7 +137,7 @@ function logout() {
     log("[Logout()] : redirection to login page");
     deleteCookie("monkeyWebUser");
     deleteCookie("monkeyWebPassword");
-    self.location = "\login";
+    self.location = "/login";
 }
 
 /**
@@ -167,23 +169,24 @@ function loadRegistrationPage() {
     var cookie = getCookieDict();
     var user = cookie.monkeyWebUser;
     $.post("post/registrationState", {
-        userID: user
+        studentID: user
     }, function (data) {
         if (data.err) {
             log("[loadRegistrationPage()] : post/status => Error");
         } else {
             log("[loadRegistrationPage()] : post/status =>");
             log(data);
+            //noinspection SpellCheckingInspection
             switch (data.registrationState) {
                 case "unregistered":
                     log("[loadRegistrationPage()] : redirection to registrationName");
                     self.location = "/registrationName";
                     break;
-                case "untransfered":
-                    log("[loadRegistrationPage()] : redirection to registrationReciept");
-                    self.location = "/registrationReciept";
+                case "untransferred":
+                    log("[loadRegistrationPage()] : redirection to registrationReceipt");
+                    self.location = "/registrationReceipt";
                     break;
-                case "transfered":
+                case "transferred":
                     break;
                 case "rejected":
                     break;

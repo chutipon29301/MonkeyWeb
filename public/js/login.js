@@ -1,3 +1,5 @@
+var $ = require("request");
+//noinspection JSUnusedLocalSymbols
 function loginSubmit() {
 	"use strict";
 
@@ -54,8 +56,8 @@ function login(user, pwd) {
 function redirectLocation(user){
 	log("in redirection");
 	$.post("post/position", {
-		userID: user,
-	}, function (data) {
+		userID: user
+    }, function (data) {
 		if (data.err) {
 			log("Invalid");
 		} else {

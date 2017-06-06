@@ -15,6 +15,7 @@
 <script src="js/jquery-1.11.3.min.js"></script>
 <script src="js/bootstrap.js"></script>
 <script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
+  <script src="js/canvas-to-image.min.js" type="text/javascript"></script>
 <script>
 	checkLogin();
 	checkIDStudent();
@@ -65,6 +66,7 @@
   <div align="center">
     <canvas id="canvas" style="border:2px solid black;" width="800" height="360"></canvas>
   </div>
+  <button onclick="canvasToImage('canvas');">Download</button>
   <script src="js/drawImage.js"></script> 
   <!-- InstanceEndEditable --> </div>
 <div class="container">
