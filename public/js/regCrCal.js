@@ -1,23 +1,24 @@
 var availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
 $(document).ready(function(){
-	var ckydict = getCookieDict()
-	if ( ckydict.regisCourse != undefined || ckydict.regisCourse=='' ){
+	var cookie = getCookieDict()
+	if ( cookie.regisCourse != undefined){
 		deleteCookie("regisCourse")
 	}
-	if ( ckydict.name == undefined || ckydict.name == ''){
+	if ( typeof(cookie.name) != 'string'){
 		self.location = "registrationName"
 	}
-	console.log(ckydict.name)
-	$('#nname').html(ckydict.name.split(' ')[0])
-	$('#name').html(ckydict.name.split(' ')[1])
-	$('#sname').html(ckydict.name.split(' ')[2])
-	$('#level').val(ckydict.level)
+	console.log(typeof(cookie.name))
+	cookie.name = JSON.parse(cookie.name)
+	$('#nname').html(decodeURIComponent(cookie.name.nname))
+	$('#name').html(decodeURIComponent(cookie.name.name))
+	$('#sname').html(decodeURIComponent(cookie.name.sname))
+	$('#grade').val(cookie.grade)
 	genTable()
 	document.getElementById	('show_price').innerHTML = 0;
 	availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
 	sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
-	var grade = $('#level').val()
+	var grade = $('#grade').val()
 	if(grade != "0"){
 		if(parseInt(grade)>=10){
 			$.post("post/gradeCourse",{grade:13}, function (arrayCourse){

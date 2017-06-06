@@ -76,10 +76,8 @@ function redirectLocation(user){
 
 function clearInput() {
 	"use strict";
-	var user = document.getElementById("usr");
 	var pwd = document.getElementById("pwd");
 
-	user.value = "";
 	pwd.value = "";
 }
 

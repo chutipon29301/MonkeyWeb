@@ -1,5 +1,8 @@
 @charset "utf-8";
 /* CSS Document */
+.html{
+    font-family: "Times New Roman", Times, serif;
+}
 
 .loginBtn{
 	margin-top: 20px;

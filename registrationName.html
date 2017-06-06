@@ -72,12 +72,28 @@
           <input id="nname" type="text" class="form-control" placeholder="ชื่อเล่น (ภาษาไทย)">
           <input id="name" type="text" class="form-control" placeholder="ชื่อจริง (ภาษาไทย)">
           <input id="sname" type="text" class="form-control" placeholder="นามสกุล (ภาษาไทย)">
+          <input id="nnameE" type="text" class="form-control" placeholder="Nickname (English)">
+          <input id="nameE" type="text" class="form-control" placeholder="Firstname (English)">
+          <input id="snameE" type="text" class="form-control" placeholder="Surname (English)">
+        </div>
+	  </div>
+	  <div class="form-group">
+        <label class="control-label col-md-2">Email:</label>
+        <div class="col-md-8">
+          <input id="email" type="text" class="form-control" placeholder="Email">
         </div>
       </div>
+	  <div class="form-group">
+        <label class="control-label col-md-2">เบอร์ติดต่อ:</label>
+        <div class="col-md-8">
+          <input id="parentNum" type="text" class="form-control" placeholder="เบอร์ติดต่อผู้ปกครอง">
+          <input id="studentNum" type="text" class="form-control" placeholder="เบอร์ติดต่อนักเรียน">
+        </div>
+		</div>
       <div class="form-group">
         <label class="control-label col-md-2">ชั้น:</label>
         <div class="col-md-8">
-          <select name="level" class="form-control" id="level" >
+          <select name="grade" class="form-control" id="grade" >
             <option value="0">กรุณาเลือกชั้นเรียน</option>
             <option value="1">ประถม 1</option>
             <option value="2">ประถม 2</option>
@@ -97,7 +113,7 @@
     </form>
   </div>
   <div class="container col-md-10 col-md-offset-1" align="right">
-    <button id="next" class="btn btn-basic disabled" onClick="this.blur(); next(this);">Next</button>
+    <button id="next" class="btn btn-default" onClick="this.blur(); next();">Next</button>
   </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
