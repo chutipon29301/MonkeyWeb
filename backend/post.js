@@ -1,3 +1,4 @@
+
 console.log("[START] post.js");
 var run=function(app,db){
     var events=require("events");
@@ -172,7 +173,17 @@ var run=function(app,db){
             else res.send({status:result.tutor.status});
         });
     });
-
+    //OK {userID} return {registrationState}
+    app.post("/post/registrationState",function(req,res){
+        var userID=parseInt(req.body.userID);
+        userDB.findOne({_id:userID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested ID doesn't exist."});
+            }
+            else if(result.position=="student")res.send({registrationState:result.student.registrationState});
+            else res.send({err:"The requested ID isn't a student."});
+        });
+    });
 
 
     // Student Information
@@ -195,7 +206,8 @@ var run=function(app,db){
                                 lastname:result[i].lastname,
                                 nickname:result[i].nickname,
                                 inCourse:course.length!=0,
-                                inHybrid:result[i].student.hybridDay.length!=0
+//                                inHybrid:result[i].student.hybridDay.length!=0
+                                inHybrid:true
                             };
                             eventEmitter.emit("finish");
                         });
@@ -217,7 +229,7 @@ var run=function(app,db){
                 if(result.position=="student"){
                     output=result.student;
                     var request=require("request");
-                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
+                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
                         output.courseID=[];

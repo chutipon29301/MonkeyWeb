@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,8 +51,22 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="col-md-4 col-md-offset-2">
-    <h1>Student</h1>
+  <div class="table-responsive col-md-8 col-md-offset-2">
+    <table class="table">
+      <tr>
+        <td><h1>Student</h1></td>
+        <td><lable>Filter: </lable></td>
+        <td><select class="form-control" id="studentMainFilter" onChange="optionSelected();">
+            <option>status</option>
+            <option>grade</option>
+          </select></td>
+        <td><select class="form-control" id="studentSubFilter" onChange="getAllStudentContent();">
+         <option>active</option>
+         <option>inactive</option>
+         <option>drop</option>
+          </select></td>
+      </tr>
+    </table>
   </div>
   <div class="table-responsive col-md-8 col-md-offset-2">
     <table class="table">
@@ -69,8 +84,7 @@
       </thead>
     </table>
   </div>
-  <!-- InstanceEndEditable -->
-</div>
+  <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
     <div class="text-center center-block">
@@ -80,4 +94,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
