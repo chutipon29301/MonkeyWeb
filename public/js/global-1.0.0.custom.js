@@ -166,13 +166,14 @@ function setStudentNavName() {
  */
 function loadRegistrationPage() {
     "use strict";
-    var cookie = getCookieDict();
-    var user = cookie.monkeyWebUser;
+    let cookie = getCookieDict();
+    let user = cookie.monkeyWebUser;
     $.post("post/registrationState", {
-        studentID: user
+        userID: user
     }, function (data) {
         if (data.err) {
             log("[loadRegistrationPage()] : post/status => Error");
+            log(data.err);
         } else {
             log("[loadRegistrationPage()] : post/status =>");
             log(data);

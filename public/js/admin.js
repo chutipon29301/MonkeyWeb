@@ -21,7 +21,7 @@ function getAllStudentContent() {
  */
 function generateStudentHtmlTable(student) {
     "use strict";
-    var table = document.getElementById("allStudentTable");
+    let table = document.getElementById("allStudentTable");
     for (var i = 0; i < student.length; i++) {
         var row = table.insertRow(i);
         var cell1 = row.insertCell(0);
@@ -70,7 +70,7 @@ function getAllCourseContent() {
  */
 function generateCourseHtmlTable(course) {
     "use strict";
-    var table = document.getElementById("allCourseTable");
+    let table = document.getElementById("allCourseTable");
     for (var i = 0; i < course.length; i++) {
         var time = new Date(course[i].day);
         var row = table.insertRow(i);
@@ -95,7 +95,7 @@ function generateCourseHtmlTable(course) {
 }
 
 function getDateName(date) {
-    var dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     return dateName[date];
 }
 
@@ -103,7 +103,7 @@ function getDateName(date) {
  * Update allStudent table
  */
 function optionSelected() {
-    var selectBox = document.getElementById("studentMainFilter");
+    let selectBox = document.getElementById("studentMainFilter");
     var selectData = [];
     switch (selectBox.options[selectBox.selectedIndex].value) {
         case "status":
@@ -128,9 +128,9 @@ function optionSelected() {
  * @returns {*} array of student to display in table
  */
 function filterData(data) {
-    var selectBox = document.getElementById("studentMainFilter");
-    var filterOption = document.getElementById("studentSubFilter");
-    var option = filterOption.options[filterOption.selectedIndex].value;
+    let selectBox = document.getElementById("studentMainFilter");
+    let filterOption = document.getElementById("studentSubFilter");
+    let option = filterOption.options[filterOption.selectedIndex].value;
     switch (selectBox.options[selectBox.selectedIndex].value) {
         case "status":
             return data.filter(function (option) {
@@ -153,9 +153,9 @@ function filterData(data) {
  * Generate element for studentProfile page
  */
 function getStudentProfile() {
-    var cookie = getCookieDict();
+    let cookie = getCookieDict();
     /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
-    var studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
+    let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
     $.post("post/studentProfile", {
         studentID: studentID

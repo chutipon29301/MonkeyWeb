@@ -3,8 +3,8 @@ var $ = require("request");
 function loginSubmit() {
 	"use strict";
 
-	var user = document.getElementById("usr");
-	var pwd = document.getElementById("pwd");
+	let user = document.getElementById("usr");
+	let pwd = document.getElementById("pwd");
 
 	if (user.value.length === 0) {
 		document.getElementById("usrReq").style.visibility = "visible";
