@@ -111,10 +111,21 @@
                         refresh();
                     });
                 });
-                $("#addTut").click(function(event){
+                $(".addTut").click(function(event){
                     event.preventDefault();
-                    $(this).before('<select class="form-control input-array" name="tutor" type="number" required><option disabled="" selected="">Select Tutor</option><option value="99001">Tutor#99001</option><option value="99002">Tutor#99002</option></select>')
-                })
+                    $(this).before('<div class="col-sm-11"><select class="form-control input-array" name="tutor" type="number" required><option disabled="" selected="">Select Tutor</option><option value="99001">Tutor#99001</option><option value="99002">Tutor#99002</option></select></div>');
+                    $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
+                });
+                $(".addCou").click(function(event){
+                    event.preventDefault();
+                    $(this).before('<div class="col-sm-11"><input class="form-control input-array col-sm-11" name="courseID" type="text" placeHolder="courseID" required></div>');
+                    $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
+                });
+                $("form").on("click",".removeField",function(event){
+                    event.preventDefault();
+                    $(this).prev().remove();
+                    $(this).remove();
+                });
             });
             // var refresh=function(){};
             var refresh=function(){
@@ -125,15 +136,17 @@
                     }
                 });
                 $("#listCourse").empty();
-                // $.post("post/allCourse",function(data,status){
-                //     for(var i=0;i<data.course.length;i++){
-                //         $("#listCourse").append(JSON.stringify(data.course[i])+"<br><br>");
-                //     }
-                // });
                 $.post("debug/listCourse",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#listCourse").append(JSON.stringify(data[i])+"<br><br>");
+                        $("#listCourse").append(JSON.stringify(data[i])+"<br>");
                         $("#listCourse").append(new Date(data[i].day).toString()+"<br><br>");
+                    }
+                });
+                $("#listHybridSeat").empty();
+                $.post("debug/listHybridSeat",function(data,status){
+                    for(var i=0;i<data.length;i++){
+                        $("#listHybridSeat").append(JSON.stringify(data[i])+"<br>");
+                        $("#listHybridSeat").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
             };
@@ -141,22 +154,30 @@
     </head>
     <body>
         <div class="container">
-            <div class="panel panel-default">
-                <div class="panel-heading" data-toggle="collapse" data-target="#listUserDiv">
-                    <div class="panel-title">List User</div>
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#listUserDiv">
+                        <div class="panel-title">List User</div>
+                    </div>
+                    <div id="listUserDiv" class="panel-collapse collapse">
+                        <div class="panel-body" id="listUser"></div>
+                    </div>
                 </div>
-                <div id="listUserDiv" class="panel-collapse collapse">
-                    <div class="panel-body" id="listUser"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#listCourseDiv">
+                        <div class="panel-title">List Course</div>
+                    </div>
+                    <div id="listCourseDiv" class="panel-collapse collapse">
+                        <div class="panel-body" id="listCourse"></div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="panel panel-default">
-                <div class="panel-heading" data-toggle="collapse" data-target="#listCourseDiv">
-                    <div class="panel-title">List Course</div>
-                </div>
-                <div id="listCourseDiv" class="panel-collapse collapse">
-                    <div class="panel-body" id="listCourse"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#listHybridSeatDiv">
+                        <div class="panel-title">List HybridSeat</div>
+                    </div>
+                    <div id="listHybridSeatDiv" class="panel-collapse collapse">
+                        <div class="panel-body" id="listHybridSeat"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -210,6 +231,11 @@
                                 <button class="btn btn-default" type="submit">post/studentProfile</button>
                             </form>
                             <br>
+                            <form action="post/registrationState" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <button class="btn btn-default" type="submit">post/registrationState</button>
+                            </form>
+                            <br>
                         </div>
                     </div>
                 </div>
@@ -220,8 +246,19 @@
                     </div>
                     <div id="studentTimetable" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <p>addStudentCourse TODO</p>
-                            <p>removeStudentCourse TODO</p>
+                            <form action="post/addStudentCourse" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
+                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default" type="submit">post/addStudentCourse</button>
+                            </form>
+                            <br>
+                            <form action="post/removeStudentCourse" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
+                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default" type="submit">post/removeStudentCourse</button>
+                            </form>
                             <br>
                             <p>addSkillDay TODO</p>
                             <p>removeSkillDay TODO</p>
@@ -343,7 +380,7 @@
                                     <option value="99001">Tutor#99001</option>
                                     <option value="99002">Tutor#99002</option>
                                 </select>
-                                <button id="addTut">+</button>
+                                <button class="btn btn-default col-sm-1 addTut">+</button>
                                 <button class="btn btn-default" type="submit">post/addCourse</button>
                             </form>
                             <br>
