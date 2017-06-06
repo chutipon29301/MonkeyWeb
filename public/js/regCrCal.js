@@ -5,6 +5,7 @@ $(document).ready(function(){
 	if ( cookie.regisCourse != undefined){
 		deleteCookie("regisCourse")
 	}
+	console.log(cookie)
 	if ( typeof(cookie.name) != 'string'){
 		self.location = "registrationName"
 	}
@@ -228,16 +229,7 @@ function nextCheck(){ /* check next btn */
 
 function next(gg){
 	if(gg.className.indexOf("disabled")==-1){
-		var i
-		var cookie=""
-		for(i in availableCourse){
-			if (availableCourse[i]!=false){
-				if(availableCourse[i].select){
-					cookie+=availableCourse[i].courseName+":"+i+" ";
-				}			
-			}
-		}
-		writeCookie("regisCourse",cookie);
+		writeCookie("regisCourse",JSON.stringify(availableCourse));
 		self.location = "registrationHybrid";
 	}
 }

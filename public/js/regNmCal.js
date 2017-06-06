@@ -22,6 +22,7 @@ $(document).ready(function(){
 	else{
 		document.getElementById('next').className="btn btn-basic disabled";
 	}
+	console.log($('#grade').html())
 })
 function next(){
 	if($('#name').val()!='' && $('#nname').val()!='' && $('#sname').val()!='' && $('#grade').val()!='0' && $('#nameE').val()!='' && $('#nnameE').val()!='' && $('#snameE').val()!='' && $('#email').val()!='' && $('#parentNum').val()!='' && $('#studentNum').val()!=''){
