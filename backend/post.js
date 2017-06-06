@@ -341,22 +341,28 @@ var run=function(app,db){
     });
 
     // User Management
-    //OK {password,firstname,lastname,nickname,grade(1-12),email,phone} return {}
+    //OK {password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
     app.post("/post/addStudent",function(req,res){
         console.log("[REQUEST] addStudent");
         var password=req.body.password;
         var firstname=req.body.firstname;
         var lastname=req.body.lastname;
         var nickname=req.body.nickname;
-        var grade=parseInt(req.body.grade);
+        var firstnameEn=req.body.firstnameEn;
+        var lastnameEn=req.body.lastnameEn;
+        var nicknameEn=req.body.nicknameEn;
         var email=req.body.email;
         var phone=req.body.phone;
+        var grade=parseInt(req.body.grade);
+        var phoneParent=req.body.phoneParent;
         var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         configDB.findOne({},function(err,config){
             userDB.insertOne({
                 _id:config.nextStudentID,password:password,position:"student",
                 firstname:firstname,lastname:lastname,nickname:nickname,
-                student:{grade:grade,registrationState:"unregistered",skillDay:[],balance:balance,status:"active",email:email,phone:phone}
+                firstnameEn:firstnameEn,lastnameEn:lastnameEn,nicknameEn:nicknameEn,
+                email:email,phone:phone,
+                student:{grade:grade,registrationState:"unregistered",skillDay:[],balance:balance,phoneParent:phoneParent,status:"active"}
             },function(err,result){
                 configDB.updateOne({},{$inc:{nextStudentID:1}});
                 // res.send({}); TODO
