@@ -9,22 +9,22 @@ var MongoClient=require('mongodb').MongoClient;
 var app=express();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
-app.use(express.static("public"));// node backend/index.js
-app.use(express.static("../public"));// node index.js
+app.use(express.static("public"));// node index.js
+app.use(express.static("../public"));// node backend/index.js
 app.use(function(req, res, next) {// Allow access from other domain
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-//app.listen(80);
-app.listen(8080);
+app.listen(80);
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
         console.error("[ERROR] "+err.message);
         return;
     }
-//     db.dropDatabase();
+    db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
+    // db.dropDatabase();
     // db.collection("user").deleteMany({position:"student"});
     // db.dropCollection("user");
     // var moment=require("moment");
@@ -35,26 +35,24 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.collection("user").insertOne({day:moment(0).hour(7).day(6).toDate()});
     // db.collection("user").updateMany({},{$set:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}});
     function splitCourseName(name){
-    	if (typeof name == 'string'){
-    		if(name.slice(0,3).toLowerCase()=='sat'){
-    			return {subject:name.slice(3),grade:"SAT",level:""}
-    		}
-    		var subject,grade,level;
-    		var firstdigit = name.indexOf(name.match(/\d/));
-    		subject = name.slice(0,firstdigit-1).toUpperCase();
-    		if(/[0-9]/.test(name[name.length-1])){
-    			grade = name.slice(firstdigit-1,name.length).toUpperCase();
-    			level = "";
-    		}
-    		else{
-    			grade = name.slice(firstdigit-1,name.length-1).toUpperCase();
-    			level = name[name.length-1].toLowerCase();
-    		}
-    		return {subject:subject , grade:grade , level:level}
-    	}
-    	else{
-    		return {subject:'Wrong input' , grade:'Wrong input' , level:'Wrong input'}
-    	}
+        if (typeof name == 'string'){
+            if(name.slice(0,3).toLowerCase()=='sat'){
+                return {subject:name.slice(3),grade:"SAT",level:""}
+            }
+            var subject,grade,level;
+            var firstdigit = name.indexOf(name.match(/\d/));
+            subject = name.slice(0,firstdigit-1).toUpperCase();
+            if(/[0-9]/.test(name[name.length-1])){
+                grade = name.slice(firstdigit-1,name.length).toUpperCase();
+                level = "";
+            }
+            else{
+                grade = name.slice(firstdigit-1,name.length-1).toUpperCase();
+                level = name[name.length-1].toLowerCase();
+            }
+            return {subject:subject,grade:grade,level:level};
+        }
+        else return {subject:'Wrong input' , grade:'Wrong input' , level:'Wrong input'};
     }
     var stringToBit=function(grade){
         var output=0,p=false,s=false;
@@ -151,10 +149,25 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
             console.log(result);
         });
     });
+    var moment=require("moment");
+    db.collection("hybridSeat").updateOne({_id:"TUE15",day:moment(0).day(2).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"THU15",day:moment(0).day(4).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SAT8",day:moment(0).day(6).hour(8).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SAT10",day:moment(0).day(6).hour(10).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SAT13",day:moment(0).day(6).hour(13).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SAT15",day:moment(0).day(6).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SUN8",day:moment(0).day(7).hour(8).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SUN10",day:moment(0).day(7).hour(10).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SUN13",day:moment(0).day(7).hour(13).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").updateOne({_id:"SUN15",day:moment(0).day(7).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
+    db.collection("hybridSeat").find().toArray(function(err,result){
+        console.log("[SHOW] All hybridSeat");
+        console.log(result);
+    });
     var configDB=db.collection("config");
     configDB.findOne({},function(err,config){
         if(config==null){
-            configDB.insertOne({_id:"config",year:60,quarter:2,
+            configDB.insertOne({_id:"config",year:60,quarter:3,
                 courseMaterialPath:"",receiptPath:"",
                 nextStudentID:17001,nextTutorID:99001,maxHybridSeat:40
             },function(err){

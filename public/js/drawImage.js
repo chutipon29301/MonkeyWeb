@@ -60,14 +60,14 @@ let data =
     '</foreignObject>' +
     '</svg>';
 var DOMURL = window.URL || window.webkitURL || window;
-
 var img = new Image();
-var svg = new Blob([data], {type: 'image/svg+xml'});
+var svg = new Blob([data], {
+    type: 'image/svg+xml'
+});
 var url = DOMURL.createObjectURL(svg);
 
 img.onload = function () {
     ctx.drawImage(img, 0, 0);
     DOMURL.revokeObjectURL(url);
 };
-
 img.src = url;

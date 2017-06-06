@@ -69,6 +69,8 @@ function redirectLocation(user){
 				case "tutor":
 					self.location = "/adminHome";
 					break;
+				case "admin"
+					self.location="/testadmin";
 				default:
 					break;
 			}
@@ -78,10 +80,8 @@ function redirectLocation(user){
 
 function clearInput() {
 	"use strict";
-	var user = document.getElementById("usr");
 	var pwd = document.getElementById("pwd");
 
-	user.value = "";
 	pwd.value = "";
 }
 
