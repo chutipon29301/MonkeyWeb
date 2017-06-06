@@ -30,6 +30,7 @@ function login(user, pwd) {
 	"use strict";
 	log("Username:" + user + ",Password:" + pwd);
 	log(encrypt(pwd).toString());
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 	$.post("post/password", {
 		userID: user,
 		password: encrypt(pwd).toString()
@@ -53,7 +54,8 @@ function login(user, pwd) {
 }
 
 function redirectLocation(user){
-	$.post("post/position", {
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    $.post("post/position", {
 		userID: user
     }, function (data) {
 		if (data.err) {
@@ -68,7 +70,9 @@ function redirectLocation(user){
 					self.location = "/adminHome";
 					break;
 				case "admin":
-					self.location="/testadmin";
+                    //noinspection SpellCheckingInspection
+                    self.location="/testadmin";
+					break;
 				default:
 					break;
 			}
@@ -78,7 +82,7 @@ function redirectLocation(user){
 
 function clearInput() {
 	"use strict";
-	var pwd = document.getElementById("pwd");
+	let pwd = document.getElementById("pwd");
 
 	pwd.value = "";
 }
