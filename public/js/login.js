@@ -53,7 +53,6 @@ function login(user, pwd) {
 }
 
 function redirectLocation(user){
-	log("in redirection");
 	$.post("post/position", {
 		userID: user
     }, function (data) {
