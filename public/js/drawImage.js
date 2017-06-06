@@ -1,12 +1,12 @@
 var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext('2d');
-var tableData = [[], [], [], [], []];
-var dateList = ['', 'TUE', 'THU', 'SAT', 'SUN'];
-var timeList = ['', '8-10', '10-12', '13-15', '15-17'];
-var bgColorList = ['black', 'deeppink', 'orange', 'purple', 'red'];
-var textColorList = ['white', 'black', 'black', 'black', 'black'];
-var textTableData;
-var courseData = [[], [], [], []];
+let ctx = canvas.getContext('2d');
+let tableData = [[], [], [], [], []];
+let dateList = ['', 'TUE', 'THU', 'SAT', 'SUN'];
+let timeList = ['', '8-10', '10-12', '13-15', '15-17'];
+let bgColorList = ['black', 'deeppink', 'orange', 'purple', 'red'];
+let textColorList = ['white', 'black', 'black', 'black', 'black'];
+let textTableData;
+let courseData = [[], [], [], []];
 
 /**
  * Create temp data in courseData Array
@@ -51,7 +51,7 @@ for (var i = 0; i < tableData.length; i++) {
 }
 textTableData += '</table>';
 
-var data =
+let data =
     '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360">' +
     '<foreignObject width="100%" height="100%">' +
     '<div xmlns="http://www.w3.org/1999/xhtml">' +
