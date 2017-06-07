@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,11 +26,11 @@
 <script type="text/javascript" src="js/regHbCal.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
 <style>
-	.disabled{
-		color: #000000!important;
-		background-color: #FFE4F5!important;
-		border-color: transparent!important;
-	}
+.disabled {
+	color: #000000!important;
+	background-color: #FFE4F5!important;
+	border-color: transparent!important;
+}
 </style>
 <!-- InstanceEndEditable -->
 </head>
@@ -43,7 +44,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="defaultNavbar1">
       <ul class="nav navbar-nav">
-		  <li class="w3-hide-large"><a href="studentProfile" class="studentName"><strong id="studentNavNameSmall">&nbsp;</strong></a></li>
+        <li class="w3-hide-large"><a href="studentProfile" class="studentName"><strong id="studentNavNameSmall">&nbsp;</strong></a></li>
         <li><a href="#" onClick="loadRegistrationPage();">Registration<span class="sr-only">(current)</span></a></li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Course<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -72,8 +73,8 @@
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
   <div class="table-responsive w3-hide-small w3-hide-medium col-md-10 col-md-offset-1">
-   <label class="control-label col-md-3" style="font-size: large">Full Hybrid(FHB):</label>
-	  <p style="color: #5CB713" class="col-md-offset-2">*สำหรับนักเรียนที่ต้องการเรียนFull Hybrid(FHB) นักเรียนที่ไม่ต้องการสามารถข้ามหน้านี้ได้เลย</p>
+    <label class="control-label col-md-3" style="font-size: large">Full Hybrid(FHB):</label>
+    <p style="color: #5CB713" class="col-md-offset-2">*สำหรับนักเรียนที่ต้องการเรียนFull Hybrid(FHB) นักเรียนที่ไม่ต้องการสามารถข้ามหน้านี้ได้เลย</p>
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -86,47 +87,47 @@
       </thead>
       <tr>
         <td>TUE</td>
-		<td></td>
+        <td></td>
         <td></td>
         <td></td>
         <td><button type="button" class="btn-tue 15.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-tue 15.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-tue 15.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>THU</td>
-       <td></td>
+        <td></td>
         <td></td>
         <td></td>
         <td><button type="button" class="btn-thu 15.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-thu 15.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-thu 15.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>SAT</td>
         <td><button type="button" class="btn-sat 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sat 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sat 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sat 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sat 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sat 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sat 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sat 13.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sat 13.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sat 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sat 15.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sat 15.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>SUN</td>
         <td><button type="button" class="btn-sun 8.1 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sun 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sun 8.2 btn btn-default col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sun 10.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sun 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sun 10.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sun 13.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sun 13.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sun 13.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
         <td><button type="button" class="btn-sun 15.1 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">MATH</button>
-        <button type="button" class="btn-sun 15.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
+          <button type="button" class="btn-sun 15.2 btn btn-default  col-md-6" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
     </table>
   </div>
   <div class="w3-hide-large">
-  	<label class="control-label col-md-2" style="font-size: large">Hybrid:</label>
-	  <p style="color: #5CB713" class="col-md-offset-2">*สำหรับนักเรียนที่ต้องการเรียนFull Hybrid(FHB) นักเรียนที่ไม่ต้องการสามารถข้ามหน้านี้ได้เลย</p>
+    <label class="control-label col-md-2" style="font-size: large">Hybrid:</label>
+    <p style="color: #5CB713" class="col-md-offset-2">*สำหรับนักเรียนที่ต้องการเรียนFull Hybrid(FHB) นักเรียนที่ไม่ต้องการสามารถข้ามหน้านี้ได้เลย</p>
   </div>
   <div class="table-responsive w3-hide-large">
     <table class="table table-bordered">
@@ -139,12 +140,14 @@
       </thead>
       <tr>
         <td>15-17</td>
-        <td><button type="button" class="btn-tue 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br><button type="button" class="btn-tue 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
-        <td><button type="button" class="btn-thu 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-thu 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
-   
+        <td><button type="button" class="btn-tue 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-tue 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-thu 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-thu 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
-	</table>
+    </table>
   </div>
   <div class="table-responsive w3-hide-large">
     <table class="table table-bordered">
@@ -157,37 +160,45 @@
       </thead>
       <tr>
         <td>8-10</td>
-        <td><button type="button" class="btn-sat 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-sat 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
-        <td><button type="button" class="btn-sun 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-sun 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-sat 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 8.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-sun 8.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>10-12</td>
-        <td><button type="button" class="btn-sat 10.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-sat 10.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
-        <td><button type="button" class="btn-sun 10.1 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-sun 10.2 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 10.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-sat 10.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 10.1 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-sun 10.2 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>13-15</td>
-        <td><button type="button" class="btn-sat 13.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-sat 13.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
-        <td><button type="button" class="btn-sun 13.1 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)" >MATH</button><br>
-        <button type="button" class="btn-sun 13.2 btn btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 13.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-sat 13.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 13.1 btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)" >MATH</button>
+          <br>
+          <button type="button" class="btn-sun 13.2 btn btn btn-default  col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
       <tr>
         <td>15-17</td>
-        <td><button type="button" class="btn-sat 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br><button type="button" class="btn-sat 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
-        <td><button type="button" class="btn-sun 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button><br>
-        <button type="button" class="btn-sun 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sat 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-sat 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
+        <td><button type="button" class="btn-sun 15.1 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">MATH</button>
+          <br>
+          <button type="button" class="btn-sun 15.2 btn btn-default col-xs-12" onClick="this.blur(); calculate(this)">PHY</button></td>
       </tr>
-
     </table>
   </div>
   <br>
   <div class="container col-md-5 col-md-offset-1 col-xs-5 col-xs-offset-0"align="left" >
- 	<button id="back" class="btn btn-default" onClick="this.blur(); back();">Back</button>
+    <button id="back" class="btn btn-default" onClick="this.blur(); back();">Back</button>
   </div>
   <div class="container col-md-4 col-md-offset-1 col-xs-6 col-xs-offset-1" align="right" >
     <button id="next" class="btn btn-default" onClick="this.blur(); next();">Next</button>
@@ -202,4 +213,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>

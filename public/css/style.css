@@ -27,3 +27,8 @@
 #allCourseTable tr:active{
 	background-color: #a8aeb7
 }
+#formHead div{
+	margin-bottom: 0;
+	padding-left: 0;
+	padding-right: 0;
+}

@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,22 +51,45 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="table-responsive col-md-8 col-md-offset-2">
-    <table class="table">
-      <tr>
-        <td><h1>Student</h1></td>
-        <td><lable>Filter: </lable></td>
-        <td><select class="form-control" id="studentMainFilter" onChange="optionSelected();">
-            <option>status</option>
-            <option>grade</option>
-          </select></td>
-        <td><select class="form-control" id="studentSubFilter" onChange="getAllStudentContent();">
-         <option>active</option>
-         <option>inactive</option>
-         <option>drop</option>
-          </select></td>
-      </tr>
-    </table>
+  <div class="col-md-2 col-md-offset-2">
+    <h1>Student</h1>
+  </div>
+  <div class="col-md-6" id="formHead">
+    <div class="col-md-4 form-group">
+      <label>Filter:</label>
+      <select class="form-control col-md-1" id="status"  style="margin-bottom: 5px">
+        <option>Active</option>
+        <option>Inactive</option>
+        <option>Drop</option>
+        <option>All</option>
+      </select>
+    </div>
+    <div class="col-md-4 form-group">
+      <label>&nbsp;</label>
+      <select class="form-control col-md-1" id="stage"  style="margin-bottom: 5px">
+        <option>All Stage</option>
+        <option>Registered</option>
+        <option>Rejected</option>
+        <option>Transferred</option>
+        <option>Untransferred</option>
+        <option>Unregistered</option>
+      </select>
+    </div>
+    <div class="col-md-4 form-group">
+      <label>&nbsp;</label>
+      <select class="form-control col-md-1" id="grade"  style="margin-bottom: 5px">
+        <option>All Grade</option>
+        <option>P4</option>
+        <option>P5</option>
+        <option>P6</option>
+        <option>S1</option>
+        <option>S2</option>
+        <option>S3</option>
+        <option>S4</option>
+        <option>S5</option>
+        <option>S6</option>
+      </select>
+    </div>
   </div>
   <div class="table-responsive col-md-8 col-md-offset-2">
     <table class="table">
@@ -83,8 +107,7 @@
       </thead>
     </table>
   </div>
-  <!-- InstanceEndEditable -->
-</div>
+  <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
     <div class="text-center center-block">
@@ -94,4 +117,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
