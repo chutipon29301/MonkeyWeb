@@ -1,9 +1,9 @@
 /**
  * Get data for generating table by calling function generateStudentHtmlTable
  */
-var $ = require("request");
 function getAllStudentContent() {
     "use strict";
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/allStudent", "", function (data) {
         if (data.err) {
             log("[getAllStudentContent()] : post/return => Error");
@@ -22,14 +22,14 @@ function getAllStudentContent() {
 function generateStudentHtmlTable(student) {
     "use strict";
     let table = document.getElementById("allStudentTable");
-    for (var i = 0; i < student.length; i++) {
-        var row = table.insertRow(i);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-        var cell5 = row.insertCell(4);
-        var cell6 = row.insertCell(5);
+    for (let i = 0; i < student.length; i++) {
+        let row = table.insertRow(i);
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        let cell3 = row.insertCell(2);
+        let cell4 = row.insertCell(3);
+        let cell5 = row.insertCell(4);
+        let cell6 = row.insertCell(5);
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
         cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
         cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
@@ -37,10 +37,12 @@ function generateStudentHtmlTable(student) {
         cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
         cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
-        var clickHandler = function (row) {
+        let clickHandler = function (row) {
             return function () {
                 log(row.getElementsByTagName("td")[0].innerHTML);
+                //noinspection SpellCheckingInspection
                 writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+                //noinspection SpellCheckingInspection
                 self.location = "/adminStudentprofile";
             };
         };
@@ -48,11 +50,13 @@ function generateStudentHtmlTable(student) {
     }
 }
 
+//noinspection SpellCheckingInspection
 /**
  * Generate element for adminAllcourse page
  */
 function getAllCourseContent() {
     "use strict";
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/allCourse", "", function (data) {
         if (data.err) {
             log("[getAllCourseContent()] : post/return => Error");
@@ -71,19 +75,19 @@ function getAllCourseContent() {
 function generateCourseHtmlTable(course) {
     "use strict";
     let table = document.getElementById("allCourseTable");
-    for (var i = 0; i < course.length; i++) {
-        var time = new Date(course[i].day);
-        var row = table.insertRow(i);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
+    for (let i = 0; i < course.length; i++) {
+        let time = new Date(course[i].day);
+        let row = table.insertRow(i);
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        let cell3 = row.insertCell(2);
+        let cell4 = row.insertCell(3);
         cell1.innerHTML = "<td>" + course[i].courseName + "</td>";
         cell2.innerHTML = "<td>" + getDateName(time.getDate()) + "</td>";
         cell3.innerHTML = "<td>" + time.getHours() + "-" + (time.getHours() + 2) + "</td>";
         cell4.innerHTML = "<td>" + course[i].tutor[0] + "</td>";
 
-        var clickHandler = function (row) {
+        let clickHandler = function (row) {
             return function () {
                 log(row.getElementsByTagName("td")[0].innerHTML);
                 writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
@@ -104,7 +108,7 @@ function getDateName(date) {
  */
 function optionSelected() {
     let selectBox = document.getElementById("studentMainFilter");
-    var selectData = [];
+    let selectData = [];
     switch (selectBox.options[selectBox.selectedIndex].value) {
         case "status":
             selectData = ["active", "inactive", "drop"];
@@ -115,8 +119,8 @@ function optionSelected() {
         default:
             break;
     }
-    var textInnerHtml = "";
-    for (var i = 0; i < selectData.length; i++) {
+    let textInnerHtml = "";
+    for (let i = 0; i < selectData.length; i++) {
         textInnerHtml += "<option>" + selectData[i] + "</option>";
     }
     document.getElementById("studentSubFilter").innerHTML = textInnerHtml;
@@ -157,6 +161,7 @@ function getStudentProfile() {
     /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("post/studentProfile", {
         studentID: studentID
     }, function (data) {
