@@ -16,13 +16,12 @@ $(document).ready(function(){
 				var courseClass = document.getElementsByClassName('btn-sat '+cookie.regisCourse[i].day.getHours()+'.1')
 				for(j=0;j<courseClass.length;j++){
 					courseClass[j].className = courseClass[j].className.replace(/btn-default/g,"btn-basic disabled");
-					courseClass[j].innerHTML = cookie.regisCourse[i].courseName
+					courseClass[j].innerHTML = 'CR : '+cookie.regisCourse[i].courseName
 					if(courseClass[j].className.indexOf('col-md')!=-1){
 						courseClass[j].className = courseClass[j].className.replace(/col-md-6/g,"col-md-12");
 					}
 					else if(courseClass[j].className.indexOf('col-xs')!=-1){
-						courseClass[j].className = courseClass[j].className
-						courseClass[j].style = "padding: 19% 0 19% 0 ; color:black"
+						courseClass[j].style = "padding: 18% 0 18% 0 ; color:black"
 					}
 				}
 			}
@@ -35,23 +34,46 @@ $(document).ready(function(){
 				var courseClass = document.getElementsByClassName('btn-sun '+cookie.regisCourse[i].day.getHours()+'.1')
 				for(j=0;j<courseClass.length;j++){
 					courseClass[j].className = courseClass[j].className.replace(/btn-default/g,"btn-basic disabled");
-					courseClass[j].innerHTML = cookie.regisCourse[i].courseName
+					courseClass[j].innerHTML = 'CR : '+cookie.regisCourse[i].courseName
 					if(courseClass[j].className.indexOf('col-md')!=-1){
 						courseClass[j].className = courseClass[j].className.replace(/col-md-6/g,"col-md-12");
 					}
 					else if(courseClass[j].className.indexOf('col-xs')!=-1){
-						courseClass[j].className = courseClass[j].className
-						courseClass[j].style = "padding: 19% 0 19% 0 ; color:black "
+						courseClass[j].style = "padding: 18% 0 18% 0 ; color:black "
 					}
 				}
 			}
 		}
 	}
-	console.log(cookie.regisCourse)
 })
 
 function next(){
+	var selectHybrid={tue151:false,tue152:false,thu151:false,thu152:false,sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,sun81 : false,sun82 : false,sun101 : false,sun102 : false,sun131 : false,sun132 : false,sun151 : false,sun152 : false}
+	var allselectHB = document.getElementsByClassName('btn-success');
+	var i
+	for(i=0;i<allselectHB.length;i++){
+		if(allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length-1]=='1'){
+		selectHybrid[allselectHB[i].className.slice(4,7)+allselectHB[i].className.split(' ')[1].slice(0,this.length-2)+allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length-1]]={subject:'M',day:moment(0).day(daytoNum(allselectHB[i].className.slice(4,7))).hour(allselectHB[i].className.split(' ')[1].slice(0,allselectHB[i].className.split(' ')[1].length-2)).valueOf()}	
+		}
+		if(allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length-1]=='2'){
+		selectHybrid[allselectHB[i].className.slice(4,7)+allselectHB[i].className.split(' ')[1].slice(0,this.length-2)+allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length-1]]={subject:'PH',day:moment(0).day(daytoNum(allselectHB[i].className.slice(4,7))).hour(allselectHB[i].className.split(' ')[1].slice(0,allselectHB[i].className.split(' ')[1].length-2)).valueOf()}	
+		}
+	}
+	console.log(selectHybrid)
+	writeCookie('regisHybrid',JSON.stringify(selectHybrid))
 	self.location = "registrationSkill"
+}
+
+function daytoNum(day){
+	switch(day){
+		case 'sun': return 0
+		case 'mon': return 1
+		case 'tue': return 2
+		case 'wed': return 3
+		case 'thu': return 4
+		case 'fri': return 5
+		case 'sat': return 6
+	}
 }
 
 function calculate(btn){ /* run after click btn in HTML to switch between select and non-select */
