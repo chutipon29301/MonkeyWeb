@@ -6,7 +6,7 @@ function getAllStudentContent() {
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/allStudent", "", function (data) {
         if (data.err) {
-            log("[getAllStudentContent()] : post/return => Error");
+            log("[getAllStudentContent()] : post/return => " + data.err);
         } else {
             log("[getAllStudentContent()] : post/return => ");
             log(data);
@@ -59,7 +59,7 @@ function getAllCourseContent() {
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/allCourse", "", function (data) {
         if (data.err) {
-            log("[getAllCourseContent()] : post/return => Error");
+            log("[getAllCourseContent()] : post/return => " + data.err);
         } else {
             log("[getAllCourseContent()] : post/return => ");
             log(data);
@@ -82,26 +82,25 @@ function generateCourseHtmlTable(course) {
         let cell2 = row.insertCell(1);
         let cell3 = row.insertCell(2);
         let cell4 = row.insertCell(3);
+        row.id = course[i].courseID;
         cell1.innerHTML = "<td>" + course[i].courseName + "</td>";
-        cell2.innerHTML = "<td>" + getDateName(time.getDate()) + "</td>";
-        cell3.innerHTML = "<td>" + time.getHours() + "-" + (time.getHours() + 2) + "</td>";
-        cell4.innerHTML = "<td>" + course[i].tutor[0] + "</td>";
+        cell2.innerHTML = "<td>" + getDateName(time.getDay()) + "</td>";
+        cell3.innerHTML = "<td>" + time.getHours() + ":00 - " + (time.getHours() + 2) + ":00</td>";
+        getUsername(course[i].tutor[0], function (data) {
+            cell4.innerHTML = "<td>" + data.nickname + "</td>";
+        });
 
         let clickHandler = function (row) {
             return function () {
                 log(row.getElementsByTagName("td")[0].innerHTML);
-                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
-                self.location = "/adminStudentprofile";
+                writeCookie("monkeyWebAdminAllcourseSelectedCourseID", row.id);
+                self.location = "/adminCoursedescription";
             };
         };
         row.onclick = clickHandler(row);
     }
 }
 
-function getDateName(date) {
-    let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    return dateName[date];
-}
 
 /**
  * Update allStudent table
@@ -166,8 +165,9 @@ function getStudentProfile() {
         studentID: studentID
     }, function (data) {
         if (data.err) {
-            log("Invalid");
+            log("[getStudentProfile()] : post/return => " + data.err);
         } else {
+            log("[getStudentProfile()] : post/return => ");
             log(data);
             document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
             document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
@@ -187,6 +187,72 @@ function getStudentProfile() {
     });
 }
 
+/**
+ * generate element for courseDescription page
+ */
+function getCourseDescription() {
+    let cookie = getCookieDict();
+    /** @namespace cookie.monkeyWebAdminAllcourseSelectedCourseID */
+    let courseID = cookie.monkeyWebAdminAllcourseSelectedCourseID;
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    $.post("post/courseInfo", {
+        courseID: courseID
+    }, function (data) {
+        if (data.err) {
+            log("[getCourseDescription()] : post/return => " + data.err);
+        } else {
+            log("[getCourseDescription()] : post/return => ");
+            log(data);
+            document.getElementById("courseName").innerHTML = data.courseName;
+            getUsername(data.tutor[0], function (data) {
+                document.getElementById("tutorName").innerHTML = "Tutor : " + data.firstname;
+            });
+            let date = new Date(data.day);
+            document.getElementById("day").innerHTML = "Day : " + getDateFullName(date.getDay());
+            document.getElementById("time").innerHTML = date.getHours() + ":00 - " + (date.getHours() + 2) + ":00";
+
+            let table = document.getElementById("allStudentInCourseTable");
+            for (let i = 0; i < data.student.length; i++) {
+                let row = table.insertRow(i);
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let cell4 = row.insertCell(3);
+                cell1.innerHTML = "<td>" + data.student[i] + "</td>";
+                getUsername(data.student[i], function (data) {
+                    cell2.innerHTML = "<td>" + data.nickname + "</td>";
+                    cell3.innerHTML = "<td>" + data.firstname + "</td>";
+                    cell4.innerHTML = "<td>" + data.lastname + "</td>";
+                });
+                let clickHandler = function (row) {
+                    return function () {
+                        log(row.getElementsByTagName("td")[0].innerHTML);
+                        //noinspection SpellCheckingInspection
+                        writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+                        //noinspection SpellCheckingInspection
+                        self.location = "/adminStudentprofile";
+                    };
+                };
+                row.onclick = clickHandler(row);
+            }
+        }
+    });
+}
+
+/**
+ * Get short name of day
+ * @param date int day
+ * @returns {string} name of day
+ */
+function getDateName(date) {
+    let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    return dateName[date];
+}
+
+function getDateFullName(date) {
+    let dateName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return dateName[date];
+}
 
 /**
  * Convert number grade to string grade
@@ -199,6 +265,30 @@ function getLetterGrade(grade) {
     } else {
         return "M" + (grade - 6);
     }
+}
+
+
+/**
+ * Get name of user
+ * @param userID of user
+ * @param callback function
+ * @returns {string} name of user
+ */
+function getUsername(userID, callback) {
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    $.post("post/name", {
+        userID: userID
+    }, function (data) {
+        if (data.err) {
+            log("[getUsername()] : post/return => " + data.err);
+            return "unknown";
+        } else {
+            log("[getUsername()] : post/return => ");
+            log(data);
+            callback(data);
+        }
+    });
+    return "unknown";
 }
 
 /**
