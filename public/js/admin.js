@@ -1,4 +1,3 @@
-
 /**
  * Get data for generating table by calling function generateStudentHtmlTable
  */
@@ -11,6 +10,7 @@ function getAllStudentContent() {
         } else {
             log("[getAllStudentContent()] : post/return => ");
             log(data);
+            document.getElementById("allStudentTable").innerHTML = "";
             generateStudentHtmlTable(filterData(data.student));
         }
     });
@@ -76,6 +76,7 @@ function getAllCourseContent() {
 function generateCourseHtmlTable(course) {
     "use strict";
     let table = document.getElementById("allCourseTable");
+    table.innerHTML = "Hello World";
     for (let i = 0; i < course.length; i++) {
         let time = new Date(course[i].day);
         let row = table.insertRow(i);
@@ -117,60 +118,106 @@ function filterData(data) {
     let grade = document.getElementById("grade");
 
     // let selectedStatus = status.options[filterOption.selectedIndex].value;
-    switch (status.options[status.selectedIndex].value){
-        case "All":
-            break;
+    switch (status.options[status.selectedIndex].value) {
         case "Active":
+            data = data.filter(function (data) {
+                return data.status === "active";
+            });
             break;
         case "Inactive":
+            data = data.filter(function (data) {
+                return data.status === "inactive";
+            });
             break;
         case "Drop":
+            data = data.filter(function (data) {
+                return data.status === "drop";
+            });
             break;
         default:
             break;
     }
 
-    switch (stage.options[stage.selectedIndex].value){
-        case "All Stage":
-            break;
+    switch (stage.options[stage.selectedIndex].value) {
         case "Registered":
+            data = data.filter(function (data) {
+                return data.registrationState === "registered";
+            });
             break;
         case "Rejected":
+            data = data.filter(function (data) {
+                return data.registrationState === "rejected";
+            });
             break;
         case "Transferred":
+            data = data.filter(function (data) {
+                return data.registrationState === "transferred";
+            });
             break;
         case "Untransferred":
+            data = data.filter(function (data) {
+                return data.registrationState === "untransferred";
+            });
             break;
         case "Unregistered":
+            data = data.filter(function (data) {
+                return data.registrationState === "unregistered";
+            });
             break;
         default:
             break;
     }
 
-    switch (grade.options[grade.selectedIndex].value){
-        case "All Stage":
-            break;
+    switch (grade.options[grade.selectedIndex].value) {
         case "P4":
+            data = data.filter(function (data) {
+                return data.grade === 4;
+            });
             break;
         case "P5":
+            data = data.filter(function (data) {
+                return data.grade === 5;
+            });
             break;
         case "P6":
+            data = data.filter(function (data) {
+                return data.grade === 6;
+            });
             break;
         case "S1":
+            data = data.filter(function (data) {
+                return data.grade === 7;
+            });
             break;
         case "S2":
+            data = data.filter(function (data) {
+                return data.grade === 8;
+            });
             break;
         case "S3":
+            data = data.filter(function (data) {
+                return data.grade === 9;
+            });
             break;
         case "S4":
+            data = data.filter(function (data) {
+                return data.grade === 10;
+            });
             break;
         case "S5":
+            data = data.filter(function (data) {
+                return data.grade === 11;
+            });
             break;
         case "S6":
+            data = data.filter(function (data) {
+                return data.grade === 12;
+            });
             break;
         default:
             break;
     }
+    log(data);
 
     return data;
 
