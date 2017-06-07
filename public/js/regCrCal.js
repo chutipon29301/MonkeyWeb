@@ -6,16 +6,20 @@ $(document).ready(function(){
 	if ( cookie.regisCourse != undefined){
 		deleteCookie("regisCourse")
 	}
-	console.log(cookie)
 	if ( typeof(cookie.name) != 'string'){
 		self.location = "registrationName"
 	}
-	console.log(typeof(cookie.name))
 	cookie.name = JSON.parse(cookie.name)
 	$('#nname').html(decodeURIComponent(cookie.name.nname))
 	$('#name').html(decodeURIComponent(cookie.name.name))
 	$('#sname').html(decodeURIComponent(cookie.name.sname))
 	$('#grade').val(cookie.grade)
+	if(parseInt($('#grade').val())>=10){
+		$('#info1,#info3').hide()
+	}
+	else{
+		$('#info2,#info4').hide()	
+	}
 	genTable()
 	document.getElementById	('show_price').innerHTML = 0;
 	availableCourse={sat81 : false,sat82 : false,sat101 : false,sat102 : false,sat131 : false,sat132 : false,sat151 : false,sat152 : false,
@@ -176,12 +180,9 @@ function calculate(btn) { /* run after click btn in HTML to switch between selec
     }
     var temp = btn.className.split(' ')
     var dayHour = temp[0].slice(temp[0].length - 3, temp[0].length) + temp[1]
-    console.log(dayHour)
     dayHour = dayHour.replace('.', '');
-    console.log(dayHour)
     if (availableCourse[dayHour] != false) {
         if (btn.className.indexOf("btn-success") != -1) {
-            console.log(availableCourse[dayHour])
             availableCourse[dayHour]["select"] = true
         }
         else {
@@ -213,14 +214,15 @@ function nextCheck() { /* check next btn */
     var check = false
     for (i in availableCourse) {
         if (availableCourse[i] != false) {
-            console.log(availableCourse[i].select)
             if (availableCourse[i].select == true && availableCourse[i].tutor.nicknameEng != "Hybrid") {
                 check = true;
-                console.log(check)
             }
         }
     }
-    if (check) {
+    if (parseInt($('#grade').val())){
+    	check = true
+    }
+    if (check && document.getElementsByClassName('btn-success').length * 6000 / 2 >= 12000) {
         document.getElementById("next").className = "btn btn-default";
     }
     else {

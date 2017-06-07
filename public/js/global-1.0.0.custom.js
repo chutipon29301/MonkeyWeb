@@ -34,13 +34,14 @@ function deleteCookie(key) {
  */
 function checkLogin() {
     "use strict";
-    var cookie = getCookieDict();
+    let cookie = getCookieDict();
     /** @namespace cookie.monkeyWebUser */
-    var user = cookie.monkeyWebUser;
+    let user = cookie.monkeyWebUser;
     /** @namespace cookie.monkeyWebPassword */
-    var pwd = cookie.monkeyWebPassword;
+    let pwd = cookie.monkeyWebPassword;
     log("[checkLogin()] : cookie -> ");
     log(cookie);
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/password", {
         userID: user,
         password: pwd
@@ -52,7 +53,7 @@ function checkLogin() {
             log(data);
             if (!data.verified) {
                 log("[checkLogin()] : redirecting to login");
-                self.location = "\login";
+                self.location = "/login";
             }
         }
     });
@@ -65,10 +66,11 @@ function checkLogin() {
  */
 function checkIDStudent() {
     "use strict";
-    var cookie = getCookieDict();
-    var user = cookie.monkeyWebUser;
+    let cookie = getCookieDict();
+    let user = cookie.monkeyWebUser;
     log("[checkLogin()] : cookie -> ");
     log(cookie);
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/position", {
         userID: user
     }, function (data) {
@@ -85,32 +87,42 @@ function checkIDStudent() {
     });
 }
 
-//noinspection JSUnusedLocalSymbols
 /**
- * Check whether user is tutor
- * if user is not tutor, logout
+ * Check if user is in valid page
+ * @param position of available user in page
  */
-function checkIDTutor() {
+function checkValidUser(position) {
     "use strict";
-    var cookie = getCookieDict();
-    var user = cookie.monkeyWebUser;
-    log("[checkLogin()] : cookie -> ");
+    let cookie = getCookieDict();
+    let user = cookie.monkeyWebUser;
+    log("[checkValidUser()] : cookie -> ");
     log(cookie);
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/position", {
         userID: user
     }, function (data) {
         if (data.err) {
-            log("[checkLogin()] : post/position => Error");
+            log("[checkValidUser()] : post/position => Error");
         } else {
-            log("[checkLogin()] : post/position => ");
+            log("[checkValidUser()] : post/position => ");
             log(data);
-            if (data.position !== "tutor") {
-                log("[checkLogin()] : redirecting to login");
-                logout();
+            if (position.constructor === Array) {
+                log($.inArray(data.position, position) === -1);
+                if ($.inArray(data.position, position) === -1) {
+                    log("[checkValidUser()] : redirecting to login");
+                    logout();
+                }
+            } else {
+                if (data.position !== position) {
+                    log("[checkValidUser()] : redirecting to login");
+                    logout();
+                }
             }
+
         }
     });
 }
+
 
 /**
  * Generate object of document.cookie
@@ -118,11 +130,13 @@ function checkIDTutor() {
  */
 function getCookieDict() {
     "use strict";
-    var allcookies = document.cookie;
+    //noinspection SpellCheckingInspection
+    let allcookies = document.cookie;
     log(allcookies);
-    var obj = {};
-    var cookiearray = allcookies.split('; ');
-    for (var i = 0; i < cookiearray.length; i++) {
+    let obj = {};
+    //noinspection SpellCheckingInspection
+    let cookiearray = allcookies.split('; ');
+    for (let i = 0; i < cookiearray.length; i++) {
         obj[cookiearray[i].split('=')[0]] = cookiearray[i].split('=')[1];
     }
     return obj;
@@ -144,8 +158,9 @@ function logout() {
  */
 function setStudentNavName() {
     "use strict";
-    var cookie = getCookieDict();
-    var user = cookie.monkeyWebUser;
+    let cookie = getCookieDict();
+    let user = cookie.monkeyWebUser;
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("post/name", {
         userID: user
     }, function (data) {
@@ -167,6 +182,7 @@ function loadRegistrationPage() {
     "use strict";
     let cookie = getCookieDict();
     let user = cookie.monkeyWebUser;
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("post/registrationState", {
         studentID: user
     }, function (data) {

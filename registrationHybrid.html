@@ -17,13 +17,20 @@
 <script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
 <script>
 	checkLogin();
-	checkIDStudent();
+	checkValidUser("student");
 	setStudentNavName();
 </script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
 <script type="text/javascript" src="js/myTable-1.0.0.custom.js"></script>
 <script type="text/javascript" src="js/regHbCal.js"></script>
+<style>
+	.disabled{
+		color: #000000!important;
+		background-color: #FFE4F5!important;
+		border-color: transparent!important;
+	}
+</style>
 <!-- InstanceEndEditable -->
 </head>
 <body>
@@ -65,7 +72,8 @@
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
   <div class="table-responsive w3-hide-small w3-hide-medium col-md-10 col-md-offset-1">
-   <label class="control-label col-md-2" style="font-size: large">Hybrid:</label>
+   <label class="control-label col-md-3" style="font-size: large">Full Hybrid(FHB):</label>
+	  <p style="color: red" class="col-md-offset-2">*นักเรียนที่ไม่ต้องการเรียน Full Hybrid(FHB) สามารถข้ามหน้านี้ได้เลย</p>
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -118,6 +126,7 @@
   </div>
   <div class="w3-hide-large">
   	<label class="control-label col-md-2" style="font-size: large">Hybrid:</label>
+	  <p style="color: red" class="col-md-offset-2">*นักเรียนที่ไม่ต้องการเรียน Full Hybrid(FHB) สามารถข้ามหน้านี้ได้เลย</p>
   </div>
   <div class="table-responsive w3-hide-large">
     <table class="table table-bordered">
