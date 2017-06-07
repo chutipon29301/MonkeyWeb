@@ -79,7 +79,6 @@
                             }
                         }
                         if($(x).attr("type")=="password")return CryptoJS.SHA3($(x).val()).toString();
-                        else if($(x).attr("type")=="number"||$(x).hasClass("input-int"))return parseInt($(x).val());
                         else if($(x).hasClass("input-day")){
                             if(input[$(x).attr("name")]==undefined)input[$(x).attr("name")]=moment(0).valueOf();
                             return moment(input[$(x).attr("name")]).day(parseInt($(x).val())).valueOf();
@@ -88,6 +87,7 @@
                             if(input[$(x).attr("name")]==undefined)input[$(x).attr("name")]=moment(0).valueOf();
                             return moment(input[$(x).attr("name")]).hour(parseInt($(x).val())).valueOf();
                         }
+                        else if($(x).attr("type")=="number"||$(x).hasClass("input-int"))return parseInt($(x).val());
                         return $(x).val();
                     };
                     $(this).find("[name]").each(function(){
@@ -120,12 +120,18 @@
                 });
                 $(".addTut").click(function(event){
                     event.preventDefault();
-                    $(this).before('<div class="col-sm-11"><select class="form-control input-array" name="tutor" type="number" required><option disabled="" selected="">Select Tutor</option><option value="99001">Tutor#99001</option><option value="99002">Tutor#99002</option></select></div>');
+                    // $(this).before('<div class="col-sm-11"><select class="form-control input-array" name="tutor" type="number" required><option disabled="" selected="">Select Tutor</option><option value="99001">Tutor#99001</option><option value="99002">Tutor#99002</option></select></div>');
+                    $(this).before('<div class="col-sm-11"><input class="form-control input-array" type="number" name="tutor" placeholder="tutor" required></div>');
                     $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
                 });
                 $(".addCou").click(function(event){
                     event.preventDefault();
                     $(this).before('<div class="col-sm-11"><input class="form-control input-array col-sm-11" name="courseID" type="text" placeHolder="courseID" required></div>');
+                    $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
+                });
+                $(".addSkl").click(function(event){
+                    event.preventDefault();
+                    $(this).before('<div class="col-sm-3"><input class="form-control input-array" type="text" name="location" placeholder="location" required></div><div class="col-sm-4"><select class="form-control input-array input-day" name="day" required><option disabled="" selected="">Select Day</option><option value="6">Saturday</option><option value="7">Sunday</option></select></div><div class="col-sm-4"><select class="form-control input-array input-hour" name="day" required><option disabled="" selected="">Select Time</option><option value="8">8.00-10.00</option><option value="10">10.00-12.00</option><option value="13">13.00-15.00</option><option value="15">15.00-17.00</option></select></div>');
                     $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
                 });
                 $("form").on("click",".removeField",function(event){
@@ -267,6 +273,24 @@
                                 <button class="btn btn-default" type="submit">post/removeStudentCourse</button>
                             </form>
                             <br>
+                            <form action="post/addSkillDay" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <input class="form-control input-array" type="text" name="location" placeholder="location" required>
+                                <select class="form-control input-array input-day" name="day" required>
+                                    <option disabled="" selected="">Select Day</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <select class="form-control input-array input-hour" name="day" required>
+                                    <option disabled="" selected="">Select Time</option>
+                                    <option value="8">8.00-10.00</option>
+                                    <option value="10">10.00-12.00</option>
+                                    <option value="13">13.00-15.00</option>
+                                    <option value="15">15.00-17.00</option>
+                                </select>
+                                <button class="btn btn-default col-sm-1 addSkl">+</button>
+                                <button class="btn btn-default" type="submit">post/addSkillDay</button>
+                            </form>
                             <p>addSkillDay TODO</p>
                             <p>removeSkillDay TODO</p>
                             <br>
@@ -276,20 +300,20 @@
                     </div>
                 </div>
 
-                <div class="panel panel-default">
+                <!-- <div class="panel panel-default">
                     <div class="panel-heading" data-toggle="collapse" data-target="#tutorInformation">
                         <div class="panel-title">Tutor Information</div>
                     </div>
                     <div id="tutorInformation" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <form action="post/tutorNickname" method="post"><!-- TODO TEST -->
+                            <form action="post/tutorNickname" method="post">
                                 <input class="form-control" type="number" name="tutorID" placeholder="tutorID" required>
                                 <button class="btn btn-default" type="submit">post/tutorNickname</button>
                             </form>
                             <br>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="panel panel-default">
                     <div class="panel-heading" data-toggle="collapse" data-target="#userManagement">
@@ -302,9 +326,13 @@
                                 <input class="form-control" type="text" name="firstname" placeholder="Firstname" required>
                                 <input class="form-control" type="text" name="lastname" placeholder="Lastname" required>
                                 <input class="form-control" type="text" name="nickname" placeholder="Nickname" required>
-                                <input class="form-control" type="number" name="grade" placeholder="Grade" required>
+                                <input class="form-control" type="text" name="firstnameEn" placeholder="FirstnameEn" required>
+                                <input class="form-control" type="text" name="lastnameEn" placeholder="LastnameEn" required>
+                                <input class="form-control" type="text" name="nicknameEn" placeholder="NicknameEn" required>
                                 <input class="form-control" type="email" name="email" placeholder="Email" required>
                                 <input class="form-control" type="text" name="phone" placeholder="Phone" required>
+                                <input class="form-control" type="number" name="grade" placeholder="Grade" required>
+                                <input class="form-control" type="text" name="phoneParent" placeholder="PhoneParent" required>
                                 <button class="btn btn-default" type="submit">post/addStudent</button>
                             </form>
                             <br>
@@ -320,8 +348,11 @@
                                 <input class="form-control" type="text" name="firstname" placeholder="Firstname" required>
                                 <input class="form-control" type="text" name="lastname" placeholder="Lastname" required>
                                 <input class="form-control" type="text" name="nickname" placeholder="Nickname" required>
+                                <input class="form-control" type="text" name="firstnameEn" placeholder="FirstnameEn" required>
+                                <input class="form-control" type="text" name="lastnameEn" placeholder="LastnameEn" required>
+                                <input class="form-control" type="text" name="nicknameEn" placeholder="NicknameEn" required>
                                 <input class="form-control" type="email" name="email" placeholder="Email" required>
-                                <input class="form-control" type="text" name="nicknameEng" placeholder="Nickname in English" required>
+                                <input class="form-control" type="text" name="phone" placeholder="Phone" required>
                                 <button class="btn btn-default" type="submit">post/addTutor</button>
                             </form>
                             <br>
@@ -356,19 +387,21 @@
                                 <button class="btn btn-default" type="submit">post/courseInfo</button>
                             </form>
                             <br>
-                            <p>addCourse TODO</p>
                             <form action="post/addCourse" method="post">
                                 <input class="form-control" type="text" name="subject" placeholder="subject" required>
                                 <!-- <input class="form-control" type="number" name="grade" placeholder="grade" required> -->
-                                <label class="checkbox-inline">
-                                    <input class="input-array input-int" type="checkbox" name="grade" value="10">M4
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input class="input-array input-int" type="checkbox" name="grade" value="11">M5
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input class="input-array input-int" type="checkbox" name="grade" value="12">M6
-                                </label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="1">P1</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="2">P2</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="3">P3</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="4">P4</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="5">P5</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="6">P6</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="7">M1</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="8">M2</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="9">M3</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="10">M4</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="11">M5</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="12">M6</label>
                                 <input class="form-control" type="text" name="level" placeholder="level" required>
                                 <select class="form-control input-day" name="day" required>
                                     <option disabled="" selected="">Select Day</option>
@@ -382,16 +415,16 @@
                                     <option value="13">13.00-15.00</option>
                                     <option value="15">15.00-17.00</option>
                                 </select>
-                                <select class="form-control input-array" name="tutor" type="number" required>
+                                <!-- <select class="form-control input-array" name="tutor" type="number" required>
                                     <option disabled="" selected="">Select Tutor</option>
                                     <option value="99001">Tutor#99001</option>
                                     <option value="99002">Tutor#99002</option>
-                                </select>
+                                </select> -->
+                                <input class="form-control input-array" type="number" name="tutor" placeholder="tutor" required>
                                 <button class="btn btn-default col-sm-1 addTut">+</button>
                                 <button class="btn btn-default" type="submit">post/addCourse</button>
                             </form>
                             <br>
-                            <p>removeCourse TODO</p>
                             <form action="post/removeCourse" method="post">
                                 <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
                                 <button class="btn btn-default" type="submit">post/removeCourse</button>

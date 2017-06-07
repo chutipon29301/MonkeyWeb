@@ -24,6 +24,19 @@
 <!-- InstanceBeginEditable name="script" -->
 <script type="text/javascript" src="js/myTable-1.0.0.custom.js"></script>
 <script type="text/javascript" src="js/regSkCal.js"></script>
+<style>
+	.w3-teal{
+		color: #555555!important;
+		background-color: #E7E7E7!important;
+	}
+	.btn{
+		color: rgba(0,0,0,1.00)!important;
+	}
+	.cr{
+		background-color: #FFE4F5!important;
+		border-color: transparent!important;
+	}
+</style>
 <!-- InstanceEndEditable -->
 </head>
 <body>
@@ -98,12 +111,181 @@
       </div>
     </form>
   </div>
+	<div class="table-responsive w3-hide-small w3-hide-medium col-md-10 col-md-offset-1">
+   <label class="control-label col-md-3" style="font-size: large">Overview:</label>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th>8:00-10:00</th>
+          <th>10:00-12:00</th>
+          <th>13:00-15:00</th>
+          <th>15:00-17:00</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>TUE</td>
+		<td></td>
+        <td></td>
+        <td></td>
+        <td><button type="button" class="btn-tue 15.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
+
+      </tr>
+      <tr>
+        <td>THU</td>
+       <td></td>
+        <td></td>
+        <td></td>
+        <td><button type="button" class="btn-thu 15.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
+      </tr>
+      <tr>
+        <td>SAT</td>
+        <td><button type="button" class="btn-sat 8.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sat 10.1 btn btn-default disabled  col-md-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sat 13.1 btn btn-default disabled  col-md-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sat 15.1 btn btn-default disabled  col-md-12" onClick="this.blur(); ">-</button></td>
+      </tr>
+      <tr>
+        <td>SUN</td>
+        <td><button type="button" class="btn-sun 8.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sun 10.1 btn btn-default disabled  col-md-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sun 13.1 btn btn-default disabled  col-md-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sun 15.1 btn btn-default disabled  col-md-12" onClick="this.blur(); ">-</button></td>
+      </tr>
+    </table>
+  </div>
+  <div class="w3-hide-large">
+  	<label class="control-label col-md-2" style="font-size: large">Overview:</label>
+  </div>
+  <div class="table-responsive w3-hide-large">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th>TUE</th>
+          <th>THU</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>15-17</td>
+        <td><button type="button" class="btn-tue 15.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-thu 15.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+   
+      </tr>
+	</table>
+  </div>
+  <div class="table-responsive w3-hide-large">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th>SAT</th>
+          <th>SUN</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>8-10</td>
+        <td><button type="button" class="btn-sat 8.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sun 8.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+      </tr>
+      <tr>
+        <td>10-12</td>
+        <td><button type="button" class="btn-sat 10.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sun 10.1 btn btn-default disabled  col-xs-12" onClick="this.blur(); ">-</button></td>
+      </tr>
+      <tr>
+        <td>13-15</td>
+        <td><button type="button" class="btn-sat 13.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sun 13.1 btn btn-default disabled  col-xs-12" onClick="this.blur(); " >-</button></td>
+      </tr>
+      <tr>
+        <td>15-17</td>
+        <td><button type="button" class="btn-sat 15.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+        <td><button type="button" class="btn-sun 15.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
+      </tr>
+
+    </table>
+  </div>
   <br>
   <div class="container col-md-5 col-md-offset-1 col-xs-5 col-xs-offset-0" align="left" >
  	<button id="back" class="btn btn-default" onClick="this.blur(); back();">Back</button>
   </div>
-  <div class="container col-md-4 col-md-offset-1 col-xs-6 col-xs-offset-1" align="right" >
-    <button id="next" class="btn btn-default" onClick="this.blur(); next();">Next</button>
+  <div class="container col-md-4 col-md-offset-1 col-xs-6 col-xs-offset-1" align="right">
+    <button class="btn btn-default" onclick="this.blur(); next(); document.getElementById('id01').style.display='block'">Next</button>
+  </div>
+	<div id="id01" class="w3-modal">
+    <div class="w3-modal-content w3-animate-zoom">
+      <header class="w3-container w3-teal"> 
+        <span onclick="document.getElementById('id01').style.display='none'" 
+        class="w3-button w3-display-topright">&times;</span>
+        <br><h2>Registration information</h2><br>
+      </header>
+      
+      <div class="w3-container">
+        <p></p>
+        	<div>
+				   <div class="container">
+					<form class="form-horizontal">
+					  <div class="form-group">
+						<label class="control-label col-md-1">ชื่อ:</label>
+						<div class="col-md-5">
+						  <p id="name" class="form-control-static"></p>
+						  <p id="nameE" class="form-control-static"></p>
+						</div>
+					  </div>
+					  <div class="form-group">
+						<label class="control-label col-md-1">ชั้น:</label>
+						<div class="col-md-5">
+						  <select name="grade" class="form-control" id="grade" disabled>
+						   <option value="0">กรุณาเลือกชั้นเรียน</option>
+							<option value="1">ประถม 1</option>
+							<option value="2">ประถม 2</option>
+							<option value="3">ประถม 3</option>
+							<option value="4">ประถม 4</option>
+							<option value="5">ประถม 5</option>
+							<option value="6">ประถม 6</option>
+							<option value="7">มัธยม 1</option>
+							<option value="8">มัธยม 2</option>
+							<option value="9">มัธยม 3</option>
+							<option value="10">มัธยม 4</option>
+							<option value="11">มัธยม 5</option>
+							<option value="12">มัธยม 6</option>
+						  </select>
+						</div>
+					  </div>
+					  	<div class="form-group">
+						<label class="control-label col-md-1">Course:</label>
+						<div class="col-md-5">
+							<p id="cr" class="form-control-static"></p>
+						</div>
+					  </div>
+						<div class="form-group">
+						<label class="control-label col-md-1">Hybrid:</label>
+						<div class="col-md-5">
+							<p id="hb" class="form-control-static"></p>
+						</div>
+					  </div>
+					  <div class="form-group">
+						<label class="control-label col-md-1">Skill:</label>
+						<div class="col-md-5">
+							<p id="sk" class="form-control-static"></p>
+						</div>
+					  </div>
+					  
+					</form>
+				  </div>
+        	</div>
+        <p></p>
+      </div>
+      
+      <footer class="w3-container w3-teal">
+       <p></p>
+       <div align="right">
+        <button class="btn btn-default" onclick="this.blur(); submit();">Submit</button>
+        </div>
+        <p></p>
+      </footer>
+    </div>
   </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">

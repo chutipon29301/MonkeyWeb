@@ -13,7 +13,6 @@ $(document).ready(function(){
 				for(j=1;j>=0;j--){
 					courseClass[j].remove()
 				}
-				console.log(courseClass)
 				var courseClass = document.getElementsByClassName('btn-sat '+cookie.regisCourse[i].day.getHours()+'.1')
 				for(j=0;j<courseClass.length;j++){
 					courseClass[j].className = courseClass[j].className.replace(/btn-default/g,"btn-basic disabled");
