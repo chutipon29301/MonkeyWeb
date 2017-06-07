@@ -10,13 +10,10 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
         <script src="js/sha3.js"></script>
-        <script src="js/jquery-1.11.3.min.js"></script>
         <script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
 		<script>
 			checkLogin();
 			checkValidUser("admin");
-		</script>
-        <script>
             $(document).ready(function(){
                 refresh();
                 $.post("post/getConfig",function(data){
@@ -395,12 +392,12 @@
                                 <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="4">P4</label>
                                 <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="5">P5</label>
                                 <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="6">P6</label>
-                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="7">M1</label>
-                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="8">M2</label>
-                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="9">M3</label>
-                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="10">M4</label>
-                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="11">M5</label>
-                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="12">M6</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="7">S1</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="8">S2</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="9">S3</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="10">S4</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="11">S5</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="12">S6</label>
                                 <input class="form-control" type="text" name="level" placeholder="level" required>
                                 <select class="form-control input-day" name="day" required>
                                     <option disabled="" selected="">Select Day</option>
