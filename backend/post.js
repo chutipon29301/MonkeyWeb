@@ -178,7 +178,7 @@ var run=function(app,db){
 
 
     // Student Information
-    //TODO TEST {} return {student:[{studentID,firstname,lastname,nickname,inCourse,inHybrid}]}
+    //TODO TEST {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
     app.post("/post/allStudent",function(req,res){
         var output=[];
         var eventEmitter=new events.EventEmitter();
@@ -191,13 +191,16 @@ var run=function(app,db){
             for(i=0;i<result.length;i++){
                 (function(i){
                     getCourseDB(function(courseDB){
-                        courseDB.find({student:{$all:[result[i]._id]}}).toArray(function(err,course){
+                        courseDB.findOne({student:{$all:[result[i]._id]}},function(err,course){
                             output[i]={studentID:result[i]._id,
                                 firstname:result[i].firstname,
                                 lastname:result[i].lastname,
                                 nickname:result[i].nickname,
-                                inCourse:course.length!=0,
-                                // inHybrid:result[i].student.hybridDay.length!=0
+                                grade:result[i].student.grade,
+                                registrationState:result[i].student.registrationState,
+                                status:result[i].student.status,
+                                inCourse:course!=null,
+                                // inHybrid:result[i].student.hybridDay.length!=0 TODO
                                 inHybrid:true
                             };
                             eventEmitter.emit("finish");
@@ -208,7 +211,7 @@ var run=function(app,db){
             eventEmitter.emit("finish");
         });
     });
-    //TODO TEST {studentID} return {grade,registrationState,[skillDay],[balance],status,email,phone,firstname,lastname,nickname,[courseID],[hybridDay]}
+    //TODO TEST {studentID} return {user.student,post/name,[courseID],[hybridDay]}
     app.post("/post/studentProfile",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var output={};
@@ -229,6 +232,7 @@ var run=function(app,db){
                                 for(var i=0;i<course.length;i++){
                                     output.courseID.push(course[i]._id);
                                 }
+                                output.hybridDay=[];//TODO
                                 res.send(output);
                             });
                         });
