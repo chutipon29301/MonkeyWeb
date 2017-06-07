@@ -23,16 +23,26 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         console.error("[ERROR] "+err.message);
         return;
     }
-    db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     // db.dropDatabase();
-    // db.collection("user").deleteMany({position:"student"});
     // db.dropCollection("user");
+    // db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
+    db.collection("user").updateOne({_id:99033},
+		{
+			$set:{
+				password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130",
+				position:"admin",
+				firstname:"สิรภพ",lastname:"ครองอภิรดี",nickname:"เชี้ยง",
+				firstnameEn:"Siraphop",lastnameEn:"Krongapiradee",nicknameEn:"Chiang",
+				email:"chiang-siraphop@mkyhybrid.com",phone:"0820105315",
+				tutor:{status:"active"}
+			}
+		},
+		{upsert:true}
+    );
+    // db.collection("user").deleteMany({position:"student"});
     // var moment=require("moment");
     // db.collection("user").insertOne({day:moment(0).hour(8).day(6).toDate()});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
-    // db.collection("user").insertOne({day:moment(0).hour(9).day(6).toDate()});
-    // db.collection("user").insertOne({day:moment(0).hour(6).day(6).toDate()});
-    // db.collection("user").insertOne({day:moment(0).hour(7).day(6).toDate()});
     // db.collection("user").updateMany({},{$set:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}});
     function splitCourseName(name){
         if (typeof name == 'string'){
