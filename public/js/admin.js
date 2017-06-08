@@ -10,7 +10,6 @@ function getAllStudentContent() {
         } else {
             log("[getAllStudentContent()] : post/return => ");
             log(data);
-            document.getElementById("allStudentTable").innerHTML = "";
             generateStudentHtmlTable(filterData(data.student));
         }
     });
@@ -23,6 +22,7 @@ function getAllStudentContent() {
 function generateStudentHtmlTable(student) {
     "use strict";
     let table = document.getElementById("allStudentTable");
+    table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let cell1 = row.insertCell(0);
@@ -76,7 +76,6 @@ function getAllCourseContent() {
 function generateCourseHtmlTable(course) {
     "use strict";
     let table = document.getElementById("allCourseTable");
-    table.innerHTML = "Hello World";
     for (let i = 0; i < course.length; i++) {
         let time = new Date(course[i].day);
         let row = table.insertRow(i);
