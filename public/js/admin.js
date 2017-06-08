@@ -296,6 +296,7 @@ function getCourseDescription() {
             let date = new Date(data.day);
             document.getElementById("day").innerHTML = "Day : " + getDateFullName(date.getDay());
             document.getElementById("time").innerHTML = date.getHours() + ":00 - " + (date.getHours() + 2) + ":00";
+            document.getElementById("courseID").innerHTML = courseID;
 
             let table = document.getElementById("allStudentInCourseTable");
             for (let i = 0; i < data.student.length; i++) {
