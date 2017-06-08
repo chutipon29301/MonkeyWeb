@@ -16,7 +16,7 @@ app.use(function(req, res, next) {// Allow access from other domain
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.listen(8080);
+app.listen(80);
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
@@ -25,6 +25,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     }
     // db.dropDatabase();
     // db.dropCollection("user");
+    // db.dropCollection("hybridSeat");
     // db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     db.collection("user").updateOne({_id:99033},
 		{
@@ -160,20 +161,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         });
     });
     var moment=require("moment");
-    db.collection("hybridSeat").updateOne({_id:"TUE15",day:moment(0).day(2).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"THU15",day:moment(0).day(4).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SAT8",day:moment(0).day(6).hour(8).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SAT10",day:moment(0).day(6).hour(10).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SAT13",day:moment(0).day(6).hour(13).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SAT15",day:moment(0).day(6).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SUN8",day:moment(0).day(7).hour(8).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SUN10",day:moment(0).day(7).hour(10).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SUN13",day:moment(0).day(7).hour(13).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").updateOne({_id:"SUN15",day:moment(0).day(7).hour(15).valueOf()},{$setOnInsert:{student:[]}},{upsert:true});
-    db.collection("hybridSeat").find().toArray(function(err,result){
-        console.log("[SHOW] All hybridSeat");
-        console.log(result);
-    });
     var configDB=db.collection("config");
     configDB.findOne({},function(err,config){
         if(config==null){
