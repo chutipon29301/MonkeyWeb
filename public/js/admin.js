@@ -366,7 +366,7 @@ function addCourse() {
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         $.post("post/addHybridDay", {
             studentID: studentID,
-            subject : (selectedValue[selectedValue.length - 1] === "M") ? "Math" : "Physics",
+            subject : (selectedValue[selectedValue.length - 1] === "M") ? "M" : "PH",
             day : selectedOption.id
         }, function (data) {
             if (data.err) {
