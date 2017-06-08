@@ -109,14 +109,10 @@ function generateCourseHtmlTable(course) {
  * @returns {*} array of student to display in table
  */
 function filterData(data) {
-    // let selectBox = document.getElementById("studentMainFilter");
-    // let filterOption = document.getElementById("studentSubFilter");
-    // let option = filterOption.options[filterOption.selectedIndex].value;
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
 
-    // let selectedStatus = status.options[filterOption.selectedIndex].value;
     switch (status.options[status.selectedIndex].value) {
         case "Active":
             data = data.filter(function (data) {
@@ -216,25 +212,7 @@ function filterData(data) {
         default:
             break;
     }
-    log(data);
-
     return data;
-
-    // switch (selectBox.options[selectBox.selectedIndex].value) {
-    //     case "status":
-    //         return data.filter(function (option) {
-    //             return true;
-    //         });
-    //         break;
-    //     case "grade":
-    //         return data.filter(function (option) {
-    //             return true;
-    //         });
-    //         break;
-    //     default:
-    //         return data;
-    //         break;
-    // }
 }
 
 
@@ -376,6 +354,40 @@ function getUsername(userID, callback) {
         }
     });
     return "unknown";
+}
+
+function addRemoveCourse(id) {
+    let button = document.getElementById(id);
+    let studentId = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    if (button.innerHTML === "Add Course") {
+        "use strict";
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("/post/allCourse", "", function (data) {
+            if (data.err) {
+                log("[addRemoveCourse()] : post/allCourse => " + data.err);
+            } else {
+                log("[addRemoveCourse()] : post/allCourse => ");
+                data.course = data.course.filter(function (data) {
+                    return data.day === parseInt(id);
+                });
+                log("[addRemoveCourse()] : data.filter() => ");
+                log(data);
+            }
+        });
+    } else {
+        let courseID = button.value;
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("post/removeStudentCourse", {
+            studentID: studentId,
+            courseID: courseID
+        }, function (data) {
+            if (data.err) {
+                log("[RemoveCourse()] : post/return => " + data.err);
+            } else {
+                log("[RemoveCourse()] : post/return => Success");
+            }
+        });
+    }
 }
 
 /**
