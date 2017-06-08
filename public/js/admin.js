@@ -22,6 +22,7 @@ function getAllStudentContent() {
 function generateStudentHtmlTable(student) {
     "use strict";
     let table = document.getElementById("allStudentTable");
+    table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let cell1 = row.insertCell(0);
@@ -87,7 +88,7 @@ function generateCourseHtmlTable(course) {
         cell2.innerHTML = "<td>" + getDateName(time.getDay()) + "</td>";
         cell3.innerHTML = "<td>" + time.getHours() + ":00 - " + (time.getHours() + 2) + ":00</td>";
         getUsername(course[i].tutor[0], function (data) {
-            cell4.innerHTML = "<td>" + data.nickname + "</td>";
+            cell4.innerHTML = "<td>" + data.nicknameEn + "</td>";
         });
 
         let clickHandler = function (row) {
@@ -103,52 +104,137 @@ function generateCourseHtmlTable(course) {
 
 
 /**
- * Update allStudent table
- */
-function optionSelected() {
-    let selectBox = document.getElementById("studentMainFilter");
-    let selectData = [];
-    switch (selectBox.options[selectBox.selectedIndex].value) {
-        case "status":
-            selectData = ["active", "inactive", "drop"];
-            break;
-        case "grade":
-            selectData = ["P1", "P2", "P3", "P4", "P5", "P6", "M1", "M2", "M3", "M4", "M5", "M6"];
-            break;
-        default:
-            break;
-    }
-    let textInnerHtml = "";
-    for (let i = 0; i < selectData.length; i++) {
-        textInnerHtml += "<option>" + selectData[i] + "</option>";
-    }
-    document.getElementById("studentSubFilter").innerHTML = textInnerHtml;
-}
-
-/**
  *
  * @param data array of student info
  * @returns {*} array of student to display in table
  */
 function filterData(data) {
-    let selectBox = document.getElementById("studentMainFilter");
-    let filterOption = document.getElementById("studentSubFilter");
-    let option = filterOption.options[filterOption.selectedIndex].value;
-    switch (selectBox.options[selectBox.selectedIndex].value) {
-        case "status":
-            return data.filter(function (option) {
-                return true;
+    // let selectBox = document.getElementById("studentMainFilter");
+    // let filterOption = document.getElementById("studentSubFilter");
+    // let option = filterOption.options[filterOption.selectedIndex].value;
+    let status = document.getElementById("status");
+    let stage = document.getElementById("stage");
+    let grade = document.getElementById("grade");
+
+    // let selectedStatus = status.options[filterOption.selectedIndex].value;
+    switch (status.options[status.selectedIndex].value) {
+        case "Active":
+            data = data.filter(function (data) {
+                return data.status === "active";
             });
             break;
-        case "grade":
-            return data.filter(function (option) {
-                return true;
+        case "Inactive":
+            data = data.filter(function (data) {
+                return data.status === "inactive";
+            });
+            break;
+        case "Drop":
+            data = data.filter(function (data) {
+                return data.status === "drop";
             });
             break;
         default:
-            return data;
             break;
     }
+
+    switch (stage.options[stage.selectedIndex].value) {
+        case "Registered":
+            data = data.filter(function (data) {
+                return data.registrationState === "registered";
+            });
+            break;
+        case "Rejected":
+            data = data.filter(function (data) {
+                return data.registrationState === "rejected";
+            });
+            break;
+        case "Transferred":
+            data = data.filter(function (data) {
+                return data.registrationState === "transferred";
+            });
+            break;
+        case "Untransferred":
+            data = data.filter(function (data) {
+                return data.registrationState === "untransferred";
+            });
+            break;
+        case "Unregistered":
+            data = data.filter(function (data) {
+                return data.registrationState === "unregistered";
+            });
+            break;
+        default:
+            break;
+    }
+
+    switch (grade.options[grade.selectedIndex].value) {
+        case "P4":
+            data = data.filter(function (data) {
+                return data.grade === 4;
+            });
+            break;
+        case "P5":
+            data = data.filter(function (data) {
+                return data.grade === 5;
+            });
+            break;
+        case "P6":
+            data = data.filter(function (data) {
+                return data.grade === 6;
+            });
+            break;
+        case "S1":
+            data = data.filter(function (data) {
+                return data.grade === 7;
+            });
+            break;
+        case "S2":
+            data = data.filter(function (data) {
+                return data.grade === 8;
+            });
+            break;
+        case "S3":
+            data = data.filter(function (data) {
+                return data.grade === 9;
+            });
+            break;
+        case "S4":
+            data = data.filter(function (data) {
+                return data.grade === 10;
+            });
+            break;
+        case "S5":
+            data = data.filter(function (data) {
+                return data.grade === 11;
+            });
+            break;
+        case "S6":
+            data = data.filter(function (data) {
+                return data.grade === 12;
+            });
+            break;
+        default:
+            break;
+    }
+    log(data);
+
+    return data;
+
+    // switch (selectBox.options[selectBox.selectedIndex].value) {
+    //     case "status":
+    //         return data.filter(function (option) {
+    //             return true;
+    //         });
+    //         break;
+    //     case "grade":
+    //         return data.filter(function (option) {
+    //             return true;
+    //         });
+    //         break;
+    //     default:
+    //         return data;
+    //         break;
+    // }
 }
 
 
@@ -205,11 +291,12 @@ function getCourseDescription() {
             log(data);
             document.getElementById("courseName").innerHTML = data.courseName;
             getUsername(data.tutor[0], function (data) {
-                document.getElementById("tutorName").innerHTML = "Tutor : " + data.firstname;
+                document.getElementById("tutorName").innerHTML = "Tutor : " + data.nicknameEn;
             });
             let date = new Date(data.day);
             document.getElementById("day").innerHTML = "Day : " + getDateFullName(date.getDay());
             document.getElementById("time").innerHTML = date.getHours() + ":00 - " + (date.getHours() + 2) + ":00";
+            document.getElementById("courseID").innerHTML = courseID;
 
             let table = document.getElementById("allStudentInCourseTable");
             for (let i = 0; i < data.student.length; i++) {
@@ -263,7 +350,7 @@ function getLetterGrade(grade) {
     if (grade <= 6) {
         return "P" + grade;
     } else {
-        return "M" + (grade - 6);
+        return "S" + (grade - 6);
     }
 }
 

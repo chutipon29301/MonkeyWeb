@@ -6,7 +6,6 @@ function log(text) {
     "use strict";
     console.log(text);
 }
-
 /**
  * Add variable to document.cookie
  * @param key variable name to be added
@@ -58,35 +57,6 @@ function checkLogin() {
         }
     });
 }
-
-//noinspection JSUnusedLocalSymbols
-/**
- * Check whether user is student
- * if user is not student, logout
- */
-function checkIDStudent() {
-    "use strict";
-    let cookie = getCookieDict();
-    let user = cookie.monkeyWebUser;
-    log("[checkLogin()] : cookie -> ");
-    log(cookie);
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("/post/position", {
-        userID: user
-    }, function (data) {
-        if (data.err) {
-            log("[checkLogin()] : post/position => Error");
-        } else {
-            log("[checkLogin()] : post/position => ");
-            log(data);
-            if (data.position !== "student") {
-                log("[checkLogin()] : redirecting to login");
-                logout();
-            }
-        }
-    });
-}
-
 /**
  * Check if user is in valid page
  * @param position of available user in page
@@ -123,7 +93,6 @@ function checkValidUser(position) {
     });
 }
 
-
 /**
  * Generate object of document.cookie
  * @return {object} object of document.cookie
@@ -141,7 +110,6 @@ function getCookieDict() {
     }
     return obj;
 }
-
 /**
  * Logout current user
  */
@@ -152,7 +120,6 @@ function logout() {
     deleteCookie("monkeyWebPassword");
     self.location = "/login";
 }
-
 /**
  * Set student name to navigation bar
  */
@@ -174,7 +141,6 @@ function setStudentNavName() {
         }
     });
 }
-
 /**
  * Load registration page from status of student
  */
