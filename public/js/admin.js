@@ -112,108 +112,19 @@ function filterData(data) {
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
-
-    switch (status.options[status.selectedIndex].value) {
-        case "Active":
-            data = data.filter(function (data) {
-                return data.status === "active";
-            });
-            break;
-        case "Inactive":
-            data = data.filter(function (data) {
-                return data.status === "inactive";
-            });
-            break;
-        case "Drop":
-            data = data.filter(function (data) {
-                return data.status === "drop";
-            });
-            break;
-        default:
-            break;
+    if (status.options[status.selectedIndex].value !== "All"){
+        data = data.filter(data => data.status === status.options[status.selectedIndex].value.toLowerCase());
     }
-
-    switch (stage.options[stage.selectedIndex].value) {
-        case "Registered":
-            data = data.filter(function (data) {
-                return data.registrationState === "registered";
-            });
-            break;
-        case "Rejected":
-            data = data.filter(function (data) {
-                return data.registrationState === "rejected";
-            });
-            break;
-        case "Transferred":
-            data = data.filter(function (data) {
-                return data.registrationState === "transferred";
-            });
-            break;
-        case "Untransferred":
-            data = data.filter(function (data) {
-                return data.registrationState === "untransferred";
-            });
-            break;
-        case "Unregistered":
-            data = data.filter(function (data) {
-                return data.registrationState === "unregistered";
-            });
-            break;
-        default:
-            break;
+    if (stage.options[stage.selectedIndex].value !== "All Stage"){
+        data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value.toLowerCase());
     }
-
-    switch (grade.options[grade.selectedIndex].value) {
-        case "P4":
-            data = data.filter(function (data) {
-                return data.grade === 4;
-            });
-            break;
-        case "P5":
-            data = data.filter(function (data) {
-                return data.grade === 5;
-            });
-            break;
-        case "P6":
-            data = data.filter(function (data) {
-                return data.grade === 6;
-            });
-            break;
-        case "S1":
-            data = data.filter(function (data) {
-                return data.grade === 7;
-            });
-            break;
-        case "S2":
-            data = data.filter(function (data) {
-                return data.grade === 8;
-            });
-            break;
-        case "S3":
-            data = data.filter(function (data) {
-                return data.grade === 9;
-            });
-            break;
-        case "S4":
-            data = data.filter(function (data) {
-                return data.grade === 10;
-            });
-            break;
-        case "S5":
-            data = data.filter(function (data) {
-                return data.grade === 11;
-            });
-            break;
-        case "S6":
-            data = data.filter(function (data) {
-                return data.grade === 12;
-            });
-            break;
-        default:
-            break;
+    if (grade.options[grade.selectedIndex].value !== "All Grade"){
+        data = data.filter(data => data.grade === getNumberGrade(grade.options[grade.selectedIndex].value));
     }
     return data;
 }
+
+
 
 
 /**
@@ -351,6 +262,17 @@ function getLetterGrade(grade) {
     }
 }
 
+function getNumberGrade(grade) {
+    log(grade);
+    if (grade[0] === "P"){
+        return parseInt(grade[1]);
+    } else if(grade[0] === "S"){
+        log(grade[1]);
+        return parseInt(grade[1]) + 6;
+    }else {
+        return "Not a valid grade";
+    }
+}
 
 /**
  * Get name of user
@@ -392,20 +314,23 @@ function addRemoveCourse(id) {
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
 
-                let courseName = [];
+                let select = document.getElementById("courseSelector");
+                select.value = id;
+                select.innerHTML = "";
 
                 for (let i = 0; i < data.course.length; i++) {
                     let course = data.course[i];
                     let grade = "";
                     if (course.grade[0] > 6) {
                         grade = "S" + course.grade.map(x => (x - 6)).join("");
-                    }else {
+                    } else {
                         grade = "P" + course.grade.join("");
                     }
-                    courseName.push(course.subject + grade + course.level);
+                    select.innerHTML += "<option id='" + course.courseID + "'>" + (course.subject + grade + course.level) + "</option>";
                 }
 
-
+                select.innerHTML += "<option id='hybridMath'> FHB:M</option>";
+                select.innerHTML += "<option id='hybridPhysics'> FHB:PH</option>";
 
                 $("#addModal").modal();
             }
@@ -418,17 +343,27 @@ function addRemoveCourse(id) {
 }
 
 function addCourse() {
-
+    let select = document.getElementById("courseSelector");
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    let courseID = select.options[select.selectedIndex].id;
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    $.post("post/addStudentCourse", {
+        studentID: studentID,
+        courseID: [courseID]
+    }, function (data) {
+        if (data.err) {
+            log("[addCourse()] : post/return => " + data.err);
+        } else {
+            log("[addCourse()] : post/return => Success");
+            location.reload();
+        }
+    });
 }
 
 function removeCourse() {
     let button = document.getElementById("confirmDelete");
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
     let courseID = button.value;
-    log(typeof studentID);
-    log(studentID);
-    log(typeof courseID);
-    log(courseID);
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("post/removeStudentCourse", {
         studentID: studentID,
