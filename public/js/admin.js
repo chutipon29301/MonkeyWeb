@@ -240,6 +240,25 @@ function getStudentProfile() {
             document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
             document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
 
+            let allCourse = data.courseID;
+
+            for (let i = 0; i < allCourse.length; i++) {
+                //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+                $.post("post/courseInfo", {
+                    courseID: allCourse[i]
+                }, function (data) {
+                    if (data.err) {
+                        log("[getStudentProfile()] : post/courseInfo => " + data.err);
+                    } else {
+                        log("[getCourseDescription()] : post/courseInfo => ");
+                        log(data);
+                        document.getElementById(data.day).innerHTML = data.courseName;
+                        document.getElementById(data.day).value = allCourse[i];
+                    }
+                });
+            }
+            log(allCourse);
+
             let courseData = [[], [], [], []];
             for (let i = 0; i < 4; i++) {
                 for (let j = 0; j < 4; j++) {
@@ -362,7 +381,7 @@ function addRemoveCourse(id) {
     if (button.innerHTML === "Add Course") {
         "use strict";
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("/post/allCourse", "", function (data) {
+        $.post("/post/allCourse", {}, function (data) {
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
@@ -372,22 +391,37 @@ function addRemoveCourse(id) {
                 });
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
+
+                $("#addModal").modal();
             }
         });
     } else {
-        let courseID = button.value;
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("post/removeStudentCourse", {
-            studentID: studentId,
-            courseID: courseID
-        }, function (data) {
-            if (data.err) {
-                log("[RemoveCourse()] : post/return => " + data.err);
-            } else {
-                log("[RemoveCourse()] : post/return => Success");
-            }
-        });
+        document.getElementById("confirmDelete").value = button.value;
+        $("#removeModal").modal();
+
     }
+}
+
+function removeCourse() {
+    let button = document.getElementById("confirmDelete");
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    let courseID = button.value;
+    log(typeof studentID);
+    log(studentID);
+    log(typeof courseID);
+    log(courseID);
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    $.post("post/removeStudentCourse", {
+        studentID: studentID,
+        courseID: [courseID]
+    }, function (data) {
+        if (data.err) {
+            log("[RemoveCourse()] : post/return => " + data.err);
+        } else {
+            log("[RemoveCourse()] : post/return => Success");
+            location.reload();
+        }
+    });
 }
 
 /**
