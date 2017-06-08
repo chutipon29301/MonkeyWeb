@@ -241,3 +241,10 @@ function next(gg) {
 function back() {
     self.location = "registrationName";
 }
+function addSuggest() {
+    var grade = parseInt($('#grade').val());
+    $.post("post/listCourseSuggestion", grade, function (suggest) {
+        log('===================');
+        log(suggest);
+    });
+}
