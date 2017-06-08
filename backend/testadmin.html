@@ -119,14 +119,9 @@
                     $(this).before('<div class="col-sm-11"><input class="form-control input-array" type="number" name="tutor" placeholder="tutor" required></div>');
                     $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
                 });
-                $(".addCou").click(function(event){
+                $(".addCr").click(function(event){
                     event.preventDefault();
                     $(this).before('<div class="col-sm-11"><input class="form-control input-array col-sm-11" name="courseID" type="text" placeHolder="courseID" required></div>');
-                    $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
-                });
-                $(".addSkl").click(function(event){
-                    event.preventDefault();
-                    $(this).before('<div class="col-sm-3"><input class="form-control input-array" type="text" name="location" placeholder="location" required></div><div class="col-sm-4"><select class="form-control input-array input-day" name="day" required><option disabled="" selected="">Select Day</option><option value="6">Saturday</option><option value="7">Sunday</option></select></div><div class="col-sm-4"><select class="form-control input-array input-hour" name="day" required><option disabled="" selected="">Select Time</option><option value="8">8.00-10.00</option><option value="10">10.00-12.00</option><option value="13">13.00-15.00</option><option value="15">15.00-17.00</option></select></div>');
                     $(this).before('<button class="btn btn-default col-sm-1 removeField">-</button>');
                 });
                 $("form").on("click",".removeField",function(event){
@@ -135,7 +130,6 @@
                     $(this).remove();
                 });
             });
-            // var refresh=function(){};
             var refresh=function(){
                 $("#listUser").empty();
                 $.post("debug/listUser",function(data,status){
@@ -284,40 +278,82 @@
                             <form action="post/addStudentCourse" method="post">
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
                                 <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
-                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default col-sm-1 addCr">+</button>
                                 <button class="btn btn-default" type="submit">post/addStudentCourse</button>
                             </form>
                             <br>
                             <form action="post/removeStudentCourse" method="post">
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
                                 <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
-                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default col-sm-1 addCr">+</button>
                                 <button class="btn btn-default" type="submit">post/removeStudentCourse</button>
                             </form>
                             <br>
+                            <p>addSkillDay TODO</p>
                             <form action="post/addSkillDay" method="post">
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
-                                <input class="form-control input-array" type="text" name="location" placeholder="location" required>
-                                <select class="form-control input-array input-day" name="day" required>
+                                <input class="form-control" type="text" name="location" placeholder="location" required>
+                                <select class="form-control input-day" name="day" required>
                                     <option disabled="" selected="">Select Day</option>
                                     <option value="6">Saturday</option>
                                     <option value="7">Sunday</option>
                                 </select>
-                                <select class="form-control input-array input-hour" name="day" required>
+                                <select class="form-control input-hour" name="day" required>
                                     <option disabled="" selected="">Select Time</option>
                                     <option value="8">8.00-10.00</option>
                                     <option value="10">10.00-12.00</option>
                                     <option value="13">13.00-15.00</option>
                                     <option value="15">15.00-17.00</option>
                                 </select>
-                                <button class="btn btn-default col-sm-1 addSkl">+</button>
+                                <button class="btn btn-default col-sm-1 addSk">+</button>
                                 <button class="btn btn-default" type="submit">post/addSkillDay</button>
                             </form>
-                            <p>addSkillDay TODO</p>
+                            <br>
                             <p>removeSkillDay TODO</p>
                             <br>
-                            <p>addHybridDay TODO</p>
-                            <p>removeHybridDay TODO</p>
+                            <form action="post/addHybridDay" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <select class="form-control" name="subject" required>
+                                    <option disabled="" selected="">Select Subject</option>
+                                    <option value="M">Math</option>
+                                    <option value="PH">Physics</option>
+                                </select>
+                                <select class="form-control input-day" name="day" required>
+                                    <option disabled="" selected="">Select Day</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <select class="form-control input-hour" name="day" required>
+                                    <option disabled="" selected="">Select Time</option>
+                                    <option value="8">8.00-10.00</option>
+                                    <option value="10">10.00-12.00</option>
+                                    <option value="13">13.00-15.00</option>
+                                    <option value="15">15.00-17.00</option>
+                                </select>
+                                <button class="btn btn-default" type="submit">post/addHybridDay</button>
+                            </form>
+                            <br>
+                            <form action="post/removeHybridDay" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <select class="form-control input-day" name="day" required>
+                                    <option disabled="" selected="">Select Day</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <select class="form-control input-hour" name="day" required>
+                                    <option disabled="" selected="">Select Time</option>
+                                    <option value="8">8.00-10.00</option>
+                                    <option value="10">10.00-12.00</option>
+                                    <option value="13">13.00-15.00</option>
+                                    <option value="15">15.00-17.00</option>
+                                </select>
+                                <button class="btn btn-default" type="submit">post/removeHybridDay</button>
+                            </form>
+                            <br>
                         </div>
                     </div>
                 </div>
@@ -419,7 +455,7 @@
                                 <input class="form-control" type="number" name="grade" placeholder="grade" required>
                                 <input class="form-control" type="text" name="level" placeholder="level" required>
                                 <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
-                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default col-sm-1 addCr">+</button>
                                 <button class="btn btn-default" type="submit">post/addCourseSuggestion</button>
                             </form>
                             <br>
@@ -427,7 +463,7 @@
                                 <input class="form-control" type="number" name="grade" placeholder="grade" required>
                                 <input class="form-control" type="text" name="level" placeholder="level" required>
                                 <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
-                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default col-sm-1 addCr">+</button>
                                 <button class="btn btn-default" type="submit">post/removeCourseSuggestion</button>
                             </form>
                             <br>
@@ -459,11 +495,6 @@
                                     <option value="13">13.00-15.00</option>
                                     <option value="15">15.00-17.00</option>
                                 </select>
-                                <!-- <select class="form-control input-array" name="tutor" type="number" required>
-                                    <option disabled="" selected="">Select Tutor</option>
-                                    <option value="99001">Tutor#99001</option>
-                                    <option value="99002">Tutor#99002</option>
-                                </select> -->
                                 <input class="form-control input-array" type="number" name="tutor" placeholder="tutor" required>
                                 <button class="btn btn-default col-sm-1 addTut">+</button>
                                 <button class="btn btn-default" type="submit">post/addCourse</button>
