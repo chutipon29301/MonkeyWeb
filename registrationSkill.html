@@ -80,10 +80,21 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="container">
+  	  <div class="container">
     <form class="form-horizontal">
-      <div class="form-group">
-        <label class="control-label col-md-1 col-md-offset-1">Skill:</label>
+    <div class="form-group">
+     <label class="control-label col-md-1 col-md-offset-1" style="font-size: large">SKILL:</label>
+     <div class="col-md-3">
+     <select class="form-control" id="skillSel">
+            <option value="1">MATH and ENG</option>
+            <option value="2">only MATH</option>
+            <option value="3">only ENG</option>
+            <option value="4">none</option>
+     </select>
+     </div>
+		</div>
+      <div class="form-group" id="math">
+        <label class="control-label col-md-1 col-md-offset-1">MATH:</label>
         <div class="col-md-3">
           <select class="form-control" id="station">
             <option value="1">สยาม</option>
@@ -98,6 +109,36 @@
         </div>
         <div class="col-md-3">
           <select class="form-control" id="skilltime">
+           	<option value="0">กรุณาเลือกเวลาเรียน</option>
+            <option value="90">9.00-10.00</option>
+            <option value="95">9.30-10.30</option>
+            <option value="100">10.00-11.00</option>
+            <option value="105">10.30-11.30</option>
+            <option value="110">11.00-12.00</option>
+            <option value="130">13.00-14.00</option>
+            <option value="135">13.30-14.30</option>
+            <option value="140">14.00-15.00</option>
+            <option value="145">14.30-15.30</option>
+            <option value="150">15.00-16.00</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" id="eng">
+        <label class="control-label col-md-1 col-md-offset-1">ENG:</label>
+        <div class="col-md-3">
+          <select class="form-control" id="stationEng">
+            <option value="1">สยาม</option>
+            <option value="2">สาย 3</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilldayEng">
+            <option value="sat">เสาร์</option>
+            <option value="sun">อาทิตย์</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilltimeEng">
            	<option value="0">กรุณาเลือกเวลาเรียน</option>
             <option value="90">9.00-10.00</option>
             <option value="95">9.30-10.30</option>
