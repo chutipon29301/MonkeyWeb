@@ -93,7 +93,6 @@ function generateCourseHtmlTable(course) {
 
         let clickHandler = function (row) {
             return function () {
-                log(row.getElementsByTagName("td")[0].innerHTML);
                 writeCookie("monkeyWebAdminAllcourseSelectedCourseID", row.id);
                 self.location = "/adminCoursedescription";
             };
@@ -112,19 +111,17 @@ function filterData(data) {
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
-    if (status.options[status.selectedIndex].value !== "All"){
+    if (status.options[status.selectedIndex].value !== "All") {
         data = data.filter(data => data.status === status.options[status.selectedIndex].value.toLowerCase());
     }
-    if (stage.options[stage.selectedIndex].value !== "All Stage"){
+    if (stage.options[stage.selectedIndex].value !== "All Stage") {
         data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value.toLowerCase());
     }
-    if (grade.options[grade.selectedIndex].value !== "All Grade"){
+    if (grade.options[grade.selectedIndex].value !== "All Grade") {
         data = data.filter(data => data.grade === getNumberGrade(grade.options[grade.selectedIndex].value));
     }
     return data;
 }
-
-
 
 
 /**
@@ -264,12 +261,12 @@ function getLetterGrade(grade) {
 
 function getNumberGrade(grade) {
     log(grade);
-    if (grade[0] === "P"){
+    if (grade[0] === "P") {
         return parseInt(grade[1]);
-    } else if(grade[0] === "S"){
+    } else if (grade[0] === "S") {
         log(grade[1]);
         return parseInt(grade[1]) + 6;
-    }else {
+    } else {
         return "Not a valid grade";
     }
 }
@@ -299,7 +296,6 @@ function getUsername(userID, callback) {
 
 function addRemoveCourse(id) {
     let button = document.getElementById(id);
-    let studentId = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
     if (button.innerHTML === "Add Course") {
         "use strict";
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
@@ -328,9 +324,15 @@ function addRemoveCourse(id) {
                     }
                     select.innerHTML += "<option id='" + course.courseID + "'>" + (course.subject + grade + course.level) + "</option>";
                 }
+                let time = new Date(parseInt(id));
 
-                select.innerHTML += "<option id='hybridMath'> FHB:M</option>";
-                select.innerHTML += "<option id='hybridPhysics'> FHB:PH</option>";
+                select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
+                select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
+
+                let hour = time.getHours();
+                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + hour + ":00 - " + (hour + 1) + ":00</option>";
+                time.setHours(hour + 1);
+                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + (hour + 1) + ":00 - " + (hour + 2) + ":00</option>";
 
                 $("#addModal").modal();
             }
@@ -345,19 +347,50 @@ function addRemoveCourse(id) {
 function addCourse() {
     let select = document.getElementById("courseSelector");
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
-    let courseID = select.options[select.selectedIndex].id;
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/addStudentCourse", {
-        studentID: studentID,
-        courseID: [courseID]
-    }, function (data) {
-        if (data.err) {
-            log("[addCourse()] : post/return => " + data.err);
-        } else {
-            log("[addCourse()] : post/return => Success");
-            location.reload();
-        }
-    });
+    let selectedOption = select.options[select.selectedIndex];
+    let selectedValue = selectedOption.value;
+    if (selectedValue.slice(0, 5) === "SKILL") {
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("post/addSkillDay", {
+            studentID: studentID,
+            day : selectedOption.id
+        }, function (data) {
+            if (data.err) {
+                log("[addCourse()] : post/addHybridDay => " + data.err);
+            } else {
+                log("[addCourse()] : post/addHybridDay => Success");
+                location.reload();
+            }
+        });
+    } else if (selectedValue.slice(0, 3) === "FHB") {
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("post/addHybridDay", {
+            studentID: studentID,
+            subject : (selectedValue[selectedValue.length - 1] === "M") ? "Math" : "Physics",
+            day : selectedOption.id
+        }, function (data) {
+            if (data.err) {
+                log("[addCourse()] : post/addHybridDay => " + data.err);
+            } else {
+                log("[addCourse()] : post/addHybridDay => Success");
+                location.reload();
+            }
+        });
+    } else {
+        let courseID = selectedOption.id;
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("post/addStudentCourse", {
+            studentID: studentID,
+            courseID: [courseID]
+        }, function (data) {
+            if (data.err) {
+                log("[addCourse()] : post/addStudentCourse => " + data.err);
+            } else {
+                log("[addCourse()] : post/addStudentCourse => Success");
+                location.reload();
+            }
+        });
+    }
 }
 
 function removeCourse() {
