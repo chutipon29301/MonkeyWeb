@@ -6,7 +6,6 @@ function log(text) {
     "use strict";
     console.log(text);
 }
-
 /**
  * Add variable to document.cookie
  * @param key variable name to be added
@@ -58,7 +57,6 @@ function checkLogin() {
         }
     });
 }
-
 //noinspection JSUnusedLocalSymbols
 /**
  * Check whether user is student
@@ -123,7 +121,6 @@ function checkValidUser(position) {
     });
 }
 
-
 /**
  * Generate object of document.cookie
  * @return {object} object of document.cookie
@@ -141,7 +138,6 @@ function getCookieDict() {
     }
     return obj;
 }
-
 /**
  * Logout current user
  */
@@ -152,7 +148,6 @@ function logout() {
     deleteCookie("monkeyWebPassword");
     self.location = "/login";
 }
-
 /**
  * Set student name to navigation bar
  */
@@ -174,7 +169,6 @@ function setStudentNavName() {
         }
     });
 }
-
 /**
  * Load registration page from status of student
  */
