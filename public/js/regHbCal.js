@@ -33,12 +33,12 @@ $(document).ready(function () {
                 courseClass = document.getElementsByClassName('btn-sun ' + cookie.regisCourse[i].day.getHours() + '.1');
                 for (let j = 0; j < courseClass.length; j++) {
                     courseClass[j].className = courseClass[j].className.replace(/btn-default/g, "btn-basic disabled");
-                    courseClass[j].innerHTML = 'CR : ' + cookie.regisCourse[i].courseName;
+                    courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
                     if (courseClass[j].className.indexOf('col-md') !== -1) {
                         courseClass[j].className = courseClass[j].className.replace(/col-md-6/g, "col-md-12");
                     }
                     else if (courseClass[j].className.indexOf('col-xs') !== -1) {
-                        courseClass[j].style = "padding: 18% 0 18% 0 ; color:black "
+                        courseClass[j].style = "padding: 12% 0 12% 0 ; color:black "
                     }
                 }
             }

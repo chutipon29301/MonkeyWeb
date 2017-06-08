@@ -1,4 +1,6 @@
 var availableCourse;
+var allSuggest;
+var suggestCourse;
 $(document).ready(function () {
     var cookie = getCookieDict();
     if (cookie.regisCourse !== undefined) {
@@ -12,13 +14,21 @@ $(document).ready(function () {
     $('#name').html(decodeURIComponent(cookie.name.name));
     $('#sname').html(decodeURIComponent(cookie.name.sname));
     $('#grade').val(cookie.grade);
-    if (parseInt($('#grade').val()) >= 10) {
+    var grade = parseInt($('#grade').val());
+    if (grade >= 10) {
         $('#info1,#info3').hide()
     }
     else {
         $('#info2,#info4').hide()
     }
     genTable();
+    $.post("post/listCourseSuggestion", {grade: grade}, function (suggestCR) {
+        allSuggest = suggestCR;
+        for (let i = 0; i <= allSuggest.course.length; i++) {
+            var lv = allSuggest.course[i].level;
+            $('#level').append('<option value="' + lv + '">' + lv + '</option>');
+        }
+    });
     document.getElementById('show_price').innerHTML = 0;
     availableCourse = {
         sat81: false,
@@ -38,15 +48,14 @@ $(document).ready(function () {
         sun151: false,
         sun152: false
     };
-    var grade = $('#grade').val();
-    if (grade !== "0") {
+    if (grade !== 0) {
         //add SAT for high school student
-        if (parseInt(grade) >= 10) {
+        if (grade >= 10) {
             $.post("post/gradeCourse", {grade: 13}, function (arrayCourse) {
                 updateAvaiCr(arrayCourse)
             });
         }
-        $.post("post/gradeCourse", {grade: parseInt(grade)}, function (arrayCourse) {
+        $.post("post/gradeCourse", {grade: grade}, function (arrayCourse) {
             updateAvaiCr(arrayCourse);
             updateTable(availableCourse);
         });
@@ -129,7 +138,6 @@ function updateTable(course) { /* update table after gen to change from blank to
     for (let i in course) {
         if (course[i] !== false) {
             var temp = document.getElementsByClassName("btn-" + i.slice(0, 3) + " " + i.slice(3, i.length - 1) + "." + i[i.length - 1]);
-            console.log(temp);
             for (let j = 0; j < temp.length; j++) {
                 var rep = temp[j].className;
                 rep = rep.replace(/btn-basic disabled/g, "btn btn-default");
@@ -241,10 +249,12 @@ function next(gg) {
 function back() {
     self.location = "registrationName";
 }
-function addSuggest() {
-    var grade = parseInt($('#grade').val());
-    $.post("post/listCourseSuggestion", grade, function (suggest) {
-        log('===================');
-        log(suggest);
-    });
+function highlight() {
+    var level = $('#level').val();
+    for (let i = 0; i < allSuggest.course.length; i++) {
+        if (level === allSuggest.course[i].level) {
+            suggestCourse = allSuggest.course[i].courseID;
+        }
+    }
+    updateTable(availableCourse);
 }
