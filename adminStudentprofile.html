@@ -15,7 +15,7 @@
 <link href="/css/style.css" rel="stylesheet" type="text/css">
 <script src="js/jquery-1.11.3.min.js"></script>
 <script src="js/bootstrap.js"></script>
-<script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
+<script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
 <script>
 	checkLogin();
 	checkValidUser(["tutor", "admin"]);
@@ -120,7 +120,41 @@
     	saveAs(blob, "table.png");
 		});
 	}
-	</script> 
+  </script> 
+  <!--  Modal for removeCourse-->
+  <div id="removeModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Remove Course</h1>
+        </div>
+        <div class="modal-body">
+          <h4>Are you sure to delete this course?</h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger">Yes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--  Modal for addCourse--> 
+  <div id="addModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Add Course</h1>
+        </div>
+        <div class="modal-body" id="searchCourse">
+          <input class="typeahead" type="text" placeholder="Course">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Confirm</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancle</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
