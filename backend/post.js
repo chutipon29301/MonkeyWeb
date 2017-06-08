@@ -6,6 +6,7 @@ var run=function(app,db){
     var path=require("path");
 
     var configDB=db.collection("config");
+    var courseSuggestionDB=db.collection("courseSuggestion");
     var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
     var userDB=db.collection("user");
@@ -226,6 +227,7 @@ var run=function(app,db){
                     request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
+                        output=Object.assign(output,{email:result.email,phone:result.phone});
                         output.courseID=[];
                         getCourseDB(function(courseDB){
                             courseDB.find({student:{$all:[studentID]}}).sort({"day":1}).toArray(function(err,course){
@@ -250,6 +252,21 @@ var run=function(app,db){
                 res.send({err:"The requested ID doesn't exist."});
             }
             else if(result.position=="student")res.send({registrationState:result.student.registrationState});
+            else res.send({err:"The requested ID isn't a student."});
+        });
+    });
+    //OK {studentID,registrationState} return {}
+    app.post("/post/changeRegistrationState",function(req,res){
+        var studentID=parseInt(req.body.studentID);
+        var registrationState=req.body.registrationState;
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested ID doesn't exist."});
+            }
+            else if(result.position=="student"){
+                userDB.updateOne({_id:studentID},{$set:{"student.registrationState":registrationState}});
+                res.send({});
+            }
             else res.send({err:"The requested ID isn't a student."});
         });
     });
@@ -490,13 +507,44 @@ var run=function(app,db){
             courseDB.findOne({_id:courseID},function(err,result){
                 if(result==null)res.send({err:"No course found."});
                 else{
-                    console.log(result);
                     getCourseName(courseID,function(courseName){
                         res.send({courseName:courseName,day:result.day,tutor:result.tutor,student:result.student});
                     });
                 }
             });
         });
+    });
+    //OK {grade,level} return {[courseID]}
+    app.post("/post/listCourseSuggestion",function(req,res){
+        var grade=parseInt(req.body.grade);
+        var level=req.body.level;
+        courseSuggestionDB.findOne({grade:grade,level:level},function(err,result){
+            if(result==null)res.send({courseID:[]});
+            else{
+                res.send({courseID:result.courseID});
+            }
+        });
+    });
+    //OK {grade,level,[courseID]} return {}
+    app.post("/post/addCourseSuggestion",function(req,res){
+        var grade=parseInt(req.body.grade);
+        var level=req.body.level;
+        var courseID=req.body.courseID;
+        courseSuggestionDB.updateOne({grade:grade,level:level},
+            {$setOnInsert:{_id:grade+level},$addToSet:{courseID:{$each:courseID}}},
+            {upsert:true}
+        );
+        res.send({});
+    });
+    //OK {grade,level,[courseID]} return {}
+    app.post("/post/removeCourseSuggestion",function(req,res){
+        var grade=parseInt(req.body.grade);
+        var level=req.body.level;
+        var courseID=req.body.courseID;
+        courseSuggestionDB.updateOne({grade:grade,level:level},
+            {$pull:{courseID:{$in:courseID}}}
+        );
+        res.send({});
     });
     //OK {subject,[grade],level,day,[tutor]} return {}
     app.post('/post/addCourse',function(req,res){
@@ -588,6 +636,14 @@ var run=function(app,db){
         hybridSeatDB.find().toArray(function(err,result){
             res.send(result);
         });
+    });
+    app.post("/debug/listCourseSuggestion",function(req,res){
+        courseSuggestionDB.find().toArray(function(err,result){
+            res.send(result);
+        });
+    });
+    app.get("*",function(req,res){
+        res.status(404).send("");
     });
 }
 module.exports.run=run;

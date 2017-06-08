@@ -27,6 +27,12 @@
 #allCourseTable tr:active{
 	background-color: #a8aeb7
 }
+#allallStudentInCourseTablee tr:hover{
+	background-color: #d0dbed
+}
+#allStudentInCourseTable tr:active{
+	background-color: #a8aeb7
+}
 #formHead div{
 	margin-bottom: 0;
 	padding-left: 0;
