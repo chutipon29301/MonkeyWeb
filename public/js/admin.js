@@ -392,6 +392,21 @@ function addRemoveCourse(id) {
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
 
+                let courseName = [];
+
+                for (let i = 0; i < data.course.length; i++) {
+                    let course = data.course[i];
+                    let grade = "";
+                    if (course.grade[0] > 6) {
+                        grade = "S" + course.grade.map(x => (x - 6)).join("");
+                    }else {
+                        grade = "P" + course.grade.join("");
+                    }
+                    courseName.push(course.subject + grade + course.level);
+                }
+
+
+
                 $("#addModal").modal();
             }
         });
@@ -400,6 +415,10 @@ function addRemoveCourse(id) {
         $("#removeModal").modal();
 
     }
+}
+
+function addCourse() {
+
 }
 
 function removeCourse() {

@@ -24,6 +24,7 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
 <!--add more script-->
+<script type="text/javascript" src="js/typeahead.bundle.min.js"></script>
 <script>
 	$(document).ready(getStudentProfile);
 </script>
@@ -132,24 +133,23 @@
           <h4>Are you sure to delete this course?</h4>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger" id="confirmDelete" onClick="removeCourse">Yes</button>
+          <button type="button" class="btn btn-danger" id="confirmDelete" onClick="removeCourse();">Yes</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
         </div>
       </div>
     </div>
   </div>
-  <!--  Modal for addCourse--> 
+  <!--  Modal for addCourse-->
   <div id="addModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h1>Add Course</h1>
         </div>
-        <div class="modal-body" id="searchCourse">
-          <input class="typeahead" type="text" placeholder="Course">
+        <div class="modal-body" align="center">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary">Confirm</button>
+          <button type="button" class="btn btn-primary" onClick="addCourse();">Confirm</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancle</button>
         </div>
       </div>
