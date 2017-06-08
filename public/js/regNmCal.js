@@ -15,12 +15,6 @@ $(document).ready(function () {
         $('#parentNum').val(cookie.tel.parent);
         $('#studentNum').val(cookie.tel.student)
     }
-    if ($('#name').val() !== '' && $('#nname').val() !== '' && $('#sname').val() !== '' && $('#grade').val() !== '0') {
-        document.getElementById('next').className = "btn btn-default";
-    }
-    else {
-        document.getElementById('next').className = "btn btn-basic disabled";
-    }
 });
 var ascii=/^[\x00-\xFF]*$/;
 var english = /^[a-zA-Z0-9]+$/;
@@ -75,7 +69,7 @@ function next() {
                 writeCookie('tel', JSON.stringify({parent: parentNum, student: studentNum}));
                 self.location = "registrationCourse"
             } else {
-                alert("กรุณากรอกข้อมูลให้ครบทุกช่อง")
+                alert("กรุณาเลือกชั้นเรียน")
             }
     }
 }
