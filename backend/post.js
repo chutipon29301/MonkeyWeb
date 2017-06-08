@@ -183,7 +183,7 @@ var run=function(app,db){
     app.post("/post/allStudent",function(req,res){
         var output=[];
         var eventEmitter=new events.EventEmitter();
-        userDB.find({position:"student"}).sort({"_id":1}).toArray(function(err,result){
+        userDB.find({position:"student"}).sort({_id:1}).toArray(function(err,result){
             var c=0;
             eventEmitter.on("finish",function(){
                 if(c==result.length)res.send({student:output});
@@ -224,13 +224,15 @@ var run=function(app,db){
                 if(result.position=="student"){
                     output=result.student;
                     var request=require("request");
-                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
+
+                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
+
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
                         output=Object.assign(output,{email:result.email,phone:result.phone});
                         output.courseID=[];
                         getCourseDB(function(courseDB){
-                            courseDB.find({student:{$all:[studentID]}}).sort({"day":1}).toArray(function(err,course){
+                            courseDB.find({student:{$all:[studentID]}}).sort({day:1}).toArray(function(err,course){
                                 for(var i=0;i<course.length;i++){
                                     output.courseID.push(course[i]._id);
                                 }
@@ -481,7 +483,7 @@ var run=function(app,db){
         var output=[];
         var eventEmitter=new events.EventEmitter();
         getCourseDB(function(courseDB){
-            courseDB.find().sort({"subject":1,"grade":1,"level":1,"tutor":1}).toArray(function(err,result){
+            courseDB.find().sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
                 var c=0;
                 eventEmitter.on("finish",function(){
                     if(c==result.length)res.send({course:output});
@@ -510,7 +512,7 @@ var run=function(app,db){
         var output=[];
         var eventEmitter=new events.EventEmitter();
         getCourseDB(function(courseDB){
-            courseDB.find({grade:{$bitsAllSet:[grade-1]}}).sort({"subject":1,"grade":1,"level":1,"tutor":1}).toArray(function(err,result){
+            courseDB.find({grade:{$bitsAllSet:[grade-1]}}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
                 var c=0;
                 eventEmitter.on("finish",function(){
                     if(c==result.length)res.send({course:output});
@@ -542,14 +544,17 @@ var run=function(app,db){
             });
         });
     });
-    //OK {grade,level} return {[courseID]}
+    //OK {grade} return {[course]}
     app.post("/post/listCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
-        var level=req.body.level;
-        courseSuggestionDB.findOne({grade:grade,level:level},function(err,result){
-            if(result==null)res.send({courseID:[]});
+        var output=[];
+        courseSuggestionDB.find({grade:grade}).sort({level:1}).toArray(function(err,result){
+            if(result==null)res.send({course:output});
             else{
-                res.send({courseID:result.courseID});
+                for(var i=0;i<result.length;i++){
+                    output[i]={level:result[i].level,courseID:result[i].courseID};
+                }
+                res.send({course:output});
             }
         });
     });
