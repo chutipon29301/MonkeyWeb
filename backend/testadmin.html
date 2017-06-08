@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -11,9 +10,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
         <script src="js/sha3.js"></script>
         <script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
-		<script>
-			checkLogin();
-			checkValidUser("admin");
+        <script>
+            checkLogin();
+            checkValidUser("admin");
             $(document).ready(function(){
                 refresh();
                 $.post("post/getConfig",function(data){
@@ -158,6 +157,12 @@
                         $("#listHybridSeat").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
+                $("#listCourseSuggestion").empty();
+                $.post("debug/listCourseSuggestion",function(data,status){
+                    for(var i=0;i<data.length;i++){
+                        $("#listCourseSuggestion").append(JSON.stringify(data[i])+"<br>");
+                    }
+                });
             };
         </script>
     </head>
@@ -186,6 +191,14 @@
                     </div>
                     <div id="listHybridSeatDiv" class="panel-collapse collapse">
                         <div class="panel-body" id="listHybridSeat"></div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#listCourseSuggestionDiv">
+                        <div class="panel-title">List courseSuggestion</div>
+                    </div>
+                    <div id="listCourseSuggestionDiv" class="panel-collapse collapse">
+                        <div class="panel-body" id="listCourseSuggestion"></div>
                     </div>
                 </div>
             </div>
@@ -243,6 +256,19 @@
                             <form action="post/registrationState" method="post">
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
                                 <button class="btn btn-default" type="submit">post/registrationState</button>
+                            </form>
+                            <br>
+                            <form action="post/changeRegistrationState" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <select class="form-control" name="registrationState" required>
+                                    <option disabled="" selected="">Select registrationState</option>
+                                    <option value="registered">registered</option>
+                                    <option value="rejected">rejected</option>
+                                    <option value="transferred">transferred</option>
+                                    <option value="untransferred">untransferred</option>
+                                    <option value="unregistered">unregistered</option>
+                                </select>
+                                <button class="btn btn-default" type="submit">post/changeRegistrationState</button>
                             </form>
                             <br>
                         </div>
@@ -381,6 +407,28 @@
                             <form action="post/courseInfo" method="post">
                                 <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
                                 <button class="btn btn-default" type="submit">post/courseInfo</button>
+                            </form>
+                            <br>
+                            <form action="post/listCourseSuggestion" method="post">
+                                <input class="form-control" type="number" name="grade" placeholder="grade" required>
+                                <input class="form-control" type="text" name="level" placeholder="level" required>
+                                <button class="btn btn-default" type="submit">post/listCourseSuggestion</button>
+                            </form>
+                            <br>
+                            <form action="post/addCourseSuggestion" method="post">
+                                <input class="form-control" type="number" name="grade" placeholder="grade" required>
+                                <input class="form-control" type="text" name="level" placeholder="level" required>
+                                <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
+                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default" type="submit">post/addCourseSuggestion</button>
+                            </form>
+                            <br>
+                            <form action="post/removeCourseSuggestion" method="post">
+                                <input class="form-control" type="number" name="grade" placeholder="grade" required>
+                                <input class="form-control" type="text" name="level" placeholder="level" required>
+                                <input class="form-control input-array" type="text" name="courseID" placeholder="courseID" required>
+                                <button class="btn btn-default col-sm-1 addCou">+</button>
+                                <button class="btn btn-default" type="submit">post/removeCourseSuggestion</button>
                             </form>
                             <br>
                             <form action="post/addCourse" method="post">

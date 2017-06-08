@@ -57,34 +57,6 @@ function checkLogin() {
         }
     });
 }
-//noinspection JSUnusedLocalSymbols
-/**
- * Check whether user is student
- * if user is not student, logout
- */
-function checkIDStudent() {
-    "use strict";
-    let cookie = getCookieDict();
-    let user = cookie.monkeyWebUser;
-    log("[checkLogin()] : cookie -> ");
-    log(cookie);
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("/post/position", {
-        userID: user
-    }, function (data) {
-        if (data.err) {
-            log("[checkLogin()] : post/position => Error");
-        } else {
-            log("[checkLogin()] : post/position => ");
-            log(data);
-            if (data.position !== "student") {
-                log("[checkLogin()] : redirecting to login");
-                logout();
-            }
-        }
-    });
-}
-
 /**
  * Check if user is in valid page
  * @param position of available user in page

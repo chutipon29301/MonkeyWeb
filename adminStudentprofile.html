@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -58,7 +59,7 @@
     <h5 id="studentLevel">&nbsp;</h5>
     <h5 id="studentState">&nbsp;</h5>
     <h5 id="studentStatus">&nbsp;</h5>
-    <!--    <h5 id="studentFHB">FHB: MJ-DB01a</h5>--> 
+    <!--    <h5 id="studentFHB">FHB: MJ-DB01a</h5>-->
     <button onClick="downloadCanvas();" class="btn btn-default">Download Table</button>
     <br>
     <br>
@@ -69,53 +70,44 @@
         <thead>
           <tr>
             <th></th>
-            <th>8:00-10:00</th>
-            <th>10:00-12:00</th>
-            <th>13:00-15:00</th>
-            <th>15:00-17:00</th>
-            <th>16:00-18:00</th>
+            <th>TUE</th>
+            <th>THU</th>
+            <th>SAT</th>
+            <th>SUN</th>
           </tr>
         </thead>
         <tr>
-          <td>TUE</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td class="col-md-2">8:00-10:00</td>
+          <td><button type="button" class="btn btn-disable col-md-12" id="tue8">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-disable col-md-12" id="thu8">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sat8">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sun8">&nbsp;</button></td>
         </tr>
         <tr>
-          <td>THU</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td>10:00-12:00</td>
+          <td><button type="button" class="btn btn-disable col-md-12" id="tue10">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-disable col-md-12" id="thu10">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sat10">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sun10">&nbsp;</button></td>
         </tr>
         <tr>
-          <td>SAT</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td>13:00-15:00</td>
+          <td><button type="button" class="btn btn-disable col-md-12" id="tue13">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-disable col-md-12" id="thu13">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sat13">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sun15">&nbsp;</button></td>
         </tr>
         <tr>
-          <td>SUN</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td>15:00-17:00</td>
+          <td><button type="button" class="btn btn-default col-md-12" id="tue15">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="thu15">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sat15">&nbsp;</button></td>
+          <td><button type="button" class="btn btn-default col-md-12" id="sun15">&nbsp;</button></td>
         </tr>
       </table>
     </div>
   </div>
-  <div class="btn-group col-md-offset-2">
-    <button type="button" class="btn btn-default">ADD</button>
-    <button type="button" class="btn btn-default">REMOVE</button>
-  </div>
-  <div class="btn-group col-md-offset-5">
+  <div class="btn-group col-md-offset-8">
     <button type="button" class="btn btn-success">APPROVE</button>
     <button type="button" class="btn btn-danger">REJECT</button>
   </div>
@@ -129,8 +121,7 @@
 		});
 	}
 	</script> 
-  <!-- InstanceEndEditable -->
-</div>
+  <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
     <div class="text-center center-block">
@@ -140,4 +131,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
