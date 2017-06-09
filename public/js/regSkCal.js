@@ -245,7 +245,7 @@ function updateTable(){
 					var hybridClass = document.getElementsByClassName('btn-'+day[k]+' '+cookie.regisHybrid[i].day.getHours()+'.1')
 					for(j=0;j<hybridClass.length;j++){
 						hybridClass[j].className = hybridClass[j].className+' hb';
-						hybridClass[j].innerHTML = 'FHB : '+cookie.regisHybrid[i].subject;
+						hybridClass[j].innerHTML = 'FHB : '+fullHBname(cookie.regisHybrid[i].subject);
 					}
 				}
 			}
