@@ -254,7 +254,8 @@ function updateTable(){
 }
 
 function back(){
-	self.location = 'registrationHybrid'
+	console.log(moment(0).day(daytoNum($('#skilldayEng').val())).hour(parseInt($('#skilltimeEng').val())/10).minute((parseInt($('#skilltimeEng').val())%10)*6).valueOf())
+	console.log(moment(0).day(daytoNum($('#skillday').val())).hour(parseInt($('#skilltime').val())/10).minute((parseInt($('#skilltime').val())%10)*6).valueOf())
 }
 
 function next(){
@@ -353,8 +354,9 @@ function submit(){
          	alert('Something went wrong! please try again')
          }
          else{
+         	console.log(cookie.regisCourse)
          	var coursetoThrow = []
-         	for(i=0;i<cookie.regisCourse.length;i++){
+         	for(i in cookie.regisCourse){
          		if(cookie.regisCourse[i]!=false){
          			if(cookie.regisCourse[i].select==true){
          				coursetoThrow.push(cookie.regisCourse[i].courseID)
@@ -368,8 +370,7 @@ function submit(){
          		else{
          			for(i in cookie.regisHybrid){
          				if(cookie.regisHybrid[i]!=false){
-         					var millisec = new Date(cookie.regisHybrid[i].day);
-         					$.post("post/addHybridDay",{studentID: parseInt(cookie.monkeyWebUser) , subject:cookie.regisHybrid[i].subject , day : millisec.getMilliseconds()},function(output3){
+         					$.post("post/addHybridDay",{studentID: parseInt(cookie.monkeyWebUser) , subject:cookie.regisHybrid[i].subject , day : cookie.regisHybrid[i].day},function(output3){
          						if(output3.err){
          							alert("Something went wrong! please try again")
          						}
@@ -390,6 +391,9 @@ function submit(){
 	         				}
 	         			})
 	         		}
+	         		alert('ลงทะเบียนเสร็จสิ้น')
+	         		self.location = 'home'
+
          		}
          	})
          }

@@ -287,6 +287,8 @@ var run=function(app,db){
     // Student Timetable
     //OK {studentID,[courseID]} return {}
     app.post("/post/addStudentCourse",function(req,res){
+        console.log("===========addStudentCourse==============")
+        console.log(req.body)
         var studentID=parseInt(req.body.studentID);
         var courseID=req.body.courseID;
         var eventEmitter=new events.EventEmitter();
@@ -347,6 +349,8 @@ var run=function(app,db){
     });
     //OK {studentID,day,subject} return {}
     app.post("/post/addSkillDay",function(req,res){
+        console.log("===========addSkillDay==============")
+        console.log(req.body)
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
@@ -390,6 +394,8 @@ var run=function(app,db){
     });
     //OK {studentID,day,subject} return {}
     app.post("/post/addHybridDay",function(req,res){
+        console.log("===========addHybridDay==============")
+        console.log(req.body)
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
@@ -479,6 +485,8 @@ var run=function(app,db){
     });
     //TODO {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
     app.post("/post/editStudent",function(req,res){
+        console.log("===========editStudent==============")
+        console.log(req.body)
         console.log("[REQUEST] addStudent");
         var studentID=parseInt(req.body.studentID);
         var input={};
