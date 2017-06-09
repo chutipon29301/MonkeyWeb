@@ -170,7 +170,7 @@ function getStudentProfile() {
             let hybrid = data.hybridDay;
 
             for (let i = 0; i < hybrid.length; i++) {
-                document.getElementById(hybrid[i].day).innerHTML = hybrid[i].subject;
+                document.getElementById(hybrid[i].day).innerHTML = (hybrid[i].subject === "M") ? "FHB : M" : "FHB : PH";
             }
 
             let courseData = [[], [], [], []];
@@ -341,9 +341,8 @@ function addRemoveCourse(timeID) {
     } else {
         document.getElementById("confirmDelete").value = button.value;
         document.getElementById("courseName").innerHTML = button.innerHTML;
-        let modal = $("#removeModal");
-        modal.value = timeID;
-        modal.modal();
+        document.getElementById("removeModal").value = timeID;
+        $("#removeModal").modal();
 
     }
 }
@@ -424,6 +423,9 @@ function removeCourse() {
             }
         });
     } else if (courseName.slice(0, 3) === "FHB") {
+        log(studentID);
+        log(time);
+        log(document.getElementById("removeModal"));
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         $.post("post/removeHybridDay", {
             studentID: studentID,
