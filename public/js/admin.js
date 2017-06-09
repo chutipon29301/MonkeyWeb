@@ -173,6 +173,24 @@ function getStudentProfile() {
                 document.getElementById(hybrid[i].day).innerHTML = (hybrid[i].subject === "M") ? "FHB : M" : "FHB : PH";
             }
 
+            let skill = data.skillDay;
+
+            for (let i = 0; i < skill.length; i++) {
+                let time = new Date(skill[i].day);
+                let hour = new Date(skill[i].day);
+                if (time.getMinutes() === 30) {
+                    time.setMinutes(0);
+                }
+                if (time.getHours() === 9 || time.getHours() === 11 || time.getHours() === 14 || time.getHours() === 16) {
+                    time.setHours(time.getHours() - 1);
+                }
+                //+ hour.getHours() + ":" + (hour.getMinutes() === 0) ? "0" : "30"
+                log(hour.getHours());
+                log((hour.getMinutes() === 0) ? "0" : "30");
+                document.getElementById("" + time.getTime()).innerHTML = "SKILL " + hour.getHours() + ":" +
+                    ((hour.getMinutes() === 0) ? "0" : "30");
+            }
+
             let courseData = [[], [], [], []];
             for (let i = 0; i < 4; i++) {
                 for (let j = 0; j < 4; j++) {
@@ -330,10 +348,13 @@ function addRemoveCourse(timeID) {
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
 
-                let hour = time.getHours();
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + hour + ":00 - " + (hour + 1) + ":00</option>";
-                time.setHours(hour + 1);
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + (hour + 1) + ":00 - " + (hour + 2) + ":00</option>";
+                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":00</option>";
+                time.setMinutes(time.getMinutes() + 30);
+                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":30</option>";
+                time.setMinutes(time.getMinutes() + 30);
+                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":00</option>";
+                time.setMinutes(time.getMinutes() + 30);
+                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":30</option>";
 
                 $("#addModal").modal();
             }
@@ -343,7 +364,6 @@ function addRemoveCourse(timeID) {
         document.getElementById("courseName").innerHTML = button.innerHTML;
         document.getElementById("removeModal").value = timeID;
         $("#removeModal").modal();
-
     }
 }
 
@@ -359,6 +379,7 @@ function addCourse() {
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         $.post("post/addSkillDay", {
             studentID: studentID,
+            subject: "M",
             day: selectedOption.id
         }, function (data) {
             if (data.err) {
@@ -410,10 +431,13 @@ function removeCourse() {
     let time = parseInt(document.getElementById("removeModal").value);
 
     if (courseName.slice(0, 5) === "SKILL") {
+        let hour = new Date(time);
+        hour.setMinutes(parseInt(courseName.slice(courseName.indexOf(":") + 1, courseName.length)));
+        hour.setHours(parseInt(courseName.slice(courseName.indexOf(" ") + 1, courseName.indexOf(":"))));
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         $.post("post/removeSkillDay", {
             studentID: studentID,
-            day: time
+            day: hour.getTime()
         }, function (data) {
             if (data.err) {
                 log("[addCourse()] : post/removeSkillDay => " + data.err);
