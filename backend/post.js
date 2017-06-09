@@ -502,8 +502,15 @@ var run=function(app,db){
         addFieldInt("grade","student.grade");
         addField("phoneParent","student.phoneParent");
         configDB.findOne({},function(err,config){
-            userDB.updateOne({_id:studentID},{$set:input},function(){
-                res.send({});
+            userDB.findOne({_id:studentID},function(err,result){
+                userDB.updateOne({_id:studentID},{$set:input},function(){
+                    if(result.student.registrationState=="unregistered"){
+                        userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"untransferred"}},function(){
+                            res.send({});
+                        });
+                    }
+                    else res.send({});
+                });
             });
         });
     });
@@ -703,10 +710,10 @@ var run=function(app,db){
             }
             else{
                 if(result.position=="student"){
-                    configDB.findOne({},function(err,result){
-                        var newPath=result.receiptPath;
-                        var year=result.year;
-                        var quarter=result.quarter;
+                    configDB.findOne({},function(err,config){
+                        var newPath=config.receiptPath;
+                        var year=config.year;
+                        var quarter=config.quarter;
                         newPath+="CR"+year+"Q"+quarter+"/";
                         var originalName=file.originalname;
                         var originalType=originalName.slice(originalName.lastIndexOf("."));
@@ -715,7 +722,14 @@ var run=function(app,db){
                             if(err)res.send({err:err});
                             else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
                                 if(err)res.send({err:err});
-                                else res.send({});
+                                else{
+                                    if(result.student.registrationState=="untransferred"){
+                                        userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
+                                            res.send({});
+                                        });
+                                    }
+                                    else res.send({});
+                                }
                             });
                         });
                     });

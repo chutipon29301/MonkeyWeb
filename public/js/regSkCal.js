@@ -8,6 +8,7 @@ $(document).ready(function(){
 	cookie.name = JSON.parse(cookie.name)
 	cookie.nameE = JSON.parse(cookie.nameE)
 	cookie.tel = JSON.parse(cookie.tel)
+	console.log(cookie)
 	$('#name').html(decodeURIComponent(cookie.name['nname'])+' '+decodeURIComponent(cookie.name['name'])+' '+decodeURIComponent(cookie.name['sname']))
 	$('#nameE').html(decodeURIComponent(cookie.nameE['nname'])+' '+decodeURIComponent(cookie.nameE['name'])+' '+decodeURIComponent(cookie.nameE['sname']))
 	$('#parentTel').html(cookie.tel.parent+'(ผู้ปกครอง)')
@@ -15,7 +16,6 @@ $(document).ready(function(){
 	$('#email').html(cookie.email)
 	$('#crFee').html(cookie.courseFee.slice(0,cookie.courseFee.length-3)+',000' +' บาท')
 	$('#grade').html(gradetoText(cookie.grade))
-	console.log(cookie)
 	var crPrint = ''
 	for(i in cookie.regisCourse){
 		if(cookie.regisCourse[i]!=false){
@@ -24,7 +24,7 @@ $(document).ready(function(){
                 cookie.regisCourse[i].courseName+='(HB)'
             }
 			if(cookie.regisCourse[i].select){
-				crPrint += numtoDay(cookie.regisCourse[i].day.getDay())+' '+cookie.regisCourse[i].day.getHours()+'.00 น. : '+cookie.regisCourse[i].courseName+'<br>'
+				crPrint += numtoDay(cookie.regisCourse[i].day.getDay())+' '+cookie.regisCourse[i].day.getHours()+'.00-'+(cookie.regisCourse[i].day.getHours()+2)+'.00 น. : '+cookie.regisCourse[i].courseName+'<br>'
 			}
 			if(cookie.regisCourse[i].day.getDay()==6 && cookie.regisCourse[i].select==true){
 				var time = cookie.regisCourse[i].day.getHours()
@@ -254,7 +254,8 @@ function updateTable(){
 }
 
 function back(){
-	self.location = 'registrationHybrid'
+	console.log(moment(0).day(daytoNum($('#skilldayEng').val())).hour(parseInt($('#skilltimeEng').val())/10).minute((parseInt($('#skilltimeEng').val())%10)*6).valueOf())
+	console.log(moment(0).day(daytoNum($('#skillday').val())).hour(parseInt($('#skilltime').val())/10).minute((parseInt($('#skilltime').val())%10)*6).valueOf())
 }
 
 function next(){
@@ -342,5 +343,59 @@ function fullHBname(name){
 	}
 }
 function submit(){
+	var cookie = getCookieDict();
+	cookie.regisCourse = JSON.parse(cookie.regisCourse)
+	cookie.regisHybrid = JSON.parse(cookie.regisHybrid)
+	cookie.name = JSON.parse(cookie.name)
+	cookie.nameE = JSON.parse(cookie.nameE)
+	cookie.tel = JSON.parse(cookie.tel)
+	$.post("post/editStudent", {studentID: parseInt(cookie.monkeyWebUser) , firstname : decodeURIComponent(cookie.name.name) , lastname : decodeURIComponent(cookie.name.sname) , nickname : decodeURIComponent(cookie.name.nname) , firstnameEn : decodeURIComponent(cookie.nameE.name) , lastnameEn : decodeURIComponent(cookie.nameE.sname) , nicknameEn : decodeURIComponent(cookie.nameE.nname) , email : cookie.email , phone : cookie.tel.student , grade : parseInt(cookie.grade) , phoneParent : cookie.tel.parent}, function (output1) {
+         if(output1.err){
+         	alert('Something went wrong! please try again')
+         }
+         else{
+         	console.log(cookie.regisCourse)
+         	var coursetoThrow = []
+         	for(i in cookie.regisCourse){
+         		if(cookie.regisCourse[i]!=false){
+         			if(cookie.regisCourse[i].select==true){
+         				coursetoThrow.push(cookie.regisCourse[i].courseID)
+         			}
+         		}
+         	}
+         	$.post("post/addStudentCourse",{studentID: parseInt(cookie.monkeyWebUser) , courseID : coursetoThrow} , function(output2){
+         		if (output2.err) {
+         			alert('Something went wrong! please try again')
+         		}
+         		else{
+         			for(i in cookie.regisHybrid){
+         				if(cookie.regisHybrid[i]!=false){
+         					$.post("post/addHybridDay",{studentID: parseInt(cookie.monkeyWebUser) , subject:cookie.regisHybrid[i].subject , day : cookie.regisHybrid[i].day},function(output3){
+         						if(output3.err){
+         							alert("Something went wrong! please try again")
+         						}
+         					})
+         				}
+         			}
+         			if($('skilltime').val()!='0'){
+	         			$.post("post/addSkillDay",{studentID: parseInt(cookie.monkeyWebUser) , subject:'M' , day:moment(0).day(daytoNum($('#skillday').val())).hour(parseInt($('#skilltime').val())/10).minute((parseInt($('#skilltime').val())%10)*6).valueOf()},function(output4){
+	         				if(output4.err){
+	         					alert("Something went wrong! please try again")
+	         				}
+	         			})
+	         		}
+	         		if($('skilltimeEng').val()!='0'){
+	         			$.post("post/addSkillDay",{studentID: parseInt(cookie.monkeyWebUser) , subject:'E' , day:moment(0).day(daytoNum($('#skilldayEng').val())).hour(parseInt($('#skilltimeEng').val())/10).minute((parseInt($('#skilltimeEng').val())%10)*6).valueOf()},function(output4){
+	         				if(output4.err){
+	         					alert("Something went wrong! please try again")
+	         				}
+	         			})
+	         		}
+	         		alert('ลงทะเบียนเสร็จสิ้น')
+	         		self.location = 'home'
 
-}
+         		}
+         	})
+         }
+    });
+};
