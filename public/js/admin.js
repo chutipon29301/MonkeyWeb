@@ -188,13 +188,35 @@ function getStudentProfile() {
                     ((hour.getMinutes() === 0) ? "00" : "30");
             }
 
-            let courseData = [[], [], [], []];
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
-                    courseData[i][j] = 'MS123c';
-                }
-            }
-            generateImage(courseData);
+            let table = document.getElementById("courseTable");
+            log(table.rows[1].cells);
+            // for (let i  = 0; i < table.rows.length; i++){
+            //
+            // }
+
+            // let courseData = [[], [], [], []];
+            // for (let i = 0; i < 4; i++) {
+            //     for (let j = 0; j < 4; j++) {
+            //         courseData[i][j] = 'MS123c';
+            //     }
+            // }
+            // generateImage(courseData);
+        }
+    });
+}
+
+function changeRegistrationState(registrationState) {
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    $.post("post/changeRegistrationState", {
+        studentID: studentID,
+        registrationState: registrationState
+    }, function (data) {
+        if (data.err) {
+            log("[changeRegistrationState()] : post/return => " + data.err);
+        } else {
+            log("[changeRegistrationState()] : post/return => Success");
+            location.reload()
         }
     });
 }

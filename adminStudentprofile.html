@@ -66,7 +66,7 @@
   </div>
   <div class="container-fluid">
     <div class="table-responsive col-md-10 col-md-offset-1">
-      <table class="table table-bordered">
+      <table class="table table-bordered" id="courseTable">
         <thead>
           <tr>
             <th class="col-md-2"></th>
@@ -108,10 +108,10 @@
     </div>
   </div>
   <div class="btn-group col-md-offset-9">
-    <button type="button" class="btn btn-success">APPROVE</button>
-    <button type="button" class="btn btn-danger">REJECT</button>
+    <button type="button" class="btn btn-success" onClick="changeRegistrationState('registered');">APPROVE</button>
+    <button type="button" class="btn btn-danger" onClick="changeRegistrationState('rejected');">REJECT</button>
   </div>
-  <canvas id="canvas" style="border:2px solid black;" width="800" height="360" hidden="true"></canvas>
+  <canvas id="canvas" style="border:2px solid black;" width="790" height="560" hidden="true"></canvas>
   <script src="js/FileSaver.min.js" type="text/javascript"></script> 
   <script>
 	function downloadCanvas(){
