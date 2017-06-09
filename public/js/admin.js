@@ -184,11 +184,8 @@ function getStudentProfile() {
                 if (time.getHours() === 9 || time.getHours() === 11 || time.getHours() === 14 || time.getHours() === 16) {
                     time.setHours(time.getHours() - 1);
                 }
-                //+ hour.getHours() + ":" + (hour.getMinutes() === 0) ? "0" : "30"
-                log(hour.getHours());
-                log((hour.getMinutes() === 0) ? "0" : "30");
                 document.getElementById("" + time.getTime()).innerHTML = "SKILL " + hour.getHours() + ":" +
-                    ((hour.getMinutes() === 0) ? "0" : "30");
+                    ((hour.getMinutes() === 0) ? "00" : "30");
             }
 
             let courseData = [[], [], [], []];
