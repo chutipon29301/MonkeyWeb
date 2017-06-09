@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,6 +9,7 @@
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <link rel="stylesheet" type="text/css" href="css/component.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <link href="css/style.css" rel="stylesheet" type="text/css">
@@ -23,7 +25,6 @@
 </script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
-<!--add more script-->
 <!-- InstanceEndEditable -->
 </head>
 <body>
@@ -36,7 +37,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="defaultNavbar1">
       <ul class="nav navbar-nav">
-		  <li class="w3-hide-large"><a href="studentProfile" class="studentName"><strong id="studentNavNameSmall">&nbsp;</strong></a></li>
+        <li class="w3-hide-large"><a href="studentProfile" class="studentName"><strong id="studentNavNameSmall">&nbsp;</strong></a></li>
         <li><a href="#" onClick="loadRegistrationPage();">Registration<span class="sr-only">(current)</span></a></li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Course<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -65,24 +66,24 @@
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
   <div class="box" align="center">
+  <form action="post/submitReceipt" method="post" enctype="multipart/form-data">
     <input type="file" name="file-1[]" id="file-1" style="opacity: 0;height: 0;" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple />
     <label for="file-1">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
         <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
       </svg>
       <span>Choose a file&hellip;</span></label>
-  </div>
-  <div class="w3-hide-small w3-hide-medium">
-   <br>
-    <button class="btn btn-default col-md-1 col-md-offset-5">Upload</button>
-    <button class="btn btn-default col-md-1">Print</button>
-  </div>
-  <div class="w3-hide-large">
-   <br>
-    <button class="btn btn-default col-xs-4 col-xs-offset-2">Upload</button>
-    <button class="btn btn-default col-xs-4">Print</button>
-  </div>
-  <script src="js/custom-file-input.js"></script>
+    </div>
+    <div class="w3-hide-small w3-hide-medium"> <br>
+      <button type="submit" class="btn btn-default col-md-1 col-md-offset-5"><i class="fa fa-circle-o-notch fa-spin"></i>Upload</button>
+      <button class="btn btn-default col-md-1">Next</button>
+    </div>
+    <div class="w3-hide-large"> <br>
+      <button type="submit" class="btn btn-default col-xs-4 col-xs-offset-2"><i class="fa fa-circle-o-notch fa-spin"></i>Upload</button>
+      <button class="btn btn-default col-xs-4">Next</button>
+    </div>
+  </form>
+  <script src="js/custom-file-input.js"></script> 
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
@@ -93,4 +94,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>

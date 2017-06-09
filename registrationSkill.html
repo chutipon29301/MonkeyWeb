@@ -8,10 +8,12 @@
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
-	.w3-teal{
-		color: #555555!important;
-		background-color: #E7E7E7!important;
+	.modalbody{
+		height: 40vh;
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
+
 	.btn{
 		color: rgba(0,0,0,1.00)!important;
 	}
@@ -111,14 +113,10 @@
           <select class="form-control" id="skilltime">
            	<option value="0">กรุณาเลือกเวลาเรียน</option>
             <option value="90">9.00-10.00</option>
-            <option value="95">9.30-10.30</option>
             <option value="100">10.00-11.00</option>
-            <option value="105">10.30-11.30</option>
             <option value="110">11.00-12.00</option>
             <option value="130">13.00-14.00</option>
-            <option value="135">13.30-14.30</option>
             <option value="140">14.00-15.00</option>
-            <option value="145">14.30-15.30</option>
             <option value="150">15.00-16.00</option>
           </select>
         </div>
@@ -141,14 +139,10 @@
           <select class="form-control" id="skilltimeEng">
            	<option value="0">กรุณาเลือกเวลาเรียน</option>
             <option value="90">9.00-10.00</option>
-            <option value="95">9.30-10.30</option>
             <option value="100">10.00-11.00</option>
-            <option value="105">10.30-11.30</option>
             <option value="110">11.00-12.00</option>
             <option value="130">13.00-14.00</option>
-            <option value="135">13.30-14.30</option>
             <option value="140">14.00-15.00</option>
-            <option value="145">14.30-15.30</option>
             <option value="150">15.00-16.00</option>
           </select>
         </div>
@@ -259,60 +253,65 @@
   </div>
 	<div id="id01" class="w3-modal">
     <div class="w3-modal-content w3-animate-zoom">
-      <header class="w3-container w3-teal"> 
+      <header class="w3-container w3-teal" style="color: #555555!important;background-color: #E7E7E7!important"> 
         <span onclick="document.getElementById('id01').style.display='none'" 
         class="w3-button w3-display-topright">&times;</span>
         <br><h2>Registration information</h2><br>
       </header>
-      
-      <div class="w3-container">
+      <div class="w3-container modalbody">
         <p></p>
         	<div>
 				   <div class="container">
 					<form class="form-horizontal">
 					  <div class="form-group">
-						<label class="control-label col-md-1">ชื่อ:</label>
+						<label class="control-label col-md-3">ชื่อ:</label>
 						<div class="col-md-5">
 						  <p id="name" class="form-control-static"></p>
 						  <p id="nameE" class="form-control-static"></p>
 						</div>
 					  </div>
 					  <div class="form-group">
-						<label class="control-label col-md-1">ชั้น:</label>
+						<label class="control-label col-md-3">เบอร์โทร:</label>
 						<div class="col-md-5">
-						  <select name="grade" class="form-control" id="grade" disabled>
-						   <option value="0">กรุณาเลือกชั้นเรียน</option>
-							<option value="1">ประถม 1</option>
-							<option value="2">ประถม 2</option>
-							<option value="3">ประถม 3</option>
-							<option value="4">ประถม 4</option>
-							<option value="5">ประถม 5</option>
-							<option value="6">ประถม 6</option>
-							<option value="7">มัธยม 1</option>
-							<option value="8">มัธยม 2</option>
-							<option value="9">มัธยม 3</option>
-							<option value="10">มัธยม 4</option>
-							<option value="11">มัธยม 5</option>
-							<option value="12">มัธยม 6</option>
-						  </select>
+						  <p id="parentTel" class="form-control-static"></p>
+						  <p id="studentTel" class="form-control-static"></p>
+						</div>
+					  </div>
+					  <div class="form-group">
+						<label class="control-label col-md-3">E-mail:</label>
+						<div class="col-md-5">
+						  <p id="email" class="form-control-static"></p>
+						</div>
+					  </div>
+					  <div class="form-group">
+						<label class="control-label col-md-3">ชั้น:</label>
+						<div class="col-md-5">
+						  <p id="grade" class="form-control-static"></p>
 						</div>
 					  </div>
 					  	<div class="form-group">
-						<label class="control-label col-md-1">Course:</label>
+						<label class="control-label col-md-3">Course(CR):</label>
 						<div class="col-md-5">
 							<p id="cr" class="form-control-static"></p>
 						</div>
 					  </div>
 						<div class="form-group">
-						<label class="control-label col-md-1">Hybrid:</label>
+						<label class="control-label col-md-3">Full Hybrid(FHB):</label>
 						<div class="col-md-5">
 							<p id="hb" class="form-control-static"></p>
 						</div>
 					  </div>
 					  <div class="form-group">
-						<label class="control-label col-md-1">Skill:</label>
+						<label class="control-label col-md-3">Skill:</label>
 						<div class="col-md-5">
 							<p id="sk" class="form-control-static"></p>
+						</div>
+					  </div>
+					  <div class="form-group">
+						<label class="control-label col-md-3" style="color: red;font-size: 150%">ค่าลงทะเบียนคอร์ส:</label>
+						<div class="col-md-5">
+							<p id="crFee" class="form-control-static" style="color: red ; font-size: 150%">0</p>
+							<p style="color: red;">*สำหรับระบบไฮบริดจะชำระค่าบริการแยกกัน หากมีข้อสงสัยกรุณาติดต่อครูแมว</p>
 						</div>
 					  </div>
 					  
@@ -321,8 +320,7 @@
         	</div>
         <p></p>
       </div>
-      
-      <footer class="w3-container w3-teal">
+      <footer class="w3-container w3-teal" style="color: #555555!important;background-color: #E7E7E7!important">
        <p></p>
        <div align="right">
         <button class="btn btn-default" onclick="this.blur(); submit();">Submit</button>
