@@ -20,6 +20,9 @@ $(document).ready(function(){
 	for(i in cookie.regisCourse){
 		if(cookie.regisCourse[i]!=false){
 			cookie.regisCourse[i].day = new Date(cookie.regisCourse[i].day)
+			if (cookie.regisCourse[i].tutor[0]==99000){
+                cookie.regisCourse[i].courseName+='(HB)'
+            }
 			if(cookie.regisCourse[i].select){
 				crPrint += numtoDay(cookie.regisCourse[i].day.getDay())+' '+cookie.regisCourse[i].day.getHours()+'.00 น. : '+cookie.regisCourse[i].courseName+'<br>'
 			}
@@ -210,6 +213,9 @@ function updateTable(){
 	for(i in cookie.regisCourse){
 		if(cookie.regisCourse[i]!=false){
 			cookie.regisCourse[i].day = new Date(cookie.regisCourse[i].day)
+			if (cookie.regisCourse[i].tutor[0]==99000){
+                cookie.regisCourse[i].courseName+='(HB)'
+            }
 			if(cookie.regisCourse[i].day.getDay()==6 && cookie.regisCourse[i].select==true){
 				var j
 				var courseClass = document.getElementsByClassName('btn-sat '+cookie.regisCourse[i].day.getHours()+'.1')
@@ -239,7 +245,7 @@ function updateTable(){
 					var hybridClass = document.getElementsByClassName('btn-'+day[k]+' '+cookie.regisHybrid[i].day.getHours()+'.1')
 					for(j=0;j<hybridClass.length;j++){
 						hybridClass[j].className = hybridClass[j].className+' hb';
-						hybridClass[j].innerHTML = 'FHB : '+cookie.regisHybrid[i].subject;
+						hybridClass[j].innerHTML = 'FHB : '+fullHBname(cookie.regisHybrid[i].subject);
 					}
 				}
 			}
