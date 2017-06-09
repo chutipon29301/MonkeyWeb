@@ -477,7 +477,36 @@ var run=function(app,db){
             }
         });
     });
-    //TODO ADD editStudent
+    //TODO {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
+    app.post("/post/editStudent",function(req,res){
+        console.log("[REQUEST] addStudent");
+        var studentID=parseInt(req.body.studentID);
+        var input={};
+        var addField=function(field,out){
+            if(out==undefined)out=field;
+            if(req.body[field])input[out]=req.body[field];
+        };
+        var addFieldInt=function(field,out){
+            if(out==undefined)out=field;
+            if(req.body[field])input[out]=parseInt(req.body[field]);
+        };
+        addField("password");
+        addField("firstname");
+        addField("lastname");
+        addField("nickname");
+        addField("firstnameEn");
+        addField("lastnameEn");
+        addField("nicknameEn");
+        addField("email");
+        addField("phone");
+        addFieldInt("grade","student.grade");
+        addField("phoneParent","student.phoneParent");
+        configDB.findOne({},function(err,config){
+            userDB.updateOne({_id:studentID},{$set:input},function(){
+                res.send({});
+            });
+        });
+    });
     //OK {password,firstname,lastname,nickname,email,nicknameEng} return {}
     app.post("/post/addTutor",function(req,res){
         console.log("[REQUEST] addTutor");
