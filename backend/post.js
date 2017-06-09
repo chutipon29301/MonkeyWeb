@@ -1,6 +1,7 @@
 console.log("[START] post.js");
 var run=function(app,db){
     var events=require("events");
+    var fs=require("fs-extra");
     var moment=require("moment");
     var ObjectID=require('mongodb').ObjectID;
     var path=require("path");
@@ -366,7 +367,7 @@ var run=function(app,db){
             }
         });
     });
-    //TODO {studentID,day} return {}
+    //OK {studentID,day} return {}
     app.post("/post/removeSkillDay",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
@@ -476,7 +477,36 @@ var run=function(app,db){
             }
         });
     });
-    //TODO ADD editStudent
+    //TODO {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
+    app.post("/post/editStudent",function(req,res){
+        console.log("[REQUEST] addStudent");
+        var studentID=parseInt(req.body.studentID);
+        var input={};
+        var addField=function(field,out){
+            if(out==undefined)out=field;
+            if(req.body[field])input[out]=req.body[field];
+        };
+        var addFieldInt=function(field,out){
+            if(out==undefined)out=field;
+            if(req.body[field])input[out]=parseInt(req.body[field]);
+        };
+        addField("password");
+        addField("firstname");
+        addField("lastname");
+        addField("nickname");
+        addField("firstnameEn");
+        addField("lastnameEn");
+        addField("nicknameEn");
+        addField("email");
+        addField("phone");
+        addFieldInt("grade","student.grade");
+        addField("phoneParent","student.phoneParent");
+        configDB.findOne({},function(err,config){
+            userDB.updateOne({_id:studentID},{$set:input},function(){
+                res.send({});
+            });
+        });
+    });
     //OK {password,firstname,lastname,nickname,email,nicknameEng} return {}
     app.post("/post/addTutor",function(req,res){
         console.log("[REQUEST] addTutor");
@@ -664,7 +694,35 @@ var run=function(app,db){
     // Reciept
     //TODO configPath/File {studentID,file} return {}
     app.post("/post/submitReceipt",function(req,res){
-        //
+        var studentID=parseInt(req.body.studentID);
+        var file=req.files[0];
+        console.log(file);
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested student ID doesn't exist."});
+            }
+            else{
+                if(result.position=="student"){
+                    configDB.findOne({},function(err,result){
+                        var newPath=result.receiptPath;
+                        var year=result.year;
+                        var quarter=result.quarter;
+                        newPath+="CR"+year+"Q"+quarter+"/";
+                        var originalName=file.originalname;
+                        var originalType=originalName.slice(originalName.lastIndexOf("."));
+                        var oldPath=file.path;
+                        fs.readFile(oldPath,function(err,data){
+                            if(err)res.send({err:err});
+                            else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
+                                if(err)res.send({err:err});
+                                else res.send({});
+                            });
+                        });
+                    });
+                }
+                else res.send({err:"The requested ID isn't a student."});
+            }
+        });
     });
 
     // Configuration

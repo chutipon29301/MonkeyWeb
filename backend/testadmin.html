@@ -40,6 +40,9 @@
                 //     });
                 // })
                 $("form").submit(function(event){
+                    if($(this).attr("action")=="post/submitReceipt"){
+                        return true;
+                    }
                     event.preventDefault();
                     // var input=$(this).find("[name]");
                     var input={};
@@ -82,10 +85,14 @@
                             if(input[$(x).attr("name")]==undefined)input[$(x).attr("name")]=moment(0).valueOf();
                             return moment(input[$(x).attr("name")]).hour(parseInt($(x).val())).valueOf();
                         }
+                        else if($(x).hasClass("input-minute")){
+                            if(input[$(x).attr("name")]==undefined)input[$(x).attr("name")]=moment(0).valueOf();
+                            return moment(input[$(x).attr("name")]).hour(parseInt($(x).val())).valueOf();
+                        }
                         else if($(x).attr("type")=="number"||$(x).hasClass("input-int"))return parseInt($(x).val());
                         return $(x).val();
                     };
-                    $(this).find("[name]").each(function(){
+                    $(this).find("[name]").filter(function(){return $(this).val()!="";}).each(function(){
                         console.log($(this).attr("name"));
                         console.log($(this).val());
                         if($(this).attr("type")=="checkbox"&&!$(this).prop("checked"))return;
@@ -300,14 +307,19 @@
                                     <option value="7">Sunday</option>
                                 </select>
                                 <select class="form-control input-hour" name="day" required>
-                                    <option disabled="" selected="">Select Time</option>
-                                    <option value="8">8.00-9.00</option>
-                                    <option value="9">9.00-10.00</option>
-                                    <option value="10">10.00-11.00</option>
-                                    <option value="11">11.00-12.00</option>
-                                    <option value="13">13.00-14.00</option>
-                                    <option value="14">14.00-15.00</option>
-                                    <option value="15">15.00-16.00</option>
+                                    <option disabled="" selected="">Select Start Hour</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                </select>
+                                <select class="form-control input-minute" name="day" required>
+                                    <option disabled="" selected="">Select Start Minute</option>
+                                    <option value="0">00</option>
+                                    <option value="30">30</option>
                                 </select>
                                 <button class="btn btn-default" type="submit">post/addSkillDay</button>
                             </form>
@@ -320,14 +332,19 @@
                                     <option value="7">Sunday</option>
                                 </select>
                                 <select class="form-control input-hour" name="day" required>
-                                    <option disabled="" selected="">Select Time</option>
-                                    <option value="8">8.00-9.00</option>
-                                    <option value="9">9.00-10.00</option>
-                                    <option value="10">10.00-11.00</option>
-                                    <option value="11">11.00-12.00</option>
-                                    <option value="13">13.00-14.00</option>
-                                    <option value="14">14.00-15.00</option>
-                                    <option value="15">15.00-16.00</option>
+                                    <option disabled="" selected="">Select Start Hour</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                </select>
+                                <select class="form-control input-minute" name="day" required>
+                                    <option disabled="" selected="">Select Start Minute</option>
+                                    <option value="0">00</option>
+                                    <option value="30">30</option>
                                 </select>
                                 <button class="btn btn-default" type="submit">post/removeSkillDay</button>
                             </form>
@@ -418,7 +435,21 @@
                                 <button class="btn btn-default" type="submit">post/removeStudent</button>
                             </form>
                             <br>
-                            <p>editStudent TODO</p>
+                            <form action="post/editStudent" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <input class="form-control" type="password" name="password" placeholder="Password">
+                                <input class="form-control" type="text" name="firstname" placeholder="Firstname">
+                                <input class="form-control" type="text" name="lastname" placeholder="Lastname">
+                                <input class="form-control" type="text" name="nickname" placeholder="Nickname">
+                                <input class="form-control" type="text" name="firstnameEn" placeholder="FirstnameEn">
+                                <input class="form-control" type="text" name="lastnameEn" placeholder="LastnameEn">
+                                <input class="form-control" type="text" name="nicknameEn" placeholder="NicknameEn">
+                                <input class="form-control" type="email" name="email" placeholder="Email">
+                                <input class="form-control" type="text" name="phone" placeholder="Phone">
+                                <input class="form-control" type="number" name="grade" placeholder="Grade">
+                                <input class="form-control" type="text" name="phoneParent" placeholder="PhoneParent">
+                                <button class="btn btn-default" type="submit">post/editStudent</button>
+                            </form>
                             <br>
                             <form action="post/addTutor" method="post">
                                 <input class="form-control" type="password" name="password" placeholder="Password" required>
@@ -533,7 +564,11 @@
                     </div>
                     <div id="reciept" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <p>submitReceipt TODO</p>
+                            <form action="post/submitReceipt" method="post" enctype="multipart/form-data">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <input class="form-control" type="file" name="file" placeholder="studentID" required>
+                                <button class="btn btn-default" type="submit">post/submitReceipt</button>
+                            </form>
                         </div>
                     </div>
                 </div>
