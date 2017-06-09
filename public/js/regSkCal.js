@@ -13,7 +13,7 @@ $(document).ready(function(){
 	$('#parentTel').html(cookie.tel.parent+'(ผู้ปกครอง)')
 	$('#studentTel').html(cookie.tel.student+'(นักเรียน)')
 	$('#email').html(cookie.email)
-	$('#crFee').html(cookie.courseFee +' บาท')
+	$('#crFee').html(cookie.courseFee.slice(0,cookie.courseFee.length-3)+',000' +' บาท')
 	$('#grade').html(gradetoText(cookie.grade))
 	console.log(cookie)
 	var crPrint = ''
@@ -37,7 +37,7 @@ $(document).ready(function(){
 	for(i in cookie.regisHybrid){
 		if(cookie.regisHybrid[i]!=false){
 			cookie.regisHybrid[i].day = new Date(cookie.regisHybrid[i].day)
-			hbPrint += numtoDay(cookie.regisHybrid[i].day.getDay())+' '+cookie.regisHybrid[i].day.getHours()+'.00 น. : '+fullHBname(cookie.regisHybrid[i].subject)+'<br>'
+			hbPrint += numtoDay(cookie.regisHybrid[i].day.getDay())+' '+cookie.regisHybrid[i].day.getHours()+'.00-'+(cookie.regisHybrid[i].day.getHours()+2)+'.00 น. : '+fullHBname(cookie.regisHybrid[i].subject)+'<br>'
 			if(cookie.regisHybrid[i].day.getDay()==6){
 				var time = cookie.regisHybrid[i].day.getHours()
 				for(j=0;j<4;j++){
@@ -334,4 +334,7 @@ function fullHBname(name){
 	if(name == 'PH'){
 		return 'PHYSICS'
 	}
+}
+function submit(){
+
 }

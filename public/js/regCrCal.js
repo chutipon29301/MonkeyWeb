@@ -61,6 +61,12 @@ $(document).ready(function () {
             updateTable(availableCourse);
         });
     }
+
+    $('#level').change(function(){
+        if($('#level').val()=='0'){
+            $('.suggest').removeClass('suggest')
+        }
+    })
 });
 function updateAvaiCr(arrayCourse) {
     for (let i = 0; i < arrayCourse.course.length; i++) {
@@ -144,6 +150,12 @@ function updateTable(course) { /* update table after gen to change from blank to
                 rep = rep.replace(/btn-basic disabled/g, "btn btn-default");
                 temp[j].className = rep;
                 temp[j].innerHTML = course[i].courseName;
+                if(course[i].suggest == true && temp[j].className.indexOf('suggest')==-1){
+                    temp[j].className = temp[j].className+' suggest';
+                }
+                else if(course[i].suggest == false){
+                    temp[j].className = temp[j].className.replace(/ suggest/g,'')
+                }
             }
         }
     }
@@ -256,6 +268,16 @@ function highlight() {
     for (let i = 0; i < allSuggest.course.length; i++) {
         if (level === allSuggest.course[i].level) {
             suggestCourse = allSuggest.course[i].courseID;
+        }
+    }
+    for (i in availableCourse){
+        if(availableCourse[i]!=false){
+            if(suggestCourse.includes(availableCourse[i].courseID)){
+                availableCourse[i]["suggest"] = true
+            }
+            else{
+                availableCourse[i]["suggest"] = false
+            }
         }
     }
     updateTable(availableCourse);
