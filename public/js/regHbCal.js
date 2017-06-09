@@ -1,5 +1,7 @@
+var cookie;
+var courseClass;
 $(document).ready(function () {
-    var cookie = getCookieDict();
+    cookie = getCookieDict();
     if (cookie.regisCourse === undefined) {
         self.location = "registrationCourse"
     }
@@ -7,21 +9,25 @@ $(document).ready(function () {
     for (let i in cookie.regisCourse) {
         if (cookie.regisCourse[i] !== false) {
             cookie.regisCourse[i].day = new Date(cookie.regisCourse[i].day);
-            var courseClass;
             if (cookie.regisCourse[i].day.getDay() === 6 && cookie.regisCourse[i].select === true) {
                 courseClass = document.getElementsByClassName('btn-sat ' + cookie.regisCourse[i].day.getHours() + '.2');
-                for (j = 1; j >= 0; j--) {
+                for (let j = 1; j >= 0; j--) {
                     courseClass[j].remove()
                 }
                 courseClass = document.getElementsByClassName('btn-sat ' + cookie.regisCourse[i].day.getHours() + '.1');
-                for (j = 0; j < courseClass.length; j++) {
+                for (let j = 0; j < courseClass.length; j++) {
                     courseClass[j].className = courseClass[j].className.replace(/btn-default/g, "btn-basic disabled");
-                    courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
                     if (courseClass[j].className.indexOf('col-md') !== -1) {
+                        courseClass[j].innerHTML = '<strong>CR:</strong>' + cookie.regisCourse[i].courseName;
                         courseClass[j].className = courseClass[j].className.replace(/col-md-6/g, "col-md-12");
                     }
                     else if (courseClass[j].className.indexOf('col-xs') !== -1) {
-                        courseClass[j].style = "padding: 12% 0 12% 0 ; color:black"
+                        courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
+                        if (window.innerWidth > window.innerHeight) {
+                            courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
+                        } else {
+                            courseClass[j].style = "padding: 12% 0 12% 0 ; color:black";
+                        }
                     }
                 }
             }
@@ -33,19 +39,23 @@ $(document).ready(function () {
                 courseClass = document.getElementsByClassName('btn-sun ' + cookie.regisCourse[i].day.getHours() + '.1');
                 for (let j = 0; j < courseClass.length; j++) {
                     courseClass[j].className = courseClass[j].className.replace(/btn-default/g, "btn-basic disabled");
-                    courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
                     if (courseClass[j].className.indexOf('col-md') !== -1) {
+                        courseClass[j].innerHTML = '<strong>CR:</strong>' + cookie.regisCourse[i].courseName;
                         courseClass[j].className = courseClass[j].className.replace(/col-md-6/g, "col-md-12");
                     }
                     else if (courseClass[j].className.indexOf('col-xs') !== -1) {
-                        courseClass[j].style = "padding: 12% 0 12% 0 ; color:black "
+                        courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
+                        if (window.innerWidth > window.innerHeight) {
+                            courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
+                        } else {
+                            courseClass[j].style = "padding: 12% 0 12% 0 ; color:black";
+                        }
                     }
                 }
             }
         }
     }
 });
-
 function next() {
     var selectHybrid = {
         tue151: false,
@@ -162,3 +172,6 @@ function deselect(btn) {     /* sub function to deselect duo btn if both is sele
 function back() {
     self.location = "registrationCourse"
 }
+window.onresize = function () {
+    location.reload()
+};

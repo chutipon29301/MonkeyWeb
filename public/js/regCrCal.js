@@ -24,7 +24,7 @@ $(document).ready(function () {
     genTable();
     $.post("post/listCourseSuggestion", {grade: grade}, function (suggestCR) {
         allSuggest = suggestCR;
-        for (let i = 0; i <= allSuggest.course.length; i++) {
+        for (let i = 0; i < allSuggest.course.length; i++) {
             var lv = allSuggest.course[i].level;
             $('#level').append('<option value="' + lv + '">' + lv + '</option>');
         }
