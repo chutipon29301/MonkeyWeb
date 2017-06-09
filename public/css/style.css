@@ -14,7 +14,7 @@
     background: #000
 }
 
-#usr, #pwd, #nname, #name, #sname, #level, #station, #skillday, #skilltime {
+#usr, #pwd, #nname, #name, #sname, #level, #station, #skillday, #skilltime, #nnameE, #nameE, #snameE,#stationEng, #skilldayEng, #skilltimeEng , #skillSel , #grade , #parentNum , #studentNum , #email {
     border-radius: 8px
 }
 

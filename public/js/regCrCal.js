@@ -1,4 +1,5 @@
 var availableCourse;
+var pricepercourse = 6000;
 var allSuggest;
 var suggestCourse;
 $(document).ready(function () {
@@ -204,7 +205,7 @@ function calculate(btn) { /* run after click btn in HTML to switch between selec
             availableCourse[dayHour]["select"] = false
         }
     }
-    document.getElementById('show_price').innerHTML = document.getElementsByClassName('btn-success').length * 6000 / 2;
+    document.getElementById('show_price').innerHTML = document.getElementsByClassName('btn-success').length * pricepercourse / 2;
     nextCheck();
 }
 function deselect(btn) {     /* sub function to deselect duo btn if both is selected */
@@ -233,7 +234,7 @@ function nextCheck() { /* check next btn */
     if (parseInt($('#grade').val())) {
         check = true
     }
-    if (check && document.getElementsByClassName('btn-success').length * 6000 / 2 >= 12000) {
+    if (check && document.getElementsByClassName('btn-success').length * pricepercourse / 2 >= 2*pricepercourse) {
         document.getElementById("next").className = "btn btn-default";
     }
     else {
@@ -242,6 +243,7 @@ function nextCheck() { /* check next btn */
 }
 function next(gg) {
     if (gg.className.indexOf("disabled") === -1) {
+        writeCookie('courseFee',document.getElementsByClassName('btn-success').length * pricepercourse / 2)
         writeCookie("regisCourse", JSON.stringify(availableCourse));
         self.location = "registrationHybrid";
     }
