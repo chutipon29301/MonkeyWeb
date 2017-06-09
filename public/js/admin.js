@@ -123,7 +123,6 @@ function filterData(data) {
     return data;
 }
 
-
 /**
  * Generate element for studentProfile page
  */
@@ -165,7 +164,14 @@ function getStudentProfile() {
                     }
                 });
             }
+            log("[getStudentProfile()] All registered course => ");
             log(allCourse);
+
+            let hybrid = data.hybridDay;
+
+            for (let i = 0; i < hybrid.length; i++) {
+                document.getElementById(hybrid[i].day).innerHTML = hybrid[i].subject;
+            }
 
             let courseData = [[], [], [], []];
             for (let i = 0; i < 4; i++) {
@@ -233,7 +239,7 @@ function getCourseDescription() {
 
 /**
  * Get short name of day
- * @param date int day
+ * @param date int day 0 - 6
  * @returns {string} name of day
  */
 function getDateName(date) {
@@ -241,6 +247,11 @@ function getDateName(date) {
     return dateName[date];
 }
 
+/**
+ * Get full name of date
+ * @param date int day 0 - 6
+ * @returns {string} full name of day
+ */
 function getDateFullName(date) {
     let dateName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     return dateName[date];
@@ -259,6 +270,11 @@ function getLetterGrade(grade) {
     }
 }
 
+/**
+ * Connvert letter grade to number grade
+ * @param grade letter grade
+ * @returns {*} int number of grade or string if not valid
+ */
 function getNumberGrade(grade) {
     log(grade);
     if (grade[0] === "P") {
@@ -294,8 +310,12 @@ function getUsername(userID, callback) {
     return "unknown";
 }
 
-function addRemoveCourse(id) {
-    let button = document.getElementById(id);
+/**
+ * Call when button in table is clicked
+ * @param timeID get from id of button
+ */
+function addRemoveCourse(timeID) {
+    let button = document.getElementById(timeID);
     if (button.innerHTML === "Add Course") {
         "use strict";
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
@@ -304,14 +324,12 @@ function addRemoveCourse(id) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
                 log("[addRemoveCourse()] : post/allCourse => ");
-                data.course = data.course.filter(function (data) {
-                    return data.day === parseInt(id);
-                });
+                data.course = data.course.filter(data => data.day === parseInt(timeID));
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
 
                 let select = document.getElementById("courseSelector");
-                select.value = id;
+                select.value = timeID;
                 select.innerHTML = "";
 
                 for (let i = 0; i < data.course.length; i++) {
@@ -324,8 +342,8 @@ function addRemoveCourse(id) {
                     }
                     select.innerHTML += "<option id='" + course.courseID + "'>" + (course.subject + grade + course.level) + "</option>";
                 }
-                let time = new Date(parseInt(id));
 
+                let time = new Date(parseInt(timeID));
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
 
@@ -339,11 +357,17 @@ function addRemoveCourse(id) {
         });
     } else {
         document.getElementById("confirmDelete").value = button.value;
-        $("#removeModal").modal();
+        document.getElementById("courseName").innerHTML = button.innerHTML;
+        let modal = $("#removeModal");
+        modal.value = time;
+        modal.modal();
 
     }
 }
 
+/**
+ * Add course to selected user
+ */
 function addCourse() {
     let select = document.getElementById("courseSelector");
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
@@ -353,12 +377,12 @@ function addCourse() {
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         $.post("post/addSkillDay", {
             studentID: studentID,
-            day : selectedOption.id
+            day: selectedOption.id
         }, function (data) {
             if (data.err) {
-                log("[addCourse()] : post/addHybridDay => " + data.err);
+                log("[addCourse()] : post/addSkillDay => " + data.err);
             } else {
-                log("[addCourse()] : post/addHybridDay => Success");
+                log("[addCourse()] : post/addSkillDay => Success");
                 location.reload();
             }
         });
@@ -366,8 +390,8 @@ function addCourse() {
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         $.post("post/addHybridDay", {
             studentID: studentID,
-            subject : (selectedValue[selectedValue.length - 1] === "M") ? "M" : "PH",
-            day : selectedOption.id
+            subject: (selectedValue[selectedValue.length - 1] === "M") ? "M" : "PH",
+            day: selectedOption.id
         }, function (data) {
             if (data.err) {
                 log("[addCourse()] : post/addHybridDay => " + data.err);
@@ -393,22 +417,56 @@ function addCourse() {
     }
 }
 
+/**
+ * Remove course from selected user
+ */
 function removeCourse() {
     let button = document.getElementById("confirmDelete");
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
     let courseID = button.value;
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/removeStudentCourse", {
-        studentID: studentID,
-        courseID: [courseID]
-    }, function (data) {
-        if (data.err) {
-            log("[RemoveCourse()] : post/return => " + data.err);
-        } else {
-            log("[RemoveCourse()] : post/return => Success");
-            location.reload();
-        }
-    });
+    let courseName = document.getElementById("courseName").innerHTML;
+    let time = parseInt(document.getElementById("removeModal").value);
+
+    if (courseName.slice(0, 5) === "SKILL") {
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("post/removeSkillDay", {
+            studentID: studentID,
+            day: time
+        }, function (data) {
+            if (data.err) {
+                log("[addCourse()] : post/removeSkillDay => " + data.err);
+            } else {
+                log("[addCourse()] : post/removeSkillDay => Success");
+                location.reload();
+            }
+        });
+    } else if (courseName.slice(0, 3) === "FHB") {
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("post/removeHybridDay", {
+            studentID: studentID,
+            day: time
+        }, function (data) {
+            if (data.err) {
+                log("[addCourse()] : post/removeHybridDay => " + data.err);
+            } else {
+                log("[addCourse()] : post/removeHybridDay => Success");
+                location.reload();
+            }
+        });
+    } else {
+        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+        $.post("post/removeStudentCourse", {
+            studentID: studentID,
+            courseID: [courseID]
+        }, function (data) {
+            if (data.err) {
+                log("[RemoveCourse()] : post/return => " + data.err);
+            } else {
+                log("[RemoveCourse()] : post/return => Success");
+                location.reload();
+            }
+        });
+    }
 }
 
 /**
@@ -422,6 +480,7 @@ function generateImage(courseData) {
     let tableData = [[], [], [], [], []];
     let dateList = ['', 'TUE', 'THU', 'SAT', 'SUN'];
     let timeList = ['', '8-10', '10-12', '13-15', '15-17'];
+    //noinspection SpellCheckingInspection
     let bgColorList = ['black', 'deeppink', 'orange', 'purple', 'red'];
     let textColorList = ['white', 'black', 'black', 'black', 'black'];
     let textTableData;
