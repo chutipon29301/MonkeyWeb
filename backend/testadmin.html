@@ -227,7 +227,6 @@
                                 <input class="form-control" type="number" name="userID" placeholder="userID" required>
                                 <button class="btn btn-default" type="submit">post/status</button>
                             </form>
-                            <br>
                         </div>
                     </div>
                 </div>
@@ -264,7 +263,6 @@
                                 </select>
                                 <button class="btn btn-default" type="submit">post/changeRegistrationState</button>
                             </form>
-                            <br>
                         </div>
                     </div>
                 </div>
@@ -289,10 +287,13 @@
                                 <button class="btn btn-default" type="submit">post/removeStudentCourse</button>
                             </form>
                             <br>
-                            <p>addSkillDay TODO</p>
                             <form action="post/addSkillDay" method="post">
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
-                                <input class="form-control" type="text" name="location" placeholder="location" required>
+                                <select class="form-control" name="subject" required>
+                                    <option disabled="" selected="">Select Subject</option>
+                                    <option value="E">English</option>
+                                    <option value="M">Math</option>
+                                </select>
                                 <select class="form-control input-day" name="day" required>
                                     <option disabled="" selected="">Select Day</option>
                                     <option value="6">Saturday</option>
@@ -300,16 +301,36 @@
                                 </select>
                                 <select class="form-control input-hour" name="day" required>
                                     <option disabled="" selected="">Select Time</option>
-                                    <option value="8">8.00-10.00</option>
-                                    <option value="10">10.00-12.00</option>
-                                    <option value="13">13.00-15.00</option>
-                                    <option value="15">15.00-17.00</option>
+                                    <option value="8">8.00-9.00</option>
+                                    <option value="9">9.00-10.00</option>
+                                    <option value="10">10.00-11.00</option>
+                                    <option value="11">11.00-12.00</option>
+                                    <option value="13">13.00-14.00</option>
+                                    <option value="14">14.00-15.00</option>
+                                    <option value="15">15.00-16.00</option>
                                 </select>
-                                <button class="btn btn-default col-sm-1 addSk">+</button>
                                 <button class="btn btn-default" type="submit">post/addSkillDay</button>
                             </form>
                             <br>
-                            <p>removeSkillDay TODO</p>
+                            <form action="post/removeSkillDay" method="post">
+                                <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
+                                <select class="form-control input-day" name="day" required>
+                                    <option disabled="" selected="">Select Day</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <select class="form-control input-hour" name="day" required>
+                                    <option disabled="" selected="">Select Time</option>
+                                    <option value="8">8.00-9.00</option>
+                                    <option value="9">9.00-10.00</option>
+                                    <option value="10">10.00-11.00</option>
+                                    <option value="11">11.00-12.00</option>
+                                    <option value="13">13.00-14.00</option>
+                                    <option value="14">14.00-15.00</option>
+                                    <option value="15">15.00-16.00</option>
+                                </select>
+                                <button class="btn btn-default" type="submit">post/removeSkillDay</button>
+                            </form>
                             <br>
                             <form action="post/addHybridDay" method="post">
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
@@ -353,7 +374,6 @@
                                 </select>
                                 <button class="btn btn-default" type="submit">post/removeHybridDay</button>
                             </form>
-                            <br>
                         </div>
                     </div>
                 </div>
@@ -368,7 +388,6 @@
                                 <input class="form-control" type="number" name="tutorID" placeholder="tutorID" required>
                                 <button class="btn btn-default" type="submit">post/tutorNickname</button>
                             </form>
-                            <br>
                         </div>
                     </div>
                 </div> -->
@@ -420,7 +439,6 @@
                             </form>
                             <br>
                             <p>editTutor TODO</p>
-                            <br>
                         </div>
                     </div>
                 </div>
@@ -505,7 +523,6 @@
                             </form>
                             <br>
                             <p>editCourse TODO</p>
-                            <br>
                         </div>
                     </div>
                 </div>
@@ -517,7 +534,6 @@
                     <div id="reciept" class="panel-collapse collapse">
                         <div class="panel-body">
                             <p>submitReceipt TODO</p>
-                            <br>
                         </div>
                     </div>
                 </div>
@@ -547,7 +563,6 @@
                                 <input class="form-control" type="number" name="toAdd" placeholder="toAdd" required>
                                 <button class="btn btn-default" type="submit">post/addStudentGrade</button>
                             </form>
-                            <br>
                         </div>
                     </div>
                 </div>
