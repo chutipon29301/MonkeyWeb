@@ -225,7 +225,7 @@ var run=function(app,db){
                     output=result.student;
                     var request=require("request");
 
-                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
+                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
 
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
