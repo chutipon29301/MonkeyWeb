@@ -150,6 +150,9 @@ function updateTable(course) { /* update table after gen to change from blank to
                 rep = rep.replace(/btn-basic disabled/g, "btn btn-default");
                 temp[j].className = rep;
                 temp[j].innerHTML = course[i].courseName;
+                if(course[i].tutor[0] == 99000){
+                    temp[j].innerHTML+='(HB)'
+                }
                 if(course[i].suggest == true && temp[j].className.indexOf('suggest')==-1){
                     temp[j].className = temp[j].className+' suggest';
                 }
@@ -237,13 +240,13 @@ function deselect(btn) {     /* sub function to deselect duo btn if both is sele
 function nextCheck() { /* check next btn */
     var check = false;
     for (let i in availableCourse) {
-        if (availableCourse[i] !== false) {
-            if (availableCourse[i].select === true && availableCourse[i].tutor.nicknameEng !== "Hybrid") {
+        if (availableCourse[i] !== false) {       
+            if (availableCourse[i].select === true && availableCourse[i].tutor[0] !== 99000) {
                 check = true;
             }
         }
     }
-    if (parseInt($('#grade').val())) {
+    if (parseInt($('#grade').val())>=10) {
         check = true
     }
     if (check && document.getElementsByClassName('btn-success').length * pricepercourse / 2 >= 2*pricepercourse) {

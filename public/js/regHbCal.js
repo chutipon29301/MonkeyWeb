@@ -9,6 +9,9 @@ $(document).ready(function () {
     for (let i in cookie.regisCourse) {
         if (cookie.regisCourse[i] !== false) {
             cookie.regisCourse[i].day = new Date(cookie.regisCourse[i].day);
+            if (cookie.regisCourse[i].tutor[0]==99000){
+                cookie.regisCourse[i].courseName+='(HB)'
+            }
             if (cookie.regisCourse[i].day.getDay() === 6 && cookie.regisCourse[i].select === true) {
                 courseClass = document.getElementsByClassName('btn-sat ' + cookie.regisCourse[i].day.getHours() + '.2');
                 for (let j = 1; j >= 0; j--) {
