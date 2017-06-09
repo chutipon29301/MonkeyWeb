@@ -26,7 +26,7 @@
 #allCourseTable tr:active {
 	background-color: #a8aeb7
 }
-#allStudentInCourseTablee tr:hover {
+#allStudentInCourseTable tr:hover {
 	background-color: #d0dbed
 }
 #allStudentInCourseTable tr:active {
