@@ -111,14 +111,14 @@ function filterData(data) {
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
-    if (status.options[status.selectedIndex].value !== "All") {
-        data = data.filter(data => data.status === status.options[status.selectedIndex].value.toLowerCase());
+    if (status.options[status.selectedIndex].value !== "all") {
+        data = data.filter(data => data.status === status.options[status.selectedIndex].value);
     }
-    if (stage.options[stage.selectedIndex].value !== "All Stage") {
-        data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value.toLowerCase());
+    if (stage.options[stage.selectedIndex].value !== "all") {
+        data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value);
     }
-    if (grade.options[grade.selectedIndex].value !== "All Grade") {
-        data = data.filter(data => data.grade === getNumberGrade(grade.options[grade.selectedIndex].value));
+    if (grade.options[grade.selectedIndex].value !== "all") {
+        data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
     }
     return data;
 }
@@ -271,23 +271,6 @@ function getLetterGrade(grade) {
 }
 
 /**
- * Connvert letter grade to number grade
- * @param grade letter grade
- * @returns {*} int number of grade or string if not valid
- */
-function getNumberGrade(grade) {
-    log(grade);
-    if (grade[0] === "P") {
-        return parseInt(grade[1]);
-    } else if (grade[0] === "S") {
-        log(grade[1]);
-        return parseInt(grade[1]) + 6;
-    } else {
-        return "Not a valid grade";
-    }
-}
-
-/**
  * Get name of user
  * @param userID of user
  * @param callback function
@@ -359,7 +342,7 @@ function addRemoveCourse(timeID) {
         document.getElementById("confirmDelete").value = button.value;
         document.getElementById("courseName").innerHTML = button.innerHTML;
         let modal = $("#removeModal");
-        modal.value = time;
+        modal.value = timeID;
         modal.modal();
 
     }
