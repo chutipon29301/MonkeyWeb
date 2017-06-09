@@ -179,7 +179,7 @@ var run=function(app,db){
 
 
     // Student Information
-    //TODO TEST {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
+    //OK {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
     app.post("/post/allStudent",function(req,res){
         var output=[];
         var eventEmitter=new events.EventEmitter();
@@ -192,19 +192,20 @@ var run=function(app,db){
             for(i=0;i<result.length;i++){
                 (function(i){
                     getCourseDB(function(courseDB){
-                        courseDB.findOne({student:{$all:[result[i]._id]}},function(err,course){
-                            output[i]={studentID:result[i]._id,
-                                firstname:result[i].firstname,
-                                lastname:result[i].lastname,
-                                nickname:result[i].nickname,
-                                grade:result[i].student.grade,
-                                registrationState:result[i].student.registrationState,
-                                status:result[i].student.status,
-                                inCourse:course!=null,
-                                // inHybrid:result[i].student.hybridDay.length!=0 TODO
-                                inHybrid:true
-                            };
-                            eventEmitter.emit("finish");
+                        courseDB.findOne({student:result[i]._id},function(err,course){
+                            hybridSeatDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
+                                output[i]={studentID:result[i]._id,
+                                    firstname:result[i].firstname,
+                                    lastname:result[i].lastname,
+                                    nickname:result[i].nickname,
+                                    grade:result[i].student.grade,
+                                    registrationState:result[i].student.registrationState,
+                                    status:result[i].student.status,
+                                    inCourse:course!=null,
+                                    inHybrid:hybrid!=null
+                                };
+                                eventEmitter.emit("finish");
+                            });
                         });
                     });
                 })(i);
@@ -212,7 +213,7 @@ var run=function(app,db){
             eventEmitter.emit("finish");
         });
     });
-    //TODO TEST {studentID} return {user.student,post/name,[courseID],[hybridDay]}
+    //OK {studentID} return {user.student,post/name,[courseID],[hybridDay]}
     app.post("/post/studentProfile",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var output={};
@@ -231,13 +232,21 @@ var run=function(app,db){
                         output=Object.assign(output,body);
                         output=Object.assign(output,{email:result.email,phone:result.phone});
                         output.courseID=[];
+                        output.hybridDay=[];
                         getCourseDB(function(courseDB){
-                            courseDB.find({student:{$all:[studentID]}}).sort({day:1}).toArray(function(err,course){
+                            courseDB.find({student:studentID}).sort({day:1}).toArray(function(err,course){
                                 for(var i=0;i<course.length;i++){
                                     output.courseID.push(course[i]._id);
                                 }
-                                output.hybridDay=[];//TODO
-                                res.send(output);
+                                hybridSeatDB.find({"student.studentID":studentID}).sort({day:1}).toArray(function(err,hybrid){
+                                    for(var i=0;i<hybrid.length;i++){
+                                        var index=hybrid[i].student.findIndex(function(x){
+                                            return x.studentID==studentID;
+                                        });
+                                        output.hybridDay.push({subject:hybrid[i].student[index].subject,day:hybrid[i].day});//TODO
+                                    }
+                                    res.send(output);
+                                });
                             });
                         });
                     });
@@ -335,15 +344,48 @@ var run=function(app,db){
             }
         });
     });
-    //TODO Date {studentID,day} return {}
+    //OK {studentID,day,subject} return {}
     app.post("/post/addSkillDay",function(req,res){
-        console.log(req.body);
-        res.send({});
+        var studentID=parseInt(req.body.studentID);
+        var day=parseInt(req.body.day);
+        var subject=req.body.subject;
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested student ID doesn't exist."});
+            }
+            else{
+                if(result.position=="student"){
+                    userDB.updateOne({_id:studentID},
+                        {$addToSet:{"student.skillDay":{subject:subject,day:day}}},
+                        function(){
+                            res.send({});
+                        }
+                    );
+                }
+                else res.send({err:"The requested ID isn't a student."});
+            }
+        });
     });
-    //TODO Date {studentID,day} return {}
+    //TODO {studentID,day} return {}
     app.post("/post/removeSkillDay",function(req,res){
-        console.log(req.body);
-        res.send({});
+        var studentID=parseInt(req.body.studentID);
+        var day=parseInt(req.body.day);
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested student ID doesn't exist."});
+            }
+            else{
+                if(result.position=="student"){
+                    userDB.updateOne({_id:studentID},
+                        {$pull:{"student.skillDay":{day:day}}},
+                        function(){
+                            res.send({});
+                        }
+                    );
+                }
+                else res.send({err:"The requested ID isn't a student."});
+            }
+        });
     });
     //OK {studentID,day,subject} return {}
     app.post("/post/addHybridDay",function(req,res){
@@ -478,7 +520,7 @@ var run=function(app,db){
     //TODO ADD editTutor
 
     // Course
-    //OK course {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
+    //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
     app.post("/post/allCourse",function(req,res){
         var output=[];
         var eventEmitter=new events.EventEmitter();
