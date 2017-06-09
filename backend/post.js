@@ -344,15 +344,48 @@ var run=function(app,db){
             }
         });
     });
-    //TODO {studentID,day} return {}
+    //OK {studentID,day,subject} return {}
     app.post("/post/addSkillDay",function(req,res){
-        console.log(req.body);
-        res.send({});
+        var studentID=parseInt(req.body.studentID);
+        var day=parseInt(req.body.day);
+        var subject=req.body.subject;
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested student ID doesn't exist."});
+            }
+            else{
+                if(result.position=="student"){
+                    userDB.updateOne({_id:studentID},
+                        {$addToSet:{"student.skillDay":{subject:subject,day:day}}},
+                        function(){
+                            res.send({});
+                        }
+                    );
+                }
+                else res.send({err:"The requested ID isn't a student."});
+            }
+        });
     });
     //TODO {studentID,day} return {}
     app.post("/post/removeSkillDay",function(req,res){
-        console.log(req.body);
-        res.send({});
+        var studentID=parseInt(req.body.studentID);
+        var day=parseInt(req.body.day);
+        userDB.findOne({_id:studentID},function(err,result){
+            if(result==null){
+                res.send({err:"The requested student ID doesn't exist."});
+            }
+            else{
+                if(result.position=="student"){
+                    userDB.updateOne({_id:studentID},
+                        {$pull:{"student.skillDay":{day:day}}},
+                        function(){
+                            res.send({});
+                        }
+                    );
+                }
+                else res.send({err:"The requested ID isn't a student."});
+            }
+        });
     });
     //OK {studentID,day,subject} return {}
     app.post("/post/addHybridDay",function(req,res){
@@ -487,7 +520,7 @@ var run=function(app,db){
     //TODO ADD editTutor
 
     // Course
-    //OK course {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
+    //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
     app.post("/post/allCourse",function(req,res){
         var output=[];
         var eventEmitter=new events.EventEmitter();
