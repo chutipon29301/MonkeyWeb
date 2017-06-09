@@ -429,7 +429,7 @@ function removeCourse() {
 
     if (courseName.slice(0, 5) === "SKILL") {
         let hour = new Date(time);
-        hour.setMinutes(parseInt(courseName.slice(courseName.indexOf(":") + 1, courseName.length)));
+        hour.setMinutes(parseInt(courseName.slice(courseName.indexOf(":") + 1)));
         hour.setHours(parseInt(courseName.slice(courseName.indexOf(" ") + 1, courseName.indexOf(":"))));
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         $.post("post/removeSkillDay", {
