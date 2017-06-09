@@ -63,7 +63,7 @@ $(document).ready(function () {
     }
 
     $('#level').change(function(){
-        if($('#level').val()=='0'){
+        if($('#level').val()==='0'){
             $('.suggest').removeClass('suggest')
         }
     })
@@ -150,13 +150,13 @@ function updateTable(course) { /* update table after gen to change from blank to
                 rep = rep.replace(/btn-basic disabled/g, "btn btn-default");
                 temp[j].className = rep;
                 temp[j].innerHTML = course[i].courseName;
-                if(course[i].tutor[0] == 99000){
+                if(course[i].tutor[0] === 99000){
                     temp[j].innerHTML+='(HB)'
                 }
-                if(course[i].suggest == true && temp[j].className.indexOf('suggest')==-1){
+                if(course[i].suggest === true && temp[j].className.indexOf('suggest')===-1){
                     temp[j].className = temp[j].className+' suggest';
                 }
-                else if(course[i].suggest == false){
+                else if(course[i].suggest === false){
                     temp[j].className = temp[j].className.replace(/ suggest/g,'')
                 }
             }
@@ -273,8 +273,8 @@ function highlight() {
             suggestCourse = allSuggest.course[i].courseID;
         }
     }
-    for (i in availableCourse){
-        if(availableCourse[i]!=false){
+    for (let i in availableCourse){
+        if(availableCourse[i]!==false){
             if(suggestCourse.includes(availableCourse[i].courseID)){
                 availableCourse[i]["suggest"] = true
             }

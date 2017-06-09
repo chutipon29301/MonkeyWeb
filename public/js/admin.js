@@ -502,7 +502,6 @@ function removeCourse() {
  * @param courseData 2d array name of course
  */
 function generateImage(courseData) {
-
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
     let tableData = [[], [], [], [], []];
@@ -512,10 +511,8 @@ function generateImage(courseData) {
     let bgColorList = ['black', 'deeppink', 'orange', 'purple', 'red'];
     let textColorList = ['white', 'black', 'black', 'black', 'black'];
     let textTableData;
-
     let i;
     let j;
-
     /**
      * Put courseData into tableData array
      */
@@ -530,7 +527,6 @@ function generateImage(courseData) {
             }
         }
     }
-
     /**
      * Generate html from tableData array
      */
