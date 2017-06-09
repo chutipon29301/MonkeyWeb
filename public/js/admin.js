@@ -507,7 +507,7 @@ function generateImage(courseData) {
     textTableData += '</table>';
 
     let data =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="560">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
         textTableData +
