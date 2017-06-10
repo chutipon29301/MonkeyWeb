@@ -9,11 +9,11 @@
 <!-- InstanceBeginEditable name="head" -->
 <!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <link href="/css/style.css" rel="stylesheet" type="text/css">
 <script src="js/jquery-1.11.3.min.js"></script>
-<script src="js/bootstrap.js"></script>
+<script src="js/bootstrap.min.js"></script>
 <script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
 <script>
 	checkLogin();
@@ -57,36 +57,36 @@
     <div class="col-md-4 form-group">
       <label>Filter:</label>
       <select class="form-control col-md-1" id="status" onChange="getAllStudentContent();" style="margin-bottom: 5px">
-        <option>Active</option>
-        <option>Inactive</option>
-        <option>Drop</option>
-        <option>All</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="drop">Drop</option>
+        <option value="all">All</option>
       </select>
     </div>
     <div class="col-md-4 form-group">
       <label>&nbsp;</label>
       <select class="form-control col-md-1" id="stage" onChange="getAllStudentContent();" style="margin-bottom: 5px">
-        <option>All Stage</option>
-        <option>Registered</option>
-        <option>Rejected</option>
-        <option>Transferred</option>
-        <option>Untransferred</option>
-        <option>Unregistered</option>
+        <option value = "all">All Stage</option>
+        <option value="registered">Registered</option>
+        <option value="rejected">Rejected</option>
+        <option value="transferred">Transferred</option>
+        <option value="untransferred">Untransferred</option>
+        <option value="unregistered">Unregistered</option>
       </select>
     </div>
     <div class="col-md-4 form-group">
       <label>&nbsp;</label>
       <select class="form-control col-md-1" id="grade" onChange="getAllStudentContent();" style="margin-bottom: 5px">
-        <option>All Grade</option>
-        <option>P4</option>
-        <option>P5</option>
-        <option>P6</option>
-        <option>S1</option>
-        <option>S2</option>
-        <option>S3</option>
-        <option>S4</option>
-        <option>S5</option>
-        <option>S6</option>
+        <option value="all">All Grade</option>
+        <option value="4">P4</option>
+        <option value="5">P5</option>
+        <option value="6">P6</option>
+        <option value="7">S1</option>
+        <option value="8">S2</option>
+        <option value="9">S3</option>
+        <option value="10">S4</option>
+        <option value="11">S5</option>
+        <option value="12">S6</option>
       </select>
     </div>
   </div>

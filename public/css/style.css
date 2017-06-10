@@ -11,8 +11,8 @@
 	height: 60vw;
 	background: #000
 }
-#usr, #pwd, #nname, #name, #sname, #level, #station, #skillday, #skilltime, #nnameE, #nameE, #snameE,#stationEng, #skilldayEng, #skilltimeEng , #skillSel , #grade , #parentNum , #studentNum , #email {
-    border-radius: 8px
+#usr, #pwd, #nname, #name, #sname, #level, #station, #skillday, #skilltime, #nnameE, #nameE, #snameE, #stationEng, #skilldayEng, #skilltimeEng, #skillSel, #grade, #parentNum, #studentNum, #email {
+	border-radius: 8px
 }
 #allStudentTable tr:hover {
 	background-color: #d0dbed
@@ -26,9 +26,12 @@
 #allCourseTable tr:active {
 	background-color: #a8aeb7
 }
-#allStudentInCourseTablee tr:hover {
+#allStudentInCourseTable tr:hover {
 	background-color: #d0dbed
 }
 #allStudentInCourseTable tr:active {
 	background-color: #a8aeb7
+}
+td {
+	vertical-align: middle!important;
 }
