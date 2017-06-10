@@ -1,5 +1,6 @@
 console.log("[START] post.js");
 var run=function(app,db){
+    var CryptoJS=require("crypto-js");
     var events=require("events");
     var fs=require("fs-extra");
     var moment=require("moment");
@@ -10,6 +11,7 @@ var run=function(app,db){
     var courseSuggestionDB=db.collection("courseSuggestion");
     var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
+    var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
 
     var gradeBitToString=function(bit){
@@ -555,6 +557,53 @@ var run=function(app,db){
         });
     });
     //TODO ADD editTutor
+    //OK {studentID} return {}
+    app.post("/post/addBlankStudent",function(req,res){
+        var studentID=req.body.studentID.split(" ");
+        var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
+        for(var i=0;i<studentID.length;i++){
+            studentID[i]=parseInt(studentID[i]);
+            var password="";
+            password+=Math.floor(Math.random()*10);
+            password+=Math.floor(Math.random()*10);
+            password+=Math.floor(Math.random()*10);
+            password+=Math.floor(Math.random()*10);
+            userDB.insertOne({
+                _id:studentID[i],password:CryptoJS.SHA3(password).toString(),position:"student",
+                firstname:"",lastname:"",nickname:"",
+                firstnameEn:"",lastnameEn:"",nicknameEn:"",
+                email:"",phone:"",
+                student:{grade:0,registrationState:"unregistered",skillDay:[],balance:balance,phoneParent:"",status:"active"}
+            });
+            randomPasswordDB.insertOne({_id:studentID[i],password:password})
+        }
+        res.send({});
+    });
+    //OK {} return {[student]}
+    app.post("/post/listRandomStudent",function(req,res){
+        var output=[];
+        randomPasswordDB.find().sort().toArray(function(err,result){
+            for(var i=0;i<result.length;i++){
+                output[i]={studentID:result[i]._id,password:result[i].password};
+            }
+            res.send({student:output});
+        });
+    });
+    //OK {tutorID,position} return {}
+    app.post("/post/changePosition",function(req,res){
+        var tutorID=parseInt(req.body.tutorID);
+        var position=req.body.position;
+        userDB.findOne({_id:tutorID},function(err,result){
+            if(result==null)res.send({err:"The requested ID doesn't exist."});
+            else if(result.position!="tutor")res.send({err:"The requested ID isn't a tutor."});
+            else{
+                userDB.updateOne({_id:tutorID},{$set:{position:position}},function(){
+                    res.send({});
+                });
+            }
+        });
+
+    });
 
     // Course
     //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
