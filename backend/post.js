@@ -83,17 +83,6 @@ var run=function(app,db){
             });
         });
     };
-    /*var pagedata=function(fileName){
-        var fs=require("fs-extra");
-        var data=fs.readFileSync(path.join(__dirname,"../",fileName+".html")).toString();
-        return data.replace(/public\//g,"").replace(/\.html/g,"");
-    };
-    var addPage=function(pageName){
-        app.get("/"+pageName,function(req,res){
-            console.log("[PAGE REQUEST] "+pageName+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-            res.send(pagedata(pageName))
-        });
-    };*/
     var addPage=function(page,url){
         if(url==undefined)url="/"+page;
         app.get(url,function(req,res){
@@ -127,12 +116,19 @@ var run=function(app,db){
     });
 
     // All post will return {err} if error occurs
+    var post=function(url,callback){
+        app.post(url,function(req,res){
+            console.log("[POST REQUEST] "+url.slice(1)+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+            console.log("\treq.body => ",req.body);
+            console.log("\treq.files => ",req.files);
+            callback(req,res);
+            console.log("[END REQUEST]");
+        });
+    };
 
     // User Information
     //OK {userID,password} return {verified}
-    app.post("/post/password",function(req,res){
-        console.log(req.body);
-        console.log("[PAGE REQUEST] post/password FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+    post("/post/password",function(req,res){
         var userID=parseInt(req.body.userID);
         var password=req.body.password;
         userDB.findOne({_id:userID,password:password},function(err,result){
@@ -145,7 +141,7 @@ var run=function(app,db){
         });
     });
     //OK {userID} return {firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn}
-    app.post("/post/name",function(req,res){
+    post("/post/name",function(req,res){
         var userID=parseInt(req.body.userID);
         userDB.findOne({_id:userID},function(err,result){
             if(result==null){
@@ -159,7 +155,7 @@ var run=function(app,db){
         });
     });
     //OK {userID} return {position}
-    app.post("/post/position",function(req,res){
+    post("/post/position",function(req,res){
         var userID=parseInt(req.body.userID);
         userDB.findOne({_id:userID},function(err,result){
             if(result==null){
@@ -169,7 +165,7 @@ var run=function(app,db){
         });
     });
     //OK {userID} return {status}
-    app.post("/post/status",function(req,res){
+    post("/post/status",function(req,res){
         var userID=parseInt(req.body.userID);
         userDB.findOne({_id:userID},function(err,result){
             if(result==null){
@@ -183,7 +179,7 @@ var run=function(app,db){
 
     // Student Information
     //OK {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
-    app.post("/post/allStudent",function(req,res){
+    post("/post/allStudent",function(req,res){
         var output=[];
         var eventEmitter=new events.EventEmitter();
         userDB.find({position:"student"}).sort({_id:1}).toArray(function(err,result){
@@ -217,7 +213,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID} return {user.student,post/name,[courseID],[hybridDay]}
-    app.post("/post/studentProfile",function(req,res){
+    post("/post/studentProfile",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var output={};
         userDB.findOne({_id:studentID},function(err,result){
@@ -259,7 +255,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID} return {registrationState}
-    app.post("/post/registrationState",function(req,res){
+    post("/post/registrationState",function(req,res){
         var studentID=parseInt(req.body.studentID);
         userDB.findOne({_id:studentID},function(err,result){
             if(result==null){
@@ -270,7 +266,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID,registrationState} return {}
-    app.post("/post/changeRegistrationState",function(req,res){
+    post("/post/changeRegistrationState",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var registrationState=req.body.registrationState;
         userDB.findOne({_id:studentID},function(err,result){
@@ -288,7 +284,7 @@ var run=function(app,db){
 
     // Student Timetable
     //OK {studentID,[courseID]} return {}
-    app.post("/post/addStudentCourse",function(req,res){
+    post("/post/addStudentCourse",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var courseID=req.body.courseID;
         var eventEmitter=new events.EventEmitter();
@@ -318,7 +314,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID,[courseID]} return {}
-    app.post("/post/removeStudentCourse",function(req,res){
+    post("/post/removeStudentCourse",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var courseID=req.body.courseID;
         var eventEmitter=new events.EventEmitter();
@@ -348,7 +344,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID,day,subject} return {}
-    app.post("/post/addSkillDay",function(req,res){
+    post("/post/addSkillDay",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
@@ -370,7 +366,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID,day} return {}
-    app.post("/post/removeSkillDay",function(req,res){
+    post("/post/removeSkillDay",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         userDB.findOne({_id:studentID},function(err,result){
@@ -391,7 +387,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID,day,subject} return {}
-    app.post("/post/addHybridDay",function(req,res){
+    post("/post/addHybridDay",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
@@ -414,7 +410,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID,day} return {}
-    app.post("/post/removeHybridDay",function(req,res){
+    post("/post/removeHybridDay",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         userDB.findOne({_id:studentID},function(err,result){
@@ -437,8 +433,7 @@ var run=function(app,db){
 
     // User Management
     //OK {password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
-    app.post("/post/addStudent",function(req,res){
-        console.log("[REQUEST] addStudent");
+    post("/post/addStudent",function(req,res){
         var password=req.body.password;
         var firstname=req.body.firstname;
         var lastname=req.body.lastname;
@@ -466,8 +461,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID} return {}
-    app.post("/post/removeStudent",function(req,res){
-        console.log("[REQUEST] removeStudent");
+    post("/post/removeStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         userDB.findOne({_id:studentID},function(err,result){
             if(result==null)res.send({err:"The requested ID doesn't exist."});
@@ -480,8 +474,7 @@ var run=function(app,db){
         });
     });
     //TODO {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
-    app.post("/post/editStudent",function(req,res){
-        console.log("[REQUEST] addStudent");
+    post("/post/editStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var input={};
         var addField=function(field,out){
@@ -517,8 +510,7 @@ var run=function(app,db){
         });
     });
     //OK {password,firstname,lastname,nickname,email,nicknameEng} return {}
-    app.post("/post/addTutor",function(req,res){
-        console.log("[REQUEST] addTutor");
+    post("/post/addTutor",function(req,res){
         var password=req.body.password;
         var firstname=req.body.firstname;
         var lastname=req.body.lastname;
@@ -543,8 +535,7 @@ var run=function(app,db){
         });
     });
     //OK {tutorID} return {}
-    app.post("/post/removeTutor",function(req,res){
-        console.log("[REQUEST] removeTutor");
+    post("/post/removeTutor",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
         userDB.findOne({_id:tutorID},function(err,result){
             if(result==null)res.send({err:"The requested ID doesn't exist."});
@@ -558,7 +549,7 @@ var run=function(app,db){
     });
     //TODO ADD editTutor
     //OK {studentID} return {}
-    app.post("/post/addBlankStudent",function(req,res){
+    post("/post/addBlankStudent",function(req,res){
         var studentID=req.body.studentID.split(" ");
         var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         for(var i=0;i<studentID.length;i++){
@@ -580,7 +571,7 @@ var run=function(app,db){
         res.send({});
     });
     //OK {} return {[student]}
-    app.post("/post/listRandomStudent",function(req,res){
+    post("/post/listRandomStudent",function(req,res){
         var output=[];
         randomPasswordDB.find().sort().toArray(function(err,result){
             for(var i=0;i<result.length;i++){
@@ -590,7 +581,7 @@ var run=function(app,db){
         });
     });
     //OK {tutorID,position} return {}
-    app.post("/post/changePosition",function(req,res){
+    post("/post/changePosition",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
         var position=req.body.position;
         userDB.findOne({_id:tutorID},function(err,result){
@@ -607,7 +598,7 @@ var run=function(app,db){
 
     // Course
     //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
-    app.post("/post/allCourse",function(req,res){
+    post("/post/allCourse",function(req,res){
         var output=[];
         var eventEmitter=new events.EventEmitter();
         getCourseDB(function(courseDB){
@@ -635,7 +626,7 @@ var run=function(app,db){
         });
     });
     //OK {grade(1-13)} return {course:[{courseID,courseName,day,[tutor]}]}
-    app.post("/post/gradeCourse",function(req,res){
+    post("/post/gradeCourse",function(req,res){
         var grade=parseInt(req.body.grade);
         var output=[];
         var eventEmitter=new events.EventEmitter();
@@ -659,7 +650,7 @@ var run=function(app,db){
         });
     });
     //OK {courseID} return {courseName,day,[tutor],[student]}
-    app.post("/post/courseInfo",function(req,res){
+    post("/post/courseInfo",function(req,res){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
             courseDB.findOne({_id:courseID},function(err,result){
@@ -673,7 +664,7 @@ var run=function(app,db){
         });
     });
     //OK {grade} return {[course]}
-    app.post("/post/listCourseSuggestion",function(req,res){
+    post("/post/listCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
         var output=[];
         courseSuggestionDB.find({grade:grade}).sort({level:1}).toArray(function(err,result){
@@ -687,7 +678,7 @@ var run=function(app,db){
         });
     });
     //OK {grade,level,[courseID]} return {}
-    app.post("/post/addCourseSuggestion",function(req,res){
+    post("/post/addCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
         var level=req.body.level;
         var courseID=req.body.courseID;
@@ -699,7 +690,7 @@ var run=function(app,db){
         );
     });
     //OK {grade,level,[courseID]} return {}
-    app.post("/post/removeCourseSuggestion",function(req,res){
+    post("/post/removeCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
         var level=req.body.level;
         var courseID=req.body.courseID;
@@ -710,7 +701,7 @@ var run=function(app,db){
         );
     });
     //OK {subject,[grade],level,day,[tutor]} return {}
-    app.post('/post/addCourse',function(req,res){
+    post('/post/addCourse',function(req,res){
         var subject=req.body.subject;
         var grade=req.body.grade;
         for(var i=0;i<grade.length;i++){
@@ -726,13 +717,12 @@ var run=function(app,db){
         var courseID=new ObjectID().toString();
         getCourseDB(function(courseDB){
             courseDB.insertOne({_id:courseID,subject:subject,grade:grade,level:level,day:day,tutor:tutor,student:[],submission:[]},function(err,result){
-                console.log(result.ops);
                 res.send(result.ops);//TODO ret {}
             });
         });
     });
     //OK {courseID} return {}
-    app.post("/post/removeCourse",function(req,res){
+    post("/post/removeCourse",function(req,res){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
             courseDB.findOne({_id:courseID},function(err,result){
@@ -749,10 +739,9 @@ var run=function(app,db){
 
     // Reciept
     //TODO configPath/File {studentID,file} return {}
-    app.post("/post/submitReceipt",function(req,res){
+    post("/post/submitReceipt",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var file=req.files[0];
-        console.log(file);
         userDB.findOne({_id:studentID},function(err,result){
             if(result==null){
                 res.send({err:"The requested student ID doesn't exist."});
@@ -790,14 +779,14 @@ var run=function(app,db){
 
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID}
-    app.post('/post/getConfig',function(req,res){
+    post('/post/getConfig',function(req,res){
         configDB.findOne({},function(err,config){
             res.send(config);
         });
     });
     //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,maxHybridSeat} return {}
-    app.post('/post/editConfig',function(req,res){
-        configDB.updateOne({},{
+    post('/post/editConfig',function(req,res){
+        configDB.updateOne({},{$set:{
             year:parseInt(req.body.year),
             quarter:parseInt(req.body.quarter),
             courseMaterialPath:req.body.courseMaterialPath,
@@ -805,15 +794,16 @@ var run=function(app,db){
             nextStudentID:parseInt(req.body.nextStudentID),
             nextTutorID:parseInt(req.body.nextTutorID),
             maxHybridSeat:parseInt(req.body.maxHybridSeat)
-        },function(){
+        }},function(){
             configDB.findOne({},function(err,config){
+                console.log("[SHOW] config");
                 console.log(config);
                 res.send({});
             });
         });
     });
     //OK {toAdd} return {}
-    app.post('/post/addStudentGrade',function(req,res){
+    post('/post/addStudentGrade',function(req,res){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
@@ -841,7 +831,9 @@ var run=function(app,db){
             res.send(result);
         });
     });
-    app.get("*",function(req,res){
+    app.all("*",function(req,res){
+        console.log("[404 REQUEST] "+req.method+" "+req.originalUrl+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
+        console.log("\treq.body => ",req.body);
         res.status(404).send("");
     });
 }
