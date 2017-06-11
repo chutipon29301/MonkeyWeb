@@ -112,13 +112,16 @@ function filterData(data) {
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     if (status.options[status.selectedIndex].value !== "all") {
-        data = data.filter(data => data.status === status.options[status.selectedIndex].value);
+        data = data.filter(data = > data.status === status.options[status.selectedIndex].value;
+    )
     }
     if (stage.options[stage.selectedIndex].value !== "all") {
-        data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value);
+        data = data.filter(data = > data.registrationState === stage.options[stage.selectedIndex].value;
+    )
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
-        data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
+        data = data.filter(data = > data.grade === parseInt(grade.options[grade.selectedIndex].value);
+    )
     }
     return data;
 }
@@ -344,7 +347,8 @@ function addRemoveCourse(timeID) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
                 log("[addRemoveCourse()] : post/allCourse => ");
-                data.course = data.course.filter(data => data.day === parseInt(timeID));
+                data.course = data.course.filter(data = > data.day === parseInt(timeID);
+            )
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
 
@@ -356,7 +360,9 @@ function addRemoveCourse(timeID) {
                     let course = data.course[i];
                     let grade = "";
                     if (course.grade[0] > 6) {
-                        grade = "S" + course.grade.map(x => (x - 6)).join("");
+                        grade = "S" + course.grade.map((x) = > (x - 6)
+                    ).
+                        join("");
                     } else {
                         grade = "P" + course.grade.join("");
                     }
@@ -496,60 +502,56 @@ function removeCourse() {
         });
     }
 }
-
 /**
- * Generate image for download
- * @param courseData 2d array name of course
+ *
+ * @param tableInfo
  */
-function generateImage(courseData) {
+function generateImage(tableInfo) {
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
-    let tableData = [[], [], [], [], []];
-    let dateList = ['', 'TUE', 'THU', 'SAT', 'SUN'];
-    let timeList = ['', '8-10', '10-12', '13-15', '15-17'];
-    //noinspection SpellCheckingInspection
-    let bgColorList = ['black', 'deeppink', 'orange', 'purple', 'red'];
-    let textColorList = ['white', 'black', 'black', 'black', 'black'];
-    let textTableData;
-    let i;
-    let j;
-    /**
-     * Put courseData into tableData array
-     */
-    for (i = 0; i < 5; i++) {
-        for (j = 0; j < 5; j++) {
-            if (i === 0) {
-                tableData[i][j] = dateList[j];
-            } else if (j === 0) {
-                tableData[i][j] = timeList[i];
-            } else {
-                tableData[i][j] = courseData[i - 1][j - 1];
-            }
-        }
+    //gen table header
+    let border = ' style="border:1px solid black;border-collapse:collapse;';
+    let day = ['TUE', 'THU', 'SAT', 'SUN'];
+    let time = [8 - 10, 10 - 12, 13 - 15, 15 - 17];
+    let tableColor = ['background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;'];
+    let minTableColor = ['background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;'];
+    let minTableTemp = '';
+    let tableTemp = '';
+    for (let i = 0; i < 4; i++) {
+        minTableTemp += '<th' + border + minTableColor[i] + 'width:40px;">' + day[i] + '</th>';
+        tableTemp += '<th rowspan="2"' + border + tableColor[i] + 'width: 120px;>' + day[i] + '</th>>';
     }
-    /**
-     * Generate html from tableData array
-     */
-    textTableData = '<table style="border: solid black;border-collapse: collapse">';
-    for (i = 0; i < tableData.length; i++) {
-        textTableData += '<tr style="height: 72px;border: solid black;color: ' + textColorList[i] + ';font-size:36px;">';
-        for (j = 0; j < tableData[i].length; j++) {
-            if (i === 0) {
-                textTableData += '<th style="background-color: ' + bgColorList[j] + ';border: solid black;width: 160px;">'
-                    + tableData[i][j] + '</th>';
-            } else {
-                textTableData += '<td style="border: solid black;">' + tableData[i][j] + '</td>'
-            }
+    let header = '<tr>' +
+        '<th rowspan="2" colspan="2"' + border + 'font-size: 40px;background-color: yellow">S1</th>' +
+        '<th colspan="2"' + border + '">ID : 159991</th>' +
+        '<th rowspan="3" colspan="2"' + border + 'font-size: 24px">กษิเดชน์ศักย์พษิฐ<br>(ปริ้นเตอร์) ขัณฑมาศ</th>' +
+        '<th rowspan="13"' + border + 'width: 5px"></th>' +
+        '<th' + border + 'height: 30px;width: 40px;background-color: black"></th>' + minTableTemp +
+        '</tr>';
+    //gen table
+    let tableHead = {
+        '0': '<th rowspan="2" colspan="2"' + border + '>lllllllllllllllll</th>',
+        '1': '<th' + border + 'width: 40px;background-color: #ffc107;color: white">M</th>' + '<th' + border + 'width: 40px;background-color: #9c27b0;color: white">P</th>',
+        '2': '<th rowspan="2" colspan="2"' + border + 'background-color: black"></th>' + tableTemp,
+        '3': ''
+    };
+    let table = '';
+    for (let i = 0; i < 4; i++) {
+        let temp = '';
+        for (let i = 0; i < 4; i++) {
+            temp += '<td' + border + 'CR8' + '"></td>'
         }
-        textTableData += '</tr>';
+        let num = '' + i;
+        table += tableHead.num + '<th' + border + 'height: 30px">' + time[i] + '</th>'
     }
-    textTableData += '</table>';
-
+    //gen canvas data
     let data =
         '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="560">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
-        textTableData +
+        '<table style="border: 1px solid black;border-collapse: collapse">' +
+        header + table +
+        '</table>' +
         '</div>' +
         '</foreignObject>' +
         '</svg>';
