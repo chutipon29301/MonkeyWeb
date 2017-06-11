@@ -268,7 +268,7 @@ var run=function(app,db){
         });
     });
     //OK {studentID,registrationState} return {}
-    app.post("/post/changeRegistrationState",function(req,res){
+    app.post("/post/setRegistrationState",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var registrationState=req.body.registrationState;
         userDB.findOne({_id:studentID},function(err,result){
