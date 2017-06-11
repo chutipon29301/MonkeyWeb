@@ -270,49 +270,56 @@ function getStudentProfile() {
                 ((hour.getMinutes() === 0) ? "00" : "30");
             document.getElementById("" + time.getTime()).className = "btn btn-info col-md-12";
         }
+        generateImageData()
     });
 }
 
-function getDataArrayFromTable() {
-    let courseData = [[], [], [], []];
-    let button = $("tr td button");
-    log(button);
-    let count = 0;
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            if (!(button[count].innerHTML === "&nbsp;" || button[count].innerHTML === "Add Course")) {
-                courseData[i][j] = {
-                    "id": button[count].value,
-                    "name": button[count].innerHTML
-                }
-            } else {
-                courseData[i][j] = {
-                    "id": "none",
-                    "name": "none"
-                }
-            }
-            count++;
-        }
-    }
-    log(courseData);
 
-    let detailedCourse = [];
-    for (let i = 0; i < courseData.length; i++) {
-        let temp = [];
-        for (let j = 0; j < courseData[i].length; j++) {
-            if (courseData[i][j].id !== "none") {
-                courseInfo(courseData[i][j].id).then((data) => {
-                    temp.append({
-                        "id": courseData[i][j].id,
-                        "name": courseData[i][j].name,
-                        "tutor": getUsernameOld(data.tutor[0], data => data.nicknameEn)
-                    })
+function generateImageData() {
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    let tableInfo = {
+        "id": "" + studentID
+    };
+
+    studentProfile(studentID).then((data) => {
+        tableInfo.firstname = data.firstname;
+        tableInfo.lastname = data.lastname;
+        tableInfo.nickname = data.nickname;
+        tableInfo.grade = "" + data.grade;
+        let temp = {};
+        for (let i = 0; i < data.courseID.length; i++) {
+            courseInfo(data.courseID[i]).then((data) => {
+                let time = new Date(data.day);
+                temp[getDateFullName(time.getDay()) + time.getHours()] = {};
+                temp[getDateFullName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                return [(name(data.tutor[0])), data];
+            }).then((req) => {
+                let name = req[0];
+                let data = req[1];
+                let time = new Date(data.day);
+                name.then((name) => {
+                    temp[getDateFullName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
+                    log(temp);
                 });
-            }
+            });
         }
-        detailedCourse.append(temp);
-    }
-    log(detailedCourse);
+
+        for (let i = 0; i < data.skillDay.length; i++) {
+            let time = new Date(data.skillDay[i].day);
+            temp[getDateFullName(time.getDay()) + time.getHours()] = {};
+            temp[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" + ((time.getMinutes() === 0) ? "00" : "30");
+            temp[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
+        }
+
+        for (let i = 0; i < data.hybridDay.length;i++){
+            let time = new Date(data.hybridDay[i].day);
+            temp[getDateFullName(time.getDay()) + time.getHours()] = {};
+            temp[getDateFullName(time.getDay()) + time.getHours()].courseName = ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
+            temp[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
+        }
+
+        tableInfo.mainTable = temp;
+    });
 }
 
 /**
@@ -323,9 +330,9 @@ function setRegistrationState(registrationState) {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
     changeRegistrationState(studentID, registrationState).then((data) => {
         if (data.err) {
-            log("[setRegistrationState()] : post/return => " + data.err);
+            log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            log("[setRegistrationState()] : post/return => Success");
+            log("[setRegistrationState()] : post/changeRegistrationState => Success");
             location.reload()
         }
     });
@@ -340,9 +347,9 @@ function getCourseDescription() {
     let courseID = cookie.monkeyWebAdminAllcourseSelectedCourseID;
     courseInfo(courseID).then((data) => {
         if (data.err) {
-            log("[getCourseDescription()] : post/return => " + data.err);
+            log("[getCourseDescription()] : post/courseInfo => " + data.err);
         } else {
-            log("[getCourseDescription()] : post/return => ");
+            log("[getCourseDescription()] : post/courseInfo => ");
             log(data);
             document.getElementById("courseName").innerHTML = data.courseName;
             name(data.tutor[0]).then((data) => {
