@@ -23,9 +23,10 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         console.error("[ERROR] "+err.message);
         return;
     }
-//     db.dropDatabase();
+    // db.dropDatabase();
     // db.dropCollection("user");
-//     db.dropCollection("hybridSeat");
+    // db.dropCollection("hybridSeat");
+    // db.dropCollection("randomPassword");
     // db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     db.collection("user").updateOne({_id:99033},
 		{
