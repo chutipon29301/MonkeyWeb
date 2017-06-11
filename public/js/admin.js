@@ -286,39 +286,53 @@ function generateImageData() {
         tableInfo.lastname = data.lastname;
         tableInfo.nickname = data.nickname;
         tableInfo.grade = "" + data.grade;
-        let temp = {};
+
+        let mainTable = {}, mathMiniTable = {}, physicsMiniTable = {};
         for (let i = 0; i < data.courseID.length; i++) {
             courseInfo(data.courseID[i]).then((data) => {
                 let time = new Date(data.day);
-                temp[getDateFullName(time.getDay()) + time.getHours()] = {};
-                temp[getDateFullName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
+                mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                if (data.tutor[0] === 99000){
+                    if (data.courseName[0] === "M"){
+                        mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
+                    }else {
+                        physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
+                    }
+                }
                 return [(name(data.tutor[0])), data];
             }).then((req) => {
                 let name = req[0];
                 let data = req[1];
                 let time = new Date(data.day);
                 name.then((name) => {
-                    temp[getDateFullName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
-                    log(temp);
+                    mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
+                    log(tableInfo);
                 });
             });
         }
 
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
-            temp[getDateFullName(time.getDay()) + time.getHours()] = {};
-            temp[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" + ((time.getMinutes() === 0) ? "00" : "30");
-            temp[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
+            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" + ((time.getMinutes() === 0) ? "00" : "30");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
         }
 
-        for (let i = 0; i < data.hybridDay.length;i++){
+        for (let i = 0; i < data.hybridDay.length; i++) {
             let time = new Date(data.hybridDay[i].day);
-            temp[getDateFullName(time.getDay()) + time.getHours()] = {};
-            temp[getDateFullName(time.getDay()) + time.getHours()].courseName = ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
-            temp[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
+            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
+            if (data.hybridDay[i].subject === "M") {
+                mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+            } else {
+                physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+            }
         }
-
-        tableInfo.mainTable = temp;
+        tableInfo.mainTable = mainTable;
+        tableInfo.mathMiniTable = mathMiniTable;
+        tableInfo.physicsMiniTable = physicsMiniTable;
     });
 }
 
