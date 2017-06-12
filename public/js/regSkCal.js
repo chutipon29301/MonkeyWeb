@@ -28,9 +28,9 @@ $(document).ready(function () {
             }
             if (cookie.regisCourse[i].day.getDay() === 6 && cookie.regisCourse[i].select === true) {
                 var time = cookie.regisCourse[i].day.getHours();
-                for (j = 0; j < 4; j++) {
+                for (j = -1; j < 4; j++) {
                     var temp = (10 * time) + (j * 5);
-                    $("#skilltime").find("option[value=" + temp + "],#skilltimeEng option[value=" + temp + "]").wrap("<span>");
+                    $("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
                 }
             }
         }
@@ -43,9 +43,9 @@ $(document).ready(function () {
             hbPrint += numtoDay(cookie.regisHybrid[i].day.getDay()) + ' ' + cookie.regisHybrid[i].day.getHours() + '.00-' + (cookie.regisHybrid[i].day.getHours() + 2) + '.00 น. : ' + fullHBname(cookie.regisHybrid[i].subject) + '<br>';
             if (cookie.regisHybrid[i].day.getDay() === 6) {
                 var time = cookie.regisHybrid[i].day.getHours();
-                for (j = 0; j < 4; j++) {
+                for (j = -1; j < 4; j++) {
                     var temp = (10 * time) + (j * 5);
-                    $("#skilltime").find("option[value=" + temp + "],#skilltimeEng option[value=" + temp + "]").wrap("<span>");
+                    $("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
                 }
             }
         }
@@ -89,7 +89,7 @@ $(document).ready(function () {
                 cookie.regisCourse[i].day = new Date(cookie.regisCourse[i].day);
                 if (cookie.regisCourse[i].day.getDay() === daytoNum($('#skillday').val()) && cookie.regisCourse[i].select === true) {
                     var time = cookie.regisCourse[i].day.getHours();
-                    for (let j = 0; j < 4; j++) {
+                    for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
                         $("#skilltime").find("option[value=" + temp + "]").wrap("<span>");
                     }
@@ -101,7 +101,7 @@ $(document).ready(function () {
                 cookie.regisHybrid[i].day = new Date(cookie.regisHybrid[i].day);
                 if (cookie.regisHybrid[i].day.getDay() === daytoNum($('#skillday').val())) {
                     var time = cookie.regisHybrid[i].day.getHours();
-                    for (let j = 0; j < 4; j++) {
+                    for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
                         $("#skilltime").find("option[value=" + temp + "]").wrap("<span>");
                     }
@@ -125,7 +125,7 @@ $(document).ready(function () {
                 cookie.regisCourse[i].day = new Date(cookie.regisCourse[i].day);
                 if (cookie.regisCourse[i].day.getDay() === daytoNum($('#skilldayEng').val()) && cookie.regisCourse[i].select === true) {
                     var time = cookie.regisCourse[i].day.getHours();
-                    for (let j = 0; j < 4; j++) {
+                    for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
                         $("#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
                     }
@@ -137,7 +137,7 @@ $(document).ready(function () {
                 cookie.regisHybrid[i].day = new Date(cookie.regisHybrid[i].day);
                 if (cookie.regisHybrid[i].day.getDay() === daytoNum($('#skilldayEng').val())) {
                     var time = cookie.regisHybrid[i].day.getHours();
-                    for (let j = 0; j < 4; j++) {
+                    for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
                         $("#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
                     }
