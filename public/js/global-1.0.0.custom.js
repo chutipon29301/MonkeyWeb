@@ -67,7 +67,7 @@ function checkValidUser(position) {
     let user = cookie.monkeyWebUser;
     log("[checkValidUser()] : cookie -> ");
     log(cookie);
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    // noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/position", {
         userID: user
     }).then((data) => {
@@ -152,8 +152,7 @@ function loadRegistrationPage() {
         studentID: user
     }).then((data) => {
         if (data.err) {
-            log("[loadRegistrationPage()] : post/registrationState => Error");
-            log(data.err);
+            log("[loadRegistrationPage()] : post/registrationState => " + data.err);
         } else {
             log("[loadRegistrationPage()] : post/registrationState =>");
             log(data);
