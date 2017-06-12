@@ -101,7 +101,6 @@ function getCookieDict() {
     "use strict";
     //noinspection SpellCheckingInspection
     let allcookies = document.cookie;
-    log(allcookies);
     let obj = {};
     //noinspection SpellCheckingInspection
     let cookiearray = allcookies.split('; ');

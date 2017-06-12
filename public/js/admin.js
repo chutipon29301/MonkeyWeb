@@ -1,18 +1,136 @@
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const allStudent = $.post("post/allStudent", {});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const allCourse = $.post("/post/allCourse", {});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const studentProfile = (studentID) => $.post("post/studentProfile", {
+    studentID: studentID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const courseInfo = (courseID) => $.post("post/courseInfo", {
+    courseID: courseID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const name = (userID) => $.post("post/name", {
+    userID: userID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const changeRegistrationState = (studentID, registrationState) => $.post("post/changeRegistrationState", {
+    studentID: studentID,
+    registrationState: registrationState
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const addSkillDay = (studentID, day) => $.post("post/addSkillDay", {
+    studentID: studentID,
+    subject: "M",
+    day: day
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const addHybridDay = (studentID, subject, day) => $.post("post/addHybridDay", {
+    studentID: studentID,
+    subject: subject,
+    day: day
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const addStudentCourse = (studentID, courseID) => $.post("post/addStudentCourse", {
+    studentID: studentID,
+    courseID: courseID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const removeStudentCourse = (studentID, courseID) => $.post("post/removeStudentCourse", {
+    studentID: studentID,
+    courseID: courseID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const removeHybridDay = (studentID, day) => $.post("post/removeHybridDay", {
+    studentID: studentID,
+    day: day
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
+    studentID: studentID,
+    day: day
+});
+
+/**
+ * Get short name of day
+ * @param date int day 0 - 6
+ * @returns {string} name of day
+ */
+const getDateName = (date) => {
+    let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    return dateName[date];
+};
+
+/**
+ * Get full name of date
+ * @param date int day 0 - 6
+ * @returns {string} full name of day
+ */
+const getDateFullName = (date) => {
+    let dateName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return dateName[date];
+};
+
+/**
+ * Convert number grade to string grade
+ * @param grade in form for number
+ * @returns {string} grade letter
+ */
+const getLetterGrade = (grade) => {
+    if (grade <= 6) {
+        return "P" + grade;
+    } else {
+        return "S" + (grade - 6);
+    }
+};
+
 /**
  * Get data for generating table by calling function generateStudentHtmlTable
  */
 function getAllStudentContent() {
     "use strict";
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("/post/allStudent", "", function (data) {
+    allStudent.then((data) => {
         if (data.err) {
-            log("[getAllStudentContent()] : post/return => " + data.err);
+            log("[getAllStudentContent()] : post/allStudent => " + data.err);
         } else {
-            log("[getAllStudentContent()] : post/return => ");
+            log("[getAllStudentContent()] : post/allStudent => ");
             log(data);
             generateStudentHtmlTable(filterData(data.student));
         }
-    });
+    })
+}
+
+/**
+ * Filter data from selected option
+ * @param data array of student info
+ * @returns {*} array of student to display in table
+ */
+function filterData(data) {
+    let status = document.getElementById("status");
+    let stage = document.getElementById("stage");
+    let grade = document.getElementById("grade");
+    if (status.options[status.selectedIndex].value !== "all") {
+        data = data.filter(data => data.status === status.options[status.selectedIndex].value);
+    }
+    if (stage.options[stage.selectedIndex].value !== "all") {
+        data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value);
+    }
+    if (grade.options[grade.selectedIndex].value !== "all") {
+        data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
+    }
+    return data;
 }
 
 /**
@@ -38,14 +156,12 @@ function generateStudentHtmlTable(student) {
         cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
         cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
-        let clickHandler = function (row) {
-            return function () {
-                log(row.getElementsByTagName("td")[0].innerHTML);
-                //noinspection SpellCheckingInspection
-                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
-                //noinspection SpellCheckingInspection
-                self.location = "/adminStudentprofile";
-            };
+        let clickHandler = (row) => () => {
+            log(row.getElementsByTagName("td")[0].innerHTML);
+            //noinspection SpellCheckingInspection
+            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+            //noinspection SpellCheckingInspection
+            self.location = "/adminStudentprofile";
         };
         row.onclick = clickHandler(row);
     }
@@ -57,8 +173,7 @@ function generateStudentHtmlTable(student) {
  */
 function getAllCourseContent() {
     "use strict";
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("/post/allCourse", "", function (data) {
+    allCourse.then((data) => {
         if (data.err) {
             log("[getAllCourseContent()] : post/return => " + data.err);
         } else {
@@ -87,44 +202,17 @@ function generateCourseHtmlTable(course) {
         cell1.innerHTML = "<td>" + course[i].courseName + "</td>";
         cell2.innerHTML = "<td>" + getDateName(time.getDay()) + "</td>";
         cell3.innerHTML = "<td>" + time.getHours() + ":00 - " + (time.getHours() + 2) + ":00</td>";
-        getUsername(course[i].tutor[0], function (data) {
+        name(course[i].tutor[0]).then((data) => {
             cell4.innerHTML = "<td>" + data.nicknameEn + "</td>";
         });
-
-        let clickHandler = function (row) {
-            return function () {
-                writeCookie("monkeyWebAdminAllcourseSelectedCourseID", row.id);
-                self.location = "/adminCoursedescription";
-            };
+        let clickHandler = (row) => () => {
+            writeCookie("monkeyWebAdminAllcourseSelectedCourseID", row.id);
+            self.location = "/adminCoursedescription";
         };
         row.onclick = clickHandler(row);
     }
 }
 
-
-/**
- *
- * @param data array of student info
- * @returns {*} array of student to display in table
- */
-function filterData(data) {
-    let status = document.getElementById("status");
-    let stage = document.getElementById("stage");
-    let grade = document.getElementById("grade");
-    if (status.options[status.selectedIndex].value !== "all") {
-        data = data.filter(data = > data.status === status.options[status.selectedIndex].value;
-    )
-    }
-    if (stage.options[stage.selectedIndex].value !== "all") {
-        data = data.filter(data = > data.registrationState === stage.options[stage.selectedIndex].value;
-    )
-    }
-    if (grade.options[grade.selectedIndex].value !== "all") {
-        data = data.filter(data = > data.grade === parseInt(grade.options[grade.selectedIndex].value);
-    )
-    }
-    return data;
-}
 
 /**
  * Generate element for studentProfile page
@@ -135,90 +223,130 @@ function getStudentProfile() {
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/studentProfile", {
-        studentID: studentID
-    }, function (data) {
-        if (data.err) {
-            log("[getStudentProfile()] : post/return => " + data.err);
-        } else {
-            log("[getStudentProfile()] : post/return => ");
-            log(data);
-            document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
-            document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
-            document.getElementById("email").innerHTML = "e-mail: " + data.email;
-            document.getElementById("phone").innerHTML = "phone: " + data.phone;
-            document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
-            document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
-
-            let allCourse = data.courseID;
-
-            for (let i = 0; i < allCourse.length; i++) {
-                //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-                $.post("post/courseInfo", {
-                    courseID: allCourse[i]
-                }, function (data) {
-                    if (data.err) {
-                        log("[getStudentProfile()] : post/courseInfo => " + data.err);
-                    } else {
-                        log("[getCourseDescription()] : post/courseInfo => ");
-                        log(data);
-                        document.getElementById(data.day).innerHTML = data.courseName;
-                        document.getElementById(data.day).value = allCourse[i];
-                    }
-                });
-            }
-            log("[getStudentProfile()] All registered course => ");
-            log(allCourse);
-
-            let hybrid = data.hybridDay;
-
-            for (let i = 0; i < hybrid.length; i++) {
-                document.getElementById(hybrid[i].day).innerHTML = (hybrid[i].subject === "M") ? "FHB : M" : "FHB : PH";
-            }
-
-            let skill = data.skillDay;
-
-            for (let i = 0; i < skill.length; i++) {
-                let time = new Date(skill[i].day);
-                let hour = new Date(skill[i].day);
-                if (time.getMinutes() === 30) {
-                    time.setMinutes(0);
+    studentProfile(studentID).then((data) => {
+        log("[getStudentProfile()] : post/studentProfile => ");
+        log(data);
+        document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
+        document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
+        document.getElementById("email").innerHTML = "e-mail: " + data.email;
+        document.getElementById("phone").innerHTML = "phone: " + data.phone;
+        document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
+        document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
+        return data;
+    }).then((data) => {
+        for (let i = 0; i < data.courseID.length; i++) {
+            courseInfo(data.courseID[i]).then((course) => {
+                if (course.err) {
+                    log("[getStudentProfile()] : post/courseInfo => " + course.err);
+                } else {
+                    log("[getCourseDescription()] : post/courseInfo => ");
+                    log(course);
+                    document.getElementById(course.day).innerHTML = course.courseName;
+                    document.getElementById(course.day).value = data.courseID[i];
+                    document.getElementById(course.day).className = "btn btn-warning col-md-12";
                 }
-                if (time.getHours() === 9 || time.getHours() === 11 || time.getHours() === 14 || time.getHours() === 16) {
-                    time.setHours(time.getHours() - 1);
-                }
-                document.getElementById("" + time.getTime()).innerHTML = "SKILL " + hour.getHours() + ":" +
-                    ((hour.getMinutes() === 0) ? "00" : "30");
-            }
-
-            let table = document.getElementById("courseTable");
-            log(table.rows[1].cells);
-            // for (let i  = 0; i < table.rows.length; i++){
-            //
-            // }
-
-            // let courseData = [[], [], [], []];
-            // for (let i = 0; i < 4; i++) {
-            //     for (let j = 0; j < 4; j++) {
-            //         courseData[i][j] = 'MS123c';
-            //     }
-            // }
-            // generateImage(courseData);
+            });
         }
+        log("[getStudentProfile()] All registered course => ");
+        log(data.courseID);
+
+        let hybrid = data.hybridDay;
+        for (let i = 0; i < hybrid.length; i++) {
+            document.getElementById(hybrid[i].day).innerHTML = (hybrid[i].subject === "M") ? "FHB : M" : "FHB : PH";
+            document.getElementById(hybrid[i].day).className = "btn btn-primary col-md-12";
+        }
+
+        let skill = data.skillDay;
+        for (let i = 0; i < skill.length; i++) {
+            let time = new Date(skill[i].day);
+            let hour = new Date(skill[i].day);
+            if (time.getMinutes() === 30) {
+                time.setMinutes(0);
+            }
+            if (time.getHours() === 9 || time.getHours() === 11 || time.getHours() === 14 || time.getHours() === 16) {
+                time.setHours(time.getHours() - 1);
+            }
+            document.getElementById("" + time.getTime()).innerHTML = "SKILL " + hour.getHours() + ":" +
+                ((hour.getMinutes() === 0) ? "00" : "30");
+            document.getElementById("" + time.getTime()).className = "btn btn-info col-md-12";
+        }
+        generateImageData()
     });
 }
 
-function changeRegistrationState(registrationState) {
+
+function generateImageData() {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/changeRegistrationState", {
-        studentID: studentID,
-        registrationState: registrationState
-    }, function (data) {
+    let tableInfo = {
+        "id": "" + studentID
+    };
+
+    studentProfile(studentID).then((data) => {
+        tableInfo.firstname = data.firstname;
+        tableInfo.lastname = data.lastname;
+        tableInfo.nickname = data.nickname;
+        tableInfo.grade = "" + data.grade;
+
+        let mainTable = {}, mathMiniTable = {}, physicsMiniTable = {};
+        for (let i = 0; i < data.courseID.length; i++) {
+            courseInfo(data.courseID[i]).then((data) => {
+                let time = new Date(data.day);
+                mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
+                mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                if (data.tutor[0] === 99000){
+                    if (data.courseName[0] === "M"){
+                        mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
+                    }else {
+                        physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
+                    }
+                }
+                return [(name(data.tutor[0])), data];
+            }).then((req) => {
+                let name = req[0];
+                let data = req[1];
+                let time = new Date(data.day);
+                name.then((name) => {
+                    mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
+                    log(tableInfo);
+                });
+            });
+        }
+
+        for (let i = 0; i < data.skillDay.length; i++) {
+            let time = new Date(data.skillDay[i].day);
+            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" + ((time.getMinutes() === 0) ? "00" : "30");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
+        }
+
+        for (let i = 0; i < data.hybridDay.length; i++) {
+            let time = new Date(data.hybridDay[i].day);
+            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
+            if (data.hybridDay[i].subject === "M") {
+                mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+            } else {
+                physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+            }
+        }
+        tableInfo.mainTable = mainTable;
+        tableInfo.mathMiniTable = mathMiniTable;
+        tableInfo.physicsMiniTable = physicsMiniTable;
+    });
+}
+
+/**
+ * Change registration state of user
+ * @param registrationState change registration stage of user
+ */
+function setRegistrationState(registrationState) {
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    changeRegistrationState(studentID, registrationState).then((data) => {
         if (data.err) {
-            log("[changeRegistrationState()] : post/return => " + data.err);
+            log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            log("[changeRegistrationState()] : post/return => Success");
+            log("[setRegistrationState()] : post/changeRegistrationState => Success");
             location.reload()
         }
     });
@@ -231,106 +359,47 @@ function getCourseDescription() {
     let cookie = getCookieDict();
     /** @namespace cookie.monkeyWebAdminAllcourseSelectedCourseID */
     let courseID = cookie.monkeyWebAdminAllcourseSelectedCourseID;
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/courseInfo", {
-        courseID: courseID
-    }, function (data) {
+    courseInfo(courseID).then((data) => {
         if (data.err) {
-            log("[getCourseDescription()] : post/return => " + data.err);
+            log("[getCourseDescription()] : post/courseInfo => " + data.err);
         } else {
-            log("[getCourseDescription()] : post/return => ");
+            log("[getCourseDescription()] : post/courseInfo => ");
             log(data);
             document.getElementById("courseName").innerHTML = data.courseName;
-            getUsername(data.tutor[0], function (data) {
+            name(data.tutor[0]).then((data) => {
                 document.getElementById("tutorName").innerHTML = "Tutor : " + data.nicknameEn;
             });
             let date = new Date(data.day);
             document.getElementById("day").innerHTML = "Day : " + getDateFullName(date.getDay());
             document.getElementById("time").innerHTML = date.getHours() + ":00 - " + (date.getHours() + 2) + ":00";
             document.getElementById("courseID").innerHTML = courseID;
-
-            let table = document.getElementById("allStudentInCourseTable");
-            for (let i = 0; i < data.student.length; i++) {
-                let row = table.insertRow(i);
-                let cell1 = row.insertCell(0);
-                let cell2 = row.insertCell(1);
-                let cell3 = row.insertCell(2);
-                let cell4 = row.insertCell(3);
-                cell1.innerHTML = "<td>" + data.student[i] + "</td>";
-                getUsername(data.student[i], function (data) {
-                    cell2.innerHTML = "<td>" + data.nickname + "</td>";
-                    cell3.innerHTML = "<td>" + data.firstname + "</td>";
-                    cell4.innerHTML = "<td>" + data.lastname + "</td>";
-                });
-                let clickHandler = function (row) {
-                    return function () {
-                        log(row.getElementsByTagName("td")[0].innerHTML);
-                        //noinspection SpellCheckingInspection
-                        writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
-                        //noinspection SpellCheckingInspection
-                        self.location = "/adminStudentprofile";
-                    };
-                };
-                row.onclick = clickHandler(row);
-            }
+            return data.student;
+        }
+    }).then((student) => {
+        let table = document.getElementById("allStudentInCourseTable");
+        for (let i = 0; i < student.length; i++) {
+            let row = table.insertRow(i);
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
+            let cell3 = row.insertCell(2);
+            let cell4 = row.insertCell(3);
+            cell1.innerHTML = "<td>" + student[i] + "</td>";
+            name(student[i]).then((data) => {
+                cell2.innerHTML = "<td>" + data.nickname + "</td>";
+                cell3.innerHTML = "<td>" + data.firstname + "</td>";
+                cell4.innerHTML = "<td>" + data.lastname + "</td>";
+            });
+            let clickHandler = (row) => () => {
+                log(row.getElementsByTagName("td")[0].innerHTML);
+                //noinspection SpellCheckingInspection
+                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+                //noinspection SpellCheckingInspection
+                self.location = "/adminStudentprofile";
+            };
+            row.onclick = clickHandler(row);
         }
     });
-}
 
-/**
- * Get short name of day
- * @param date int day 0 - 6
- * @returns {string} name of day
- */
-function getDateName(date) {
-    let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    return dateName[date];
-}
-
-/**
- * Get full name of date
- * @param date int day 0 - 6
- * @returns {string} full name of day
- */
-function getDateFullName(date) {
-    let dateName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    return dateName[date];
-}
-
-/**
- * Convert number grade to string grade
- * @param grade in form for number
- * @returns {string} grade letter
- */
-function getLetterGrade(grade) {
-    if (grade <= 6) {
-        return "P" + grade;
-    } else {
-        return "S" + (grade - 6);
-    }
-}
-
-/**
- * Get name of user
- * @param userID of user
- * @param callback function
- * @returns {string} name of user
- */
-function getUsername(userID, callback) {
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/name", {
-        userID: userID
-    }, function (data) {
-        if (data.err) {
-            log("[getUsername()] : post/return => " + data.err);
-            return "unknown";
-        } else {
-            log("[getUsername()] : post/return => ");
-            log(data);
-            callback(data);
-        }
-    });
-    return "unknown";
 }
 
 /**
@@ -341,8 +410,7 @@ function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
     if (button.innerHTML === "Add Course") {
         "use strict";
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("/post/allCourse", {}, function (data) {
+        allCourse.then((data) => {
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
@@ -366,7 +434,10 @@ function addRemoveCourse(timeID) {
                     } else {
                         grade = "P" + course.grade.join("");
                     }
-                    select.innerHTML += "<option id='" + course.courseID + "'>" + (course.subject + grade + course.level) + "</option>";
+                    name(course.tutor[0]).then((data) => {
+                        select.innerHTML += "<option id='" + course.courseID + "'>" + course.subject + grade + course.level +
+                            " - " + data.nicknameEn + "</option>";
+                    });
                 }
 
                 let time = new Date(parseInt(timeID));
@@ -401,12 +472,7 @@ function addCourse() {
     let selectedOption = select.options[select.selectedIndex];
     let selectedValue = selectedOption.value;
     if (selectedValue.slice(0, 5) === "SKILL") {
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("post/addSkillDay", {
-            studentID: studentID,
-            subject: "M",
-            day: selectedOption.id
-        }, function (data) {
+        addSkillDay(studentID, selectedOption.id).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/addSkillDay => " + data.err);
             } else {
@@ -416,11 +482,7 @@ function addCourse() {
         });
     } else if (selectedValue.slice(0, 3) === "FHB") {
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("post/addHybridDay", {
-            studentID: studentID,
-            subject: (selectedValue[selectedValue.length - 1] === "M") ? "M" : "PH",
-            day: selectedOption.id
-        }, function (data) {
+        addHybridDay(studentID, ((selectedValue[selectedValue.length - 1] === "M") ? "M" : "PH"), selectedOption.id).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/addHybridDay => " + data.err);
             } else {
@@ -431,10 +493,7 @@ function addCourse() {
     } else {
         let courseID = selectedOption.id;
         //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("post/addStudentCourse", {
-            studentID: studentID,
-            courseID: [courseID]
-        }, function (data) {
+        addStudentCourse(studentID, [courseID]).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/addStudentCourse => " + data.err);
             } else {
@@ -459,11 +518,7 @@ function removeCourse() {
         let hour = new Date(time);
         hour.setMinutes(parseInt(courseName.slice(courseName.indexOf(":") + 1)));
         hour.setHours(parseInt(courseName.slice(courseName.indexOf(" ") + 1, courseName.indexOf(":"))));
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("post/removeSkillDay", {
-            studentID: studentID,
-            day: hour.getTime()
-        }, function (data) {
+        removeSkillDay(studentID, hour.getTime()).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/removeSkillDay => " + data.err);
             } else {
@@ -475,11 +530,7 @@ function removeCourse() {
         log(studentID);
         log(time);
         log(document.getElementById("removeModal"));
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("post/removeHybridDay", {
-            studentID: studentID,
-            day: time
-        }, function (data) {
+        removeHybridDay(studentID, time).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/removeHybridDay => " + data.err);
             } else {
@@ -488,15 +539,11 @@ function removeCourse() {
             }
         });
     } else {
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-        $.post("post/removeStudentCourse", {
-            studentID: studentID,
-            courseID: [courseID]
-        }, function (data) {
+        removeStudentCourse(studentID, [courseID]).then((data) => {
             if (data.err) {
-                log("[RemoveCourse()] : post/return => " + data.err);
+                log("[RemoveCourse()] : post/removeStudentCourse => " + data.err);
             } else {
-                log("[RemoveCourse()] : post/return => Success");
+                log("[RemoveCourse()] : post/removeStudentCourse => Success");
                 location.reload();
             }
         });
