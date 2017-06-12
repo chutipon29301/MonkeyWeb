@@ -30,7 +30,9 @@ $(document).ready(function () {
                 var time = cookie.regisCourse[i].day.getHours();
                 for (j = -1; j < 4; j++) {
                     var temp = (10 * time) + (j * 5);
-                    $("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                    if (!($("#skilltime").find("option[value=" + temp + "]").parent().is("span"))){
+                    	$("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                    }
                 }
             }
         }
@@ -45,7 +47,9 @@ $(document).ready(function () {
                 var time = cookie.regisHybrid[i].day.getHours();
                 for (j = -1; j < 4; j++) {
                     var temp = (10 * time) + (j * 5);
-                    $("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                    if (!($("#skilltime").find("option[value=" + temp + "]").parent().is("span"))){
+                    	$("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                    }
                 }
             }
         }
@@ -91,7 +95,9 @@ $(document).ready(function () {
                     var time = cookie.regisCourse[i].day.getHours();
                     for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
-                        $("#skilltime").find("option[value=" + temp + "]").wrap("<span>");
+                        if (!($("#skilltime").find("option[value=" + temp + "]").parent().is("span"))){
+                        	$("#skilltime").find("option[value=" + temp + "]").wrap("<span>");
+                        }
                     }
                 }
             }
@@ -103,7 +109,9 @@ $(document).ready(function () {
                     var time = cookie.regisHybrid[i].day.getHours();
                     for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
-                        $("#skilltime").find("option[value=" + temp + "]").wrap("<span>");
+                        if (!($("#skilltime").find("option[value=" + temp + "]").parent().is("span"))){
+                        	$("#skilltime").find("option[value=" + temp + "]").wrap("<span>");
+                        }
                     }
                 }
             }
@@ -127,7 +135,9 @@ $(document).ready(function () {
                     var time = cookie.regisCourse[i].day.getHours();
                     for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
-                        $("#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                        if (!($("#skilltimeEng").find("option[value=" + temp + "]").parent().is("span"))){
+                        	$("#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                        }
                     }
                 }
             }
@@ -139,7 +149,9 @@ $(document).ready(function () {
                     var time = cookie.regisHybrid[i].day.getHours();
                     for (let j = -1; j < 4; j++) {
                         var temp = (10 * time) + (j * 5);
-                        $("#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                        if (!($("#skilltimeEng").find("option[value=" + temp + "]").parent().is("span"))){
+                        	$("#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                        }
                     }
                 }
             }
@@ -147,6 +159,8 @@ $(document).ready(function () {
     });
 
     $("#station").change(function () {
+    	genTable();
+    	updateTable();
         if ($(this).val() === "2") {
             $('#skilltime').val('0');
             document.getElementById('skillday').disabled = true;
@@ -164,6 +178,8 @@ $(document).ready(function () {
         }
     });
     $("#stationEng").change(function () {
+    	genTable();
+    	updateTable();
         if ($(this).val() === "2") {
             $('#skilltime').val('0');
             document.getElementById('skilldayEng').disabled = true;
@@ -189,6 +205,8 @@ $(document).ready(function () {
                 $('#skilltime').val('0')
             }
         }
+        genTable();
+        updateTable();
     })
 });
 
@@ -246,6 +264,33 @@ function updateTable() {
                 }
             }
         }
+    }
+    if($('#station').val()=='1' && $('#skilltime').val()!='0'){
+    	console.log('1')
+		var disTime = [8,10,13,15]
+		for(i=0;i<disTime.length;i++){
+			console.log(Math.floor(parseInt($('#skilltime').val())/10))
+			if(Math.floor(parseInt($('#skilltime').val())/10) == disTime[i] || Math.floor(parseInt($('#skilltime').val())/10)-1 == disTime[i]){
+				var skillClass = document.getElementsByClassName('btn-' + $('#skillday').val() + ' ' + disTime[i] + '.1');
+                for (let j = 0; j < hybridClass.length; j++) {
+                    skillClass[j].className = skillClass[j].className + ' sk';
+                    skillClass[j].innerHTML = '<strong>SKILL M:</strong>' + '<br>' + $('#skilltime option:selected').text().split('-')[0]+' น.';
+                }
+			}
+		}
+    }
+    if($('#stationEng').val()=='1' && $('#skilltimeEng').val()!='0'){
+    	console.log('2')
+		var disTime = [8,10,13,15]
+		for(i=0;i<disTime.length;i++){
+			if(Math.floor(parseInt($('#skilltimeEng').val())/10) == disTime[i] || Math.floor(parseInt($('#skilltimeEng').val())/10)-1 == disTime[i]){
+				var skillClassE = document.getElementsByClassName('btn-' + $('#skilldayEng').val() + ' ' + disTime[i] + '.1');
+                for (let j = 0; j < hybridClass.length; j++) {
+                    skillClassE[j].className = skillClassE[j].className + ' sk';
+                    skillClassE[j].innerHTML = '<strong>SKILL E:</strong>' + '<br>' + $('#skilltimeEng option:selected').text().split('-')[0]+' น.';
+                }
+			}
+		}
     }
 }
 
@@ -397,7 +442,7 @@ function submit() {
                         $.post("post/addSkillDay", {
                             studentID: parseInt(cookie.monkeyWebUser),
                             subject: 'M',
-                            day: moment(0).day(daytoNum($('#skillday').val())).hour(parseInt($('#skilltime').val()) / 10).minute((parseInt($('#skilltime').val()) % 10) * 6).valueOf()
+                            day: moment(0).day(daytoNum($('#skillday').val())).hour(Math.floor(parseInt($('#skilltime').val()) / 10)).minute((parseInt($('#skilltime').val()) % 10) * 6).valueOf()
                         }, function (output4) {
                             if (output4.err) {
                                 alert("Something went wrong! please try again")
@@ -408,7 +453,7 @@ function submit() {
                         $.post("post/addSkillDay", {
                             studentID: parseInt(cookie.monkeyWebUser),
                             subject: 'E',
-                            day: moment(0).day(daytoNum($('#skilldayEng').val())).hour(parseInt($('#skilltimeEng').val()) / 10).minute((parseInt($('#skilltimeEng').val()) % 10) * 6).valueOf()
+                            day: moment(0).day(daytoNum($('#skilldayEng').val())).hour(Math.floor(parseInt($('#skilltimeEng').val()) / 10)).minute((parseInt($('#skilltimeEng').val()) % 10) * 6).valueOf()
                         }, function (output4) {
                             if (output4.err) {
                                 alert("Something went wrong! please try again")
