@@ -44,7 +44,7 @@ function checkLogin() {
     $.post("/post/password", {
         userID: user,
         password: pwd
-    }, function (data) {
+    }).then((data) => {
         if (data.err) {
             log("[checkLogin()] : post/password => Error");
         } else {
@@ -67,10 +67,10 @@ function checkValidUser(position) {
     let user = cookie.monkeyWebUser;
     log("[checkValidUser()] : cookie -> ");
     log(cookie);
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+    // noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("/post/position", {
         userID: user
-    }, function (data) {
+    }).then((data) => {
         if (data.err) {
             log("[checkValidUser()] : post/position => Error");
         } else {
@@ -129,7 +129,7 @@ function setStudentNavName() {
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("post/name", {
         userID: user
-    }, function (data) {
+    }).then((data) => {
         if (data.err) {
             document.getElementById("navStudentName").innerHTML = " ";
             log("[setStudentNavName()] => Set student name in navigation bar to :  ");
@@ -150,12 +150,11 @@ function loadRegistrationPage() {
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("post/registrationState", {
         studentID: user
-    }, function (data) {
+    }).then((data) => {
         if (data.err) {
-            log("[loadRegistrationPage()] : post/status => Error");
-            log(data.err);
+            log("[loadRegistrationPage()] : post/registrationState => " + data.err);
         } else {
-            log("[loadRegistrationPage()] : post/status =>");
+            log("[loadRegistrationPage()] : post/registrationState =>");
             log(data);
             //noinspection SpellCheckingInspection
             switch (data.registrationState) {
