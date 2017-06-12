@@ -293,10 +293,10 @@ function generateImageData() {
                 let time = new Date(data.day);
                 mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
                 mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = data.courseName;
-                if (data.tutor[0] === 99000){
-                    if (data.courseName[0] === "M"){
+                if (data.tutor[0] === 99000) {
+                    if (data.courseName[0] === "M") {
                         mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
-                    }else {
+                    } else {
                         physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
                     }
                 }
@@ -333,6 +333,8 @@ function generateImageData() {
         tableInfo.mainTable = mainTable;
         tableInfo.mathMiniTable = mathMiniTable;
         tableInfo.physicsMiniTable = physicsMiniTable;
+    }).then(() =>{
+        //some function
     });
 }
 

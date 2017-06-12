@@ -34,7 +34,7 @@ function login(user, pwd) {
     $.post("post/password", {
         userID: user,
         password: encrypt(pwd).toString()
-    }, function (data) {
+    }).then((data) => {
         if (data.err) {
             log("Invalid");
         } else {
@@ -57,7 +57,7 @@ function redirectLocation(user) {
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     $.post("post/position", {
         userID: user
-    }, function (data) {
+    }).then((data) => {
         if (data.err) {
             log("Invalid");
         } else {
