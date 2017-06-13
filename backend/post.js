@@ -93,7 +93,6 @@ var run=function(app,db){
 
     // addPage("login","/");
     addPage("login");
-    addPage("404");
     addPage("registrationCourse");
     addPage("registrationHybrid");
 	addPage("registrationName");
