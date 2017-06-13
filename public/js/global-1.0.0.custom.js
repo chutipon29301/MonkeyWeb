@@ -109,6 +109,7 @@ function getCookieDict() {
     }
     return obj;
 }
+
 /**
  * Logout current user
  */
@@ -119,6 +120,7 @@ function logout() {
     deleteCookie("monkeyWebPassword");
     self.location = "/login";
 }
+
 /**
  * Set student name to navigation bar
  */
@@ -140,6 +142,15 @@ function setStudentNavName() {
         }
     });
 }
+
+function clearAllCookie() {
+    log("[clearAllCookie()] is called");
+    let cookieKeys = Object.keys(getCookieDict());
+    for (let i = 0; i < cookieKeys.length; i++){
+        deleteCookie(cookieKeys[i]);
+    }
+}
+
 /**
  * Load registration page from status of student
  */
