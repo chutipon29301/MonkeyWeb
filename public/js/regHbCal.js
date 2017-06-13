@@ -175,6 +175,6 @@ function deselect(btn) {     /* sub function to deselect duo btn if both is sele
 function back() {
     self.location = "registrationCourse"
 }
-window.onresize = function () {
-    location.reload()
-};
+// window.onresize = function () {
+//     location.reload()
+// };

@@ -272,6 +272,8 @@ function generateImageData() {
         return tableInfo;
     }).then((tableInfo) => {
         log(tableInfo);
+        generateImage(tableInfo);
+        showReciept(tableInfo);
     });
 }
 
@@ -488,26 +490,78 @@ function generateImage(tableInfo) {
     //gen row
     const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
     const day = ['TUE', 'THU', 'SAT', 'SUN'];
-    const time = ['8-10', '10-12', '13-15', '15-17'];
-    const tableCl = ['#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2'];
-    const border = 'border: 1px solid black;border-collapse: collapse;';
+    const time = ['8-10', '10-12', '13-15', '15-17', '17-19'];
+    const tableCl = ['#ff47b2', '#ffa133', '#9645cf', '#ff2e2e'];
+    const whtCl = ['#ffffff', '#ffffff', '#ffffff', '#ffffff'];
+    const borderB = 'border: 1px solid black;border-collapse: collapse;';
+    const borderG = 'border-bottom: 1px solid grey;border-right: 1px solid black;border-collapse: collapse;';
     const levelColor = ['#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2',
         '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2'];
-    let row1 = '<tr>' + '<th rowspan="2" colspan="2" style="' + border + 'font-size:40px;background-color:' +
-        levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + border + '">' +
-        'ID : ' + tableInfo.id + '</th>' + '<th rowspan="3" colspan="2" style="' + border + 'font-size: 24px">' +
-        tableInfo.firstname + tableInfo.nickname + tableInfo.lastname + '</th>' + '<th rowspan="13" style="' + border +
-        'width: 5px"></th>' + '<th style="' + border + 'height: 30px;width: 40px;background-color: black"></th>' +
-        loop4(1, day, 40, tableCl) + '</tr>';
-    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + border + '">' + 'barcode' + '</th>' +
-        '<th style="' + border + 'height: 30px">' + time[0] + '</th>' + '</tr>';
+    const miniT = ['8', '10', '13', '15', '17'];
+    let mini = {
+        math8: [],
+        math10: [],
+        math13: [],
+        math15: [],
+        math17: [],
+        phy8: [],
+        phy10: [],
+        phy13: [],
+        phy15: [],
+        phy17: []
+    };
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (tableInfo.mathMiniTable[day[j] + miniT[i]] !== undefined) {
+                mini['math' + miniT[i]][j] = tableInfo.mathMiniTable[day[j] + miniT[i]];
+            } else mini['math' + miniT[i]][j] = '';
+            if (tableInfo.physicsMiniTable[day[j] + miniT[i]] !== undefined) {
+                mini['phy' + miniT[i]][j] = tableInfo.physicsMiniTable[day[j] + miniT[i]];
+            } else mini['phy' + miniT[i]][j] = '';
+        }
+    }
+    let row1 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
+        levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
+        'ID : ' + tableInfo.id + '</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
+        tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
+        '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
+        'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
+    //for Phy change from here
+    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'barcode' + '</th>' +
+        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini['math8'], 40, whtCl, borderB) + '</tr>';
+    let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color: #ffc107;color: white">' + 'M' + '</th>' +
+        '<th style="' + borderB + 'width: 40px;background-color: #9c27b0;color: white">' + 'P' + '</th>' +
+        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini['math10'], 40, whtCl, borderB) + '</tr>';
+    let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
+        loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
+        loop4(2, 1, mini['math13'], 40, whtCl, borderB) + '</tr>';
+    let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini['math15'], 40, whtCl, borderB) + '</tr>';
+    let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[0] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 30px">'
+        + time[4] + '</th>' + loop4(2, 1, mini['math15'], 40, whtCl, borderB) + '</tr>';
+    //change Phy end here
+    let row7 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '8'), 120, whtCl, borderB) + '<th rowspan="2" colspan="5" style="' + borderB +
+        'background-color: yellow">Note : </th>' + '</tr>';
+    let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[1] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '10'), 120, whtCl, borderG) + '</tr>';
+    let row9 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '10'), 120, whtCl, borderB) +
+        '<th rowspan="7" colspan="5" style="' + borderB + '"></th>' + '</tr>';
+    let row10 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[2] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '13'), 120, whtCl, borderG) + '</tr>';
+    let row11 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '13'), 120, whtCl, borderB) + '</tr>';
+    let row12 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[3] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '15'), 120, whtCl, borderG) + '</tr>';
+    let row13 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '15'), 120, whtCl, borderB) + '</tr>';
+    let row14 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[4] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '17'), 120, whtCl, borderG) + '</tr>';
+    let row15 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
     //gen canvas data
     let data =
         '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="560">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
         '<table style="border: 1px solid black;border-collapse: collapse">' +
-        row1 + row2 +
+        row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9 + row10 + row11 + row12 + row13 + row14 + row15 +
         '</table>' +
         '</div>' +
         '</foreignObject>' +
@@ -529,18 +583,64 @@ function generateImage(tableInfo) {
     };
     img.src = url;
 }
-function loop4(type, data, w, color) {
+//function for generate duplicate 4 row table with a data in each row
+function loop4(type, row, data, w, color, border) {
     let text = '';
-    if (type === 1) {
-        for (let i = 0; i < 4; i++) {
-            text += '<th style="border:1px solid black;border-collapse:collapse;width:' + w + 'px;background-color:' + color[i] +
-                '">' + data[i] + '</th>';
+    if (row > 1) {
+        if (type === 1) {
+            for (let i = 0; i < 4; i++) {
+                text += '<th rowspan="' + row + '" style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</th>';
+            }
+        } else {
+            for (let i = 0; i < 4; i++) {
+                text += '<td rowspan="' + row + '" style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</td>';
+            }
         }
     } else {
-        for (let i = 0; i < 4; i++) {
-            text += '<td style="border:1px solid black;border-collapse:collapse;width:' + w + 'px;background-color:' + color[i] +
-                '">' + data[i] + '</td>';
+        if (type === 1) {
+            for (let i = 0; i < 4; i++) {
+                text += '<th style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</th>';
+            }
+        } else {
+            for (let i = 0; i < 4; i++) {
+                text += '<td style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</td>';
+            }
         }
     }
     return text;
+}
+//for create data in a row of table from course data
+function tableRow(type, tableInfo, day, time) {
+    let tableRow = ['', '', '', ''];
+    for (let i = 0; i < 4; i++) {
+        if (tableInfo.mainTable[day[i] + time] !== undefined) {
+            if (type === 1) {
+                tableRow[i] = tableInfo.mainTable[day[i] + time].courseName;
+            } else tableRow[i] = tableInfo.mainTable[day[i] + time].tutor;
+        }
+    }
+    return tableRow;
+}
+//for show reciept pic on page
+function showReciept(tableInfo) {
+    let picId = tableInfo.id;
+    $.get('pic/CR60Q3/15999.jpg', function (data, status) {
+        if (status === 'success') {
+            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpg');
+        }
+    });
+    $.get('pic/CR60Q3/15999.jpeg', function (data, status) {
+        if (status === 'success') {
+            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpeg');
+        }
+    });
+    $.get('pic/CR60Q3/15999.png', function (data, status) {
+        if (status === 'success') {
+            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.png');
+        }
+    });
 }
