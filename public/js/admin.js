@@ -417,8 +417,7 @@ function addRemoveCourse(timeID) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
                 log("[addRemoveCourse()] : post/allCourse => ");
-                data.course = data.course.filter(data = > data.day === parseInt(timeID);
-            )
+                data.course = data.course.filter(data => data.day === parseInt(timeID));
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
 
@@ -430,7 +429,7 @@ function addRemoveCourse(timeID) {
                     let course = data.course[i];
                     let grade = "";
                     if (course.grade[0] > 6) {
-                        grade = "S" + course.grade.map((x) = > (x - 6)
+                        grade = "S" + course.grade.map((x) => (x - 6)
                     ).
                         join("");
                     } else {
@@ -558,48 +557,15 @@ function removeCourse() {
 function generateImage(tableInfo) {
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
-    //gen table header
-    let border = ' style="border:1px solid black;border-collapse:collapse;';
-    let day = ['TUE', 'THU', 'SAT', 'SUN'];
-    let time = [8 - 10, 10 - 12, 13 - 15, 15 - 17];
-    let tableColor = ['background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;'];
-    let minTableColor = ['background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;', 'background-color:#ff47b2;'];
-    let minTableTemp = '';
-    let tableTemp = '';
-    for (let i = 0; i < 4; i++) {
-        minTableTemp += '<th' + border + minTableColor[i] + 'width:40px;">' + day[i] + '</th>';
-        tableTemp += '<th rowspan="2"' + border + tableColor[i] + 'width: 120px;>' + day[i] + '</th>>';
-    }
-    let header = '<tr>' +
-        '<th rowspan="2" colspan="2"' + border + 'font-size: 40px;background-color: yellow">S1</th>' +
-        '<th colspan="2"' + border + '">ID : 159991</th>' +
-        '<th rowspan="3" colspan="2"' + border + 'font-size: 24px">กษิเดชน์ศักย์พษิฐ<br>(ปริ้นเตอร์) ขัณฑมาศ</th>' +
-        '<th rowspan="13"' + border + 'width: 5px"></th>' +
-        '<th' + border + 'height: 30px;width: 40px;background-color: black"></th>' + minTableTemp +
-        '</tr>';
     //gen table
-    let tableHead = {
-        '0': '<th rowspan="2" colspan="2"' + border + '>lllllllllllllllll</th>',
-        '1': '<th' + border + 'width: 40px;background-color: #ffc107;color: white">M</th>' + '<th' + border + 'width: 40px;background-color: #9c27b0;color: white">P</th>',
-        '2': '<th rowspan="2" colspan="2"' + border + 'background-color: black"></th>' + tableTemp,
-        '3': ''
-    };
-    let table = '';
-    for (let i = 0; i < 4; i++) {
-        let temp = '';
-        for (let i = 0; i < 4; i++) {
-            temp += '<td' + border + 'CR8' + '"></td>'
-        }
-        let num = '' + i;
-        table += tableHead.num + '<th' + border + 'height: 30px">' + time[i] + '</th>'
-    }
+
     //gen canvas data
     let data =
         '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="560">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
         '<table style="border: 1px solid black;border-collapse: collapse">' +
-        header + table +
+
         '</table>' +
         '</div>' +
         '</foreignObject>' +

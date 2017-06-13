@@ -1,5 +1,5 @@
-var cookie;
-var courseClass;
+let cookie;
+let courseClass;
 $(document).ready(function () {
     cookie = getCookieDict();
     if (cookie.regisCourse === undefined) {
@@ -60,7 +60,7 @@ $(document).ready(function () {
     }
 });
 function next() {
-    var selectHybrid = {
+    let selectHybrid = {
         tue151: false,
         tue152: false,
         thu151: false,
@@ -82,8 +82,8 @@ function next() {
         sun151: false,
         sun152: false
     };
-    var allselectHB = document.getElementsByClassName('btn-success');
-    var i;
+    let allselectHB = document.getElementsByClassName('btn-success');
+    let i;
     for (i = 0; i < allselectHB.length; i++) {
         if (allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1] === '1') {
             selectHybrid[allselectHB[i].className.slice(4, 7) + allselectHB[i].className.split(' ')[1].slice(0, this.length - 2) + allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1]] = {
@@ -123,15 +123,15 @@ function daytoNum(day) {
 }
 
 function calculate(btn) { /* run after click btn in HTML to switch between select and non-select */
-    var i;
-    var all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
+    let i;
+    let all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
     for (i = 0; i < all_same.length; i++) {
-        var raw = all_same[i].className;
-        var check = all_same[i].className.split(' ')[0] + ' ' + all_same[i].className.split(' ')[1];
+        let raw = all_same[i].className;
+        let check = all_same[i].className.split(' ')[0] + ' ' + all_same[i].className.split(' ')[1];
         if (raw.indexOf("btn-default") !== -1) {
             raw = raw.replace(/btn-default/g, "btn-success");
             all_same[i].className = raw;
-            var temp;
+            let temp;
             if (check[check.length - 1] === '1') {
                 temp = document.getElementsByClassName(check.slice(0, check.length - 1) + '2');
                 for (let j = 0; j < temp.length; j++) {
@@ -157,10 +157,10 @@ function calculate(btn) { /* run after click btn in HTML to switch between selec
 }
 
 function deselect(btn) {     /* sub function to deselect duo btn if both is selected */
-    var i;
-    var all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
+    let i;
+    let all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
     for (i = 0; i < all_same.length; i++) {
-        var raw = all_same[i].className;
+        let raw = all_same[i].className;
         if (raw.indexOf("btn-default") !== -1) {
             raw = raw.replace(/btn-default/g, "btn-success");
             all_same[i].className = raw;
