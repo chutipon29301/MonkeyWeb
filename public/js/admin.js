@@ -226,13 +226,13 @@ function generateImageData() {
         for (let i = 0; i < data.courseID.length; i++) {
             courseInfo(data.courseID[i]).then((data) => {
                 let time = new Date(data.day);
-                mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-                mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = data.courseName;
                 if (data.tutor[0] === 99000) {
                     if (data.courseName[0] === "M") {
-                        mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
+                        mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
                     } else {
-                        physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
+                        physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
                     }
                 }
                 return [(name(data.tutor[0])), data];
@@ -241,37 +241,38 @@ function generateImageData() {
                 let data = req[1];
                 let time = new Date(data.day);
                 name.then((name) => {
-                    mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
-                    log(tableInfo);
+                    mainTable[getDateName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
                 });
             });
         }
 
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
-            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+            mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
                 ((time.getMinutes() === 0) ? "00" : "30");
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "SKILL";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
             let time = new Date(data.hybridDay[i].day);
-            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName =
+            mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateName(time.getDay()) + time.getHours()].courseName =
                 ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "HB";
             if (data.hybridDay[i].subject === "M") {
-                mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+                mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
             } else {
-                physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+                physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
             }
         }
         tableInfo.mainTable = mainTable;
         tableInfo.mathMiniTable = mathMiniTable;
         tableInfo.physicsMiniTable = physicsMiniTable;
-    }).then(() => {
-        //some function
+        return tableInfo;
+    }).then((tableInfo) => {
+        log("======================================");
+        log(tableInfo);
     });
 }
 
@@ -366,8 +367,7 @@ function addRemoveCourse(timeID) {
                     let grade = "";
                     if (course.grade[0] > 6) {
                         grade = "S" + course.grade.map((x) => (x - 6)
-                    ).
-                        join("");
+                            ).join("");
                     } else {
                         grade = "P" + course.grade.join("");
                     }
@@ -486,15 +486,29 @@ function removeCourse() {
 function generateImage(tableInfo) {
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
-    //gen table
-
+    //gen row
+    const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
+    const day = ['TUE', 'THU', 'SAT', 'SUN'];
+    const time = ['8-10', '10-12', '13-15', '15-17'];
+    const tableCl = ['#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2'];
+    const border = 'border: 1px solid black;border-collapse: collapse;';
+    const levelColor = ['#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2',
+        '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2'];
+    let row1 = '<tr>' + '<th rowspan="2" colspan="2" style="' + border + 'font-size:40px;background-color:' +
+        levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + border + '">' +
+        'ID : ' + tableInfo.id + '</th>' + '<th rowspan="3" colspan="2" style="' + border + 'font-size: 24px">' +
+        tableInfo.firstname + tableInfo.nickname + tableInfo.lastname + '</th>' + '<th rowspan="13" style="' + border +
+        'width: 5px"></th>' + '<th style="' + border + 'height: 30px;width: 40px;background-color: black"></th>' +
+        loop4(1, day, 40, tableCl) + '</tr>';
+    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + border + '">' + 'barcode' + '</th>' +
+        '<th style="' + border + 'height: 30px">' + time[0] + '</th>' + '</tr>';
     //gen canvas data
     let data =
         '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="560">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
         '<table style="border: 1px solid black;border-collapse: collapse">' +
-
+        row1 + row2 +
         '</table>' +
         '</div>' +
         '</foreignObject>' +
@@ -515,4 +529,19 @@ function generateImage(tableInfo) {
         DOMURL.revokeObjectURL(url);
     };
     img.src = url;
+}
+function loop4(type, data, w, color) {
+    let text = '';
+    if (type === 1) {
+        for (let i = 0; i < 4; i++) {
+            text += '<th style="border:1px solid black;border-collapse:collapse;width:' + w + 'px;background-color:' + color[i] +
+                '">' + data[i] + '</th>';
+        }
+    } else {
+        for (let i = 0; i < 4; i++) {
+            text += '<td style="border:1px solid black;border-collapse:collapse;width:' + w + 'px;background-color:' + color[i] +
+                '">' + data[i] + '</td>';
+        }
+    }
+    return text;
 }
