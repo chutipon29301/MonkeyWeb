@@ -33,11 +33,23 @@ $(document).ready(function(){
         }
         for(let i in data.skillDay){
             switch ((new Date(parseInt(data.skillDay[i].day))).getHours()){
-                case 9: var time = '8'
-                case 10||11: var time = '10'
-                case 13||14: var time = '13'
-                case 15: var time = '15'
+                case 9: 
+                    var time = '8'
+                    break;
+                case 10: case 11:
+                    var time = '10'
+                    break ;
+                case 13: case 14:
+                    var time = '13'
+                    break;
+                case 15:
+                    var time = '15' 
+                    break;
+                default:
+                    break;
             }
+            console.log((new Date(parseInt(data.skillDay[i].day))).getHours())
+            console.log(time)
             var skill = document.getElementsByClassName('btn-'+(numtoDay((new Date(parseInt(data.skillDay[i].day))).getDay()))+' '+time+'.1')
             for(j=0;j<skill.length;j++){
                 if(!(skill[j].className.indexOf('sk')!=-1)){
