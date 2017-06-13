@@ -1,17 +1,10 @@
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const studentProfile = (studentID) => $.post("post/studentProfile", {
-    studentID: studentID
-});
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const courseInfo = (courseID) => $.post("post/courseInfo", {
-    courseID: courseID
-});
 $(document).ready(function(){
     genTable()
     var cookie = getCookieDict()
-    $('#studentID').html('ID : '+cookie.monkeyWebUser)        
+    $('#id').html(cookie.monkeyWebUser)        
     console.log(cookie)
     studentProfile(parseInt(cookie.monkeyWebUser)).then((data) => {
+        $('#status').html(data.registrationState)
         $('#name').html(data.nickname+' '+data.firstname+' '+data.lastname)
         $('#nameE').html(data.nicknameEn+' '+data.firstnameEn+' '+data.lastnameEn)
         $('#studentTel').html(data.phone)
@@ -33,11 +26,23 @@ $(document).ready(function(){
         }
         for(let i in data.skillDay){
             switch ((new Date(parseInt(data.skillDay[i].day))).getHours()){
-                case 9: var time = '8'
-                case 10||11: var time = '10'
-                case 13||14: var time = '13'
-                case 15: var time = '15'
+                case 9: 
+                    var time = '8'
+                    break;
+                case 10: case 11:
+                    var time = '10'
+                    break ;
+                case 13: case 14:
+                    var time = '13'
+                    break;
+                case 15:
+                    var time = '15' 
+                    break;
+                default:
+                    break;
             }
+            console.log((new Date(parseInt(data.skillDay[i].day))).getHours())
+            console.log(time)
             var skill = document.getElementsByClassName('btn-'+(numtoDay((new Date(parseInt(data.skillDay[i].day))).getDay()))+' '+time+'.1')
             for(j=0;j<skill.length;j++){
                 if(!(skill[j].className.indexOf('sk')!=-1)){
@@ -48,7 +53,7 @@ $(document).ready(function(){
                     else{
                         var temp = (new Date(parseInt(data.skillDay[i].day))).getHours()+'.30 น.'
                     }
-                    skill[j].innerHTML = '<strong>SKILL '+ data.skillDay[i].subject + ' :</strong>' + '<br>' + temp
+                    skill[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + temp
                 }
                 else{
                     if(skill[j].innerHTML.split('<br>')[1].split(' ')[0]<=(new Date(parseInt(data.skillDay[i].day))).getHours()+'.'+(new Date(parseInt(data.skillDay[i].day))).getMinutes()/100){
@@ -57,7 +62,7 @@ $(document).ready(function(){
                     else{
                         var temp = (new Date(parseInt(data.skillDay[i].day))).getHours()+'.'+(new Date(parseInt(data.skillDay[i].day))).getMinutes()/100+'0 น.'
                     }
-                    skill[j].innerHTML = '<strong>SKILL M/E :</strong>' + '<br>' + temp
+                    skill[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + temp
                 }
             }
         }
