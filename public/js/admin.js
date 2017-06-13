@@ -1,68 +1,3 @@
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const allStudent = $.post("post/allStudent", {});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const allCourse = $.post("/post/allCourse", {});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const studentProfile = (studentID) => $.post("post/studentProfile", {
-    studentID: studentID
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const courseInfo = (courseID) => $.post("post/courseInfo", {
-    courseID: courseID
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const name = (userID) => $.post("post/name", {
-    userID: userID
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const changeRegistrationState = (studentID, registrationState) => $.post("post/changeRegistrationState", {
-    studentID: studentID,
-    registrationState: registrationState
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const addSkillDay = (studentID, day) => $.post("post/addSkillDay", {
-    studentID: studentID,
-    subject: "M",
-    day: day
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const addHybridDay = (studentID, subject, day) => $.post("post/addHybridDay", {
-    studentID: studentID,
-    subject: subject,
-    day: day
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const addStudentCourse = (studentID, courseID) => $.post("post/addStudentCourse", {
-    studentID: studentID,
-    courseID: courseID
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const removeStudentCourse = (studentID, courseID) => $.post("post/removeStudentCourse", {
-    studentID: studentID,
-    courseID: courseID
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const removeHybridDay = (studentID, day) => $.post("post/removeHybridDay", {
-    studentID: studentID,
-    day: day
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
-    studentID: studentID,
-    day: day
-});
-
 /**
  * Get short name of day
  * @param date int day 0 - 6
@@ -138,7 +73,6 @@ function filterData(data) {
  * @param student information to fill in table
  */
 function generateStudentHtmlTable(student) {
-    "use strict";
     let table = document.getElementById("allStudentTable");
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
@@ -172,7 +106,6 @@ function generateStudentHtmlTable(student) {
  * Generate element for adminAllcourse page
  */
 function getAllCourseContent() {
-    "use strict";
     allCourse.then((data) => {
         if (data.err) {
             log("[getAllCourseContent()] : post/return => " + data.err);
@@ -189,7 +122,6 @@ function getAllCourseContent() {
  * @param course information to fill in table
  */
 function generateCourseHtmlTable(course) {
-    "use strict";
     let table = document.getElementById("allCourseTable");
     for (let i = 0; i < course.length; i++) {
         let time = new Date(course[i].day);
@@ -241,9 +173,12 @@ function getStudentProfile() {
                 } else {
                     log("[getCourseDescription()] : post/courseInfo => ");
                     log(course);
-                    document.getElementById(course.day).innerHTML = course.courseName;
-                    document.getElementById(course.day).value = data.courseID[i];
-                    document.getElementById(course.day).className = "btn btn-warning col-md-12";
+                    let time = new Date(course.day);
+                    //noinspection ES6ModulesDependencies,JSUnresolvedFunction
+                    let courseTimeID = moment(0).day(time.getDay()).hour(time.getHours()).minute(time.getMinutes()).valueOf();
+                    document.getElementById(courseTimeID).innerHTML = course.courseName;
+                    document.getElementById(courseTimeID).value = data.courseID[i];
+                    document.getElementById(courseTimeID).className = "btn btn-warning col-md-12";
                 }
             });
         }
@@ -315,14 +250,16 @@ function generateImageData() {
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
             mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" + ((time.getMinutes() === 0) ? "00" : "30");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+                ((time.getMinutes() === 0) ? "00" : "30");
             mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
             let time = new Date(data.hybridDay[i].day);
             mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName =
+                ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
             mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
             if (data.hybridDay[i].subject === "M") {
                 mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
@@ -333,7 +270,7 @@ function generateImageData() {
         tableInfo.mainTable = mainTable;
         tableInfo.mathMiniTable = mathMiniTable;
         tableInfo.physicsMiniTable = physicsMiniTable;
-    }).then(() =>{
+    }).then(() => {
         //some function
     });
 }
@@ -411,12 +348,11 @@ function getCourseDescription() {
 function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
     if (button.innerHTML === "Add Course") {
-        "use strict";
         allCourse.then((data) => {
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
-                log("[addRemoveCourse()] : post/allCourse => ");
+                //noinspection JSUndefinedPropertyAssignment
                 data.course = data.course.filter(data => data.day === parseInt(timeID));
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
@@ -443,13 +379,11 @@ function addRemoveCourse(timeID) {
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
 
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":00</option>";
-                time.setMinutes(time.getMinutes() + 30);
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":30</option>";
-                time.setMinutes(time.getMinutes() + 30);
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":00</option>";
-                time.setMinutes(time.getMinutes() + 30);
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":30</option>";
+                for (let i = 0; i < 4; i++) {
+                    select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() +
+                        ((i % 2 === 0) ? ":00" : ":30") + "</option>";
+                    time.setMinutes(time.getMinutes() + 30);
+                }
 
                 $("#addModal").modal();
             }
@@ -480,7 +414,6 @@ function addCourse() {
             }
         });
     } else if (selectedValue.slice(0, 3) === "FHB") {
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         addHybridDay(studentID, ((selectedValue[selectedValue.length - 1] === "M") ? "M" : "PH"), selectedOption.id).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/addHybridDay => " + data.err);
@@ -491,7 +424,6 @@ function addCourse() {
         });
     } else {
         let courseID = selectedOption.id;
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         addStudentCourse(studentID, [courseID]).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/addStudentCourse => " + data.err);
@@ -526,9 +458,6 @@ function removeCourse() {
             }
         });
     } else if (courseName.slice(0, 3) === "FHB") {
-        log(studentID);
-        log(time);
-        log(document.getElementById("removeModal"));
         removeHybridDay(studentID, time).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/removeHybridDay => " + data.err);

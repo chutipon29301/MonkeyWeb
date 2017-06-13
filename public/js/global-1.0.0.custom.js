@@ -1,3 +1,84 @@
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const allStudent = $.post("post/allStudent", {});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const allCourse = $.post("/post/allCourse", {});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const studentProfile = (studentID) => $.post("post/studentProfile", {
+    studentID: studentID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const courseInfo = (courseID) => $.post("post/courseInfo", {
+    courseID: courseID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const name = (userID) => $.post("post/name", {
+    userID: userID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const position = (userID) => $.post("/post/position", {
+    userID: userID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const changeRegistrationState = (studentID, registrationState) => $.post("post/changeRegistrationState", {
+    studentID: studentID,
+    registrationState: registrationState
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const addSkillDay = (studentID, day) => $.post("post/addSkillDay", {
+    studentID: studentID,
+    subject: "M",
+    day: day
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const addHybridDay = (studentID, subject, day) => $.post("post/addHybridDay", {
+    studentID: studentID,
+    subject: subject,
+    day: day
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const addStudentCourse = (studentID, courseID) => $.post("post/addStudentCourse", {
+    studentID: studentID,
+    courseID: courseID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const removeStudentCourse = (studentID, courseID) => $.post("post/removeStudentCourse", {
+    studentID: studentID,
+    courseID: courseID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const removeHybridDay = (studentID, day) => $.post("post/removeHybridDay", {
+    studentID: studentID,
+    day: day
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
+    studentID: studentID,
+    day: day
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const password = (userID, password) => $.post("/post/password", {
+    userID: userID,
+    password: password
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const registrationState = (studentID) => $.post("post/registrationState", {
+    studentID: studentID
+});
+
 /**
  * Use to log text to console
  * @param text text to be log in console
@@ -34,17 +115,8 @@ function deleteCookie(key) {
 function checkLogin() {
     "use strict";
     let cookie = getCookieDict();
-    /** @namespace cookie.monkeyWebUser */
-    let user = cookie.monkeyWebUser;
-    /** @namespace cookie.monkeyWebPassword */
-    let pwd = cookie.monkeyWebPassword;
-    log("[checkLogin()] : cookie -> ");
-    log(cookie);
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("/post/password", {
-        userID: user,
-        password: pwd
-    }).then((data) => {
+    //noinspection JSUnresolvedVariable
+    password(cookie.monkeyWebUser, cookie.monkeyWebPassword).then((data) => {
         if (data.err) {
             log("[checkLogin()] : post/password => Error");
         } else {
@@ -64,20 +136,16 @@ function checkLogin() {
 function checkValidUser(position) {
     "use strict";
     let cookie = getCookieDict();
-    let user = cookie.monkeyWebUser;
     log("[checkValidUser()] : cookie -> ");
     log(cookie);
-    // noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("/post/position", {
-        userID: user
-    }).then((data) => {
+    //noinspection JSUnresolvedVariable
+    position(cookie.monkeyWebUser).then((data) => {
         if (data.err) {
             log("[checkValidUser()] : post/position => Error");
         } else {
             log("[checkValidUser()] : post/position => ");
             log(data);
             if (position.constructor === Array) {
-                log($.inArray(data.position, position) === -1);
                 if ($.inArray(data.position, position) === -1) {
                     log("[checkValidUser()] : redirecting to login");
                     logout();
@@ -109,27 +177,25 @@ function getCookieDict() {
     }
     return obj;
 }
+
 /**
  * Logout current user
  */
 function logout() {
     "use strict";
     log("[Logout()] : redirection to login page");
-    deleteCookie("monkeyWebUser");
-    deleteCookie("monkeyWebPassword");
+    clearAllCookie();
     self.location = "/login";
 }
+
 /**
  * Set student name to navigation bar
  */
 function setStudentNavName() {
     "use strict";
     let cookie = getCookieDict();
-    let user = cookie.monkeyWebUser;
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/name", {
-        userID: user
-    }).then((data) => {
+    //noinspection JSUnresolvedVariable
+    name(cookie.monkeyWebUser).then((data) => {
         if (data.err) {
             document.getElementById("navStudentName").innerHTML = " ";
             log("[setStudentNavName()] => Set student name in navigation bar to :  ");
@@ -140,17 +206,26 @@ function setStudentNavName() {
         }
     });
 }
+
+/**
+ * Delete all cookies in browser
+ */
+function clearAllCookie() {
+    log("[clearAllCookie()] is called");
+    let cookieKeys = Object.keys(getCookieDict());
+    for (let i = 0; i < cookieKeys.length; i++){
+        deleteCookie(cookieKeys[i]);
+    }
+}
+
 /**
  * Load registration page from status of student
  */
 function loadRegistrationPage() {
     "use strict";
     let cookie = getCookieDict();
-    let user = cookie.monkeyWebUser;
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/registrationState", {
-        studentID: user
-    }).then((data) => {
+    //noinspection JSUnresolvedVariable
+    registrationState(cookie.monkeyWebUser).then((data) => {
         if (data.err) {
             log("[loadRegistrationPage()] : post/registrationState => " + data.err);
         } else {
