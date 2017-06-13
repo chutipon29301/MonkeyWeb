@@ -352,8 +352,11 @@ function addRemoveCourse(timeID) {
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
+                let localTime = new Date(parseInt(timeID));
+                //noinspection ES6ModulesDependencies,JSUnresolvedFunction
+                let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
                 //noinspection JSUndefinedPropertyAssignment
-                data.course = data.course.filter(data => data.day === parseInt(timeID));
+                data.course = data.course.filter(data => data.day === parseInt(serverTime));
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
 
