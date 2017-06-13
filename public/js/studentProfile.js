@@ -2,7 +2,6 @@ $(document).ready(function(){
     genTable()
     var cookie = getCookieDict()
     $('#id').html(cookie.monkeyWebUser)        
-    console.log(cookie)
     studentProfile(parseInt(cookie.monkeyWebUser)).then((data) => {
         $('#status').html(data.registrationState)
         $('#name').html(data.nickname+' '+data.firstname+' '+data.lastname)
@@ -16,7 +15,6 @@ $(document).ready(function(){
             }
             else{ return 'ประถม '+data.grade}
         })
-        console.log(data)
         for(let i in data.hybridDay){
             var hybrid = document.getElementsByClassName('btn-'+(numtoDay((new Date(parseInt(data.hybridDay[i].day))).getDay()))+' '+(new Date(parseInt(data.hybridDay[i].day))).getHours()+'.1')
             for(j=0;j<hybrid.length;j++){
@@ -41,8 +39,6 @@ $(document).ready(function(){
                 default:
                     break;
             }
-            console.log((new Date(parseInt(data.skillDay[i].day))).getHours())
-            console.log(time)
             var skill = document.getElementsByClassName('btn-'+(numtoDay((new Date(parseInt(data.skillDay[i].day))).getDay()))+' '+time+'.1')
             for(j=0;j<skill.length;j++){
                 if(!(skill[j].className.indexOf('sk')!=-1)){
@@ -60,7 +56,7 @@ $(document).ready(function(){
                         var temp = skill[j].innerHTML.split('<br>')[1].split(' ')[0]+'0 น.'
                     }
                     else{
-                        var temp = (new Date(parseInt(data.skillDay[i].day))).getHours()+'.'+(new Date(parseInt(data.skillDay[i].day))).getMinutes()/100+'0 น.'
+                        var temp = (new Date(parseInt(data.skillDay[i].day))).getHours()+'.'+parseInt((new Date(parseInt(data.skillDay[i].day))).getMinutes()/100)+'0 น.'
                     }
                     skill[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + temp
                 }
