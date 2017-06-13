@@ -271,7 +271,6 @@ function generateImageData() {
         tableInfo.physicsMiniTable = physicsMiniTable;
         return tableInfo;
     }).then((tableInfo) => {
-        log("======================================");
         log(tableInfo);
     });
 }

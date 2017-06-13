@@ -131,27 +131,27 @@ function checkLogin() {
 }
 /**
  * Check if user is in valid page
- * @param position of available user in page
+ * @param positionArray of available user in page
  */
-function checkValidUser(position) {
+function checkValidUser(positionArray) {
     "use strict";
     let cookie = getCookieDict();
     log("[checkValidUser()] : cookie -> ");
     log(cookie);
     //noinspection JSUnresolvedVariable
-    position(cookie.monkeyWebUser).then((data) => {
+    position(parseInt(cookie.monkeyWebUser)).then((data) => {
         if (data.err) {
             log("[checkValidUser()] : post/position => Error");
         } else {
             log("[checkValidUser()] : post/position => ");
             log(data);
-            if (position.constructor === Array) {
-                if ($.inArray(data.position, position) === -1) {
+            if (positionArray.constructor === Array) {
+                if ($.inArray(data.position, positionArray) === -1) {
                     log("[checkValidUser()] : redirecting to login");
                     logout();
                 }
             } else {
-                if (data.position !== position) {
+                if (data.position !== positionArray) {
                     log("[checkValidUser()] : redirecting to login");
                     logout();
                 }
@@ -213,7 +213,7 @@ function setStudentNavName() {
 function clearAllCookie() {
     log("[clearAllCookie()] is called");
     let cookieKeys = Object.keys(getCookieDict());
-    for (let i = 0; i < cookieKeys.length; i++){
+    for (let i = 0; i < cookieKeys.length; i++) {
         deleteCookie(cookieKeys[i]);
     }
 }

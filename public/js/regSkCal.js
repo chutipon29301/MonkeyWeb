@@ -195,7 +195,7 @@ $(document).ready(function () {
         }
     });
 
-    $('#skilltime,#skilltimeEng,#skillday,#skilldayEng').change(function () {
+    $('#skillSel,#skilltime,#skilltimeEng,#skillday,#skilldayEng').change(function () {
         /*if ($('#skillday').val() === $('#skilldayEng').val() && ($('#skilltime').val() === $('#skilltimeEng').val() || parseInt($('#skilltime').val()) + 5 === parseInt($('#skilltimeEng').val()) || parseInt($('#skilltime').val()) == parseInt($('#skilltimeEng').val()) + 5)) {
             if ($('#skilltime').val() !== '0') {
                 alert('คุณไม่สามารถเลือกเวลาเรียนทับกันได้');
@@ -270,7 +270,7 @@ function updateTable() {
 				var skillClass = document.getElementsByClassName('btn-' + $('#skillday').val() + ' ' + disTime[i] + '.1');
                 for (let j = 0; j < hybridClass.length; j++) {
                     if(skillClass[j].className.indexOf('sk')!=-1){
-                		if(parseInt($('#skilltimeEng option:selected').text().split('-')[0])<=parseInt($('#skilltime option:selected').text().split('-')[0])){
+                		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
                 		else{
@@ -293,7 +293,7 @@ function updateTable() {
 				var skillClassE = document.getElementsByClassName('btn-' + $('#skilldayEng').val() + ' ' + disTime[i] + '.1');
                 for (let j = 0; j < hybridClass.length; j++) {
                 	if(skillClassE[j].className.indexOf('sk')!=-1){
-                		if(parseInt($('#skilltimeEng option:selected').text().split('-')[0])<=parseInt($('#skilltime option:selected').text().split('-')[0])){
+                		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
                 		else{
@@ -348,57 +348,7 @@ window.onclick = function (event) {
     }
 };
 
-function daytoNum(day) {
-    switch (day) {
-        case 'sun':
-            return 0;
-        case 'mon':
-            return 1;
-        case 'tue':
-            return 2;
-        case 'wed':
-            return 3;
-        case 'thu':
-            return 4;
-        case 'fri':
-            return 5;
-        case 'sat':
-            return 6
-    }
-}
-function numtoDay(num) {
-    switch (num) {
-        case 0:
-            return 'sun';
-        case 1:
-            return 'mon';
-        case 2:
-            return 'tue';
-        case 3:
-            return 'wed';
-        case 4:
-            return 'thu';
-        case 5:
-            return 'fri';
-        case 6:
-            return 'sat'
-    }
-}
-function gradetoText(grade) {
-    if (grade <= 6) {
-        return "ประถม " + grade;
-    } else {
-        return "มัธยม " + (grade - 6);
-    }
-}
-function fullHBname(name) {
-    if (name === 'M') {
-        return 'MATH'
-    }
-    if (name === 'PH') {
-        return 'PHYSICS'
-    }
-}
+
 function submit() {
     var cookie = getCookieDict();
     cookie.regisCourse = JSON.parse(cookie.regisCourse);
