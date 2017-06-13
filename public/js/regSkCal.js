@@ -402,7 +402,7 @@ function submit() {
                             })
                         }
                     }
-                    if ($('skilltime').val() !== '0') {
+                    if ($('#skilltime').val() !== '0') {
                         $.post("post/addSkillDay", {
                             studentID: parseInt(cookie.monkeyWebUser),
                             subject: 'M',
@@ -413,7 +413,7 @@ function submit() {
                             }
                         })
                     }
-                    if ($('skilltimeEng').val() !== '0') {
+                    if ($('#skilltimeEng').val() !== '0') {
                         $.post("post/addSkillDay", {
                             studentID: parseInt(cookie.monkeyWebUser),
                             subject: 'E',
