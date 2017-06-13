@@ -73,7 +73,6 @@ function filterData(data) {
  * @param student information to fill in table
  */
 function generateStudentHtmlTable(student) {
-    "use strict";
     let table = document.getElementById("allStudentTable");
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
@@ -107,7 +106,6 @@ function generateStudentHtmlTable(student) {
  * Generate element for adminAllcourse page
  */
 function getAllCourseContent() {
-    "use strict";
     allCourse.then((data) => {
         if (data.err) {
             log("[getAllCourseContent()] : post/return => " + data.err);
@@ -124,7 +122,6 @@ function getAllCourseContent() {
  * @param course information to fill in table
  */
 function generateCourseHtmlTable(course) {
-    "use strict";
     let table = document.getElementById("allCourseTable");
     for (let i = 0; i < course.length; i++) {
         let time = new Date(course[i].day);
@@ -273,7 +270,7 @@ function generateImageData() {
         tableInfo.mainTable = mainTable;
         tableInfo.mathMiniTable = mathMiniTable;
         tableInfo.physicsMiniTable = physicsMiniTable;
-    }).then(() =>{
+    }).then(() => {
         //some function
     });
 }
@@ -351,11 +348,11 @@ function getCourseDescription() {
 function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
     if (button.innerHTML === "Add Course") {
-        "use strict";
         allCourse.then((data) => {
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
+                //noinspection JSUndefinedPropertyAssignment
                 data.course = data.course.filter(data => data.day === parseInt(timeID));
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
@@ -382,13 +379,11 @@ function addRemoveCourse(timeID) {
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
 
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":00</option>";
-                time.setMinutes(time.getMinutes() + 30);
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":30</option>";
-                time.setMinutes(time.getMinutes() + 30);
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":00</option>";
-                time.setMinutes(time.getMinutes() + 30);
-                select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() + ":30</option>";
+                for (let i = 0; i < 4; i++) {
+                    select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() +
+                        ((i % 2 === 0) ? ":00" : ":30") + "</option>";
+                    time.setMinutes(time.getMinutes() + 30);
+                }
 
                 $("#addModal").modal();
             }
@@ -419,7 +414,6 @@ function addCourse() {
             }
         });
     } else if (selectedValue.slice(0, 3) === "FHB") {
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         addHybridDay(studentID, ((selectedValue[selectedValue.length - 1] === "M") ? "M" : "PH"), selectedOption.id).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/addHybridDay => " + data.err);
@@ -430,7 +424,6 @@ function addCourse() {
         });
     } else {
         let courseID = selectedOption.id;
-        //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
         addStudentCourse(studentID, [courseID]).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/addStudentCourse => " + data.err);
@@ -465,9 +458,6 @@ function removeCourse() {
             }
         });
     } else if (courseName.slice(0, 3) === "FHB") {
-        log(studentID);
-        log(time);
-        log(document.getElementById("removeModal"));
         removeHybridDay(studentID, time).then((data) => {
             if (data.err) {
                 log("[addCourse()] : post/removeHybridDay => " + data.err);
