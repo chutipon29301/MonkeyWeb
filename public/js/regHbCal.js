@@ -98,7 +98,6 @@ function next() {
             }
         }
     }
-    console.log(selectHybrid);
     writeCookie('regisHybrid', JSON.stringify(selectHybrid));
     self.location = "registrationSkill"
 }
