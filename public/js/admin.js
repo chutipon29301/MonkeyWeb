@@ -382,10 +382,12 @@ function addRemoveCourse(timeID) {
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
 
-                for (let i = 0; i < 4; i++) {
-                    select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() +
-                        ((i % 2 === 0) ? ":00" : ":30") + "</option>";
-                    time.setMinutes(time.getMinutes() + 30);
+                if (!(time.getDay() === 2 || time.getDay() === 4)) {
+                    for (let i = 0; i < 4; i++) {
+                        select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() +
+                            ((i % 2 === 0) ? ":00" : ":30") + "</option>";
+                        time.setMinutes(time.getMinutes() + 30);
+                    }
                 }
 
                 $("#addModal").modal();
