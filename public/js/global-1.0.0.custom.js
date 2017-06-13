@@ -74,6 +74,7 @@ const password = (userID, password) => $.post("/post/password", {
     password: password
 });
 
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const registrationState = (studentID) => $.post("post/registrationState", {
     studentID: studentID
 });
@@ -137,6 +138,7 @@ function checkValidUser(position) {
     let cookie = getCookieDict();
     log("[checkValidUser()] : cookie -> ");
     log(cookie);
+    //noinspection JSUnresolvedVariable
     position(cookie.monkeyWebUser).then((data) => {
         if (data.err) {
             log("[checkValidUser()] : post/position => Error");
@@ -192,8 +194,8 @@ function logout() {
 function setStudentNavName() {
     "use strict";
     let cookie = getCookieDict();
-    let user = cookie.monkeyWebUser;
-    name(user).then((data) => {
+    //noinspection JSUnresolvedVariable
+    name(cookie.monkeyWebUser).then((data) => {
         if (data.err) {
             document.getElementById("navStudentName").innerHTML = " ";
             log("[setStudentNavName()] => Set student name in navigation bar to :  ");
@@ -222,6 +224,7 @@ function clearAllCookie() {
 function loadRegistrationPage() {
     "use strict";
     let cookie = getCookieDict();
+    //noinspection JSUnresolvedVariable
     registrationState(cookie.monkeyWebUser).then((data) => {
         if (data.err) {
             log("[loadRegistrationPage()] : post/registrationState => " + data.err);
