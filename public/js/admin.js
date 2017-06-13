@@ -241,9 +241,12 @@ function getStudentProfile() {
                 } else {
                     log("[getCourseDescription()] : post/courseInfo => ");
                     log(course);
-                    document.getElementById(course.day).innerHTML = course.courseName;
-                    document.getElementById(course.day).value = data.courseID[i];
-                    document.getElementById(course.day).className = "btn btn-warning col-md-12";
+                    let time = new Date(course.day);
+                    //noinspection ES6ModulesDependencies,JSUnresolvedFunction
+                    let courseTimeID = moment(0).day(time.getDay()).hour(time.getHours()).minute(time.getMinutes()).valueOf();
+                    document.getElementById(courseTimeID).innerHTML = course.courseName;
+                    document.getElementById(courseTimeID).value = data.courseID[i];
+                    document.getElementById(courseTimeID).className = "btn btn-warning col-md-12";
                 }
             });
         }
@@ -315,14 +318,16 @@ function generateImageData() {
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
             mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" + ((time.getMinutes() === 0) ? "00" : "30");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+                ((time.getMinutes() === 0) ? "00" : "30");
             mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
             let time = new Date(data.hybridDay[i].day);
             mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
+            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName =
+                ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
             mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
             if (data.hybridDay[i].subject === "M") {
                 mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
@@ -416,7 +421,6 @@ function addRemoveCourse(timeID) {
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
-                log("[addRemoveCourse()] : post/allCourse => ");
                 data.course = data.course.filter(data => data.day === parseInt(timeID));
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
