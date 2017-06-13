@@ -30,11 +30,7 @@ function login(user, pwd) {
     "use strict";
     log("Username:" + user + ",Password:" + pwd);
     log(encrypt(pwd).toString());
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/password", {
-        userID: user,
-        password: encrypt(pwd).toString()
-    }, function (data) {
+    password(user, encrypt(pwd).toString()).then((data) => {
         if (data.err) {
             log("Invalid");
         } else {
@@ -54,10 +50,7 @@ function login(user, pwd) {
 }
 
 function redirectLocation(user) {
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-    $.post("post/position", {
-        userID: user
-    }, function (data) {
+    position(user).then((data) => {
         if (data.err) {
             log("Invalid");
         } else {
@@ -83,7 +76,6 @@ function redirectLocation(user) {
 function clearInput() {
     "use strict";
     let pwd = document.getElementById("pwd");
-
     pwd.value = "";
 }
 
