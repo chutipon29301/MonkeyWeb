@@ -58,11 +58,14 @@ $(document).ready(function(){
                 else{
                     if(skill[j].innerHTML.split('<br>')[1].split(' ')[0]<=(new Date(parseInt(data.skillDay[i].day))).getHours()+'.'+(new Date(parseInt(data.skillDay[i].day))).getMinutes()/100){
                         var temp = skill[j].innerHTML.split('<br>')[1].split(' ')[0]+'0 น.'
+                        console.log('hmm')
                     }
                     else{
-                        var temp = (new Date(parseInt(data.skillDay[i].day))).getHours()+'.'+(new Date(parseInt(data.skillDay[i].day))).getMinutes()/100+'0 น.'
+                        var temp = (new Date(parseInt(data.skillDay[i].day))).getHours()+'.'+parseInt((new Date(parseInt(data.skillDay[i].day))).getMinutes()/100)+'0 น.'
+                        console.log('hmmm2')
                     }
                     skill[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + temp
+                    console.log(temp)
                 }
             }
         }
