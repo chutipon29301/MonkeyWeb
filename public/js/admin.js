@@ -242,7 +242,6 @@ function generateImageData() {
                 let time = new Date(data.day);
                 name.then((name) => {
                     mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
-                    log(tableInfo);
                 });
             });
         }
@@ -270,8 +269,9 @@ function generateImageData() {
         tableInfo.mainTable = mainTable;
         tableInfo.mathMiniTable = mathMiniTable;
         tableInfo.physicsMiniTable = physicsMiniTable;
-    }).then(() => {
-        //some function
+        return tableInfo;
+    }).then((tableInfo) => {
+        log(tableInfo);
     });
 }
 
