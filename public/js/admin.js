@@ -108,9 +108,9 @@ function generateStudentHtmlTable(student) {
 function getAllCourseContent() {
     allCourse.then((data) => {
         if (data.err) {
-            log("[getAllCourseContent()] : post/return => " + data.err);
+            log("[getAllCourseContent()] : post/allCourse => " + data.err);
         } else {
-            log("[getAllCourseContent()] : post/return => ");
+            log("[getAllCourseContent()] : post/allCourse => ");
             log(data);
             generateCourseHtmlTable(data.course);
         }
