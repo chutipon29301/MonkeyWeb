@@ -24,7 +24,7 @@ app.use(function(req, res, next) {// Allow access from other domain
 // 	res.redirect("https://"+req.hostname+req.url);
 // })).listen(80);
 // Uncomment code above and comment code below to automatically redirect to https
-app.listen(80);
+app.listen(8080);
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
