@@ -718,7 +718,7 @@ function combineCanvas(subj) {
     let canvas = document.getElementById('combine');
     let ctx = canvas.getContext('2d');
     ctx.fillStyle="white";
-    ctx.fillRect(0,0, cfCanvas.width, cfCanvas.height);
+    ctx.fillRect(0,0, canvas.width, canvas.height);
     let canvas1 = document.getElementById(subj + 'Canvas');
     let canvas2 = document.getElementById(subj + 'Barcode');
     ctx.drawImage(canvas1, 0, 0);

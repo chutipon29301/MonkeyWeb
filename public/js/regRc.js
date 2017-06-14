@@ -20,8 +20,6 @@ function upPic() {
                 contentType: false,
                 success: function (data) {
                     $('.fa').remove();
-                    log('====================');
-                    log(ID);
                     showReceipt(ID);
                 }
             });
