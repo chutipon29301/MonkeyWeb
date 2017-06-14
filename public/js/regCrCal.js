@@ -1,5 +1,5 @@
 var availableCourse;
-var pricepercourse = 6000;
+var pricepercourse = 7800;
 var allSuggest;
 var suggestCourse;
 $(document).ready(function () {
@@ -17,9 +17,6 @@ $(document).ready(function () {
     $('#grade').val(cookie.grade);
     var grade = parseInt($('#grade').val());
     if (grade >= 10) {
-        $('#info1,#info3').hide()
-    }
-    else {
         $('#info2,#info4').hide()
     }
     genTable();

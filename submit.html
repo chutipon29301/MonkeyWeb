@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Skill Registration</title>
+<title>Submit</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
@@ -17,7 +17,7 @@
 		border-color: transparent!important;
 	}
 	.sk{
-		background-color: #FAFFAA!important;
+		background-color: #D4EEF8!important;
 		border-color: transparent!important;
 	}
 </style>
@@ -37,7 +37,7 @@
 <script src="js/student.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
-<script type="text/javascript" src="js/regSkCal.js"></script>
+<script type="text/javascript" src="js/submit.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
 <!-- InstanceEndEditable -->
 </head>
@@ -79,24 +79,59 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  	  <div class="container">
+  	  
+<div align="center">
+	<h1 style="color: rgba(255,0,4,1.00)">กรุณาตรวจสอบข้อมูลให้ครบถ้วน</h1><br>
+</div>
+<div class="container">
     <form class="form-horizontal">
-    <div class="form-group">
-     <label class="control-label col-md-1 col-md-offset-1" style="font-size: large">SKILL:</label>
-     <div class="col-md-3">
-     <select class="form-control" id="skillSel">
-           <option value="0">กรุณาเลือกวิชา</option>
-            <option value="1">MATH and ENG</option>
-            <option value="2">MATH</option>
-            <option value="3">ENG</option>
-            <option value="4">Complete</option>
-     </select>
-     </div>
-    </div>
-    <p style="color: red" class="col-md-offset-2">*Complete คือ จบหลักสูตร Monkey Skill แล้ว</p>
-</form>
+      <div class="form-group">
+        <label class="control-label col-md-2">ชื่อ:</label>
+        <div class="col-md-8">
+          <p id="name" class="form-control-static"></p>
+          <p id="nameE" class="form-control-static"></p>
+          </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2">ชั้น:</label>
+       <div class="col-md-8">
+          <p id="grade" class="form-control-static"></p>
+		  </div>
+		</div>
+       <div class="form-group">
+        <label class="control-label col-md-2">Email:</label>
+        <div class="col-md-8">
+          <p id="email" class="form-control-static"></p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2">เบอร์ติดต่อ:</label>
+        <div class="col-md-8">
+          <p id="parentTel" class="form-control-static"></p>
+          <p id="studentTel" class="form-control-static"></p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2">Course(CR):</label>
+        <div class="col-md-8">
+          <p id="cr" class="form-control-static"></p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2">Full Hybrid(FHB):</label>
+        <div class="col-md-8">
+          <p id="hb" class="form-control-static"></p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2">SKILL:</label>
+        <div class="col-md-8">
+          <p id="sk" class="form-control-static"></p>
+        </div>
+      </div>
+	</form>
 	</div>
-	<br>
+	
 	<div class="table-responsive w3-hide-small w3-hide-medium col-md-10 col-md-offset-1">
    <label class="control-label col-md-3" style="font-size: large">Overview:</label>
     <table class="table table-bordered">
@@ -202,9 +237,103 @@
  	<button id="back" class="btn btn-default" onClick="this.blur(); back();">Back</button>
   </div>
 <div class="container col-md-4 col-md-offset-1 col-xs-6 col-xs-offset-1" align="right" >
-    <button id="next" class="btn btn-default" onClick="this.blur(); nextbtn();">Next</button>
+    <button id="next" class="btn btn-default" onclick="document.getElementById('id01').style.display='block'; this.blur();">Next</button>
   </div>
-	
+  <div id="id01" class="w3-modal">
+    <div class="w3-modal-content w3-animate-zoom">
+      <header class="w3-container w3-teal" style="color: #555555!important;background-color: #E7E7E7!important"> 
+        <span onclick="document.getElementById('id01').style.display='none'" 
+        class="w3-button w3-display-topright">&times;</span>
+        <br><h2>Registration complete</h2><br>
+      </header>
+      <div class="w3-container modalbody">
+        <p></p>
+        	<div>
+		<h1 style="color: rgba(255,0,4,1.00)">หลังจากกด Submit แล้วจะไม่สามารถแก้ไขข้อมูลได้</h1>
+		<br>
+		<h3>คุณแน่ใจแล้วว่าไม่มีข้อมูลผิดพลาด?</h3>
+					
+		  </div>
+        	</div>
+      <footer class="w3-container w3-teal" style="color: #555555!important;background-color: #E7E7E7!important">
+       <p></p>
+         <div class="container col-md-5 col-md-offset-0 col-xs-5" align="left">
+    <button id="notsubmit" class="btn btn-default" onClick="this.blur(); notsubmit();">ยังไม่แน่ใจ</button>
+  </div>
+  <div class="container col-md-7 col-md-offset-0 col-xs-7" align="right" >
+    <button id="submit" class="btn btn-success" onClick="this.blur(); submit();">แน่ใจแล้ว</button><br>
+    <p> </p>
+  </div>
+       <div>
+        
+        </div>
+      </footer>
+    </div>
+  </div>
+	<div class="container" id="allskill" style="visibility: hidden">
+    <form class="form-horizontal">
+      <div class="form-group" id="math">
+        <label class="control-label col-md-2 col-md-offset-0">SKILL MATH:</label>
+        <div class="col-md-3">
+          <select class="form-control" id="station">
+            <option value="1">สยาม</option>
+            <option value="2">สาย 3</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skillday">
+            <option value="sat">เสาร์</option>
+            <option value="sun">อาทิตย์</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilltime">
+           	<option value="0">กรุณาเลือกเวลาเรียน</option>
+            <option value="90">9.00-10.00</option>
+            <option value="95">9.30-10.30</option>
+            <option value="100">10.00-11.00</option>
+            <option value="105">10.30-11.30</option>
+            <option value="110">11.00-12.00</option>
+            <option value="130">13.00-14.00</option>
+            <option value="135">13.30-14.30</option>
+            <option value="140">14.00-15.00</option>
+            <option value="145">14.30-15.30</option>
+            <option value="150">15.00-16.00</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" id="eng">
+        <label class="control-label col-md-2 col-md-offset-0">SKILL ENG:</label>
+        <div class="col-md-3">
+          <select class="form-control" id="stationEng">
+            <option value="1">สยาม</option>
+            <option value="2">สาย 3</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilldayEng">
+            <option value="sat">เสาร์</option>
+            <option value="sun">อาทิตย์</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilltimeEng">
+           	<option value="0">กรุณาเลือกเวลาเรียน</option>
+            <option value="90">9.00-10.00</option>
+            <option value="95">9.30-10.30</option>
+            <option value="100">10.00-11.00</option>
+            <option value="105">10.30-11.30</option>
+            <option value="110">11.00-12.00</option>
+            <option value="130">13.00-14.00</option>
+            <option value="135">13.30-14.30</option>
+            <option value="140">14.00-15.00</option>
+            <option value="145">14.30-15.30</option>
+            <option value="150">15.00-16.00</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">

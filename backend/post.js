@@ -98,6 +98,8 @@ var run=function(app,db){
     addPage("registrationHybrid");
 	addPage("registrationName");
 	addPage("registrationSkill");
+    addPage("registrationSkill2");
+    addPage("submit");
     addPage("registrationReceipt");
 	addPage("studentProfile");
     addPage("home");

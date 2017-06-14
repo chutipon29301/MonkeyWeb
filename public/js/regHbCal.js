@@ -21,15 +21,15 @@ $(document).ready(function () {
                 for (let j = 0; j < courseClass.length; j++) {
                     courseClass[j].className = courseClass[j].className.replace(/btn-default/g, "btn-basic disabled");
                     if (courseClass[j].className.indexOf('col-md') !== -1) {
-                        courseClass[j].innerHTML = '<strong>CR:</strong>' + cookie.regisCourse[i].courseName;
-                        courseClass[j].className = courseClass[j].className.replace(/col-md-6/g, "col-md-12");
+                        courseClass[j].innerHTML = '<strong>CR:</strong>'+'<br>' + cookie.regisCourse[i].courseName;
+                        courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
                     }
                     else if (courseClass[j].className.indexOf('col-xs') !== -1) {
                         courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
                         if (window.innerWidth > window.innerHeight) {
                             courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
                         } else {
-                            courseClass[j].style = "padding: 12% 0 12% 0 ; color:black";
+                            courseClass[j].style = "padding: 10% 0 10% 0 ; color:black";
                         }
                     }
                 }
@@ -43,8 +43,8 @@ $(document).ready(function () {
                 for (let j = 0; j < courseClass.length; j++) {
                     courseClass[j].className = courseClass[j].className.replace(/btn-default/g, "btn-basic disabled");
                     if (courseClass[j].className.indexOf('col-md') !== -1) {
-                        courseClass[j].innerHTML = '<strong>CR:</strong>' + cookie.regisCourse[i].courseName;
-                        courseClass[j].className = courseClass[j].className.replace(/col-md-6/g, "col-md-12");
+                        courseClass[j].innerHTML = '<strong>CR:</strong>'+'<br>' + cookie.regisCourse[i].courseName;
+                        courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
                     }
                     else if (courseClass[j].className.indexOf('col-xs') !== -1) {
                         courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
@@ -61,10 +61,10 @@ $(document).ready(function () {
 });
 function next() {
     var selectHybrid = {
-        tue151: false,
-        tue152: false,
-        thu151: false,
-        thu152: false,
+        tue171: false,
+        tue172: false,
+        thu171: false,
+        thu172: false,
         sat81: false,
         sat82: false,
         sat101: false,
@@ -174,6 +174,3 @@ function deselect(btn) {     /* sub function to deselect duo btn if both is sele
 function back() {
     self.location = "registrationCourse"
 }
-window.onresize = function () {
-    location.reload()
-};
