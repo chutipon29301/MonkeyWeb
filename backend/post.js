@@ -127,6 +127,8 @@ var run=function(app,db){
             addPage("registrationCourse",options);
             addPage("registrationHybrid",options);
             addPage("registrationSkill",options);
+			addPage("registrationSkill2",options);
+			addPage("submit",options);
         options.middlewareOptions.registrationState="untransferred";
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
@@ -250,7 +252,7 @@ var run=function(app,db){
                     output=result.student;
                     var request=require("request");
 
-                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
+                    request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){
 
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
