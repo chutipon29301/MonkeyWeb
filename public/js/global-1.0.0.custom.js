@@ -185,7 +185,7 @@ function logout() {
     "use strict";
     log("[Logout()] : redirection to login page");
     clearAllCookie();
-    self.location = "/login";
+    self.location = "/";
 }
 
 /**
