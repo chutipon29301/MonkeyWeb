@@ -2,12 +2,14 @@
 console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
+var cookieParser=require('cookie-parser');
 var express=require("express");
 var multer=require("multer");
 var MongoClient=require('mongodb').MongoClient;
 
 var app=express();
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(cookieParser());
 app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
 app.use(express.static("public"));// node index.js
 app.use(express.static("../public"));// node backend/index.js
@@ -16,7 +18,9 @@ app.use(function(req, res, next) {// Allow access from other domain
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.listen(8080);
+// var credentials = {key:fs.readFileSync('private.key'),cert:fs.readFileSync('certificate.crt')};
+require("http").createServer(app).listen(80);
+// require("https").createServer(credentials,app).listen(443);
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
