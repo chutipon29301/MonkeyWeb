@@ -108,9 +108,9 @@ function generateStudentHtmlTable(student) {
 function getAllCourseContent() {
     allCourse.then((data) => {
         if (data.err) {
-            log("[getAllCourseContent()] : post/return => " + data.err);
+            log("[getAllCourseContent()] : post/allCourse => " + data.err);
         } else {
-            log("[getAllCourseContent()] : post/return => ");
+            log("[getAllCourseContent()] : post/allCourse => ");
             log(data);
             generateCourseHtmlTable(data.course);
         }
@@ -215,7 +215,6 @@ function generateImageData() {
     let tableInfo = {
         "id": "" + studentID
     };
-
     studentProfile(studentID).then((data) => {
         tableInfo.firstname = data.firstname;
         tableInfo.lastname = data.lastname;
@@ -271,7 +270,7 @@ function generateImageData() {
         tableInfo.physicsMiniTable = physicsMiniTable;
         return tableInfo;
     }).then((tableInfo) => {
-        showReciept(tableInfo);
+        showReceipt(tableInfo);
         generateImage(tableInfo);
     });
 }
@@ -353,8 +352,11 @@ function addRemoveCourse(timeID) {
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
+                let localTime = new Date(parseInt(timeID));
+                //noinspection ES6ModulesDependencies,JSUnresolvedFunction
+                let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
                 //noinspection JSUndefinedPropertyAssignment
-                data.course = data.course.filter(data => data.day === parseInt(timeID));
+                data.course = data.course.filter(data => data.day === parseInt(serverTime));
                 log("[addRemoveCourse()] : data.filter() => ");
                 log(data);
 
@@ -381,10 +383,12 @@ function addRemoveCourse(timeID) {
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
 
-                for (let i = 0; i < 4; i++) {
-                    select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() +
-                        ((i % 2 === 0) ? ":00" : ":30") + "</option>";
-                    time.setMinutes(time.getMinutes() + 30);
+                if (!(time.getDay() === 2 || time.getDay() === 4)) {
+                    for (let i = 0; i < 4; i++) {
+                        select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() +
+                            ((i % 2 === 0) ? ":00" : ":30") + "</option>";
+                        time.setMinutes(time.getMinutes() + 30);
+                    }
                 }
 
                 $("#addModal").modal();
@@ -612,6 +616,7 @@ function loop4(type, row, data, w, color, border) {
     }
     return text;
 }
+
 //for create data in a row of table from course data
 function tableRow(type, tableInfo, day, time) {
     let tableRow = ['', '', '', ''];
@@ -624,8 +629,9 @@ function tableRow(type, tableInfo, day, time) {
     }
     return tableRow;
 }
-//for show reciept pic on page
-function showReciept(tableInfo) {
+
+//for show receipt pic on page
+function showReceipt(tableInfo) {
     let picId = tableInfo.id;
     $.get('pic/CR60Q3/15999.jpg', function (data, status) {
         if (status === 'success') {

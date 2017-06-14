@@ -83,38 +83,62 @@ var run=function(app,db){
             });
         });
     };
-    var addPage=function(page,url){
+    var checkAuth=function(options){
+        if(options.length==0){
+            return function(req,res,next){
+                next();
+            };
+        }
+        var query={};
+        if(options.position)query["position"]=options.position;
+        if(options.registrationState)query["student.registrationState"]=options.registrationState;
+        if(options.studentStatus)query["student.status"]=options.studentStatus;
+        if(options.tutorStatus)query["tutor.status"]=options.tutorStatus;
+        return function(req,res,next){
+            if(options.login)query["_id"]=parseInt(req.cookies.monkeyWebUser),query["password"]=req.cookies.monkeyWebPassword;
+            userDB.findOne(query,function(err,result){
+                if(result==null)res.send({err:"Authentication failed."});
+                else next();
+            });
+        };
+    };
+    var addPage=function(page,options){
+        if(options==undefined)options={};
+        var url=options.url;
         if(url==undefined)url="/"+page;
-        app.get(url,function(req,res){
+        var outputPath=path.join(__dirname,"../",page+".html");
+        if(options.backendDir==true)outputPath=path.join(__dirname,page+".html");
+        var middlewareOptions=options.middlewareOptions;
+        if(middlewareOptions==undefined)middlewareOptions={};
+        app.get(url,checkAuth(middlewareOptions),function(req,res){
             console.log("[PAGE REQUEST] "+page+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-            res.sendFile(path.join(__dirname,"../",page+".html"));
+            console.log("\treq.cookies => ",req.cookies);
+            res.sendFile(outputPath);
         });
     };
 
-    // addPage("login","/");
     addPage("login");
-    addPage("404");
-    addPage("registrationCourse");
-    addPage("registrationHybrid");
-	addPage("registrationName");
-	addPage("registrationSkill");
-    addPage("registrationReceipt");
-	addPage("studentProfile");
-    addPage("home");
-    addPage("home2");
-    addPage("adminHome");
-    addPage("adminAllcourse");
-    addPage("adminCoursedescription");
-    addPage("adminAllstudent");
-    addPage("adminStudentprofile");
-    app.get("/testadmin",function(req,res){
-        console.log("[PAGE REQUEST] testadmin FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        res.sendFile(path.join(__dirname,"testadmin.html"));
-    });
-    app.get("/firstConfig",function(req,res){
-        console.log("[PAGE REQUEST] firstConfig FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        res.sendFile(path.join(__dirname,"firstConfig.html"));
-    });
+    addPage("login",{url:"/"});
+    var options={middlewareOptions:{login:true,position:"student"}};
+        addPage("home",options);
+        addPage("home2",options);
+        addPage("studentProfile",options);
+        options.middlewareOptions.registrationState="unregistered";
+            addPage("registrationName",options);
+            addPage("registrationCourse",options);
+            addPage("registrationHybrid",options);
+            addPage("registrationSkill",options);
+        options.middlewareOptions.registrationState="untransferred";
+            addPage("registrationReceipt",options);
+        delete options.middlewareOptions.registrationState;
+    options.middlewareOptions.position="admin";
+        addPage("adminHome",options);
+        addPage("adminAllstudent",options);
+        addPage("adminAllcourse",options);
+        addPage("adminStudentprofile",options);
+        addPage("adminCoursedescription",options);
+    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"admin"}});
+    addPage("firstConfig",{backendDir:true});
 
     // All post will return {err} if error occurs
     var post=function(url,callback){
@@ -122,6 +146,7 @@ var run=function(app,db){
             console.log("[POST REQUEST] "+url.slice(1)+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
             console.log("\treq.body => ",req.body);
             console.log("\treq.files => ",req.files);
+            console.log("\treq.cookies => ",req.cookies);
             callback(req,res);
             console.log("[END REQUEST]");
         });
@@ -226,7 +251,7 @@ var run=function(app,db){
                     output=result.student;
                     var request=require("request");
 
-                    request.post("http://localhost:80/post/name",{form:{userID:studentID}},function(err,response,body){
+                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
 
                         body=JSON.parse(body);
                         output=Object.assign(output,body);
