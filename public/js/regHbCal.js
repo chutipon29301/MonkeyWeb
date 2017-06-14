@@ -1,5 +1,5 @@
-var cookie;
-var courseClass;
+let cookie;
+let courseClass;
 $(document).ready(function () {
     cookie = getCookieDict();
     if (cookie.regisCourse === undefined) {
@@ -21,15 +21,15 @@ $(document).ready(function () {
                 for (let j = 0; j < courseClass.length; j++) {
                     courseClass[j].className = courseClass[j].className.replace(/btn-default/g, "btn-basic disabled");
                     if (courseClass[j].className.indexOf('col-md') !== -1) {
-                        courseClass[j].innerHTML = '<strong>CR:</strong>' + cookie.regisCourse[i].courseName;
-                        courseClass[j].className = courseClass[j].className.replace(/col-md-6/g, "col-md-12");
+                        courseClass[j].innerHTML = '<strong>CR:</strong>'+'<br>' + cookie.regisCourse[i].courseName;
+                        courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
                     }
                     else if (courseClass[j].className.indexOf('col-xs') !== -1) {
                         courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
                         if (window.innerWidth > window.innerHeight) {
                             courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
                         } else {
-                            courseClass[j].style = "padding: 12% 0 12% 0 ; color:black";
+                            courseClass[j].style = "padding: 10% 0 10% 0 ; color:black";
                         }
                     }
                 }
@@ -43,8 +43,8 @@ $(document).ready(function () {
                 for (let j = 0; j < courseClass.length; j++) {
                     courseClass[j].className = courseClass[j].className.replace(/btn-default/g, "btn-basic disabled");
                     if (courseClass[j].className.indexOf('col-md') !== -1) {
-                        courseClass[j].innerHTML = '<strong>CR:</strong>' + cookie.regisCourse[i].courseName;
-                        courseClass[j].className = courseClass[j].className.replace(/col-md-6/g, "col-md-12");
+                        courseClass[j].innerHTML = '<strong>CR:</strong>'+'<br>' + cookie.regisCourse[i].courseName;
+                        courseClass[j].style = "padding: 6% 0 6% 0 ; color:black";
                     }
                     else if (courseClass[j].className.indexOf('col-xs') !== -1) {
                         courseClass[j].innerHTML = '<strong>CR:</strong>' + '<br>' + cookie.regisCourse[i].courseName;
@@ -61,10 +61,10 @@ $(document).ready(function () {
 });
 function next() {
     var selectHybrid = {
-        tue151: false,
-        tue152: false,
-        thu151: false,
-        thu152: false,
+        tue171: false,
+        tue172: false,
+        thu171: false,
+        thu172: false,
         sat81: false,
         sat82: false,
         sat101: false,
@@ -82,8 +82,8 @@ function next() {
         sun151: false,
         sun152: false
     };
-    var allselectHB = document.getElementsByClassName('btn-success');
-    var i;
+    let allselectHB = document.getElementsByClassName('btn-success');
+    let i;
     for (i = 0; i < allselectHB.length; i++) {
         if (allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1] === '1') {
             selectHybrid[allselectHB[i].className.slice(4, 7) + allselectHB[i].className.split(' ')[1].slice(0, this.length - 2) + allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1]] = {
@@ -122,15 +122,15 @@ function daytoNum(day) {
 }
 
 function calculate(btn) { /* run after click btn in HTML to switch between select and non-select */
-    var i;
-    var all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
+    let i;
+    let all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
     for (i = 0; i < all_same.length; i++) {
-        var raw = all_same[i].className;
-        var check = all_same[i].className.split(' ')[0] + ' ' + all_same[i].className.split(' ')[1];
+        let raw = all_same[i].className;
+        let check = all_same[i].className.split(' ')[0] + ' ' + all_same[i].className.split(' ')[1];
         if (raw.indexOf("btn-default") !== -1) {
             raw = raw.replace(/btn-default/g, "btn-success");
             all_same[i].className = raw;
-            var temp;
+            let temp;
             if (check[check.length - 1] === '1') {
                 temp = document.getElementsByClassName(check.slice(0, check.length - 1) + '2');
                 for (let j = 0; j < temp.length; j++) {
@@ -156,10 +156,10 @@ function calculate(btn) { /* run after click btn in HTML to switch between selec
 }
 
 function deselect(btn) {     /* sub function to deselect duo btn if both is selected */
-    var i;
-    var all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
+    let i;
+    let all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
     for (i = 0; i < all_same.length; i++) {
-        var raw = all_same[i].className;
+        let raw = all_same[i].className;
         if (raw.indexOf("btn-default") !== -1) {
             raw = raw.replace(/btn-default/g, "btn-success");
             all_same[i].className = raw;
@@ -174,6 +174,3 @@ function deselect(btn) {     /* sub function to deselect duo btn if both is sele
 function back() {
     self.location = "registrationCourse"
 }
-window.onresize = function () {
-    location.reload()
-};

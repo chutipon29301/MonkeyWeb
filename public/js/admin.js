@@ -108,9 +108,9 @@ function generateStudentHtmlTable(student) {
 function getAllCourseContent() {
     allCourse.then((data) => {
         if (data.err) {
-            log("[getAllCourseContent()] : post/return => " + data.err);
+            log("[getAllCourseContent()] : post/allCourse => " + data.err);
         } else {
-            log("[getAllCourseContent()] : post/return => ");
+            log("[getAllCourseContent()] : post/allCourse => ");
             log(data);
             generateCourseHtmlTable(data.course);
         }
@@ -144,7 +144,6 @@ function generateCourseHtmlTable(course) {
         row.onclick = clickHandler(row);
     }
 }
-
 
 /**
  * Generate element for studentProfile page
@@ -209,71 +208,88 @@ function getStudentProfile() {
     });
 }
 
-
+/**
+ * Generate tableInfo object 
+ */
 function generateImageData() {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
     let tableInfo = {
         "id": "" + studentID
     };
-
+    let mainTable = {}, mathMiniTable = {}, physicsMiniTable = {};
     studentProfile(studentID).then((data) => {
         tableInfo.firstname = data.firstname;
         tableInfo.lastname = data.lastname;
         tableInfo.nickname = data.nickname;
         tableInfo.grade = "" + data.grade;
 
-        let mainTable = {}, mathMiniTable = {}, physicsMiniTable = {};
-        for (let i = 0; i < data.courseID.length; i++) {
-            courseInfo(data.courseID[i]).then((data) => {
-                let time = new Date(data.day);
-                mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-                mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = data.courseName;
-                if (data.tutor[0] === 99000) {
-                    if (data.courseName[0] === "M") {
-                        mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
-                    } else {
-                        physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "CR";
-                    }
-                }
-                return [(name(data.tutor[0])), data];
-            }).then((req) => {
-                let name = req[0];
-                let data = req[1];
-                let time = new Date(data.day);
-                name.then((name) => {
-                    mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
-                });
-            });
-        }
-
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
-            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+            mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
                 ((time.getMinutes() === 0) ? "00" : "30");
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "SKILL";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "SKILL";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
             let time = new Date(data.hybridDay[i].day);
-            mainTable[getDateFullName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].courseName =
+            mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+            mainTable[getDateName(time.getDay()) + time.getHours()].courseName =
                 ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
-            mainTable[getDateFullName(time.getDay()) + time.getHours()].tutor = "HB";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "HB";
             if (data.hybridDay[i].subject === "M") {
-                mathMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+                mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
             } else {
-                physicsMiniTable[getDateFullName(time.getDay()) + time.getHours()] = "HB";
+                physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
             }
         }
-        tableInfo.mainTable = mainTable;
+
         tableInfo.mathMiniTable = mathMiniTable;
         tableInfo.physicsMiniTable = physicsMiniTable;
-        return tableInfo;
-    }).then((tableInfo) => {
-        log(tableInfo);
+        return data.courseID;
+    }).then((courseID) => {
+        let promise = [];
+        for (let i = 0; i < courseID.length; i++) {
+            promise.push(courseInfo(courseID[i]));
+        }
+        Promise.all(promise).then((value) => {
+            let tutorName = [];
+            let dataArray = [];
+            for (let i = 0; i < value.length; i++) {
+                let data = value[i];
+                dataArray.push(data);
+                let time = new Date(data.day);
+                mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                if (data.tutor[0] === 99000) {
+                    if (data.courseName[0] === "M") {
+                        mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+                    } else {
+                        physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+                    }
+                }
+                tutorName.push(name(data.tutor[0]));
+            }
+            Promise.all(tutorName).then((allName) => {
+                log(allName.length);
+                for (let i = 0; i < allName.length; i++) {
+                    let name = allName[i];
+                    let time = new Date(dataArray[i].day);
+                    mainTable[getDateName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
+                }
+            }).then(() => {
+                tableInfo.mainTable = mainTable;
+                log("[generateImageData()] : Generated info => ");
+                log(tableInfo);
+                showReceipt(tableInfo);
+                generateImage(tableInfo, 'math');
+                generateImage(tableInfo, 'phy');
+            });
+        });
     });
 }
+
+
 
 /**
  * Change registration state of user
@@ -347,6 +363,7 @@ function getCourseDescription() {
  */
 function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
+    log(button.innerHTML === "Add Course");
     if (button.innerHTML === "Add Course") {
         allCourse.then((data) => {
             if (data.err) {
@@ -368,7 +385,8 @@ function addRemoveCourse(timeID) {
                     let course = data.course[i];
                     let grade = "";
                     if (course.grade[0] > 6) {
-                        grade = "S" + course.grade.map(x => (x - 6)).join("");
+                        grade = "S" + course.grade.map((x) => (x - 6)
+                            ).join("");
                     } else {
                         grade = "P" + course.grade.join("");
                     }
@@ -482,60 +500,101 @@ function removeCourse() {
         });
     }
 }
-
 /**
- * Generate image for download
- * @param courseData 2d array name of course
+ *
+ * @param tableInfo
+ * @param subj
  */
-function generateImage(courseData) {
-    let canvas = document.getElementById('canvas');
+function generateImage(tableInfo, subj) {
+    let canvasID = subj + 'Canvas';
+    let canvas = document.getElementById(canvasID);
     let ctx = canvas.getContext('2d');
-    let tableData = [[], [], [], [], []];
-    let dateList = ['', 'TUE', 'THU', 'SAT', 'SUN'];
-    let timeList = ['', '8-10', '10-12', '13-15', '15-17'];
-    //noinspection SpellCheckingInspection
-    let bgColorList = ['black', 'deeppink', 'orange', 'purple', 'red'];
-    let textColorList = ['white', 'black', 'black', 'black', 'black'];
-    let textTableData;
-    let i;
-    let j;
-    /**
-     * Put courseData into tableData array
-     */
-    for (i = 0; i < 5; i++) {
-        for (j = 0; j < 5; j++) {
-            if (i === 0) {
-                tableData[i][j] = dateList[j];
-            } else if (j === 0) {
-                tableData[i][j] = timeList[i];
-            } else {
-                tableData[i][j] = courseData[i - 1][j - 1];
-            }
+    //gen row
+    const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
+    const day = ['TUE', 'THU', 'SAT', 'SUN'];
+    const time = ['8-10', '10-12', '13-15', '15-17', '17-19'];
+    const tableCl = ['#ff47b2', '#ffa133', '#9645cf', '#ff2e2e'];
+    const whtCl = ['#ffffff', '#ffffff', '#ffffff', '#ffffff'];
+    const borderB = 'border: 1px solid black;border-collapse: collapse;';
+    const borderG = 'border-bottom: 1px solid grey;border-right: 1px solid black;border-collapse: collapse;';
+    const levelColor = ['#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2',
+        '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2'];
+    const miniT = ['8', '10', '13', '15', '17'];
+    let mini = {
+        math8: [],
+        math10: [],
+        math13: [],
+        math15: [],
+        math17: [],
+        phy8: [],
+        phy10: [],
+        phy13: [],
+        phy15: [],
+        phy17: []
+    };
+    log(tableRow(2, tableInfo, day, '8'));
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (tableInfo.mathMiniTable[day[j] + miniT[i]] !== undefined) {
+                mini['math' + miniT[i]][j] = tableInfo.mathMiniTable[day[j] + miniT[i]];
+            } else mini['math' + miniT[i]][j] = '';
+            if (tableInfo.physicsMiniTable[day[j] + miniT[i]] !== undefined) {
+                mini['phy' + miniT[i]][j] = tableInfo.physicsMiniTable[day[j] + miniT[i]];
+            } else mini['phy' + miniT[i]][j] = '';
         }
     }
-    /**
-     * Generate html from tableData array
-     */
-    textTableData = '<table style="border: solid black;border-collapse: collapse">';
-    for (i = 0; i < tableData.length; i++) {
-        textTableData += '<tr style="height: 72px;border: solid black;color: ' + textColorList[i] + ';font-size:36px;">';
-        for (j = 0; j < tableData[i].length; j++) {
-            if (i === 0) {
-                textTableData += '<th style="background-color: ' + bgColorList[j] + ';border: solid black;width: 160px;">'
-                    + tableData[i][j] + '</th>';
-            } else {
-                textTableData += '<td style="border: solid black;">' + tableData[i][j] + '</td>'
-            }
-        }
-        textTableData += '</tr>';
+    let row1 = '';
+    if (canvasID === 'mathCanvas') {
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
+            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
+            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
+            tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
+            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
+            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
+    } else {
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
+            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
+            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
+            tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
+            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
+            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     }
-    textTableData += '</table>';
 
+    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
+        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, whtCl, borderB) + '</tr>';
+    let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color: #ffc107;color: white">' + 'M' + '</th>' +
+        '<th style="' + borderB + 'width: 40px;background-color: #9c27b0;color: white">' + 'P' + '</th>' +
+        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, whtCl, borderB) + '</tr>';
+    let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
+        loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
+        loop4(2, 1, mini[subj + '13'], 40, whtCl, borderB) + '</tr>';
+    let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini[subj + '15'], 40, whtCl, borderB) + '</tr>';
+    let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[0] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 30px">'
+        + time[4] + '</th>' + loop4(2, 1, mini[subj + '17'], 40, whtCl, borderB) + '</tr>';
+    let row7 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '8'), 120, whtCl, borderB) + '<th rowspan="2" colspan="5" style="' + borderB +
+        'background-color: yellow">Note : </th>' + '</tr>';
+    let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[1] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '10'), 120, whtCl, borderG) + '</tr>';
+    let row9 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '10'), 120, whtCl, borderB) +
+        '<th rowspan="7" colspan="5" style="' + borderB + '"></th>' + '</tr>';
+    let row10 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[2] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '13'), 120, whtCl, borderG) + '</tr>';
+    let row11 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '13'), 120, whtCl, borderB) + '</tr>';
+    let row12 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[3] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '15'), 120, whtCl, borderG) + '</tr>';
+    let row13 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '15'), 120, whtCl, borderB) + '</tr>';
+    let row14 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[4] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '17'), 120, whtCl, borderG) + '</tr>';
+    let row15 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
+    //gen canvas data
     let data =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="560">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="480">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
-        textTableData +
+        '<table style="border: 1px solid black;border-collapse: collapse">' +
+        row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9 + row10 + row11 + row12 + row13 + row14 + row15 +
+        '</table>' +
         '</div>' +
         '</foreignObject>' +
         '</svg>';
@@ -547,7 +606,6 @@ function generateImage(courseData) {
     });
     //noinspection JSUnresolvedFunction
     let url = DOMURL.createObjectURL(svg);
-
     //noinspection SpellCheckingInspection
     img.onload = function () {
         ctx.drawImage(img, 0, 0);
@@ -555,4 +613,100 @@ function generateImage(courseData) {
         DOMURL.revokeObjectURL(url);
     };
     img.src = url;
+    barcode(tableInfo);
+}
+//function for generate duplicate 4 row table with a data in each row
+function loop4(type, row, data, w, color, border) {
+    let text = '';
+    if (row > 1) {
+        if (type === 1) {
+            for (let i = 0; i < 4; i++) {
+                text += '<th rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</th>';
+            }
+        } else {
+            for (let i = 0; i < 4; i++) {
+                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</td>';
+            }
+        }
+    } else {
+        if (type === 1) {
+            for (let i = 0; i < 4; i++) {
+                text += '<th style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</th>';
+            }
+        } else {
+            for (let i = 0; i < 4; i++) {
+                text += '<td style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
+                    '">' + data[i] + '</td>';
+            }
+        }
+    }
+    return text;
+}
+
+//for create data in a row of table from course data
+function tableRow(type, tableInfo, day, time) {
+    log(tableInfo);
+    var size = Object.keys(tableInfo.mainTable).length;
+    log(size);
+    log(tableInfo.mainTable);
+    let cookieKeys = Object.keys(tableInfo.mainTable);
+    log(cookieKeys);
+    let tableRow = ['', '', '', ''];
+    for (let i = 0; i < 4; i++) {
+        log(day[i] + time);
+        log(tableInfo.mainTable[day[i] + time]);
+        if (tableInfo.mainTable[day[i] + time] !== undefined) {
+            if (type === 1) {
+                tableRow[i] = tableInfo.mainTable[day[i] + time].courseName;
+            } else tableRow[i] = tableInfo.mainTable[day[i] + time].tutor;
+        }
+    }
+    return tableRow;
+}
+
+//for show receipt pic on page
+function showReceipt(tableInfo) {
+    let picId = tableInfo.id;
+    $.get('pic/CR60Q3/15999.jpg', function (data, status) {
+        if (status === 'success') {
+            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpg');
+        }
+    });
+    $.get('pic/CR60Q3/15999.jpeg', function (data, status) {
+        if (status === 'success') {
+            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpeg');
+        }
+    });
+    $.get('pic/CR60Q3/15999.png', function (data, status) {
+        if (status === 'success') {
+            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.png');
+        }
+    });
+}
+function barcode(tableInfo) {
+    const code = tableInfo.id;
+    JsBarcode("#mathBarcode", code + '1', {
+        lineColor: "black",
+        width: 2,
+        height: 40,
+        displayValue: false
+    });
+    JsBarcode("#phyBarcode", code + '2', {
+        lineColor: "black",
+        width: 2,
+        height: 40,
+        displayValue: false
+    });
+}
+function combineCanvas(subj) {
+    let canvas = document.getElementById('combine');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let canvas1 = document.getElementById(subj + 'Canvas');
+    let canvas2 = document.getElementById(subj + 'Barcode');
+    ctx.drawImage(canvas1, 0, 0);
+    ctx.drawImage(canvas2, 120, 37);
 }
