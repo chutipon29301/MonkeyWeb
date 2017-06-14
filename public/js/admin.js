@@ -270,6 +270,7 @@ function generateImageData() {
         tableInfo.physicsMiniTable = physicsMiniTable;
         return tableInfo;
     }).then((tableInfo) => {
+        log("[generateImageData()] : Generated info => ");
         log(tableInfo);
         generateImage(tableInfo);
         showReceipt(tableInfo);
