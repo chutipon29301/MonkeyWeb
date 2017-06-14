@@ -21,6 +21,9 @@
 <script src="js/student.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
+<script>
+	$(document).ready(getDescription);
+</script>
 <script type="text/javascript" src="js/regCrCal.js"></script>
 <style>
 	.suggest{
@@ -212,10 +215,12 @@
 	  </form>
     <form class="form-horizontal">
       <div class="form-group">
-        <label class="control-label col-md-2">description:</label>
-        <div class="col-md-8">
+        <label class="control-label col-md-2">Description: </label>
+        <div class="col-md-8" id="description">
+<!--
 			<p id="description" class="form-control-static"> - </p>
-
+       		<p id="description" class="form-control-static"> - </p>
+-->
         </div>
       </div>
 	  </form>
