@@ -1,28 +1,41 @@
-//noinspection JSUnusedLocalSymbols
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const passwordCheck = (userID, pwd) => $.post("/post/password", {
+    userID: userID,
+    password: pwd
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const positionCheck = (userID) => $.post("/post/position", {
+    userID: userID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const registrationStateCheck = (studentID) => $.post("post/registrationState", {
+    studentID: studentID
+});
+
 function loginSubmit() {
     "use strict";
-
     let user = document.getElementById("usr");
     let pwd = document.getElementById("pwd");
-
     if (user.value.length === 0) {
         document.getElementById("usrReq").style.visibility = "visible";
-        document.getElementById("usrFromGroup").classList.add("has-error");
+        document.getElementById("usrFromGroup").classList.add("has-error")
     }
     if (user.value.length !== 0) {
         document.getElementById("usrReq").style.visibility = "hidden";
-        document.getElementById("usrFromGroup").className = "form-group";
+        document.getElementById("usrFromGroup").className = "form-group"
     }
     if (pwd.value.length === 0) {
         document.getElementById("pwdReq").style.visibility = "visible";
-        document.getElementById("pwdFromGroup").classList.add("has-error");
+        document.getElementById("pwdFromGroup").classList.add("has-error")
     }
     if (pwd.value.length !== 0) {
         document.getElementById("pwdReq").style.visibility = "hidden";
-        document.getElementById("pwdFromGroup").className = "form-group";
+        document.getElementById("pwdFromGroup").className = "form-group"
     }
     if (pwd.value.length !== 0 && user.value.length !== 0) {
-        login(parseInt(user.value), pwd.value);
+        login(parseInt(user.value), pwd.value)
     }
 }
 
@@ -30,44 +43,60 @@ function login(user, pwd) {
     "use strict";
     log("Username:" + user + ",Password:" + pwd);
     log(encrypt(pwd).toString());
-    password(user, encrypt(pwd).toString()).then((data) => {
+    passwordCheck(user, encrypt(pwd).toString()).then((data) => {
         if (data.err) {
-            log("Invalid");
+            log("[login()] : post/password => " + data.err);
         } else {
+            log("[login()] : post/password => ");
             log(data);
             if (data.verified) {
                 writeUserCookie(user, pwd);
-                log(document.cookie);
                 redirectLocation(user);
             } else {
                 log("Wrong");
                 alert("ID and password do not match.");
                 clearInput();
-
             }
         }
     });
 }
 
 function redirectLocation(user) {
-    position(user).then((data) => {
+    positionCheck(user).then((data) => {
         if (data.err) {
-            log("Invalid");
+            log("[redirectLocation()] : post/position => " + data.err);
         } else {
+            log("[redirectLocation()] : post/position => ");
             log(data);
             switch (data.position) {
                 case "student":
-                    self.location = "/home";
+                    studentLogin(user);
                     break;
                 case "tutor":
                     self.location = "/adminHome";
                     break;
                 case "admin":
-                    //noinspection SpellCheckingInspection
                     self.location = "/testadmin";
                     break;
                 default:
-                    break;
+                    break
+            }
+        }
+    });
+}
+
+function studentLogin(studentID) {
+    registrationStateCheck(studentID).then((data) => {
+        if (data.err) {
+            log("[studentLogin()] : post/registrationState => " + data.err);
+        } else {
+            log("[studentLogin()] : post/registrationState => ");
+            log(data);
+            //noinspection SpellCheckingInspection
+            if (data.registrationState === "untransferred") {
+                self.location = "/registrationReceipt";
+            } else {
+                self.location = "/home";
             }
         }
     });
@@ -76,16 +105,16 @@ function redirectLocation(user) {
 function clearInput() {
     "use strict";
     let pwd = document.getElementById("pwd");
-    pwd.value = "";
+    pwd.value = ""
 }
 
 function encrypt(text) {
     "use strict";
-    return CryptoJS.SHA3(text);
+    return CryptoJS.SHA3(text)
 }
 
 function writeUserCookie(user, pwd) {
     "use strict";
     writeCookie("monkeyWebUser", user);
-    writeCookie("monkeyWebPassword", encrypt(pwd).toString());
+    writeCookie("monkeyWebPassword", encrypt(pwd).toString())
 }

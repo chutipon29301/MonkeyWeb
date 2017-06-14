@@ -131,7 +131,7 @@ function checkLogin() {
 }
 /**
  * Check if user is in valid page
- * @param position of available user in page
+ * @param positionArray of available user in page
  */
 function checkValidUser(positionArray) {
     "use strict";
@@ -242,6 +242,8 @@ function loadRegistrationPage() {
                     self.location = "/registrationReceipt";
                     break;
                 case "transferred":
+                    log("[loadRegistrationPage()] : redirection to registrationReceipt");
+                    self.location = "/registrationReceipt";
                     break;
                 case "rejected":
                     break;
