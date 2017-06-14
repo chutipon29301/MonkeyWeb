@@ -134,7 +134,7 @@ var run=function(app,db){
         options.middlewareOptions.registrationState="untransferred";
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
-    options.middlewareOptions.position="admin";
+    options.middlewareOptions.position={$not:{$eq:"student"}};
         addPage("adminHome",options);
         addPage("adminAllstudent",options);
         addPage("adminAllcourse",options);
