@@ -717,7 +717,8 @@ function barcode(tableInfo) {
 function combineCanvas(subj) {
     let canvas = document.getElementById('combine');
     let ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle="white";
+    ctx.fillRect(0,0, cfCanvas.width, cfCanvas.height);
     let canvas1 = document.getElementById(subj + 'Canvas');
     let canvas2 = document.getElementById(subj + 'Barcode');
     ctx.drawImage(canvas1, 0, 0);
@@ -729,7 +730,8 @@ function acceptReject(state) {
     let ctxCf = cfCanvas.getContext('2d');
     let canvas1 = document.getElementById('mathCanvas');
     let img = document.getElementById('imgTrans');
-    ctxCf.clearRect(0, 0, cfCanvas.width, cfCanvas.height);
+    ctxCf.fillStyle="white";
+    ctxCf.fillRect(0,0, cfCanvas.width, cfCanvas.height);
     if (state === 'rejected') {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
