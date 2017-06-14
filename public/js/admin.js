@@ -272,8 +272,8 @@ function generateImageData() {
     }).then((tableInfo) => {
         log("[generateImageData()] : Generated info => ");
         log(tableInfo);
-        generateImage(tableInfo);
         showReceipt(tableInfo);
+        generateImage(tableInfo);
     });
 }
 
@@ -532,7 +532,7 @@ function generateImage(tableInfo) {
         '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
         'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     //for Phy change from here
-    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'barcode' + '</th>' +
+    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
         '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini['math8'], 40, whtCl, borderB) + '</tr>';
     let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color: #ffc107;color: white">' + 'M' + '</th>' +
         '<th style="' + borderB + 'width: 40px;background-color: #9c27b0;color: white">' + 'P' + '</th>' +
@@ -579,7 +579,6 @@ function generateImage(tableInfo) {
     });
     //noinspection JSUnresolvedFunction
     let url = DOMURL.createObjectURL(svg);
-
     //noinspection SpellCheckingInspection
     img.onload = function () {
         ctx.drawImage(img, 0, 0);
@@ -587,6 +586,7 @@ function generateImage(tableInfo) {
         DOMURL.revokeObjectURL(url);
     };
     img.src = url;
+    barcode(tableInfo);
 }
 //function for generate duplicate 4 row table with a data in each row
 function loop4(type, row, data, w, color, border) {
@@ -649,5 +649,14 @@ function showReceipt(tableInfo) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.png');
         }
+    });
+}
+function barcode(tableInfo) {
+    const code=tableInfo.id;
+    JsBarcode("#barcode", code, {
+        lineColor: "black",
+        width: 2,
+        height: 35,
+        displayValue: false
     });
 }
