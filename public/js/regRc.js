@@ -20,11 +20,12 @@ function upPic() {
                 contentType: false,
                 success: function (data) {
                     $('.fa').remove();
+
                 }
             });
         }
     }
 }
 function next() {
-    self.location = '/home';
+    self.location = '/studentProfile';
 }
