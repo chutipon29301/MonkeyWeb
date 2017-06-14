@@ -227,7 +227,7 @@ function generateImageData() {
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
             let hour = time.getHours();
-            if (hour === 9 || hour === 11 || hour === 14 || hour === 16){
+            if (hour === 9 || hour === 11 || hour === 14 || hour === 16) {
                 hour = hour - 1;
             }
             mainTable[getDateName(time.getDay()) + time.getHours()] = {};
@@ -311,8 +311,8 @@ function setRegistrationState(registrationState) {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
+            acceptReject(registrationState);
             log("[setRegistrationState()] : post/changeRegistrationState => Success");
-            location.reload()
         }
     });
 }
@@ -571,11 +571,12 @@ function generateImage(tableInfo, subj) {
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
             'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     }
-
+    log(tableInfo.inMath);
+    log(tableInfo.inPhy);
     let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
         '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
-    let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color: #ffc107;color: white">' + 'M' + '</th>' +
-        '<th style="' + borderB + 'width: 40px;background-color: #9c27b0;color: white">' + 'P' + '</th>' +
+    let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inMath) ? "#ffc107" : "white") + ';color: white">' + 'M' + '</th>' +
+        '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inPhy) ? "#9c27b0" : "white") + ';color: white">' + 'P' + '</th>' +
         '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, tueCl, borderB) + '</tr>';
     let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
         loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
@@ -721,4 +722,37 @@ function combineCanvas(subj) {
     let canvas2 = document.getElementById(subj + 'Barcode');
     ctx.drawImage(canvas1, 0, 0);
     ctx.drawImage(canvas2, 120, 37);
+}
+function acceptReject(state) {
+    let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let cfCanvas = document.getElementById('appRej');
+    let ctxCf = cfCanvas.getContext('2d');
+    let canvas1 = document.getElementById('mathCanvas');
+    let img = document.getElementById('imgTrans');
+    ctxCf.clearRect(0, 0, cfCanvas.width, cfCanvas.height);
+    if (state === 'rejected') {
+        ctxCf.save();
+        ctxCf.drawImage(canvas1, 0, -100);
+        ctxCf.drawImage(img,90,70,220,165);
+        ctxCf.rotate(11*Math.PI/6);
+        ctxCf.font="bold 55px Cordia New";
+        ctxCf.fillStyle="red";
+        ctxCf.textAlign='center';
+        ctxCf.fillText('Rejected กรุณาติดต่อครูแมว',150,340);
+        ctxCf.restore();
+    } else {
+        ctxCf.save();
+        ctxCf.drawImage(canvas1, 0, -100);
+        ctxCf.drawImage(img,90,70,220,165);
+        ctxCf.rotate(11*Math.PI/6);
+        ctxCf.font="bold 90px Cordia New";
+        ctxCf.fillStyle="green";
+        ctxCf.textAlign='center';
+        ctxCf.fillText('Approved',150,340);
+        ctxCf.restore();
+    }
+    cfCanvas.toBlob(function (blob) {
+        saveAs(blob, studentID + state+".png");
+    });
+    // location.reload();
 }
