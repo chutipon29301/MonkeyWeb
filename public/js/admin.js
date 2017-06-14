@@ -225,10 +225,14 @@ function generateImageData() {
 
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
+            let hour = time.getHours();
+            if (hour === 9 || hour === 11 || hour === 14 || hour === 16){
+                hour = hour - 1;
+            }
             mainTable[getDateName(time.getDay()) + time.getHours()] = {};
             mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
                 ((time.getMinutes() === 0) ? "00" : "30");
-            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "SKILL";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = " ";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
