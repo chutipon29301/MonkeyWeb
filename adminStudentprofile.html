@@ -138,14 +138,15 @@
     <canvas id="phyCanvas" style="border:1px solid black" width="790" height="480" hidden="true"></canvas>
     <canvas id="mathBarcode" hidden="true"></canvas>
     <canvas id="phyBarcode" hidden="true"></canvas>
-	<canvas id="combine" style="border:1px solid black" width="790" height="480"></canvas>
+    <canvas id="combine" style="border:1px solid black" width="790" height="480" hidden="true"></canvas>
     <script src="js/FileSaver.min.js" type="text/javascript"></script> 
     <script>
     function downloadCanvas(subj) {
+		let sID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
 		combineCanvas(subj);
-        var canvas = document.getElementById("combine"), ctx = canvas.getContext("2d");
+        let canvas = document.getElementById("combine"), ctx = canvas.getContext("2d");
         canvas.toBlob(function (blob) {
-            saveAs(blob, "table.png");
+            saveAs(blob, sID+((subj === "math") ? "1" : "2")+".png");
         });
     }
 </script> 
@@ -168,21 +169,21 @@
 </div>
     <!--  Modal for addCourse-->
     <div id="addModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-        <div class="modal-content">
-      <div class="modal-header">
-            <h1>Add Course</h1>
-          </div>
-      <div class="modal-body form-group">
-            <select class="form-control" id="courseSelector">
-        </select>
-          </div>
-      <div class="modal-footer">
-            <button type="button" class="btn btn-primary" onClick="addCourse();">Confirm</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          </div>
+    <div class="modal-dialog">
+  <div class="modal-content">
+        <div class="modal-header">
+      <h1>Add Course</h1>
+    </div>
+        <div class="modal-body form-group">
+          <select class="form-control" id="courseSelector">
+          </select>
+    </div>
+        <div class="modal-footer">
+      <button type="button" class="btn btn-primary" onClick="addCourse();">Confirm</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
     </div>
       </div>
+</div>
     <!-- InstanceEndEditable -->
 </div>
 <div class="container">

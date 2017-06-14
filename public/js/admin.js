@@ -209,7 +209,7 @@ function getStudentProfile() {
 }
 
 /**
- * Generate tableInfo object 
+ * Generate tableInfo object
  */
 function generateImageData() {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
@@ -288,7 +288,6 @@ function generateImageData() {
         });
     });
 }
-
 
 
 /**
@@ -513,12 +512,14 @@ function generateImage(tableInfo, subj) {
     const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
     const day = ['TUE', 'THU', 'SAT', 'SUN'];
     const time = ['8-10', '10-12', '13-15', '15-17', '17-19'];
-    const tableCl = ['#ff47b2', '#ffa133', '#9645cf', '#ff2e2e'];
+    const tableCl = ['#ff82d9', '#ffa133', '#9645cf', '#ff2e2e'];
     const whtCl = ['#ffffff', '#ffffff', '#ffffff', '#ffffff'];
+    const tueCl = ['#000000', '#000000', '#ffffff', '#ffffff'];
+    const satCl = ['#ffffff', '#ffffff', '#000000', '#000000'];
     const borderB = 'border: 1px solid black;border-collapse: collapse;';
-    const borderG = 'border-bottom: 1px solid grey;border-right: 1px solid black;border-collapse: collapse;';
-    const levelColor = ['#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2',
-        '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2', '#ff47b2'];
+    const borderG = 'border-bottom: 1px solid lightgrey;border-right: 1px solid black;border-collapse: collapse;';
+    const levelColor = ['#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18',
+        '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60'];
     const miniT = ['8', '10', '13', '15', '17'];
     let mini = {
         math8: [],
@@ -561,19 +562,19 @@ function generateImage(tableInfo, subj) {
     }
 
     let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, whtCl, borderB) + '</tr>';
+        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
     let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color: #ffc107;color: white">' + 'M' + '</th>' +
         '<th style="' + borderB + 'width: 40px;background-color: #9c27b0;color: white">' + 'P' + '</th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, whtCl, borderB) + '</tr>';
+        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, tueCl, borderB) + '</tr>';
     let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
         loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
-        loop4(2, 1, mini[subj + '13'], 40, whtCl, borderB) + '</tr>';
+        loop4(2, 1, mini[subj + '13'], 40, tueCl, borderB) + '</tr>';
     let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini[subj + '15'], 40, whtCl, borderB) + '</tr>';
     let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[0] + '</th>' +
         loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 30px">'
-        + time[4] + '</th>' + loop4(2, 1, mini[subj + '17'], 40, whtCl, borderB) + '</tr>';
+        + time[4] + '</th>' + loop4(2, 1, mini[subj + '17'], 40, satCl, borderB) + '</tr>';
     let row7 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '8'), 120, whtCl, borderB) + '<th rowspan="2" colspan="5" style="' + borderB +
-        'background-color: yellow">Note : </th>' + '</tr>';
+        'background-color: #fffb87">Note : </th>' + '</tr>';
     let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[1] + '</th>' +
         loop4(2, 1, tableRow(1, tableInfo, day, '10'), 120, whtCl, borderG) + '</tr>';
     let row9 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '10'), 120, whtCl, borderB) +
@@ -586,7 +587,7 @@ function generateImage(tableInfo, subj) {
     let row13 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '15'), 120, whtCl, borderB) + '</tr>';
     let row14 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[4] + '</th>' +
         loop4(2, 1, tableRow(1, tableInfo, day, '17'), 120, whtCl, borderG) + '</tr>';
-    let row15 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
+    let row15 = '<tr style="' + borderB + '">' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
     //gen canvas data
     let data =
         '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="480">' +
@@ -649,7 +650,7 @@ function loop4(type, row, data, w, color, border) {
 //for create data in a row of table from course data
 function tableRow(type, tableInfo, day, time) {
     log(tableInfo);
-    var size = Object.keys(tableInfo.mainTable).length;
+    let size = Object.keys(tableInfo.mainTable).length;
     log(size);
     log(tableInfo.mainTable);
     let cookieKeys = Object.keys(tableInfo.mainTable);
