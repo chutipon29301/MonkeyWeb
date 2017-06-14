@@ -117,7 +117,6 @@ var run=function(app,db){
         });
     };
 
-    addPage("login");
     addPage("login",{url:"/"});
     var options={middlewareOptions:{login:true,position:"student"}};
         addPage("home",options);
