@@ -515,6 +515,8 @@ function generateImage(tableInfo) {
         phy15: [],
         phy17: []
     };
+    log('================================================');
+    log(tableRow(2, tableInfo, day, '8'));
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 4; j++) {
             if (tableInfo.mathMiniTable[day[j] + miniT[i]] !== undefined) {
