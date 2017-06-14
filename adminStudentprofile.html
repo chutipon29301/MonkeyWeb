@@ -1,169 +1,227 @@
 <!doctype html>
 <html lang="en"><!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- InstanceBeginEditable name="doctitle" -->
-<title>Student Profile</title>
-<!-- InstanceEndEditable -->
-<!-- InstanceBeginEditable name="head" -->
-<!-- InstanceEndEditable -->
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
-<link href="css/w3.css" rel="stylesheet" type="text/css">
-<link href="/css/style.css" rel="stylesheet" type="text/css">
-<script src="js/jquery-1.11.3.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
-<script>
-	checkLogin();
-	checkValidUser(["tutor", "admin"]);
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
-<script src="/js/admin.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<!-- InstanceBeginEditable name="script" -->
-<!--add more script-->
-<script>
-	$(document).ready(getStudentProfile);
-</script>
-<!-- InstanceEndEditable -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- InstanceBeginEditable name="doctitle" -->
+    <title>Student Profile</title>
+    <!-- InstanceEndEditable -->
+    <!-- InstanceBeginEditable name="head" -->
+    <!-- InstanceEndEditable -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/w3.css" rel="stylesheet" type="text/css">
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
+    <script>
+        checkLogin();
+        checkValidUser(["tutor", "admin"]);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+    <script src="/js/admin.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- InstanceBeginEditable name="script" -->
+    <!--add more script-->
+    <script>
+        $(document).ready(getStudentProfile);
+    </script>
+    <!-- InstanceEndEditable -->
 </head>
 <body>
 <nav class="navbar navbar-default">
-  <div class="container-fluid"> 
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#defaultNavbar1"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
-      <a class="navbar-brand" href="adminHome">Monkey</a></div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="defaultNavbar1">
-      <ul class="nav navbar-nav">
-        <li><a href="adminAllcourse">All Course<span class="sr-only">(current)</span></a></li>
-        <li><a href="adminAllstudent">All Student<span class="sr-only">(current)</span></a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#" onClick="logout();"><span class="glyphicon glyphicon-log-out"></span>Log out</a></li>
-      </ul>
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#defaultNavbar1">
+                <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
+                    class="icon-bar"></span><span class="icon-bar"></span></button>
+            <a class="navbar-brand" href="adminHome">Monkey</a></div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="defaultNavbar1">
+            <ul class="nav navbar-nav">
+                <li><a href="adminAllcourse">All Course<span class="sr-only">(current)</span></a></li>
+                <li><a href="adminAllstudent">All Student<span class="sr-only">(current)</span></a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" onClick="logout();"><span class="glyphicon glyphicon-log-out"></span>Log out</a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
     </div>
-    <!-- /.navbar-collapse --> 
-  </div>
-  <!-- /.container-fluid --> 
+    <!-- /.container-fluid -->
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="col-md-10 col-md-offset-1">
-    <h1 id="studentID">&nbsp;</h1>
-    <h3 id="studentName">&nbsp;</h3>
-    <h5 id="email">&nbsp;</h5>
-    <h5 id="phone">&nbsp;</h5>
-    <h5 id="studentLevel">&nbsp;</h5>
-    <h5 id="studentState">&nbsp;</h5>
-    <h5 id="studentStatus">&nbsp;</h5>
-    <!--    <h5 id="studentFHB">FHB: MJ-DB01a</h5>-->
-    <button onClick="downloadCanvas();" class="btn btn-default">Download Table</button>
-    <br>
-    <br>
-  </div>
-  <div class="container-fluid">
-    <div class="table-responsive col-md-10 col-md-offset-1">
-      <table class="table table-bordered" id="courseTable">
-        <thead>
-          <tr>
-            <th class="col-md-2"></th>
-            <th class="col-md-2">TUE</th>
-            <th class="col-md-2">THU</th>
-            <th class="col-md-2">SAT</th>
-            <th class="col-md-2">SUN</th>
-          </tr>
-        </thead>
-        <tr>
-          <td>8:00-10:00</td>
-          <td><button type="button" class="btn btn-disable col-md-12" id="-169200000">&nbsp;</button></td>
-          <td><button type="button" class="btn btn-disable col-md-12" id="3600000">&nbsp;</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="176400000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="-342000000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-        </tr>
-        <tr>
-          <td>10:00-12:00</td>
-          <td><button type="button" class="btn btn-disable col-md-12" id="-162000000">&nbsp;</button></td>
-          <td><button type="button" class="btn btn-disable col-md-12" id="10800000">&nbsp;</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="183600000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="-334800000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-        </tr>
-        <tr>
-          <td>13:00-15:00</td>
-          <td><button type="button" class="btn btn-disable col-md-12" id="-151200000">&nbsp;</button></td>
-          <td><button type="button" class="btn btn-disable col-md-12" id="21600000">&nbsp;</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="194400000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="-324000000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-        </tr>
-        <tr>
-          <td>15:00-17:00</td>
-          <td><button type="button" class="btn btn-default col-md-12" id="-144000000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="28800000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="201600000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-          <td><button type="button" class="btn btn-default col-md-12" id="-316800000" onClick="addRemoveCourse(this.id);">Add Course</button></td>
-        </tr>
-      </table>
+    <div class="col-md-5 col-md-offset-1">
+        <h1 id="studentID">&nbsp;</h1>
+        <h3 id="studentName">&nbsp;</h3>
+        <h5 id="email">&nbsp;</h5>
+        <h5 id="phone">&nbsp;</h5>
+        <h5 id="studentLevel">&nbsp;</h5>
+        <h5 id="studentState">&nbsp;</h5>
+        <h5 id="studentStatus">&nbsp;</h5>
+        <!--    <h5 id="studentFHB">FHB: MJ-DB01a</h5>-->
+        <button onClick="downloadCanvas();" class="btn btn-default">Download Table</button>
+        <br>
+        <br>
     </div>
-  </div>
-  <div class="btn-group col-md-offset-9">
-    <button type="button" class="btn btn-success" onClick="setRegistrationState('registered');">APPROVE</button>
-    <button type="button" class="btn btn-danger" onClick="setRegistrationState('rejected');">REJECT</button>
-  </div>
-  <canvas id="canvas" style="border:2px solid black;" width="790" height="560" hidden="true"></canvas>
-  <script src="js/FileSaver.min.js" type="text/javascript"></script> 
-  <script>
-	function downloadCanvas(){
-		var canvas = document.getElementById("canvas"), ctx = canvas.getContext("2d");
-		canvas.toBlob(function(blob) {
-    	saveAs(blob, "table.png");
-		});
-	}
-  </script> 
-  <!--  Modal for removeCourse-->
-  <div id="removeModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1>Remove Course</h1>
-        </div>
-        <div class="modal-body">
-          <h4>Are you sure to delete <span id="courseName"></span>&nbsp;?</h4>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" id="confirmDelete" onClick="removeCourse();">Yes</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-        </div>
-      </div>
+    <div class="col-md-5" align="right">
+        <img id="imgTrans" src="images/noImage.svg" style="width: auto;max-height: 240px;">
     </div>
-  </div>
-  <!--  Modal for addCourse-->
-  <div id="addModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1>Add Course</h1>
+    <div class="container-fluid">
+        <div class="table-responsive col-md-10 col-md-offset-1">
+            <table class="table table-bordered" id="courseTable">
+                <thead>
+                <tr>
+                    <th class="col-md-2"></th>
+                    <th class="col-md-2">TUE</th>
+                    <th class="col-md-2">THU</th>
+                    <th class="col-md-2">SAT</th>
+                    <th class="col-md-2">SUN</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>8:00-10:00</td>
+                    <td>
+                        <button type="button" class="btn btn-disable col-md-12" id="-169200000">&nbsp;</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-disable col-md-12" id="3600000">&nbsp;</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="176400000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="-342000000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>10:00-12:00</td>
+                    <td>
+                        <button type="button" class="btn btn-disable col-md-12" id="-162000000">&nbsp;</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-disable col-md-12" id="10800000">&nbsp;</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="183600000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="-334800000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>13:00-15:00</td>
+                    <td>
+                        <button type="button" class="btn btn-disable col-md-12" id="-151200000">&nbsp;</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-disable col-md-12" id="21600000">&nbsp;</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="194400000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="-324000000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>15:00-17:00</td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="-144000000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="28800000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="201600000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default col-md-12" id="-316800000"
+                                onClick="addRemoveCourse(this.id);">Add Course
+                        </button>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div class="modal-body form-group">
-          <select class="form-control" id="courseSelector"></select>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onClick="addCourse();">Confirm</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        </div>
-      </div>
     </div>
-  </div>
-  <!-- InstanceEndEditable -->
+    <div class="btn-group col-md-offset-9">
+        <button type="button" class="btn btn-success" onClick="setRegistrationState('registered');">APPROVE</button>
+        <button type="button" class="btn btn-danger" onClick="setRegistrationState('rejected');">REJECT</button>
+    </div>
+    <canvas id="canvas" style="border:1px solid black;" width="790" height="560"></canvas>
+    <script src="js/FileSaver.min.js" type="text/javascript"></script>
+    <script>
+        function downloadCanvas() {
+            var canvas = document.getElementById("canvas"), ctx = canvas.getContext("2d");
+            canvas.toBlob(function (blob) {
+                saveAs(blob, "table.png");
+            });
+        }
+    </script>
+    <!--  Modal for removeCourse-->
+    <div id="removeModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Remove Course</h1>
+                </div>
+                <div class="modal-body">
+                    <h4>Are you sure to delete <span id="courseName"></span>&nbsp;?</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="confirmDelete" onClick="removeCourse();">Yes
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  Modal for addCourse-->
+    <div id="addModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Add Course</h1>
+                </div>
+                <div class="modal-body form-group">
+                    <select class="form-control" id="courseSelector"></select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onClick="addCourse();">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- InstanceEndEditable -->
 </div>
 <div class="container">
-  <div class="row">
-    <div class="text-center center-block">
-      <h4>Monkey </h4>
-      <p>Copyright &copy; 2017 &middot; All Rights Reserved</p>
+    <div class="row">
+        <div class="text-center center-block">
+            <h4>Monkey </h4>
+            <p>Copyright &copy; 2017 &middot; All Rights Reserved</p>
+        </div>
     </div>
-  </div>
 </div>
 </body>
 <!-- InstanceEnd --></html>

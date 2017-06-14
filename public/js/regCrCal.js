@@ -1,9 +1,9 @@
-var availableCourse;
-var pricepercourse = 6000;
-var allSuggest;
-var suggestCourse;
+let availableCourse;
+const pricepercourse = 6000;
+let allSuggest;
+let suggestCourse;
 $(document).ready(function () {
-    var cookie = getCookieDict();
+    const cookie = getCookieDict();
     if (cookie.regisCourse !== undefined) {
         deleteCookie("regisCourse")
     }
@@ -15,7 +15,7 @@ $(document).ready(function () {
     $('#name').html(decodeURIComponent(cookie.name.name));
     $('#sname').html(decodeURIComponent(cookie.name.sname));
     $('#grade').val(cookie.grade);
-    var grade = parseInt($('#grade').val());
+    const grade = parseInt($('#grade').val());
     if (grade >= 10) {
         $('#info1,#info3').hide()
     }
@@ -26,7 +26,7 @@ $(document).ready(function () {
     $.post("post/listCourseSuggestion", {grade: grade}, function (suggestCR) {
         allSuggest = suggestCR;
         for (let i = 0; i < allSuggest.course.length; i++) {
-            var lv = allSuggest.course[i].level;
+            const lv = allSuggest.course[i].level;
             $('#level').append('<option value="' + lv + '">' + lv + '</option>');
         }
     });
@@ -144,9 +144,9 @@ function updateAvaiCr(arrayCourse) {
 function updateTable(course) { /* update table after gen to change from blank to recieved data */
     for (let i in course) {
         if (course[i] !== false) {
-            var temp = document.getElementsByClassName("btn-" + i.slice(0, 3) + " " + i.slice(3, i.length - 1) + "." + i[i.length - 1]);
+            let temp = document.getElementsByClassName("btn-" + i.slice(0, 3) + " " + i.slice(3, i.length - 1) + "." + i[i.length - 1]);
             for (let j = 0; j < temp.length; j++) {
-                var rep = temp[j].className;
+                let rep = temp[j].className;
                 rep = rep.replace(/btn-basic disabled/g, "btn btn-default");
                 temp[j].className = rep;
                 temp[j].innerHTML = course[i].courseName;
@@ -164,10 +164,10 @@ function updateTable(course) { /* update table after gen to change from blank to
     }
 }
 function genTable() { /* gen blank table at first */
-    var satTable = document.getElementsByClassName("btn-sat");
-    var sunTable = document.getElementsByClassName("btn-sun");
-    var i;
-    var raw;
+    let satTable = document.getElementsByClassName("btn-sat");
+    let sunTable = document.getElementsByClassName("btn-sun");
+    let i;
+    let raw;
     for (i = 0; i < satTable.length; i++) {
         raw = satTable[i].className.split(' ');
         satTable[i].className = raw[0] + ' ' + raw[1] + ' btn btn-basic disabled ' + raw[raw.length - 1];
@@ -179,16 +179,17 @@ function genTable() { /* gen blank table at first */
         sunTable[i].innerHTML = "&nbsp;"
     }
 }
-function calculate(btn) { /* run after click btn in HTML to switch between select and non-select */
-    var all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
+function calculate(btn) { let temp;
+    /* run after click btn in HTML to switch between select and non-select */
+    let all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
     for (let i = 0; i < all_same.length; i++) {
-        var raw = all_same[i].className;
-        var check = all_same[i].className.split(' ')[0] + ' ' + all_same[i].className.split(' ')[1];
+        let raw = all_same[i].className;
+        let check = all_same[i].className.split(' ')[0] + ' ' + all_same[i].className.split(' ')[1];
         if (raw.indexOf("btn-default") !== -1) {
             raw = raw.replace(/btn-default/g, "btn-success");
             all_same[i].className = raw;
             if (check[check.length - 1] === '1') {
-                var temp = document.getElementsByClassName(check.slice(0, check.length - 1) + '2');
+                temp = document.getElementsByClassName(check.slice(0, check.length - 1) + '2');
                 for (let j = 0; j < temp.length; j++) {
                     if (temp[j].className.indexOf("btn-success") !== -1) {
                         deselect(temp[j])
@@ -196,7 +197,7 @@ function calculate(btn) { /* run after click btn in HTML to switch between selec
                 }
             }
             else if (check[check.length - 1] === '2') {
-                var temp = document.getElementsByClassName(check.slice(0, check.length - 1) + '1');
+                temp = document.getElementsByClassName(check.slice(0, check.length - 1) + '1');
                 for (let j = 0; j < temp.length; j++) {
                     if (temp[j].className.indexOf("btn-success") !== -1) {
                         deselect(temp[j])
@@ -209,24 +210,19 @@ function calculate(btn) { /* run after click btn in HTML to switch between selec
             all_same[i].className = raw;
         }
     }
-    var temp = btn.className.split(' ');
-    var dayHour = temp[0].slice(temp[0].length - 3, temp[0].length) + temp[1];
+    temp = btn.className.split(' ');
+    let dayHour = temp[0].slice(temp[0].length - 3, temp[0].length) + temp[1];
     dayHour = dayHour.replace('.', '');
     if (availableCourse[dayHour] !== false) {
-        if (btn.className.indexOf("btn-success") !== -1) {
-            availableCourse[dayHour]["select"] = true
-        }
-        else {
-            availableCourse[dayHour]["select"] = false
-        }
+        availableCourse[dayHour]["select"] = btn.className.indexOf("btn-success") !== -1;
     }
     document.getElementById('show_price').innerHTML = document.getElementsByClassName('btn-success').length * pricepercourse / 2;
     nextCheck();
 }
 function deselect(btn) {     /* sub function to deselect duo btn if both is selected */
-    var all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
+    let all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
     for (let i = 0; i < all_same.length; i++) {
-        var raw = all_same[i].className;
+        let raw = all_same[i].className;
         if (raw.indexOf("btn-default") !== -1) {
             raw = raw.replace(/btn-default/g, "btn-success");
             all_same[i].className = raw;
@@ -238,7 +234,7 @@ function deselect(btn) {     /* sub function to deselect duo btn if both is sele
     }
 }
 function nextCheck() { /* check next btn */
-    var check = false;
+    let check = false;
     for (let i in availableCourse) {
         if (availableCourse[i] !== false) {       
             if (availableCourse[i].select === true && availableCourse[i].tutor[0] !== 99000) {
@@ -267,7 +263,7 @@ function back() {
     self.location = "registrationName";
 }
 function highlight() {
-    var level = $('#level').val();
+    let level = $('#level').val();
     for (let i = 0; i < allSuggest.course.length; i++) {
         if (level === allSuggest.course[i].level) {
             suggestCourse = allSuggest.course[i].courseID;
@@ -275,12 +271,7 @@ function highlight() {
     }
     for (let i in availableCourse){
         if(availableCourse[i]!==false){
-            if(suggestCourse.includes(availableCourse[i].courseID)){
-                availableCourse[i]["suggest"] = true
-            }
-            else{
-                availableCourse[i]["suggest"] = false
-            }
+            availableCourse[i]["suggest"] = suggestCourse.includes(availableCourse[i].courseID);
         }
     }
     updateTable(availableCourse);
