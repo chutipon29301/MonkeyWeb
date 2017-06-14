@@ -282,7 +282,8 @@ function generateImageData() {
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
                 showReceipt(tableInfo);
-                generateImage(tableInfo);
+                generateImage(tableInfo, 'math');
+                generateImage(tableInfo, 'phy');
             });
         });
     });
@@ -502,9 +503,11 @@ function removeCourse() {
 /**
  *
  * @param tableInfo
+ * @param subj
  */
-function generateImage(tableInfo) {
-    let canvas = document.getElementById('canvas');
+function generateImage(tableInfo, subj) {
+    let canvasID = subj + 'Canvas';
+    let canvas = document.getElementById(canvasID);
     let ctx = canvas.getContext('2d');
     //gen row
     const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
@@ -529,6 +532,7 @@ function generateImage(tableInfo) {
         phy15: [],
         phy17: []
     };
+    log(tableRow(2, tableInfo, day, '8'));
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 4; j++) {
             if (tableInfo.mathMiniTable[day[j] + miniT[i]] !== undefined) {
@@ -539,26 +543,35 @@ function generateImage(tableInfo) {
             } else mini['phy' + miniT[i]][j] = '';
         }
     }
-    let row1 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
-        levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
-        'ID : ' + tableInfo.id + '</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
-        tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
-        '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
-        'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
-    //for Phy change from here
+    let row1 = '';
+    if (canvasID === 'mathCanvas') {
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
+            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
+            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
+            tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
+            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
+            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
+    } else {
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
+            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
+            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
+            tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
+            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
+            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
+    }
+
     let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini['math8'], 40, whtCl, borderB) + '</tr>';
+        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, whtCl, borderB) + '</tr>';
     let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color: #ffc107;color: white">' + 'M' + '</th>' +
         '<th style="' + borderB + 'width: 40px;background-color: #9c27b0;color: white">' + 'P' + '</th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini['math10'], 40, whtCl, borderB) + '</tr>';
+        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, whtCl, borderB) + '</tr>';
     let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
         loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
-        loop4(2, 1, mini['math13'], 40, whtCl, borderB) + '</tr>';
-    let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini['math15'], 40, whtCl, borderB) + '</tr>';
+        loop4(2, 1, mini[subj + '13'], 40, whtCl, borderB) + '</tr>';
+    let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini[subj + '15'], 40, whtCl, borderB) + '</tr>';
     let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[0] + '</th>' +
         loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 30px">'
-        + time[4] + '</th>' + loop4(2, 1, mini['math15'], 40, whtCl, borderB) + '</tr>';
-    //change Phy end here
+        + time[4] + '</th>' + loop4(2, 1, mini[subj + '17'], 40, whtCl, borderB) + '</tr>';
     let row7 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '8'), 120, whtCl, borderB) + '<th rowspan="2" colspan="5" style="' + borderB +
         'background-color: yellow">Note : </th>' + '</tr>';
     let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[1] + '</th>' +
@@ -576,7 +589,7 @@ function generateImage(tableInfo) {
     let row15 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
     //gen canvas data
     let data =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="560">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="480">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
         '<table style="border: 1px solid black;border-collapse: collapse">' +
@@ -608,24 +621,24 @@ function loop4(type, row, data, w, color, border) {
     if (row > 1) {
         if (type === 1) {
             for (let i = 0; i < 4; i++) {
-                text += '<th rowspan="' + row + '" style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                text += '<th rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</th>';
             }
         } else {
             for (let i = 0; i < 4; i++) {
-                text += '<td rowspan="' + row + '" style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</td>';
             }
         }
     } else {
         if (type === 1) {
             for (let i = 0; i < 4; i++) {
-                text += '<th style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                text += '<th style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</th>';
             }
         } else {
             for (let i = 0; i < 4; i++) {
-                text += '<td style="' + border + 'width:' + w + 'px;background-color:' + color[i] +
+                text += '<td style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</td>';
             }
         }
@@ -639,7 +652,6 @@ function tableRow(type, tableInfo, day, time) {
     var size = Object.keys(tableInfo.mainTable).length;
     log(size);
     log(tableInfo.mainTable);
-    log("======================");
     let cookieKeys = Object.keys(tableInfo.mainTable);
     log(cookieKeys);
     let tableRow = ['', '', '', ''];
@@ -676,10 +688,25 @@ function showReceipt(tableInfo) {
 }
 function barcode(tableInfo) {
     const code = tableInfo.id;
-    JsBarcode("#barcode", code, {
+    JsBarcode("#mathBarcode", code + '1', {
         lineColor: "black",
         width: 2,
-        height: 35,
+        height: 40,
         displayValue: false
     });
+    JsBarcode("#phyBarcode", code + '2', {
+        lineColor: "black",
+        width: 2,
+        height: 40,
+        displayValue: false
+    });
+}
+function combineCanvas(subj) {
+    let canvas = document.getElementById('combine');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let canvas1 = document.getElementById(subj + 'Canvas');
+    let canvas2 = document.getElementById(subj + 'Barcode');
+    ctx.drawImage(canvas1, 0, 0);
+    ctx.drawImage(canvas2, 120, 37);
 }

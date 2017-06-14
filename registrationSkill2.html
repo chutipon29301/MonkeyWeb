@@ -8,6 +8,9 @@
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
+	.btn{
+		color: rgba(0,0,0,1.00)!important;
+	}
 	.cr{
 		background-color: #FFE4F5!important;
 		border-color: transparent!important;
@@ -17,7 +20,7 @@
 		border-color: transparent!important;
 	}
 	.sk{
-		background-color: #FAFFAA!important;
+		background-color: #D4EEF8!important;
 		border-color: transparent!important;
 	}
 </style>
@@ -37,7 +40,7 @@
 <script src="js/student.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
-<script type="text/javascript" src="js/regSkCal.js"></script>
+<script type="text/javascript" src="js/regSkCal2.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
 <!-- InstanceEndEditable -->
 </head>
@@ -81,22 +84,68 @@
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
   	  <div class="container">
     <form class="form-horizontal">
-    <div class="form-group">
-     <label class="control-label col-md-1 col-md-offset-1" style="font-size: large">SKILL:</label>
-     <div class="col-md-3">
-     <select class="form-control" id="skillSel">
-           <option value="0">กรุณาเลือกวิชา</option>
-            <option value="1">MATH and ENG</option>
-            <option value="2">MATH</option>
-            <option value="3">ENG</option>
-            <option value="4">Complete</option>
-     </select>
-     </div>
-    </div>
-    <p style="color: red" class="col-md-offset-2">*Complete คือ จบหลักสูตร Monkey Skill แล้ว</p>
-</form>
-	</div>
-	<br>
+      <div class="form-group" id="math">
+        <label class="control-label col-md-2 col-md-offset-0">SKILL MATH:</label>
+        <div class="col-md-3">
+          <select class="form-control" id="station">
+            <option value="1">สยาม</option>
+            <option value="2">สาย 3</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skillday">
+            <option value="sat">เสาร์</option>
+            <option value="sun">อาทิตย์</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilltime">
+           	<option value="0">กรุณาเลือกเวลาเรียน</option>
+            <option value="90">9.00-10.00</option>
+            <option value="95">9.30-10.30</option>
+            <option value="100">10.00-11.00</option>
+            <option value="105">10.30-11.30</option>
+            <option value="110">11.00-12.00</option>
+            <option value="130">13.00-14.00</option>
+            <option value="135">13.30-14.30</option>
+            <option value="140">14.00-15.00</option>
+            <option value="145">14.30-15.30</option>
+            <option value="150">15.00-16.00</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" id="eng">
+        <label class="control-label col-md-2 col-md-offset-0">SKILL ENG:</label>
+        <div class="col-md-3">
+          <select class="form-control" id="stationEng">
+            <option value="1">สยาม</option>
+            <option value="2">สาย 3</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilldayEng">
+            <option value="sat">เสาร์</option>
+            <option value="sun">อาทิตย์</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" id="skilltimeEng">
+           	<option value="0">กรุณาเลือกเวลาเรียน</option>
+            <option value="90">9.00-10.00</option>
+            <option value="95">9.30-10.30</option>
+            <option value="100">10.00-11.00</option>
+            <option value="105">10.30-11.30</option>
+            <option value="110">11.00-12.00</option>
+            <option value="130">13.00-14.00</option>
+            <option value="135">13.30-14.30</option>
+            <option value="140">14.00-15.00</option>
+            <option value="145">14.30-15.30</option>
+            <option value="150">15.00-16.00</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
 	<div class="table-responsive w3-hide-small w3-hide-medium col-md-10 col-md-offset-1">
    <label class="control-label col-md-3" style="font-size: large">Overview:</label>
     <table class="table table-bordered">
@@ -201,8 +250,8 @@
   <div class="container col-md-5 col-md-offset-1 col-xs-5 col-xs-offset-0" align="left" >
  	<button id="back" class="btn btn-default" onClick="this.blur(); back();">Back</button>
   </div>
-<div class="container col-md-4 col-md-offset-1 col-xs-6 col-xs-offset-1" align="right" >
-    <button id="next" class="btn btn-default" onClick="this.blur(); nextbtn();">Next</button>
+  <div class="container col-md-4 col-md-offset-1 col-xs-6 col-xs-offset-1" align="right">
+    <button class="btn btn-default" onclick="this.blur(); next(); document.getElementById('id01').style.display='block'">Next</button>
   </div>
 	
   <!-- InstanceEndEditable --> </div>
