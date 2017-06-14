@@ -63,8 +63,8 @@
   <h5 id="studentState">&nbsp;</h5>
   <h5 id="studentStatus">&nbsp;</h5>
   <!--    <h5 id="studentFHB">FHB: MJ-DB01a</h5>-->
-  <button onClick="downloadCanvas();" class="btn btn-default">Download Math Table</button>
-  <button onClick="downloadCanvas();" class="btn btn-default">Download Physics Table</button>
+  <button onClick="downloadCanvas(this.id);" class="btn btn-default" id="math">Download Math Table</button>
+  <button onClick="downloadCanvas(this.id);" class="btn btn-default" id="phy">Download Physics Table</button>
   <br>
   <br>
 </div>
@@ -134,14 +134,16 @@
   <button type="button" class="btn btn-danger" onClick="setRegistrationState('rejected');">REJECT</button>
 </div>
     </div>
-    <canvas id="canvas" style="border:1px solid black" width="790" height="560"></canvas>
-    <canvas id="barcode"></canvas>
-    <!--<canvas id="combine" width="790" height="560"></canvas>--> 
-    <!--<button onclick="combine()">click</button>--> 
+    <canvas id="mathCanvas" style="border:1px solid black" width="790" height="480" hidden="true"></canvas>
+    <canvas id="phyCanvas" style="border:1px solid black" width="790" height="480" hidden="true"></canvas>
+    <canvas id="mathBarcode" hidden="true"></canvas>
+    <canvas id="phyBarcode" hidden="true"></canvas>
+	<canvas id="combine" style="border:1px solid black" width="790" height="480"></canvas>
     <script src="js/FileSaver.min.js" type="text/javascript"></script> 
     <script>
-    function downloadCanvas() {
-        var canvas = document.getElementById("canvas"), ctx = canvas.getContext("2d");
+    function downloadCanvas(subj) {
+		combineCanvas(subj);
+        var canvas = document.getElementById("combine"), ctx = canvas.getContext("2d");
         canvas.toBlob(function (blob) {
             saveAs(blob, "table.png");
         });

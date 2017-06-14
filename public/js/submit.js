@@ -287,7 +287,7 @@ function submit() {
                         })
                     }
                     alert('ลงทะเบียนเสร็จสิ้น');
-                    self.location = 'home'
+                    self.location = 'registrationReceipt'
 
                 }
             })
