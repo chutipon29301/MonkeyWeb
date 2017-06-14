@@ -145,7 +145,6 @@ function generateCourseHtmlTable(course) {
     }
 }
 
-
 /**
  * Generate element for studentProfile page
  */
@@ -209,41 +208,17 @@ function getStudentProfile() {
     });
 }
 
-
 function generateImageData() {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
     let tableInfo = {
         "id": "" + studentID
     };
+    let mainTable = {}, mathMiniTable = {}, physicsMiniTable = {};
     studentProfile(studentID).then((data) => {
         tableInfo.firstname = data.firstname;
         tableInfo.lastname = data.lastname;
         tableInfo.nickname = data.nickname;
         tableInfo.grade = "" + data.grade;
-
-        let mainTable = {}, mathMiniTable = {}, physicsMiniTable = {};
-        for (let i = 0; i < data.courseID.length; i++) {
-            courseInfo(data.courseID[i]).then((data) => {
-                let time = new Date(data.day);
-                mainTable[getDateName(time.getDay()) + time.getHours()] = {};
-                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = data.courseName;
-                if (data.tutor[0] === 99000) {
-                    if (data.courseName[0] === "M") {
-                        mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
-                    } else {
-                        physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
-                    }
-                }
-                return [(name(data.tutor[0])), data];
-            }).then((req) => {
-                let name = req[0];
-                let data = req[1];
-                let time = new Date(data.day);
-                name.then((name) => {
-                    mainTable[getDateName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
-                });
-            });
-        }
 
         for (let i = 0; i < data.skillDay.length; i++) {
             let time = new Date(data.skillDay[i].day);
@@ -265,17 +240,120 @@ function generateImageData() {
                 physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
             }
         }
-        tableInfo.mainTable = mainTable;
+
         tableInfo.mathMiniTable = mathMiniTable;
         tableInfo.physicsMiniTable = physicsMiniTable;
-        return tableInfo;
-    }).then((tableInfo) => {
-        log("[generateImageData()] : Generated info => ");
-        log(tableInfo);
-        showReceipt(tableInfo);
-        generateImage(tableInfo);
+        return data.courseID;
+    }).then((courseID) => {
+        let promise = [];
+        for (let i = 0; i < courseID.length; i++) {
+            promise.push(courseInfo(courseID[i]));
+        }
+        Promise.all(promise).then((value) => {
+            let tutorName = [];
+            let dataArray = [];
+            for (let i = 0; i < value.length; i++) {
+                let data = value[i];
+                dataArray.push(data);
+                let time = new Date(data.day);
+                mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                if (data.tutor[0] === 99000) {
+                    if (data.courseName[0] === "M") {
+                        mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+                    } else {
+                        physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+                    }
+                }
+                tutorName.push(name(data.tutor[0]));
+            }
+            Promise.all(tutorName).then((allName) => {
+                log(allName.length);
+                for (let i = 0; i < allName.length; i++) {
+                    let name = allName[i];
+                    let time = new Date(dataArray[i].day);
+                    mainTable[getDateName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
+                }
+            }).then(() => {
+                tableInfo.mainTable = mainTable;
+                log("[generateImageData()] : Generated info => ");
+                log(tableInfo);
+                showReceipt(tableInfo);
+                generateImage(tableInfo);
+            });
+        });
     });
 }
+
+
+// function generateImageData() {
+//     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+//     let tableInfo = {
+//         "id": "" + studentID
+//     };
+//     studentProfile(studentID).then((data) => {
+//         tableInfo.firstname = data.firstname;
+//         tableInfo.lastname = data.lastname;
+//         tableInfo.nickname = data.nickname;
+//         tableInfo.grade = "" + data.grade;
+//
+//         let mainTable = {}, mathMiniTable = {}, physicsMiniTable = {};
+//         for (let i = 0; i < data.courseID.length; i++) {
+//             courseInfo(data.courseID[i]).then((data) => {
+//                 let time = new Date(data.day);
+//                 mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+//                 mainTable[getDateName(time.getDay()) + time.getHours()].courseName = data.courseName;
+//                 if (data.tutor[0] === 99000) {
+//                     if (data.courseName[0] === "M") {
+//                         mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+//                     } else {
+//                         physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+//                     }
+//                 }
+//                 log("Abc");
+//                 return [(name(data.tutor[0])), data];
+//             }).then((req) => {
+//                 let name = req[0];
+//                 let data = req[1];
+//                 let time = new Date(data.day);
+//                 name.then((name) => {
+//                     log("Hello");
+//                     mainTable[getDateName(time.getDay()) + time.getHours()].tutor = name.nicknameEn;
+//                 });
+//             });
+//         }
+//
+//         for (let i = 0; i < data.skillDay.length; i++) {
+//             let time = new Date(data.skillDay[i].day);
+//             mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+//             mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+//                 ((time.getMinutes() === 0) ? "00" : "30");
+//             mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "SKILL";
+//         }
+//
+//         for (let i = 0; i < data.hybridDay.length; i++) {
+//             let time = new Date(data.hybridDay[i].day);
+//             mainTable[getDateName(time.getDay()) + time.getHours()] = {};
+//             mainTable[getDateName(time.getDay()) + time.getHours()].courseName =
+//                 ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
+//             mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "HB";
+//             if (data.hybridDay[i].subject === "M") {
+//                 mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
+//             } else {
+//                 physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
+//             }
+//         }
+//         tableInfo.mainTable = mainTable;
+//         tableInfo.mathMiniTable = mathMiniTable;
+//         tableInfo.physicsMiniTable = physicsMiniTable;
+//         return tableInfo;
+//     }).then((tableInfo) => {
+//         log("[generateImageData()] : Generated info => ");
+//         log(tableInfo);
+//         showReceipt(tableInfo);
+//         generateImage(tableInfo);
+//     });
+// }
 
 /**
  * Change registration state of user
@@ -349,6 +427,7 @@ function getCourseDescription() {
  */
 function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
+    log(button.innerHTML === "Add Course");
     if (button.innerHTML === "Add Course") {
         allCourse.then((data) => {
             if (data.err) {
@@ -621,8 +700,17 @@ function loop4(type, row, data, w, color, border) {
 
 //for create data in a row of table from course data
 function tableRow(type, tableInfo, day, time) {
+    log(tableInfo);
+    var size = Object.keys(tableInfo.mainTable).length;
+    log(size);
+    log(tableInfo.mainTable);
+    log("======================");
+    let cookieKeys = Object.keys(tableInfo.mainTable);
+    log(cookieKeys);
     let tableRow = ['', '', '', ''];
     for (let i = 0; i < 4; i++) {
+        log(day[i] + time);
+        log(tableInfo.mainTable[day[i] + time]);
         if (tableInfo.mainTable[day[i] + time] !== undefined) {
             if (type === 1) {
                 tableRow[i] = tableInfo.mainTable[day[i] + time].courseName;
@@ -652,7 +740,7 @@ function showReceipt(tableInfo) {
     });
 }
 function barcode(tableInfo) {
-    const code=tableInfo.id;
+    const code = tableInfo.id;
     JsBarcode("#barcode", code, {
         lineColor: "black",
         width: 2,

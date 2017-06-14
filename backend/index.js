@@ -19,7 +19,7 @@ app.use(function(req, res, next) {// Allow access from other domain
     next();
 });
 // var credentials = {key:fs.readFileSync('private.key'),cert:fs.readFileSync('certificate.crt')};
-require("http").createServer(app).listen(80);
+require("http").createServer(app).listen(8080);
 // require("https").createServer(credentials,app).listen(443);
 
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
