@@ -212,6 +212,7 @@ function getStudentProfile() {
  * Generate tableInfo object 
  */
 function generateImageData() {
+    let inMath = false, inPhy = false;
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
     let tableInfo = {
         "id": "" + studentID
@@ -243,8 +244,10 @@ function generateImageData() {
             mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "HB";
             if (data.hybridDay[i].subject === "M") {
                 mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
+                inMath = true;
             } else {
                 physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
+                inPhy = true;
             }
         }
 
@@ -268,8 +271,10 @@ function generateImageData() {
                 if (data.tutor[0] === 99000) {
                     if (data.courseName[0] === "M") {
                         mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+                        inMath = true;
                     } else {
                         physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
+                        inPhy = true;
                     }
                 }
                 tutorName.push(name(data.tutor[0]));
@@ -283,6 +288,8 @@ function generateImageData() {
                 }
             }).then(() => {
                 tableInfo.mainTable = mainTable;
+                tableInfo.inMath = inMath;
+                tableInfo.inPhy = inPhy;
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
                 showReceipt(tableInfo);
