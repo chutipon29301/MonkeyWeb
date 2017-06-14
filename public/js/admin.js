@@ -200,6 +200,7 @@ function getStudentProfile() {
             if (time.getHours() === 9 || time.getHours() === 11 || time.getHours() === 14 || time.getHours() === 16) {
                 time.setHours(time.getHours() - 1);
             }
+            log(time.getTime());
             document.getElementById("" + time.getTime()).innerHTML = "SKILL " + hour.getHours() + ":" +
                 ((hour.getMinutes() === 0) ? "00" : "30");
             document.getElementById("" + time.getTime()).className = "btn btn-info col-md-12";
@@ -355,7 +356,6 @@ function getCourseDescription() {
                 cell4.innerHTML = "<td>" + data.lastname + "</td>";
             });
             let clickHandler = (row) => () => {
-                log(row.getElementsByTagName("td")[0].innerHTML);
                 //noinspection SpellCheckingInspection
                 writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
                 //noinspection SpellCheckingInspection
@@ -373,7 +373,6 @@ function getCourseDescription() {
  */
 function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
-    log(button.innerHTML === "Add Course");
     if (button.innerHTML === "Add Course") {
         allCourse.then((data) => {
             if (data.err) {
@@ -544,7 +543,6 @@ function generateImage(tableInfo, subj) {
         phy15: [],
         phy17: []
     };
-    log(tableRow(2, tableInfo, day, '8'));
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 4; j++) {
             if (tableInfo.mathMiniTable[day[j] + miniT[i]] !== undefined) {
@@ -571,8 +569,6 @@ function generateImage(tableInfo, subj) {
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
             'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     }
-    log(tableInfo.inMath);
-    log(tableInfo.inPhy);
     let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
         '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
     let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inMath) ? "#ffc107" : "white") + ';color: white">' + 'M' + '</th>' +
@@ -661,16 +657,8 @@ function loop4(type, row, data, w, color, border) {
 
 //for create data in a row of table from course data
 function tableRow(type, tableInfo, day, time) {
-    log(tableInfo);
-    let size = Object.keys(tableInfo.mainTable).length;
-    log(size);
-    log(tableInfo.mainTable);
-    let cookieKeys = Object.keys(tableInfo.mainTable);
-    log(cookieKeys);
     let tableRow = ['', '', '', ''];
     for (let i = 0; i < 4; i++) {
-        log(day[i] + time);
-        log(tableInfo.mainTable[day[i] + time]);
         if (tableInfo.mainTable[day[i] + time] !== undefined) {
             if (type === 1) {
                 tableRow[i] = tableInfo.mainTable[day[i] + time].courseName;
