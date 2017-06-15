@@ -129,8 +129,8 @@ var run=function(app,db){
             addPage("registrationCourse",options);
             addPage("registrationHybrid",options);
             addPage("registrationSkill",options);
-			addPage("registrationSkill2",options);
-			addPage("submit",options);
+            addPage("registrationSkill2",options);
+            addPage("submit",options);
         options.middlewareOptions.registrationState="untransferred";
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
