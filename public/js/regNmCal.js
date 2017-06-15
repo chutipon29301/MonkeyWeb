@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var cookie = getCookieDict();
+    let cookie = getCookieDict();
     if (cookie.name !== undefined && cookie.nameE !== undefined) {
         cookie.name = JSON.parse(cookie.name);
         cookie.nameE = JSON.parse(cookie.nameE);
@@ -16,16 +16,16 @@ $(document).ready(function () {
         $('#studentNum').val(cookie.tel.student)
     }
 });
-var ascii=/^[\x00-\xFF]*$/;
-var english = /^[a-zA-Z0-9]+$/;
-var isAscii=function (str) {
-    return ascii.test(str)
+const thai = /^[ภถุึคตจขชๆไำพะัีรนยบลฃฟหกดเ้่าสวงผปแอิืทมใฝๅูฎฑธํ๊ณฯญฐฤฆฏโฌ็๋ษศซฅฉฮ์ฒฬฦฺ]+$/;
+const english = /^[a-zA-Z]+$/;
+let isNotThai = function (str) {
+    return !thai.test(str)
 };
-var isNotEnglish = function (str) {
+let isNotEnglish = function (str) {
     return !english.test(str)
 };
-var isNotAllNumber = function (str) {
-    for (var i = 0; i < str.length; i++) {
+let isNotAllNumber = function (str) {
+    for (let i = 0; i < str.length; i++) {
         if (str.charCodeAt(i) < 48 || str.charCodeAt(i) > 57) {
             log(str.charCodeAt(i));
             return true;
@@ -34,23 +34,23 @@ var isNotAllNumber = function (str) {
     return false;
 };
 function next() {
-    var nname = $('#nname').val();
-    var name = $('#name').val();
-    var sname = $('#sname').val();
-    var nnameE = $('#nnameE').val();
-    var nameE = $('#nameE').val();
-    var snameE = $('#snameE').val();
-    var email = $('#email').val();
-    var parentNum = $('#parentNum').val();
-    var studentNum = $('#studentNum').val();
-    if(isAscii(nname)||isAscii(name)||isAscii(sname)){
+    let nname = $('#nname').val();
+    let name = $('#name').val();
+    let sname = $('#sname').val();
+    let nnameE = $('#nnameE').val();
+    let nameE = $('#nameE').val();
+    let snameE = $('#snameE').val();
+    let email = $('#email').val();
+    let parentNum = $('#parentNum').val();
+    let studentNum = $('#studentNum').val();
+    if(isNotThai(nname)||isNotThai(name)||isNotThai(sname)){
         alert('กรุณากรอกชื่อภาษาไทยให้ถูกต้อง เช่น ณัฐพงษ์')
     } else if (isNotEnglish(nnameE) || isNotEnglish(nameE) || isNotEnglish(snameE)) {
         alert('กรุณากรอกชื่อภาษาอังกฤษให้ถูกต้อง เช่น Nuttapong');
     } else if (email.indexOf('@') < 0) {
         alert("กรุณากรอก E-Mail ให้ถูกต้อง");
     } else {
-        var grade = $('#grade').val();
+        let grade = $('#grade').val();
         if (parentNum.length !== 10 || studentNum.length !== 10 || isNotAllNumber(parentNum) || isNotAllNumber(studentNum)) {
                 alert("เบอร์โทรศัพท์ต้องมี 10 ตัวและประกอบด้วยตัวเลข 0-9 เท่านั้น")
             } else if (name !== '' && nname !== '' && sname !== '' && grade !== '0' && nameE !== '' && nnameE !== '' && snameE !== '' && email !== '' && parentNum !== '' && studentNum !== '') {

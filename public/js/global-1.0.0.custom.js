@@ -185,7 +185,7 @@ function logout() {
     "use strict";
     log("[Logout()] : redirection to login page");
     clearAllCookie();
-    self.location = "/login";
+    self.location = "/";
 }
 
 /**
@@ -246,12 +246,79 @@ function loadRegistrationPage() {
                     self.location = "/registrationReceipt";
                     break;
                 case "rejected":
+                    log("[loadRegistrationPage()] : redirection to studentProfile");
+                    self.location = "/studentProfile";
                     break;
                 case "registered":
+                    log("[loadRegistrationPage()] : redirection to studentProfile");
+                    self.location = "/studentProfile";
                     break;
                 default:
                     break;
             }
         }
     });
+}
+
+function getDescription() {
+    let description = document.getElementById("description");
+    let innerHtml = "";
+    let cookie = getCookieDict();
+
+    switch (cookie.grade) {
+        case "4":
+        case "5":
+        case "6":
+            innerHtml = '<p class="form-control-static"><b>SCIP456z</b>: เนื้อหาทั่วไป (สำหรับทุกคน)</p>'+
+                '<p class="form-control-static"><b>SCIP6x</b>: ตะลุยโจทย์สอบเข้า (สำหรับป.6 สอบเข้า)</p>'+
+                '<p class="form-control-static"><b>MP456a</b>: เนื้อหาสอบเข้าที่จำเป็น</p>'+
+                '<p class="form-control-static"><b>MP456x</b>: ตะลุยโจทย์สอบเข้า (สำหรับทุกคน)</p>'+
+                '<p class="form-control-static"><b>MP456g</b>: กลุ่ม gifted (สำหรับนร.ที่ผ่านคอร์สพี่พรีมาแล้ว)</p>';
+            break;
+        case "7":
+            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
+                '<p class="form-control-static"><b>ES123b</b>: สำหรับนร.ทั่วไป</p>'+
+                '<p class="form-control-static"><b>CHS123z</b>: เนื้อหาเคมีทั่วไป (สำหรับทุกคน)</p>';
+            break;
+        case "8":
+            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
+                '<p class="form-control-static"><b>ES123b</b>: สำหรับนร.ทั่วไป</p>'+
+                '<p class="form-control-static"><b>MS23w</b>: เนื้อหาและโจทย์สอบเข้า (ระดับเริ่มต้น)</p>'+
+                '<p class="form-control-static"><b>MS23x</b>: ตะลุยโจทย์สอบเข้า (ระดับยาก)</p>'+
+                '<p class="form-control-static"><b>PHS12b</b>: กลุ่มพื้นฐาน (สำหรับนร.ที่ผ่านคอร์สพี่แก๊กมาแล้ว)</p>'+
+                '<p class="form-control-static"><b>PHS23g</b>: กลุ่ม gifted (สำหรับนร.ที่ผ่านคอร์สพี่เต๋ามาแล้ว)</p>'+
+                '<p class="form-control-static"><b>CHS123z</b>: เนื้อหาเคมีทั่วไป (สำหรับทุกคน)</p>';
+            break;
+        case "9":
+            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี หรือ นร.ม.3</p>'+
+                '<p class="form-control-static"><b>ES23b</b>: สำหรับนร.ทั่วไป</p>'+
+                '<p class="form-control-static"><b>MS23w</b>: เนื้อหาและโจทย์สอบเข้า (ระดับเริ่มต้น)</p>'+
+                '<p class="form-control-static"><b>MS23x</b>: ตะลุยโจทย์สอบเข้า (ระดับยาก)</p>'+
+                '<p class="form-control-static"><b>PHS23g</b>: กลุ่ม gifted (สำหรับนร.ที่ผ่านคอร์สพี่เต๋ามาแล้ว)</p>'+
+                '<p class="form-control-static"><b>CHS123z</b>: เนื้อหาเคมีทั่วไป (สำหรับทุกคน)</p>';
+            break;
+        case "10":
+            innerHtml = '<p class="form-control-static"><b>ES456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
+                '<p class="form-control-static"><b>ES456b</b>: สำหรับนร.ทั่วไป</p>'+
+                '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
+                '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>';
+            break;
+        case "11":
+            innerHtml = '<p class="form-control-static"><b>ES456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
+                '<p class="form-control-static"><b>ES456b</b>: สำหรับนร.ทั่วไป</p>'+
+                '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
+                '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>'+
+                '<p class="form-control-static"><b>PHS56v</b>: เนื้อหาพิเศษทางวิศวกรรม (เพิ่มคะแนน PAT3)</p>';
+            break;
+        case "12":
+            innerHtml = '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี หรือ นร.ม.6</p>'+
+                '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>'+
+                '<p class="form-control-static"><b>PHS56v</b>: เนื้อหาพิเศษทางวิศวกรรม (เพิ่มคะแนน PAT3)</p>'+
+                '<p class="form-control-static"><b>PHS6x</b>: ตะลุยโจทย์ฟิสิกส์สอบเข้า (กสพท.+ PAT3)</p>';
+            break;
+        default:
+            innerHtml = "";
+            break;
+    }
+    description.innerHTML = innerHtml;
 }

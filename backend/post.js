@@ -97,7 +97,7 @@ var run=function(app,db){
         return function(req,res,next){
             if(options.login)query["_id"]=parseInt(req.cookies.monkeyWebUser),query["password"]=req.cookies.monkeyWebPassword;
             userDB.findOne(query,function(err,result){
-                if(result==null)res.send({err:"Authentication failed."});
+                if(result==null)res.status(404).sendFile(path.join(__dirname,"../404.html"));
                 else next();
             });
         };
@@ -117,11 +117,14 @@ var run=function(app,db){
         });
     };
 
+    addPage("login");
     addPage("login",{url:"/"});
     var options={middlewareOptions:{login:true,position:"student"}};
         addPage("home",options);
         addPage("home2",options);
-        addPage("studentProfile",options);
+        options.middlewareOptions.registrationState={$not:{$eq:"unregistered"}};
+            addPage("studentProfile",options);
+        options.middlewareOptions.registrationState="unregistered";
             addPage("registrationName",options);
             addPage("registrationCourse",options);
             addPage("registrationHybrid",options);
@@ -131,7 +134,7 @@ var run=function(app,db){
         options.middlewareOptions.registrationState="untransferred";
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
-    options.middlewareOptions.position="admin";
+    options.middlewareOptions.position={$not:{$eq:"student"}};
         addPage("adminHome",options);
         addPage("adminAllstudent",options);
         addPage("adminAllcourse",options);
@@ -249,11 +252,12 @@ var run=function(app,db){
             else{
                 if(result.position=="student"){
                     output=result.student;
-                    var request=require("request");
-
-                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
-
-                        body=JSON.parse(body);
+                    // var request=require("request");
+                    // request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){//closing tag
+                        body={firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
+                            firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn
+                        };
+                        // body=JSON.parse(body);
                         output=Object.assign(output,body);
                         output=Object.assign(output,{email:result.email,phone:result.phone});
                         output.courseID=[];
@@ -274,7 +278,7 @@ var run=function(app,db){
                                 });
                             });
                         });
-                    });
+                    // });
                 }
                 else res.send({err:"The requested ID isn't a student."});
             }
@@ -860,7 +864,7 @@ var run=function(app,db){
     app.all("*",function(req,res){
         console.log("[404 REQUEST] "+req.method+" "+req.originalUrl+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         console.log("\treq.body => ",req.body);
-        res.status(404).send("");
+        res.status(404).sendFile(path.join(__dirname,"../404.html"));
     });
 }
 module.exports.run=run;

@@ -10,8 +10,18 @@ $(document).ready(function(){
     genTable()
     var cookie = getCookieDict()
     $('#id').html(cookie.monkeyWebUser)        
-    studentProf(parseInt(cookie.monkeyWebUser)).then((data) => {
-        $('#status').html(data.registrationState)
+    studentProfile(parseInt(cookie.monkeyWebUser)).then((data) => {
+        let status=$('#status');
+        switch (data.registrationState){
+            case 'untransferred':status.html('ยังไม่โอนเงิน');
+                break;
+            case 'transferred':status.html('โอนเงินแล้ว');
+                break;
+            case 'rejected':status.html('ติดต่อไลน์ครูแมว');
+                break;
+            case 'registered':status.html('ลงทะเบียนเสร็จสมบูรณ์');
+                break;
+        }
         $('#name').html(data.nickname+' '+data.firstname+' '+data.lastname)
         $('#nameE').html(data.nicknameEn+' '+data.firstnameEn+' '+data.lastnameEn)
         $('#studentTel').html(data.phone)
