@@ -673,17 +673,17 @@ function tableRow(type, tableInfo, day, time) {
 //for show receipt pic on page
 function showReceipt(tableInfo) {
     let picId = tableInfo.id;
-    $.get('pic/CR60Q3/15999.jpg', function (data, status) {
+    $.get("pic/CR60Q3/" + picId + '.jpg', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpg');
         }
     });
-    $.get('pic/CR60Q3/15999.jpeg', function (data, status) {
+    $.get("pic/CR60Q3/" + picId + '.jpeg', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpeg');
         }
     });
-    $.get('pic/CR60Q3/15999.png', function (data, status) {
+    $.get("pic/CR60Q3/" + picId + '.png', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.png');
         }
