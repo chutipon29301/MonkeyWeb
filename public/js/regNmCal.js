@@ -37,9 +37,9 @@ function next() {
     let nname = $('#nname').val();
     let name = $('#name').val();
     let sname = $('#sname').val();
-    let nnameE = $('#nnameE').val();
-    let nameE = $('#nameE').val();
-    let snameE = $('#snameE').val();
+    let nnameE = $('#nnameE').val().trim();
+    let nameE = $('#nameE').val().trim();
+    let snameE = $('#snameE').val().trim();
     let email = $('#email').val();
     let parentNum = $('#parentNum').val();
     let studentNum = $('#studentNum').val();
