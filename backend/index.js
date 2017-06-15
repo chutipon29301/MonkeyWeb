@@ -1,9 +1,9 @@
-
 console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
 var cookieParser=require('cookie-parser');
 var express=require("express");
+var fs=require("fs-extra");
 var multer=require("multer");
 var MongoClient=require('mongodb').MongoClient;
 
@@ -14,6 +14,7 @@ app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
 app.use(express.static("public"));// node index.js
 app.use(express.static("../public"));// node backend/index.js
 app.use(function(req, res, next) {// Allow access from other domain
+    console.log(req);
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
