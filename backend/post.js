@@ -122,11 +122,12 @@ var run=function(app,db){
         addPage("home",options);
         addPage("home2",options);
         addPage("studentProfile",options);
-        options.middlewareOptions.registrationState="unregistered";
             addPage("registrationName",options);
             addPage("registrationCourse",options);
             addPage("registrationHybrid",options);
             addPage("registrationSkill",options);
+            addPage("registrationSkill2",options);
+            addPage("submit",options);
         options.middlewareOptions.registrationState="untransferred";
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
