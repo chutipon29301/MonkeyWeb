@@ -169,7 +169,7 @@ function updateTable() {
 		for(i=0;i<disTime.length;i++){
 			if(Math.floor(parseInt($('#skilltimeEng').val())/10) == disTime[i] || Math.floor(parseInt($('#skilltimeEng').val())/10)-1 == disTime[i]){
 				var skillClassE = document.getElementsByClassName('btn-' + $('#skilldayEng').val() + ' ' + disTime[i] + '.1');
-                for (let j = 0; j < hybridClass.length; j++) {
+                for (let j = 0; j < skillClass.length; j++) {
                 	if(skillClassE[j].className.indexOf('sk')!=-1){
                 		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
