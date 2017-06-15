@@ -17,7 +17,7 @@ $(document).ready(function () {
     }
 });
 const thai = /^[ภถุึคตจขชๆไำพะัีรนยบลฃฟหกดเ้่าสวงผปแอิืทมใฝๅูฎฑธํ๊ณฯญฐฤฆฏโฌ็๋ษศซฅฉฮ์ฒฬฦฺ]+$/;
-const english = /^[a-zA-Z]+$/;
+const english = /^[a-zA-Z-]+$/;
 let isNotThai = function (str) {
     return !thai.test(str)
 };
@@ -44,9 +44,9 @@ function next() {
     let parentNum = $('#parentNum').val();
     let studentNum = $('#studentNum').val();
     if(isNotThai(nname)||isNotThai(name)||isNotThai(sname)){
-        alert('กรุณากรอกชื่อภาษาไทยให้ถูกต้อง เช่น ณัฐพงษ์')
+        alert('กรุณากรอกชื่อภาษาไทยให้ถูกต้อง เช่น ณัฐพงษ์ โดยไม่มี spacebar หรืออักขระพิเศษ')
     } else if (isNotEnglish(nnameE) || isNotEnglish(nameE) || isNotEnglish(snameE)) {
-        alert('กรุณากรอกชื่อภาษาอังกฤษให้ถูกต้อง เช่น Nuttapong');
+        alert('กรุณากรอกชื่อภาษาอังกฤษให้ถูกต้อง เช่น Nuttapong โดยไม่มี spacebar หรืออักขระพิเศษ');
     } else if (email.indexOf('@') < 0) {
         alert("กรุณากรอก E-Mail ให้ถูกต้อง");
     } else {
