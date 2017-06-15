@@ -151,9 +151,12 @@ function updateTable() {
                 		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
-                		else{
-                			var x = $('#skilltime option:selected').text().split('-')[0]	
-                		}
+                		else if($('skilltime').val()!='0'){
+                            var x = $('#skilltime option:selected').text().split('-')[0]    
+                        }
+                        else{
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                        }
                 		skillClass[j].innerHTM = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                 	}
                 	else{
@@ -174,9 +177,12 @@ function updateTable() {
                 		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
-                		else{
+                		else if($('skilltime').val()!='0'){
                 			var x = $('#skilltime option:selected').text().split('-')[0]	
                 		}
+                        else{
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                        }
                 		skillClassE[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                 	}
                 	else{
