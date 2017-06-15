@@ -13,7 +13,7 @@ $(document).ready(function(){
     studentProfile(parseInt(cookie.monkeyWebUser)).then((data) => {
         let status=$('#status');
         switch (data.registrationState){
-            case 'untransferred':status.html('ยังไม่โอนเงิน');
+            case 'untransferred':status.html('รอใบโอน');
                 break;
             case 'transferred':status.html('โอนเงินแล้ว');
                 break;
