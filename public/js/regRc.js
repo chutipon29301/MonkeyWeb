@@ -46,3 +46,16 @@ function showReceipt(id) {
 function next() {
     self.location = '/studentProfile';
 }
+
+const studentProf = (studentID) => $.post("post/studentProfile", {
+    studentID: studentID
+});
+
+$(document).ready(function(){
+    var cookie = getCookieDict()
+    studentProf(parseInt(cookie.monkeyWebUser)).then((data) => {
+        var fee = ' '+(data.courseID.length*7800)
+        $('#fee1').html('<strong>'+'ค่า Course(CR) :'+fee.slice(0,fee.length-3)+','+fee.slice(fee.length-3,fee.length)+' บาท'+'</strong>')
+        $('#fee2').html('<strong>'+'ค่า Course(CR) :<br>'+fee.slice(0,fee.length-3)+','+fee.slice(fee.length-3,fee.length)+' บาท'+'</strong>')
+    })
+})
