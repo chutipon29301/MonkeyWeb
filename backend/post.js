@@ -603,7 +603,7 @@ var run=function(app,db){
     //OK {} return {[student]}
     post("/post/listRandomStudent",function(req,res){
         var output=[];
-        randomPasswordDB.find().sort().toArray(function(err,result){
+        randomPasswordDB.find().sort({_id:1}).toArray(function(err,result){
             for(var i=0;i<result.length;i++){
                 output[i]={studentID:result[i]._id,password:result[i].password};
             }
@@ -616,12 +616,12 @@ var run=function(app,db){
         var position=req.body.position;
         userDB.findOne({_id:tutorID},function(err,result){
             if(result==null)res.send({err:"The requested ID doesn't exist."});
-            else if(result.position!="tutor")res.send({err:"The requested ID isn't a tutor."});
-            else{
+            else if(result.position!="student"){
                 userDB.updateOne({_id:tutorID},{$set:{position:position}},function(){
                     res.send({});
                 });
             }
+            else res.send({err:"The requested ID isn't a tutor."});
         });
 
     });
@@ -786,6 +786,15 @@ var run=function(app,db){
                         var originalName=file.originalname;
                         var originalType=originalName.slice(originalName.lastIndexOf("."));
                         var oldPath=file.path;
+                        if(fs.existsSync(newPath+studentID+".jpg")){
+                            fs.unlinkSync(newPath+studentID+".jpg");
+                        }
+                        if(fs.existsSync(newPath+studentID+".jpeg")){
+                            fs.unlinkSync(newPath+studentID+".jpeg");
+                        }
+                        if(fs.existsSync(newPath+studentID+".png")){
+                            fs.unlinkSync(newPath+studentID+".png");
+                        }
                         fs.readFile(oldPath,function(err,data){
                             if(err)res.send({err:err});
                             else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
