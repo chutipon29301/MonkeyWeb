@@ -302,27 +302,31 @@ function back() {
 }
 
 function next() {
-
-    var cookie = getCookieDict()
-    if(($('#skilltime').val()!='0'||$('#station').val()=='2'||cookie.skillSel=='3')&&($('#skilltimeEng').val()!='0'||$('#stationEng').val()=='2'||cookie.skillSel=='2')){
-        var selectSkill = {}
-        selectSkill['M'] = {
-            station : $('#station').val(),
-            day : $('#skillday').val(),
-            time : $('#skilltime').val()
+    if(document.readyState === "complete"){
+        var cookie = getCookieDict()
+        if(($('#skilltime').val()!='0'||$('#station').val()=='2'||cookie.skillSel=='3')&&($('#skilltimeEng').val()!='0'||$('#stationEng').val()=='2'||cookie.skillSel=='2')){
+            var selectSkill = {}
+            selectSkill['M'] = {
+                station : $('#station').val(),
+                day : $('#skillday').val(),
+                time : $('#skilltime').val()
+            }
+            selectSkill['E'] = {
+                station : $('#stationEng').val(),
+                day : $('#skilldayEng').val(),
+                time : $('#skilltimeEng').val()
+            }
+            writeCookie('regisSkill', JSON.stringify(selectSkill));
+            self.location = "submit"
         }
-        selectSkill['E'] = {
-            station : $('#stationEng').val(),
-            day : $('#skilldayEng').val(),
-            time : $('#skilltimeEng').val()
+        else if ((cookie.skillSel == '1' || cookie.skillSel == '2')&& $('#station').val()=='1' && $('#skilltime').val()=='0'){
+            alert('กรุณาเลือกเวลาเรียนสกิลเลข')
         }
-        writeCookie('regisSkill', JSON.stringify(selectSkill));
-        self.location = "submit"
+        else if ((cookie.skillSel == '1' || cookie.skillSel == '3')&& $('#stationEng').val()=='1' ){
+            alert('กรุณาเลือกเวลาเรียนสกิลอังกฤษ')
+        }
     }
-    else if ((cookie.skillSel == '1' || cookie.skillSel == '2')&& $('#station').val()=='1' && $('#skilltime').val()=='0'){
-        alert('กรุณาเลือกเวลาเรียนสกิลเลข')
-    }
-    else if ((cookie.skillSel == '1' || cookie.skillSel == '3')&& $('#stationEng').val()=='1' ){
-        alert('กรุณาเลือกเวลาเรียนสกิลอังกฤษ')
+    else{
+        alert('การเชื่อมต่อมีปัญหา กรุณาลองใหม่อีกครั้ง หรือทำการรีเฟรช')
     }
 }
