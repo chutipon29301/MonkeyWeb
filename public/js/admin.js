@@ -313,7 +313,7 @@ function setRegistrationState(registrationState) {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            acceptReject(registrationState);
+            if (registrationState !== "rejected") acceptReject(registrationState);
             log("[setRegistrationState()] : post/changeRegistrationState => Success");
         }
     });
@@ -723,17 +723,17 @@ function acceptReject(state) {
     let img = document.getElementById('imgTrans');
     ctxCf.fillStyle = "white";
     ctxCf.fillRect(0, 0, cfCanvas.width, cfCanvas.height);
-    if (state === 'rejected') {
+    if (state === 'pending') {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
         ctxCf.drawImage(img, 90, 70, 220, 165);
         ctxCf.rotate(11 * Math.PI / 6);
         ctxCf.font = "bold 55px Cordia New";
-        ctxCf.fillStyle = "red";
+        ctxCf.fillStyle = "orange";
         ctxCf.textAlign = 'center';
-        ctxCf.fillText('Rejected กรุณาติดต่อครูแมว', 150, 340);
+        ctxCf.fillText('Pending กรุณาติดต่อครูแมว', 150, 340);
         ctxCf.restore();
-    } else {
+    } else if(state==='registered') {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
         ctxCf.drawImage(img, 90, 70, 220, 165);
