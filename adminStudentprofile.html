@@ -146,9 +146,12 @@
 		let sID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
 		combineCanvas(subj);
         let canvas = document.getElementById("combine"), ctx = canvas.getContext("2d");
-        canvas.toBlob(function (blob) {
-            saveAs(blob, sID+((subj === "math") ? "1" : "2")+".png");
-        });
+        let dlImg=canvas.toDataURL();
+        let aref=document.createElement('a');
+        aref.href=dlImg;
+        aref.download=sID+((subj === "math") ? "1" : "2")+'.png';
+        document.body.appendChild(aref);
+        aref.click();
     }
 </script> 
     <!--  Modal for removeCourse-->

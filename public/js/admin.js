@@ -744,8 +744,10 @@ function acceptReject(state) {
         ctxCf.fillText('Approved', 150, 340);
         ctxCf.restore();
     }
-    cfCanvas.toBlob(function (blob) {
-        saveAs(blob, studentID + state + ".png");
-    });
-    // location.reload();
+    let dlImg=cfCanvas.toDataURL();
+    let aref=document.createElement('a');
+    aref.href=dlImg;
+    aref.download=studentID+state+'.png';
+    document.body.appendChild(aref);
+    aref.click();
 }
