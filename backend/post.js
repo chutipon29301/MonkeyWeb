@@ -122,7 +122,7 @@ module.exports=function(app,db){
     var options={middlewareOptions:{login:true,position:"student"}};
         addPage("home",options);
         addPage("home2",options);
-        options.middlewareOptions.registrationState={$not:{$eq:"unregistered"}};
+        options.middlewareOptions.registrationState={$ne:"unregistered"};
             addPage("studentProfile",options);
         options.middlewareOptions.registrationState="unregistered";
             addPage("registrationName",options);
@@ -131,10 +131,10 @@ module.exports=function(app,db){
             addPage("registrationSkill",options);
 			addPage("registrationSkill2",options);
 			addPage("submit",options);
-        options.middlewareOptions.registrationState="untransferred";
+        options.middlewareOptions.registrationState={$in:["untransferred","rejected"]};
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
-    options.middlewareOptions.position={$not:{$eq:"student"}};
+    options.middlewareOptions.position={$ne:"student"};
         addPage("adminHome",options);
         addPage("adminAllstudent",options);
         addPage("adminAllcourse",options);
