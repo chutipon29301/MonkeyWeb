@@ -72,9 +72,6 @@ $(document).ready(function () {
     if ($('#hb').html().length === 0) {
         $('#hb').html('ไม่ลงทะเบียนในระบบ FHB')
     }
-    if ($('#sk').html().length === 0) {
-        $('#sk').html('ไม่ลงทะเบียนในระบบ SKILL')
-    }
 });
 
 function genTable() {
