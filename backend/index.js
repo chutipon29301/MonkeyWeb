@@ -14,7 +14,6 @@ app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
 app.use(express.static("public"));// node index.js
 app.use(express.static("../public"));// node backend/index.js
 app.use(function(req, res, next) {// Allow access from other domain
-    console.log(req);
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -182,13 +181,13 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
                 console.log("[WARNING] Please update path/year/quarter");
                 configDB.findOne({},function(err,config){
                     console.log(config);
-                    require("./post.js").run(app,db);
+                    require("./post.js")(app,db);
                 });
             });
         }
         else{
             console.log(config);
-            require("./post.js").run(app,db);
+            require("./post.js")(app,db);
         }
     });
 });

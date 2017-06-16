@@ -1,5 +1,5 @@
 console.log("[START] post.js");
-var run=function(app,db){
+module.exports=function(app,db){
     var CryptoJS=require("crypto-js");
     var events=require("events");
     var fs=require("fs-extra");
@@ -800,7 +800,7 @@ var run=function(app,db){
                             else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
                                 if(err)res.send({err:err});
                                 else{
-                                    if(result.student.registrationState=="untransferred"){
+                                    if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
                                         userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
                                             res.send({});
                                         });
@@ -876,4 +876,3 @@ var run=function(app,db){
         res.status(404).sendFile(path.join(__dirname,"../404.html"));
     });
 }
-module.exports.run=run;
