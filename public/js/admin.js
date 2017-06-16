@@ -232,10 +232,10 @@ function generateImageData() {
             if (hour === 9 || hour === 11 || hour === 14 || hour === 16) {
                 hour = hour - 1;
             }
-            mainTable[getDateName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+            mainTable[getDateName(time.getDay()) + hour] = {};
+            mainTable[getDateName(time.getDay()) + hour].courseName = "SKILL " + time.getHours() + ":" +
                 ((time.getMinutes() === 0) ? "00" : "30");
-            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = " ";
+            mainTable[getDateName(time.getDay()) + hour].tutor = " ";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
