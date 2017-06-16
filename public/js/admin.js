@@ -158,6 +158,7 @@ function getStudentProfile() {
         log("[getStudentProfile()] : post/studentProfile => ");
         log(data);
         document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
+        document.getElementById("studentNameEng").innerHTML = data.firstnameEn + " (" + data.nicknameEn + ") " + data.lastnameEn;
         document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
@@ -231,10 +232,10 @@ function generateImageData() {
             if (hour === 9 || hour === 11 || hour === 14 || hour === 16) {
                 hour = hour - 1;
             }
-            mainTable[getDateName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+            mainTable[getDateName(time.getDay()) + hour] = {};
+            mainTable[getDateName(time.getDay()) + hour].courseName = "SKILL " + time.getHours() + ":" +
                 ((time.getMinutes() === 0) ? "00" : "30");
-            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = " ";
+            mainTable[getDateName(time.getDay()) + hour].tutor = " ";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
