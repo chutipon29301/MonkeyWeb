@@ -93,7 +93,7 @@ function studentLogin(studentID) {
             log("[studentLogin()] : post/registrationState => ");
             log(data);
             //noinspection SpellCheckingInspection
-            if (data.registrationState === "untransferred") {
+            if (data.registrationState === "untransferred" || data.registrationState === "pending") {
                 self.location = "/registrationReceipt";
             } else {
                 self.location = "/home";
