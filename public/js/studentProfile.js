@@ -17,7 +17,7 @@ $(document).ready(function(){
                 break;
             case 'transferred':status.html('โอนเงินแล้ว');
                 break;
-            case 'rejected':status.html('ติดต่อไลน์ครูแมว');
+            case 'pending':status.html('อยู่ระหว่างพิจารณา');
                 break;
             case 'registered':status.html('ลงทะเบียนเสร็จสมบูรณ์');
                 break;
