@@ -72,9 +72,6 @@ $(document).ready(function () {
     if ($('#hb').html().length === 0) {
         $('#hb').html('ไม่ลงทะเบียนในระบบ FHB')
     }
-    if ($('#sk').html().length === 0) {
-        $('#sk').html('ไม่ลงทะเบียนในระบบ SKILL')
-    }
 });
 
 function genTable() {
@@ -151,9 +148,12 @@ function updateTable() {
                 		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
-                		else{
-                			var x = $('#skilltime option:selected').text().split('-')[0]	
-                		}
+                		else if($('skilltime').val()!='0'){
+                            var x = $('#skilltime option:selected').text().split('-')[0]    
+                        }
+                        else{
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                        }
                 		skillClass[j].innerHTM = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                 	}
                 	else{
@@ -169,14 +169,17 @@ function updateTable() {
 		for(i=0;i<disTime.length;i++){
 			if(Math.floor(parseInt($('#skilltimeEng').val())/10) == disTime[i] || Math.floor(parseInt($('#skilltimeEng').val())/10)-1 == disTime[i]){
 				var skillClassE = document.getElementsByClassName('btn-' + $('#skilldayEng').val() + ' ' + disTime[i] + '.1');
-                for (let j = 0; j < hybridClass.length; j++) {
+                for (let j = 0; j < skillClassE.length; j++) {
                 	if(skillClassE[j].className.indexOf('sk')!=-1){
                 		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
-                		else{
+                		else if($('skilltime').val()!='0'){
                 			var x = $('#skilltime option:selected').text().split('-')[0]	
                 		}
+                        else{
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                        }
                 		skillClassE[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                 	}
                 	else{

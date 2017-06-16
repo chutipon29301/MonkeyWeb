@@ -158,6 +158,7 @@ function getStudentProfile() {
         log("[getStudentProfile()] : post/studentProfile => ");
         log(data);
         document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
+        document.getElementById("studentNameEng").innerHTML = data.firstnameEn + " (" + data.nicknameEn + ") " + data.lastnameEn;
         document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
@@ -231,10 +232,10 @@ function generateImageData() {
             if (hour === 9 || hour === 11 || hour === 14 || hour === 16) {
                 hour = hour - 1;
             }
-            mainTable[getDateName(time.getDay()) + time.getHours()] = {};
-            mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "SKILL " + time.getHours() + ":" +
+            mainTable[getDateName(time.getDay()) + hour] = {};
+            mainTable[getDateName(time.getDay()) + hour].courseName = "SKILL " + time.getHours() + ":" +
                 ((time.getMinutes() === 0) ? "00" : "30");
-            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = " ";
+            mainTable[getDateName(time.getDay()) + hour].tutor = " ";
         }
 
         for (let i = 0; i < data.hybridDay.length; i++) {
@@ -553,19 +554,21 @@ function generateImage(tableInfo, subj) {
             } else mini['phy' + miniT[i]][j] = '';
         }
     }
+    let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
+    let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
     let row1 = '';
     if (canvasID === 'mathCanvas') {
         row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
             levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
-            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
-            tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
+            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
+            name1 + '</p><p>' + name2 + '</p></th>' +
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
             'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     } else {
         row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
             levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
-            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 24px">' +
-            tableInfo.firstname + ' (' + tableInfo.nickname + ')' + tableInfo.lastname + '</th>' +
+            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
+            name1 + '</p><p>' + name2 + '</p></th>' +
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
             'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     }
@@ -671,17 +674,17 @@ function tableRow(type, tableInfo, day, time) {
 //for show receipt pic on page
 function showReceipt(tableInfo) {
     let picId = tableInfo.id;
-    $.get('pic/CR60Q3/15999.jpg', function (data, status) {
+    $.get("pic/CR60Q3/" + picId + '.jpg', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpg');
         }
     });
-    $.get('pic/CR60Q3/15999.jpeg', function (data, status) {
+    $.get("pic/CR60Q3/" + picId + '.jpeg', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpeg');
         }
     });
-    $.get('pic/CR60Q3/15999.png', function (data, status) {
+    $.get("pic/CR60Q3/" + picId + '.png', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.png');
         }
@@ -705,8 +708,8 @@ function barcode(tableInfo) {
 function combineCanvas(subj) {
     let canvas = document.getElementById('combine');
     let ctx = canvas.getContext('2d');
-    ctx.fillStyle="white";
-    ctx.fillRect(0,0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     let canvas1 = document.getElementById(subj + 'Canvas');
     let canvas2 = document.getElementById(subj + 'Barcode');
     ctx.drawImage(canvas1, 0, 0);
@@ -718,31 +721,33 @@ function acceptReject(state) {
     let ctxCf = cfCanvas.getContext('2d');
     let canvas1 = document.getElementById('mathCanvas');
     let img = document.getElementById('imgTrans');
-    ctxCf.fillStyle="white";
-    ctxCf.fillRect(0,0, cfCanvas.width, cfCanvas.height);
+    ctxCf.fillStyle = "white";
+    ctxCf.fillRect(0, 0, cfCanvas.width, cfCanvas.height);
     if (state === 'rejected') {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
-        ctxCf.drawImage(img,90,70,220,165);
-        ctxCf.rotate(11*Math.PI/6);
-        ctxCf.font="bold 55px Cordia New";
-        ctxCf.fillStyle="red";
-        ctxCf.textAlign='center';
-        ctxCf.fillText('Rejected กรุณาติดต่อครูแมว',150,340);
+        ctxCf.drawImage(img, 90, 70, 220, 165);
+        ctxCf.rotate(11 * Math.PI / 6);
+        ctxCf.font = "bold 55px Cordia New";
+        ctxCf.fillStyle = "red";
+        ctxCf.textAlign = 'center';
+        ctxCf.fillText('Rejected กรุณาติดต่อครูแมว', 150, 340);
         ctxCf.restore();
     } else {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
-        ctxCf.drawImage(img,90,70,220,165);
-        ctxCf.rotate(11*Math.PI/6);
-        ctxCf.font="bold 90px Cordia New";
-        ctxCf.fillStyle="green";
-        ctxCf.textAlign='center';
-        ctxCf.fillText('Approved',150,340);
+        ctxCf.drawImage(img, 90, 70, 220, 165);
+        ctxCf.rotate(11 * Math.PI / 6);
+        ctxCf.font = "bold 90px Cordia New";
+        ctxCf.fillStyle = "green";
+        ctxCf.textAlign = 'center';
+        ctxCf.fillText('Approved', 150, 340);
         ctxCf.restore();
     }
-    cfCanvas.toBlob(function (blob) {
-        saveAs(blob, studentID + state+".png");
-    });
-    // location.reload();
+    let dlImg=cfCanvas.toDataURL();
+    let aref=document.createElement('a');
+    aref.href=dlImg;
+    aref.download=studentID+state+'.png';
+    document.body.appendChild(aref);
+    aref.click();
 }

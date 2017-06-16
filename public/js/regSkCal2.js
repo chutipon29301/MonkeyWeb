@@ -253,9 +253,12 @@ function updateTable() {
                 		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
-                		else{
-                			var x = $('#skilltime option:selected').text().split('-')[0]	
-                		}
+                		else if($('skilltime').val()!='0'){
+                            var x = $('#skilltime option:selected').text().split('-')[0]    
+                        }
+                        else{
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                        }
                 		skillClass[j].innerHTM = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                 	}
                 	else{
@@ -271,14 +274,17 @@ function updateTable() {
 		for(i=0;i<disTime.length;i++){
 			if(Math.floor(parseInt($('#skilltimeEng').val())/10) == disTime[i] || Math.floor(parseInt($('#skilltimeEng').val())/10)-1 == disTime[i]){
 				var skillClassE = document.getElementsByClassName('btn-' + $('#skilldayEng').val() + ' ' + disTime[i] + '.1');
-                for (let j = 0; j < hybridClass.length; j++) {
+                for (let j = 0; j < skillClassE.length; j++) {
                 	if(skillClassE[j].className.indexOf('sk')!=-1){
                 		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
                 			var x = $('#skilltimeEng option:selected').text().split('-')[0]
                 		}
-                		else{
+                		else if($('skilltime').val()!='0'){
                 			var x = $('#skilltime option:selected').text().split('-')[0]	
                 		}
+                        else{
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                        }
                 		skillClassE[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                 	}
                 	else{
@@ -296,17 +302,31 @@ function back() {
 }
 
 function next() {
-    var selectSkill = {}
-    selectSkill['M'] = {
-        station : $('#station').val(),
-        day : $('#skillday').val(),
-        time : $('#skilltime').val()
+    if(document.readyState === "complete"){
+        var cookie = getCookieDict()
+        if(($('#skilltime').val()!='0'||$('#station').val()=='2'||cookie.skillSel=='3')&&($('#skilltimeEng').val()!='0'||$('#stationEng').val()=='2'||cookie.skillSel=='2')){
+            var selectSkill = {}
+            selectSkill['M'] = {
+                station : $('#station').val(),
+                day : $('#skillday').val(),
+                time : $('#skilltime').val()
+            }
+            selectSkill['E'] = {
+                station : $('#stationEng').val(),
+                day : $('#skilldayEng').val(),
+                time : $('#skilltimeEng').val()
+            }
+            writeCookie('regisSkill', JSON.stringify(selectSkill));
+            self.location = "submit"
+        }
+        else if ((cookie.skillSel == '1' || cookie.skillSel == '2')&& $('#station').val()=='1' && $('#skilltime').val()=='0'){
+            alert('กรุณาเลือกเวลาเรียนสกิลเลข')
+        }
+        else if ((cookie.skillSel == '1' || cookie.skillSel == '3')&& $('#stationEng').val()=='1' ){
+            alert('กรุณาเลือกเวลาเรียนสกิลอังกฤษ')
+        }
     }
-    selectSkill['E'] = {
-        station : $('#stationEng').val(),
-        day : $('#skilldayEng').val(),
-        time : $('#skilltimeEng').val()
+    else{
+        alert('การเชื่อมต่อมีปัญหา กรุณาลองใหม่อีกครั้ง หรือทำการรีเฟรช')
     }
-    writeCookie('regisSkill', JSON.stringify(selectSkill));
-    self.location = "submit"
 }

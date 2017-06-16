@@ -1,30 +1,31 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-    <title>Receipt Upload</title>
-    <!-- InstanceEndEditable -->
+<title>Receipt Upload</title>
+<!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
-    <link rel="stylesheet" type="text/css" href="css/component.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- InstanceEndEditable -->
+<link rel="stylesheet" type="text/css" href="css/component.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="css/style.min.css" rel="stylesheet" type="text/css">
 <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <script src="js/jquery-1.11.3.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-<script src="js/global-1.0.0.custom.js" type="text/javascript"></script>
+<script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
 <script>
 	setStudentNavName();
 </script>
-<script src="js/student.js"></script>
+<script src="js/student.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
-    <script src="js/regRc.js" type="text/javascript"></script>
-    <!-- InstanceEndEditable -->
+<script src="js/regRc.js" type="text/javascript"></script>
+<!-- InstanceEndEditable -->
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -36,7 +37,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="defaultNavbar1">
       <ul class="nav navbar-nav">
-		  <li class="w3-hide-large"><a href="studentProfile" class="studentName"><strong id="studentNavNameSmall">&nbsp;</strong></a></li>
+        <li class="w3-hide-large"><a href="studentProfile" class="studentName"><strong id="studentNavNameSmall">&nbsp;</strong></a></li>
         <li><a href="#" onClick="loadRegistrationPage();">ลงทะเบียน<span class="sr-only">(current)</span></a></li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Course<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -69,6 +70,11 @@
     <h5 style="color: red">*โปรดอ่านขั้นตอนการโอนเงินอย่างละเอียด*</h5>
     <br>
     <h2><strong>ระบบ Course (CR):</strong></h2>
+    <br>
+    <div align="center">
+    <p id="fee1" style="font-size: 150%;color: red;"></p>
+    </div>
+    <br>
     <div align="center"> <img src="images/scb.png" style="max-width: 30%;height: auto">
       <h4>โดยสามารถชำระที่เคาน์เตอร์ธนาคาร,ATM,อินเตอร์เน็ต หรือมือถือเข้ามาที่เลข บช. ด้าบนได้จากทุกธนาคาร</h4>
       <br>
@@ -80,6 +86,11 @@
     <h6 style="color: red;text-align: center">*โปรดอ่านขั้นตอนการโอนเงินอย่างละเอียด*</h6>
     <br>
     <h4><strong>ระบบ Course (CR):</strong></h4>
+    <br>
+    <div align="center">
+    <p id="fee2" style="font-size: 150%;color: red;"></p>
+    </div>
+    <br>
     <div align="center"> <img src="images/scb.png" style="max-width: 90%;height: auto"> </div>
     <h6>โดยสามารถชำระที่เคาน์เตอร์ธนาคาร,ATM,อินเตอร์เน็ต หรือมือถือเข้ามาที่เลข บช. ด้าบนได้จากทุกธนาคาร</h6>
     <h6><strong>อัพโหลดใบโอนค่า Course :</strong></h6>
@@ -119,7 +130,7 @@
       <h6>--ส่งใบโอนในไลน์ส่วนตัวครูแมว--</h6>
     </div>
     <h6>สำหรับนักเรียนที่ลงเรียนระบบ FHB ใหม่หรือมีเงินคงเหลือในระบบต่ำกว่า 2,500 บาท ต้องโอนเงินเข้ามาวิชาละ 10,000 บาท</h6>
-    <h6 style="color: red">**สำหรับ นร. ที่ลงเรียน CR ฟิสิกส์หรือเลขด้วยระบบ HB <ins>หากยังไม่มีเงินในระบบ HB กรุณาโอนเงินเข้ามาวิชาละ 10,000 บาท</ins> เพื่อเปิดระบบ HB หากยอดเงินไม่ได้ใช้จะคืนให้หลังปิดระบบ</h6>
+    <h6 style="color: red">**สำหรับ นร. ที่ลงเรียน CR ฟิสิกส์หรือเลขด้วยระบบ HB <ins>หากยังไม่มีเงินในระบบ FHB กรุณาโอนเงินเข้ามาวิชาละ 10,000 บาท</ins> เพื่อเปิดระบบ FHB หากยอดเงินไม่ได้ใช้จะคืนให้หลังปิดระบบ</h6>
     <hr>
     <h4><strong>ระบบ Skill :</strong></h4>
     <h6 style="color: red">ไม่ต้องชำระเงิน</h6>
@@ -141,4 +152,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
