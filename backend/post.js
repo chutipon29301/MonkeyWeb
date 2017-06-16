@@ -1,5 +1,5 @@
 console.log("[START] post.js");
-var run=function(app,db){
+module.exports=function(app,db){
     var CryptoJS=require("crypto-js");
     var events=require("events");
     var fs=require("fs-extra");
@@ -97,7 +97,7 @@ var run=function(app,db){
         return function(req,res,next){
             if(options.login)query["_id"]=parseInt(req.cookies.monkeyWebUser),query["password"]=req.cookies.monkeyWebPassword;
             userDB.findOne(query,function(err,result){
-                if(result==null)res.send({err:"Authentication failed."});
+                if(result==null)res.status(404).sendFile(path.join(__dirname,"../404.html"));
                 else next();
             });
         };
@@ -122,16 +122,19 @@ var run=function(app,db){
     var options={middlewareOptions:{login:true,position:"student"}};
         addPage("home",options);
         addPage("home2",options);
-        addPage("studentProfile",options);
+        options.middlewareOptions.registrationState={$ne:"unregistered"};
+            addPage("studentProfile",options);
         options.middlewareOptions.registrationState="unregistered";
             addPage("registrationName",options);
             addPage("registrationCourse",options);
             addPage("registrationHybrid",options);
             addPage("registrationSkill",options);
-        options.middlewareOptions.registrationState="untransferred";
+            addPage("registrationSkill2",options);
+            addPage("submit",options);
+        options.middlewareOptions.registrationState={$in:["untransferred","rejected"]};
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
-    options.middlewareOptions.position="admin";
+    options.middlewareOptions.position={$ne:"student"};
         addPage("adminHome",options);
         addPage("adminAllstudent",options);
         addPage("adminAllcourse",options);
@@ -249,11 +252,12 @@ var run=function(app,db){
             else{
                 if(result.position=="student"){
                     output=result.student;
-                    var request=require("request");
-
-                    request.post("http://localhost:8080/post/name",{form:{userID:studentID}},function(err,response,body){
-
-                        body=JSON.parse(body);
+                    // var request=require("request");
+                    // request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){//closing tag
+                        body={firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
+                            firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn
+                        };
+                        // body=JSON.parse(body);
                         output=Object.assign(output,body);
                         output=Object.assign(output,{email:result.email,phone:result.phone});
                         output.courseID=[];
@@ -274,7 +278,7 @@ var run=function(app,db){
                                 });
                             });
                         });
-                    });
+                    // });
                 }
                 else res.send({err:"The requested ID isn't a student."});
             }
@@ -599,7 +603,7 @@ var run=function(app,db){
     //OK {} return {[student]}
     post("/post/listRandomStudent",function(req,res){
         var output=[];
-        randomPasswordDB.find().sort().toArray(function(err,result){
+        randomPasswordDB.find().sort({_id:1}).toArray(function(err,result){
             for(var i=0;i<result.length;i++){
                 output[i]={studentID:result[i]._id,password:result[i].password};
             }
@@ -612,12 +616,12 @@ var run=function(app,db){
         var position=req.body.position;
         userDB.findOne({_id:tutorID},function(err,result){
             if(result==null)res.send({err:"The requested ID doesn't exist."});
-            else if(result.position!="tutor")res.send({err:"The requested ID isn't a tutor."});
-            else{
+            else if(result.position!="student"){
                 userDB.updateOne({_id:tutorID},{$set:{position:position}},function(){
                     res.send({});
                 });
             }
+            else res.send({err:"The requested ID isn't a tutor."});
         });
 
     });
@@ -782,12 +786,21 @@ var run=function(app,db){
                         var originalName=file.originalname;
                         var originalType=originalName.slice(originalName.lastIndexOf("."));
                         var oldPath=file.path;
+                        if(fs.existsSync(newPath+studentID+".jpg")){
+                            fs.unlinkSync(newPath+studentID+".jpg");
+                        }
+                        if(fs.existsSync(newPath+studentID+".jpeg")){
+                            fs.unlinkSync(newPath+studentID+".jpeg");
+                        }
+                        if(fs.existsSync(newPath+studentID+".png")){
+                            fs.unlinkSync(newPath+studentID+".png");
+                        }
                         fs.readFile(oldPath,function(err,data){
                             if(err)res.send({err:err});
                             else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
                                 if(err)res.send({err:err});
                                 else{
-                                    if(result.student.registrationState=="untransferred"){
+                                    if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
                                         userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
                                             res.send({});
                                         });
@@ -860,7 +873,6 @@ var run=function(app,db){
     app.all("*",function(req,res){
         console.log("[404 REQUEST] "+req.method+" "+req.originalUrl+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
         console.log("\treq.body => ",req.body);
-        res.status(404).send("");
+        res.status(404).sendFile(path.join(__dirname,"../404.html"));
     });
 }
-module.exports.run=run;

@@ -1,9 +1,27 @@
+const studentProf = (studentID) => $.post("post/studentProfile", {
+    studentID: studentID
+});
+
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const courseInf = (courseID) => $.post("post/courseInfo", {
+    courseID: courseID
+});
 $(document).ready(function(){
     genTable()
     var cookie = getCookieDict()
     $('#id').html(cookie.monkeyWebUser)        
     studentProfile(parseInt(cookie.monkeyWebUser)).then((data) => {
-        $('#status').html(data.registrationState)
+        let status=$('#status');
+        switch (data.registrationState){
+            case 'untransferred':status.html('รอใบโอน');
+                break;
+            case 'transferred':status.html('โอนเงินแล้ว');
+                break;
+            case 'pending':status.html('อยู่ระหว่างพิจารณา');
+                break;
+            case 'registered':status.html('ลงทะเบียนเสร็จสมบูรณ์');
+                break;
+        }
         $('#name').html(data.nickname+' '+data.firstname+' '+data.lastname)
         $('#nameE').html(data.nicknameEn+' '+data.firstnameEn+' '+data.lastnameEn)
         $('#studentTel').html(data.phone)
@@ -63,7 +81,7 @@ $(document).ready(function(){
             }
         }
         for(let i in data.courseID){
-            courseInfo(data.courseID[i]).then((cr) => {
+            courseInf(data.courseID[i]).then((cr) => {
                 var course = document.getElementsByClassName('btn-'+(numtoDay((new Date(parseInt(cr.day))).getDay()))+' '+(new Date(parseInt(cr.day))).getHours()+'.1')
                 for(j=0;j<course.length;j++){
                     course[j].className = course[j].className+' cr'

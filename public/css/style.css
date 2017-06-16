@@ -1,14 +1,16 @@
 @charset "utf-8";
 /* CSS Document */
+/*
 .html {
 	font-family: "Times New Roman", Times, serif;
 }
+*/
 .loginBtn {
 	margin-top: 20px;
 }
 .galleria {
-	max-width: 80vw;
-	height: 60vw;
+	max-width: 100vw;
+	height: 90vh;
 	background: #000
 }
 #usr, #pwd, #nname, #name, #sname, #level, #station, #skillday, #skilltime, #nnameE, #nameE, #snameE, #stationEng, #skilldayEng, #skilltimeEng, #skillSel, #grade, #parentNum, #studentNum, #email {

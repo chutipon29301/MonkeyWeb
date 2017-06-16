@@ -185,7 +185,7 @@ function logout() {
     "use strict";
     log("[Logout()] : redirection to login page");
     clearAllCookie();
-    self.location = "/login";
+    self.location = "/";
 }
 
 /**
@@ -245,9 +245,13 @@ function loadRegistrationPage() {
                     log("[loadRegistrationPage()] : redirection to registrationReceipt");
                     self.location = "/registrationReceipt";
                     break;
-                case "rejected":
+                case "pending":
+                    log("[loadRegistrationPage()] : redirection to studentProfile");
+                    self.location = "/studentProfile";
                     break;
                 case "registered":
+                    log("[loadRegistrationPage()] : redirection to studentProfile");
+                    self.location = "/studentProfile";
                     break;
                 default:
                     break;
