@@ -246,8 +246,8 @@ function loadRegistrationPage() {
                     self.location = "/registrationReceipt";
                     break;
                 case "rejected":
-                    log("[loadRegistrationPage()] : redirection to studentProfile");
-                    self.location = "/studentProfile";
+                    log("[loadRegistrationPage()] : redirection to registrationReceipt");
+                    self.location = "/registrationReceipt";
                     break;
                 case "registered":
                     log("[loadRegistrationPage()] : redirection to studentProfile");
