@@ -164,6 +164,7 @@ function getStudentProfile() {
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
         document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
+        //
         return data;
     }).then((data) => {
         for (let i = 0; i < data.courseID.length; i++) {
@@ -510,10 +511,45 @@ function removeCourse() {
         });
     }
 }
+
 /**
- *
- * @param tableInfo
- * @param subj
+ * Edit student info
+ */
+function editStudent() {
+    const editStudent = (studentID, firstname, lastname, nickname, firstnameEn, nicknameEn, lastnameEn, email, phone, grade, phoneParent) => $.post("post/editStudent", {
+        studentID: studentID,
+        firstname: firstname,
+        lastname: lastname,
+        nickname: nickname,
+        firstnameEn: firstnameEn,
+        nicknameEn: nicknameEn,
+        lastnameEn: lastnameEn,
+        email: email,
+        phone: phone,
+        grade: grade,
+        phoneParent: phoneParent
+    });
+
+    editStudent(parseInt(document.getElementById("studentID")),
+        document.getElementById("firstName"),
+        document.getElementById("lastName"),
+        document.getElementById("nickname"),
+        document.getElementById("firstnameEn"),
+        document.getElementById("nicknameEn"),
+        document.getElementById("lastNameEN"),
+        document.getElementById("email"),
+        document.getElementById("phone"),
+        parseInt(document.getElementById("grade")),
+        document.getElementById("phone parent")
+    ).then(() => {
+        //remove modal
+    });
+}
+
+/**
+ * Function for generate image for download
+ * @param tableInfo data of image
+ * @param subj subject for image
  */
 function generateImage(tableInfo, subj) {
     let canvasID = subj + 'Canvas';
@@ -690,6 +726,7 @@ function showReceipt(tableInfo) {
         }
     });
 }
+
 function barcode(tableInfo) {
     const code = tableInfo.id;
     JsBarcode("#mathBarcode", code + '1', {
@@ -705,6 +742,7 @@ function barcode(tableInfo) {
         displayValue: false
     });
 }
+
 function combineCanvas(subj) {
     let canvas = document.getElementById('combine');
     let ctx = canvas.getContext('2d');
@@ -715,6 +753,7 @@ function combineCanvas(subj) {
     ctx.drawImage(canvas1, 0, 0);
     ctx.drawImage(canvas2, 120, 37);
 }
+
 function acceptReject(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     let cfCanvas = document.getElementById('appRej');
@@ -733,7 +772,7 @@ function acceptReject(state) {
         ctxCf.textAlign = 'center';
         ctxCf.fillText('Pending กรุณาติดต่อครูแมว', 150, 340);
         ctxCf.restore();
-    } else if(state==='registered') {
+    } else if (state === 'registered') {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
         ctxCf.drawImage(img, 90, 70, 220, 165);
@@ -744,10 +783,10 @@ function acceptReject(state) {
         ctxCf.fillText('Approved', 150, 340);
         ctxCf.restore();
     }
-    let dlImg=cfCanvas.toDataURL();
-    let aref=document.createElement('a');
-    aref.href=dlImg;
-    aref.download=studentID+state+'.png';
+    let dlImg = cfCanvas.toDataURL();
+    let aref = document.createElement('a');
+    aref.href = dlImg;
+    aref.download = studentID + state + '.png';
     document.body.appendChild(aref);
     aref.click();
 }

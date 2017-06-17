@@ -20,7 +20,7 @@
 	checkValidUser(["tutor", "admin"]);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
-<script src="/js/admin.min.js"></script>
+<script src="/js/admin.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
     <script src="galleria/galleria-1.5.7.min.js"></script>
@@ -50,10 +50,34 @@
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
     <div id="slideShow" class="container-fluid" align="center">
-        <div class="galleria"> </div>
+        <div class="galleria">
+            <img src="/images/news/Slide1.PNG">
+            <img src="/images/news/Slide2.PNG">
+            <img src="/images/news/Slide3.PNG">
+            <img src="/images/news/Slide4.PNG">
+            <img src="/images/news/Slide5.PNG">
+            <img src="/images/news/Slide6.PNG">
+            <img src="/images/news/Slide7.PNG">
+            <img src="/images/news/Slide8.PNG">
+            <img src="/images/news/Slide9.PNG">
+        </div>
     </div>
     <script>
-        slideShow('classic');
+        //      slideShow('fullscreen');
+        $(document).ready(function(){
+            $("body").dblclick(function(){
+                self.location="\home";
+            });
+        });
+        Galleria.loadTheme('galleria/themes/' + 'fullscreen' + '/galleria.' + 'fullscreen' + '.min.js');
+        Galleria.run($('.galleria'), {
+            extend: function () {
+                this.setOptions('transition', 'fade');
+                if (true) {
+                    this.play(5000);
+                }
+            }
+        });
     </script>
  <div class="col-md-offset-1">
  	<button class="btn btn-default">UPLOAD</button>
