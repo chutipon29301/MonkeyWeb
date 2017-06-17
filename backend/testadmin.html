@@ -91,8 +91,6 @@
                         return $(x).val();
                     };
                     $(this).find("[name]").filter(function(){return $(this).val()!="";}).each(function(){
-                        console.log($(this).attr("name"));
-                        console.log($(this).val());
                         if($(this).attr("type")=="checkbox"&&!$(this).prop("checked"))return;
                         if($(this).hasClass("input-array")){
                             if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=[];
@@ -262,6 +260,7 @@
                                     <option disabled="" selected="">Select registrationState</option>
                                     <option value="registered">registered</option>
                                     <option value="rejected">rejected</option>
+                                    <option value="pending">pending</option>
                                     <option value="transferred">transferred</option>
                                     <option value="untransferred">untransferred</option>
                                     <option value="unregistered">unregistered</option>
@@ -486,7 +485,7 @@
                                     <option disabled="" selected="">Select position</option>
                                     <option value="tutor">tutor</option>
                                     <option value="admin">admin</option>
-                                    <option value="gg">gg</option>
+                                    <option value="dev">dev</option>
                                 </select>
                                 <button class="btn btn-default" type="submit">post/changePosition</button>
                             </form>

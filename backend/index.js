@@ -89,77 +89,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         }
         return output;
     };
-    //Data Migration
-    // db.collection("CR60Q2").find().forEach(function(result){
-    //     var moment=require("moment");
-    //     var subject=splitCourseName(result.courseName).subject,
-    //         // grade=splitCourseName(result.courseName).grade,
-    //         grade=stringToBit(splitCourseName(result.courseName).grade),
-    //         level=splitCourseName(result.courseName).level,
-    //         day,tutor=[],student=[],submission=[];
-    //     var tday,ttime;
-    //     if(result.day=="sat")tday=6;
-    //     else if(result.day=="sun")tday=7;
-    //     if(result.time=="8-10")ttime=8;
-    //     else if(result.time=="10-12")ttime=10;
-    //     else if(result.time=="13-15")ttime=13;
-    //     else if(result.time=="15-17")ttime=15;
-    //     day=moment(0).day(tday).hour(ttime).toDate();
-    //     for(var i=0;i<result.submission.length;i++){
-    //         if(result.submission[i]!=null){
-    //             submission[i]={
-    //                 teachDate:moment(result.submission[i].dated+result.submission[i].datem+result.submission[i].datey,"DDMMYY").toDate(),
-    //                 status:result.submission[i].status
-    //             }
-    //         }
-    //     }
-    //     db.collection("user").findOne({"tutor.nicknameEng":{$regex:new RegExp("^"+result.tutor+"$","i")}},function(err,restutor){
-    //         if(restutor==null){
-    //             if(result.tutor=="pe/ch"){
-    //                 tutor.push(99011);
-    //                 tutor.push(99012);
-    //             }
-    //             else if(result.tutor=="pre/pele"){
-    //                 tutor.push(99004);
-    //                 tutor.push(99022);
-    //             }
-    //         }
-    //         else tutor.push(restutor._id);
-    //         db.collection("CR60Q2").updateOne({_id:result._id},{
-    //             $unset:{
-    //                 courseName:"",
-    //                 time:"",
-    //                 day:"",
-    //                 tutor:"",
-    //                 submission:""
-    //             }
-    //         },function(){
-    //             db.collection("CR60Q2").updateOne({_id:result._id},{
-    //                 $set:{
-    //                     subject:subject,
-    //                     grade:grade,
-    //                     level:level,
-    //                     day:day,
-    //                     tutor:tutor,
-    //                     student:student,
-    //                     submission:submission
-    //                 }
-    //             });
-    //         });
-    //         // db.collection("CR60Q2").deleteOne({_id:result._id},function(){
-    //         //     db.collection("CR60Q2").insertOne({
-    //         //         _id:result._id,
-    //         //         subject:subject,
-    //         //         grade:grade,
-    //         //         level:level,
-    //         //         day:day,
-    //         //         tutor:tutor,
-    //         //         student:student,
-    //         //         submission:submission
-    //         //     });
-    //         // });
-    //     });
-    // });
     console.log("[CONNECT] MonkeyDB successfully");
     db.admin().listDatabases(function(err,result){
         console.log("[SHOW] All databases");
@@ -169,25 +98,21 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
             console.log(result);
         });
     });
-    var moment=require("moment");
     var configDB=db.collection("config");
-    configDB.findOne({},function(err,config){
-        if(config==null){
-            configDB.insertOne({_id:"config",year:60,quarter:3,
-                courseMaterialPath:"",receiptPath:"",
-                nextStudentID:17001,nextTutorID:99001,maxHybridSeat:40
-            },function(err){
+    configDB.updateOne({_id:"config"},
+        {$setOnInsert:{
+            year:60,quarter:3,courseMaterialPath:"",receiptPath:"",
+            nextStudentID:17001,nextTutorID:99001,maxHybridSeat:40}
+        },{upsert:true},function(err,result){
+            if(result.upsertedCount){
                 require("opn")("http://127.0.0.1/firstConfig");
                 console.log("[WARNING] Please update path/year/quarter");
-                configDB.findOne({},function(err,config){
-                    console.log(config);
-                    require("./post.js")(app,db);
-                });
+            }
+            configDB.findOne({},function(err,config){
+                console.log(config);
+                require("./post.js")(app,db);
+                require("./webFlow.js")(app,db);
             });
         }
-        else{
-            console.log(config);
-            require("./post.js")(app,db);
-        }
-    });
+    );
 });
