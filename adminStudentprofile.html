@@ -54,7 +54,7 @@
 <div class="container-fluid">
 <!-- InstanceBeginEditable name="body" -->
     <div class="col-md-5 col-md-offset-1">
-  <h2 id="studentName">&nbsp;</h2><h4>Edit</h4>
+  <h2 id="studentName">&nbsp;</h2>
   <h2 id="studentNameEng">&nbsp;</h2>
   <h3 id="studentLevel">&nbsp;</h3>
   <h4 id="studentID">&nbsp;</h4>
@@ -129,7 +129,10 @@
     </table>
       </div>
 </div>
-    <div class="btn-group col-md-offset-8">
+    <div class="col-md-1 col-md-offset-1">
+  <button type="button" class="btn btn-info" onClick="editProfile()">EDIT</button>
+</div>
+    <div class="btn-group col-md-3 col-md-offset-6">
   <button type="button" class="btn btn-success" onClick="setRegistrationState('registered');">APPROVE</button>
   <button type="button" class="btn btn-warning" onClick="setRegistrationState('pending');">PENDING</button>
   <button type="button" class="btn btn-danger" onClick="setRegistrationState('rejected');">REJECTED</button>
@@ -154,7 +157,85 @@
         document.body.appendChild(aref);
         aref.click();
     }
+		function editProfile(){
+			$("#editModal").modal();
+		}
 </script> 
+    <!--   Modal for editProfile-->
+    <div id="editModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+        <div class="modal-content">
+      <div class="modal-header">
+            <h1>Edit Profile</h1>
+          </div>
+      <div class="modal-body">
+            <div class="form-group">
+          <label>Name :</label>
+          <input id="thNName" type="text" class="form-control col-md-2" placeholder="ชื่อเล่น">
+          <input id="thName" type="text" class="form-control col-md-2" placeholder="ชื่อจริง">
+          <input id="thSName" type="text" class="form-control col-md-2" placeholder="นามสกุล">
+          <input id="enNName" type="text" class="form-control col-md-2" placeholder="Nickname">
+          <input id="enName" type="text" class="form-control col-md-2" placeholder="Firstname">
+          <input id="enSName" type="text" class="form-control col-md-2" placeholder="Surname">
+        </div>
+            <div class="form-group">
+          <label>Level :</label>
+          <select id="classStudent" class="form-control">
+                <option value="1">ประถม 1</option>
+                <option value="2">ประถม 2</option>
+                <option value="3">ประถม 3</option>
+                <option value="4">ประถม 4</option>
+                <option value="5">ประถม 5</option>
+                <option value="6">ประถม 6</option>
+                <option value="7">มัธยม 1</option>
+                <option value="8">มัธยม 2</option>
+                <option value="9">มัธยม 3</option>
+                <option value="10">มัธยม 4</option>
+                <option value="11">มัธยม 5</option>
+                <option value="12">มัธยม 6</option>
+                <option value="13">SAT</option>
+              </select>
+        </div>
+            <div class="form-group">
+          <label>Stage :</label>
+          <select id="stageStudent" class="form-control">
+                <option value="unregistered">Unregister</option>
+                <option value="untransfered">Non-transfered</option>
+                <option value="transfered">Transfered</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+                <option value="registered">Registered</option>
+              </select>
+        </div>
+            <div class="form-group">
+          <label>Status :</label>
+          <select id="statusStudent" class="form-control">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="drop">Drop</option>
+              </select>
+        </div>
+            <div class="form-group">
+          <label>E-mail :</label>
+          <input id="emailStudent" type="text" class="form-control col-md-2" placeholder="In put e-mail">
+        </div>
+            <div class="form-group">
+          <label>Phone :</label>
+          <input id="telStudent" type="text" class="form-control col-md-2" placeholder="In put phone number">
+        </div>
+          </div>
+      <div class="modal-footer">
+            <div class="col-md-1">
+          <button id="resetStudent" type="button" class="btn btn-danger">RESET</button>
+        </div>
+            <div>
+          <button id="acceptStudentData" type="button" class="btn btn-success">CONFIRM</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
+        </div>
+          </div>
+    </div>
+      </div>
+</div>
     <!--  Modal for removeCourse-->
     <div id="removeModal" class="modal fade" role="dialog">
   <div class="modal-dialog">

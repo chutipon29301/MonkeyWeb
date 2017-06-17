@@ -86,12 +86,14 @@ function next() {
     let i;
     for (i = 0; i < allselectHB.length; i++) {
         if (allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1] === '1') {
+            //noinspection ES6ModulesDependencies,JSUnresolvedFunction
             selectHybrid[allselectHB[i].className.slice(4, 7) + allselectHB[i].className.split(' ')[1].slice(0, this.length - 2) + allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1]] = {
                 subject: 'M',
                 day: moment(0).day(daytoNum(allselectHB[i].className.slice(4, 7))).hour(allselectHB[i].className.split(' ')[1].slice(0, allselectHB[i].className.split(' ')[1].length - 2)).valueOf()
             }
         }
         if (allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1] === '2') {
+            //noinspection ES6ModulesDependencies,JSUnresolvedFunction
             selectHybrid[allselectHB[i].className.slice(4, 7) + allselectHB[i].className.split(' ')[1].slice(0, this.length - 2) + allselectHB[i].className.split(' ')[1][allselectHB[i].className.split(' ')[1].length - 1]] = {
                 subject: 'PH',
                 day: moment(0).day(daytoNum(allselectHB[i].className.slice(4, 7))).hour(allselectHB[i].className.split(' ')[1].slice(0, allselectHB[i].className.split(' ')[1].length - 2)).valueOf()
