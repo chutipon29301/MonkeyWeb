@@ -176,6 +176,7 @@ function getStudentProfile() {
         // wait for backend post
         // document.getElementById("statusStudent").value = data.status;
         document.getElementById("emailStudent").value = data.email;
+        document.getElementById("telStudent").value = data.phone;
         return data;
     }).then((data) => {
         for (let i = 0; i < data.courseID.length; i++) {
