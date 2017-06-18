@@ -1,58 +1,56 @@
 <!doctype html>
-<html lang="en">
-<!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- InstanceBeginEditable name="doctitle" -->
+<html lang="en"><!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
     <title>Student Profile</title>
     <!-- InstanceEndEditable -->
-    <!-- InstanceBeginEditable name="head" -->
+<!-- InstanceBeginEditable name="head" -->
     <!-- InstanceEndEditable -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="css/w3.css" rel="stylesheet" type="text/css">
-    <link href="/css/style.min.css" rel="stylesheet" type="text/css">
-    <script src="js/jquery-1.11.3.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
-    <script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="css/w3.css" rel="stylesheet" type="text/css">
+<link href="/css/style.min.css" rel="stylesheet" type="text/css">
+<script src="js/jquery-1.11.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
+<script>
 	checkLogin();
 	checkValidUser(["tutor", "admin"]);
 </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
-    <script src="/js/admin.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <!-- InstanceBeginEditable name="script" -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+<script src="/js/admin.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<!-- InstanceBeginEditable name="script" -->
     <script src="js/JsBarcode.code128.min.js" type="text/javascript"></script>
     <script>
         $(document).ready(getStudentProfile);
     </script>
     <!-- InstanceEndEditable -->
-    </head>
-    <body>
+</head>
+<body>
 <nav class="navbar navbar-default">
-      <div class="container-fluid"> 
+  <div class="container-fluid"> 
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#defaultNavbar1"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
-          <a class="navbar-brand" href="adminHome">Monkey</a></div>
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#defaultNavbar1"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+      <a class="navbar-brand" href="adminHome">Monkey</a></div>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="defaultNavbar1">
-          <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav">
         <li><a href="adminAllcourse">All Course<span class="sr-only">(current)</span></a></li>
         <li><a href="adminAllstudent">All Student<span class="sr-only">(current)</span></a></li>
       </ul>
-          <ul class="nav navbar-nav navbar-right">
+      <ul class="nav navbar-nav navbar-right">
         <li><a href="#" onClick="logout();"><span class="glyphicon glyphicon-log-out"></span>Log out</a></li>
       </ul>
-        </div>
+    </div>
     <!-- /.navbar-collapse --> 
   </div>
-      <!-- /.container-fluid --> 
-    </nav>
-<div class="container-fluid">
-<!-- InstanceBeginEditable name="body" -->
+  <!-- /.container-fluid --> 
+</nav>
+<div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
     <div class="col-md-5 col-md-offset-1">
   <h2 id="studentName">&nbsp;</h2>
   <h2 id="studentNameEng">&nbsp;</h2>
@@ -217,11 +215,11 @@
         </div>
             <div class="form-group">
           <label>E-mail :</label>
-          <input id="emailStudent" type="text" class="form-control col-md-2" placeholder="In put e-mail">
+          <input id="emailStudent" type="text" class="form-control col-md-2" placeholder="Input e-mail">
         </div>
             <div class="form-group">
           <label>Phone :</label>
-          <input id="telStudent" type="text" class="form-control col-md-2" placeholder="In put phone number">
+          <input id="telStudent" type="text" class="form-control col-md-2" placeholder="Input phone number">
         </div>
           </div>
       <div class="modal-footer">
@@ -229,7 +227,7 @@
           <button id="resetStudent" type="button" class="btn btn-danger">RESET</button>
         </div>
             <div>
-          <button id="acceptStudentData" type="button" class="btn btn-success">CONFIRM</button>
+          <button id="acceptStudentData" type="button" class="btn btn-success" onClick="editStudent();">CONFIRM</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
         </div>
           </div>
@@ -273,13 +271,12 @@
     <!-- InstanceEndEditable -->
 </div>
 <div class="container">
-      <div class="row">
+  <div class="row">
     <div class="text-center center-block">
-          <h4>Monkey </h4>
-          <p>Copyright &copy; 2017 &middot; All Rights Reserved</p>
-        </div>
-  </div>
+      <h4>Monkey </h4>
+      <p>Copyright &copy; 2017 &middot; All Rights Reserved</p>
     </div>
+  </div>
+</div>
 </body>
-<!-- InstanceEnd -->
-</html>
+<!-- InstanceEnd --></html>

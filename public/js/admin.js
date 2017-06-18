@@ -165,6 +165,17 @@ function getStudentProfile() {
         document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
         //add student data to modal
+        document.getElementById("thNName").value = data.nickname;
+        document.getElementById("thName").value = data.firstname;
+        document.getElementById("thSName").value = data.lastname;
+        document.getElementById("enNName").value = data.nicknameEn;
+        document.getElementById("enName").value = data.firstnameEn;
+        document.getElementById("enSName").value = data.lastnameEn;
+        document.getElementById("classStudent").value = data.grade;
+        document.getElementById("stageStudent").value = data.registrationState;
+        // wait for backend post
+        // document.getElementById("statusStudent").value = data.status;
+        document.getElementById("emailStudent").value = data.email;
         return data;
     }).then((data) => {
         for (let i = 0; i < data.courseID.length; i++) {
@@ -526,34 +537,31 @@ function removeCourse() {
  * Edit student info
  */
 function editStudent() {
-    const editStudent = (studentID, firstname, lastname, nickname, firstnameEn, nicknameEn, lastnameEn, email, phone, grade, phoneParent) => $.post("post/editStudent", {
-        studentID: studentID,
-        firstname: firstname,
-        lastname: lastname,
-        nickname: nickname,
-        firstnameEn: firstnameEn,
-        nicknameEn: nicknameEn,
-        lastnameEn: lastnameEn,
-        email: email,
-        phone: phone,
-        grade: grade,
-        phoneParent: phoneParent
-    });
+    log("Hello World");
 
-    editStudent(parseInt(document.getElementById("studentID")),
-        document.getElementById("firstName"),
-        document.getElementById("lastName"),
-        document.getElementById("nickname"),
-        document.getElementById("firstnameEn"),
-        document.getElementById("nicknameEn"),
-        document.getElementById("lastNameEN"),
-        document.getElementById("email"),
-        document.getElementById("phone"),
-        parseInt(document.getElementById("grade")),
-        document.getElementById("phone parent")
-    ).then(() => {
-        //remove modal
-        location.reload();
+    let selectGrade = document.getElementById("classStudent");
+    let grade = parseInt(selectGrade.options[selectGrade.selectedIndex].value);
+    let selectStage = document.getElementById("stageStudent");
+    let stage = selectStage.options[selectStage.selectedIndex].value;
+    // Wati for post method
+    // let selectStatus = document.getElementById("statusStudent");
+    // let status = selectStatus.options[selectStatus.selectedIndex].value;
+
+    $.post("post/editStudent", {
+        studentID: parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length)),
+        firstname: document.getElementById("thName").value,
+        lastname: document.getElementById("thSName").value,
+        nickname: document.getElementById("thNName").value,
+        firstnameEn: document.getElementById("enName").value,
+        lastnameEn: document.getElementById("enSName").value,
+        nicknameEn: document.getElementById("enNName").value,
+        email: document.getElementById("emailStudent").value,
+        phone: document.getElementById("telStudent").value,
+        grade: grade
+    }).then(() => {
+        changeRegistrationState(stage).then(() => {
+            location.reload();
+        });
     });
 }
 
