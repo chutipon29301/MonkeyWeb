@@ -1,7 +1,7 @@
-var availableCourse;
-var pricepercourse = 7800;
-var allSuggest;
-var suggestCourse;
+let availableCourse;
+const pricepercourse = 7800;
+let allSuggest;
+let suggestCourse;
 $(document).ready(function () {
     const cookie = getCookieDict();
     if (cookie.regisCourse !== undefined) {

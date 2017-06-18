@@ -733,16 +733,19 @@ function tableRow(type, tableInfo, day, time) {
 //for show receipt pic on page
 function showReceipt(tableInfo) {
     let picId = tableInfo.id;
+    //noinspection ES6ModulesDependencies
     $.get("pic/CR60Q3/" + picId + '.jpg', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpg');
         }
     });
+    //noinspection ES6ModulesDependencies
     $.get("pic/CR60Q3/" + picId + '.jpeg', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpeg');
         }
     });
+    //noinspection ES6ModulesDependencies
     $.get("pic/CR60Q3/" + picId + '.png', function (data, status) {
         if (status === 'success') {
             $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.png');
