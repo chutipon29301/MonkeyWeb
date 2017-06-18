@@ -164,7 +164,7 @@ function getStudentProfile() {
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
         document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
-        //
+        //add student data to modal
         return data;
     }).then((data) => {
         for (let i = 0; i < data.courseID.length; i++) {
@@ -377,6 +377,7 @@ function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
     if (button.innerHTML === "Add Course") {
         allCourse.then((data) => {
+            log(data);
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
@@ -392,21 +393,6 @@ function addRemoveCourse(timeID) {
                 select.value = timeID;
                 select.innerHTML = "";
 
-                for (let i = 0; i < data.course.length; i++) {
-                    let course = data.course[i];
-                    let grade = "";
-                    if (course.grade[0] > 6) {
-                        grade = "S" + course.grade.map((x) => (x - 6)
-                            ).join("");
-                    } else {
-                        grade = "P" + course.grade.join("");
-                    }
-                    name(course.tutor[0]).then((data) => {
-                        select.innerHTML += "<option id='" + course.courseID + "'>" + course.subject + grade + course.level +
-                            " - " + data.nicknameEn + "</option>";
-                    });
-                }
-
                 let time = new Date(parseInt(timeID));
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
@@ -418,8 +404,32 @@ function addRemoveCourse(timeID) {
                         time.setMinutes(time.getMinutes() + 30);
                     }
                 }
-
-                $("#addModal").modal();
+                let promise = [];
+                for (let i = 0; i < data.course.length; i++) {
+                    let course = data.course[i];
+                    let grade = "";
+                    if (course.grade[0] > 6) {
+                        grade = "S" + course.grade.map((x) => (x - 6)
+                            ).join("");
+                    } else {
+                        grade = "P" + course.grade.join("");
+                    }
+                    promise.push(name(course.tutor[0]));
+                }
+                Promise.all(promise).then((allName) => {
+                    for (let i = 0; i < data.course.length; i++) {
+                        let grade = "";
+                        if (data.course[i].grade[0] > 6) {
+                            grade = "S" + data.course[i].grade.map((x) => (x - 6)
+                                ).join("");
+                        } else {
+                            grade = "P" + data.course[i].grade.join("");
+                        }
+                        select.innerHTML += "<option id='" + data.course[i].courseID + "'>" + data.course[i].subject + grade + data.course[i].level +
+                            " - " + allName[i].nicknameEn + "</option>";
+                    }
+                    $("#addModal").modal();
+                });
             }
         });
     } else {
@@ -543,6 +553,19 @@ function editStudent() {
         document.getElementById("phone parent")
     ).then(() => {
         //remove modal
+        location.reload();
+    });
+}
+
+/**
+ * Reset student
+ */
+function resetStudent() {
+    let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    studentProfile(parseInt(studentID)).then((data) => {
+        for (let i = 0; i < data.courseID.length; i++) {
+            // removeStudentCourse(stu)
+        }
     });
 }
 
