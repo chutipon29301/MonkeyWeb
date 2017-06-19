@@ -128,11 +128,13 @@ function generateCourseHtmlTable(course) {
     for (let i = 0; i < course.length; i++) {
         let time = new Date(course[i].day);
         let row = table.insertRow(i);
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
-        let cell4 = row.insertCell(3);
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+        let cell2 = row.insertCell(2);
+        let cell3 = row.insertCell(3);
+        let cell4 = row.insertCell(4);
         row.id = course[i].courseID;
+        cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + course[i].courseName + "</td>";
         cell2.innerHTML = "<td>" + getDateName(time.getDay()) + "</td>";
         cell3.innerHTML = "<td>" + time.getHours() + ":00 - " + (time.getHours() + 2) + ":00</td>";
@@ -361,10 +363,12 @@ function getCourseDescription() {
         let table = document.getElementById("allStudentInCourseTable");
         for (let i = 0; i < student.length; i++) {
             let row = table.insertRow(i);
-            let cell1 = row.insertCell(0);
-            let cell2 = row.insertCell(1);
-            let cell3 = row.insertCell(2);
-            let cell4 = row.insertCell(3);
+            let cell0 = row.insertCell(0);
+            let cell1 = row.insertCell(1);
+            let cell2 = row.insertCell(2);
+            let cell3 = row.insertCell(3);
+            let cell4 = row.insertCell(4);
+            cell0.innerHTML = "<td>" + (i + 1) + "</td>";
             cell1.innerHTML = "<td>" + student[i] + "</td>";
             name(student[i]).then((data) => {
                 cell2.innerHTML = "<td>" + data.nickname + "</td>";
@@ -373,7 +377,7 @@ function getCourseDescription() {
             });
             let clickHandler = (row) => () => {
                 //noinspection SpellCheckingInspection
-                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
                 //noinspection SpellCheckingInspection
                 self.location = "/adminStudentprofile";
             };
@@ -568,17 +572,17 @@ function editStudent() {
     });
 }
 
-/**
- * Reset student
- */
-function resetStudent() {
-    let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
-    studentProfile(parseInt(studentID)).then((data) => {
-        for (let i = 0; i < data.courseID.length; i++) {
-            // removeStudentCourse(stu)
-        }
-    });
-}
+// /**
+//  * Reset student
+//  */
+// function resetStudent() {
+//     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+//     studentProfile(parseInt(studentID)).then((data) => {
+//         for (let i = 0; i < data.courseID.length; i++) {
+//             // removeStudentCourse(stu)
+//         }
+//     });
+// }
 
 /**
  * Function for generate image for download
