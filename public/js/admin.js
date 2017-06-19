@@ -377,7 +377,7 @@ function getCourseDescription() {
             });
             let clickHandler = (row) => () => {
                 //noinspection SpellCheckingInspection
-                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
                 //noinspection SpellCheckingInspection
                 self.location = "/adminStudentprofile";
             };
