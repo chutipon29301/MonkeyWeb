@@ -311,6 +311,7 @@ function generateImageData() {
                 tableInfo.inPhy = inPhy;
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
+                showProfilePic(tableInfo);
                 showReceipt(tableInfo);
                 generateImage(tableInfo, 'math');
                 generateImage(tableInfo, 'phy');
@@ -744,7 +745,28 @@ function tableRow(type, tableInfo, day, time) {
     }
     return tableRow;
 }
-
+//for show profile pic on page
+function showProfilePic(tableInfo) {
+    let picId = tableInfo.id;
+    //noinspection ES6ModulesDependencies
+    $.get("pic/profile/" + picId + '.jpg', function (data, status) {
+        if (status === 'success') {
+            $('#profilePic').attr("src", "pic/profile/" + picId + '.jpg');
+        }
+    });
+    //noinspection ES6ModulesDependencies
+    $.get("pic/profile/" + picId + '.jpeg', function (data, status) {
+        if (status === 'success') {
+            $('#profilePic').attr("src", "pic/profile/" + picId + '.jpeg');
+        }
+    });
+    //noinspection ES6ModulesDependencies
+    $.get("pic/profile/" + picId + '.png', function (data, status) {
+        if (status === 'success') {
+            $('#profilePic').attr("src", "pic/profile/" + picId + '.png');
+        }
+    });
+}
 //for show receipt pic on page
 function showReceipt(tableInfo) {
     let picId = tableInfo.id;
