@@ -101,8 +101,9 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     var configDB=db.collection("config");
     configDB.updateOne({_id:"config"},
         {$setOnInsert:{
-            year:60,quarter:3,courseMaterialPath:"",receiptPath:"",
-            nextStudentID:17001,nextTutorID:99001,maxHybridSeat:40}
+            year:60,quarter:3,courseMaterialPath:"courseMaterial",receiptPath:"receipt",
+            nextStudentID:17001,nextTutorID:99001,maxHybridSeat:40,
+            profilePicturePath:"profilePicture",studentSlideshowPath:"studentSlideshow"}
         },{upsert:true},function(err,result){
             if(result.upsertedCount){
                 require("opn")("http://127.0.0.1/firstConfig");
