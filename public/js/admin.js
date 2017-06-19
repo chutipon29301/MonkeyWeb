@@ -77,12 +77,14 @@ function generateStudentHtmlTable(student) {
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
-        let cell4 = row.insertCell(3);
-        let cell5 = row.insertCell(4);
-        let cell6 = row.insertCell(5);
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+        let cell2 = row.insertCell(2);
+        let cell3 = row.insertCell(3);
+        let cell4 = row.insertCell(4);
+        let cell5 = row.insertCell(5);
+        let cell6 = row.insertCell(6);
+        cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
         cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
         cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
@@ -93,7 +95,7 @@ function generateStudentHtmlTable(student) {
         let clickHandler = (row) => () => {
             log(row.getElementsByTagName("td")[0].innerHTML);
             //noinspection SpellCheckingInspection
-            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
             //noinspection SpellCheckingInspection
             self.location = "/adminStudentprofile";
         };
