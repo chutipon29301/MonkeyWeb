@@ -95,7 +95,7 @@ function generateStudentHtmlTable(student) {
         let clickHandler = (row) => () => {
             log(row.getElementsByTagName("td")[0].innerHTML);
             //noinspection SpellCheckingInspection
-            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
             //noinspection SpellCheckingInspection
             self.location = "/adminStudentprofile";
         };
