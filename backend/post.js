@@ -5,7 +5,6 @@ module.exports=function(app,db){
     var fs=require("fs-extra");
     var moment=require("moment");
     var ObjectID=require('mongodb').ObjectID;
-    var path=require("path");
 
     var configDB=db.collection("config");
     var courseSuggestionDB=db.collection("courseSuggestion");
@@ -54,8 +53,7 @@ module.exports=function(app,db){
         return output;
     };
     // var gradeStringToBit=function(grade){
-    //     var output=0,p=false,s=false;
-    //     if(grade[0]=='S'&&grade[1]=='A')return (1<<12);
+    //     var output=0;
     //     if(grade[0]=='P'){
     //         for(var i=1;i<grade.length;i++){
     //             output|=(1<<(grade[i]-'1'));
@@ -83,65 +81,16 @@ module.exports=function(app,db){
             });
         });
     };
-    var checkAuth=function(options){
-        if(options.length==0){
-            return function(req,res,next){
-                next();
-            };
-        }
-        var query={};
-        if(options.position)query["position"]=options.position;
-        if(options.registrationState)query["student.registrationState"]=options.registrationState;
-        if(options.studentStatus)query["student.status"]=options.studentStatus;
-        if(options.tutorStatus)query["tutor.status"]=options.tutorStatus;
-        return function(req,res,next){
-            if(options.login)query["_id"]=parseInt(req.cookies.monkeyWebUser),query["password"]=req.cookies.monkeyWebPassword;
-            userDB.findOne(query,function(err,result){
-                if(result==null)res.status(404).sendFile(path.join(__dirname,"../404.html"));
-                else next();
-            });
-        };
-    };
-    var addPage=function(page,options){
-        if(options==undefined)options={};
-        var url=options.url;
-        if(url==undefined)url="/"+page;
-        var outputPath=path.join(__dirname,"../",page+".html");
-        if(options.backendDir==true)outputPath=path.join(__dirname,page+".html");
-        var middlewareOptions=options.middlewareOptions;
-        if(middlewareOptions==undefined)middlewareOptions={};
-        app.get(url,checkAuth(middlewareOptions),function(req,res){
-            console.log("[PAGE REQUEST] "+page+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-            console.log("\treq.cookies => ",req.cookies);
-            res.sendFile(outputPath);
+
+    var findUser=function(res,userID,options,callback){
+        userDB.findOne({_id:userID},function(err,result){
+            if(result==null)res.send({err:"The requested userID doesn't exist."});
+            else{
+                if(options.position!=undefined&&options.position!=result.position)return res.send({err:"The requested userID isn't a "+options.position+"."});
+                else callback(result);
+            }
         });
     };
-
-    addPage("login");
-    addPage("login",{url:"/"});
-    var options={middlewareOptions:{login:true,position:"student"}};
-        addPage("home",options);
-        addPage("home2",options);
-        options.middlewareOptions.registrationState={$ne:"unregistered"};
-            addPage("studentProfile",options);
-        options.middlewareOptions.registrationState="unregistered";
-            addPage("registrationName",options);
-            addPage("registrationCourse",options);
-            addPage("registrationHybrid",options);
-            addPage("registrationSkill",options);
-            addPage("registrationSkill2",options);
-            addPage("submit",options);
-        options.middlewareOptions.registrationState={$in:["untransferred","rejected"]};
-            addPage("registrationReceipt",options);
-        delete options.middlewareOptions.registrationState;
-    options.middlewareOptions.position={$ne:"student"};
-        addPage("adminHome",options);
-        addPage("adminAllstudent",options);
-        addPage("adminAllcourse",options);
-        addPage("adminStudentprofile",options);
-        addPage("adminCoursedescription",options);
-    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"admin"}});
-    addPage("firstConfig",{backendDir:true});
 
     // All post will return {err} if error occurs
     var post=function(url,callback){
@@ -172,35 +121,24 @@ module.exports=function(app,db){
     //OK {userID} return {firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn}
     post("/post/name",function(req,res){
         var userID=parseInt(req.body.userID);
-        userDB.findOne({_id:userID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else{
-                res.send({firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
-                    firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn
-                });
-            }
+        findUser(res,userID,{},function(result){
+            res.send({firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
+                firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn
+            });
         });
     });
     //OK {userID} return {position}
     post("/post/position",function(req,res){
         var userID=parseInt(req.body.userID);
-        userDB.findOne({_id:userID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else res.send({position:result.position});
+        findUser(res,userID,{},function(result){
+            res.send({position:result.position});
         });
     });
     //OK {userID} return {status}
     post("/post/status",function(req,res){
         var userID=parseInt(req.body.userID);
-        userDB.findOne({_id:userID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else if(result.position=="student")res.send({status:result.student.status});
+        findUser(res,userID,{},function(result){
+            if(result.position=="student")res.send({status:result.student.status});
             else res.send({status:result.tutor.status});
         });
     });
@@ -241,74 +179,48 @@ module.exports=function(app,db){
             eventEmitter.emit("finish");
         });
     });
-    //OK {studentID} return {user.student,post/name,[courseID],[hybridDay]}
+    //OK {studentID} return {user.student,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,[courseID],[hybridDay]}
     post("/post/studentProfile",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var output={};
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    output=result.student;
-                    // var request=require("request");
-                    // request.post("http://localhost/post/name",{form:{userID:studentID}},function(err,response,body){//closing tag
-                        body={firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
-                            firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn
-                        };
-                        // body=JSON.parse(body);
-                        output=Object.assign(output,body);
-                        output=Object.assign(output,{email:result.email,phone:result.phone});
-                        output.courseID=[];
-                        output.hybridDay=[];
-                        getCourseDB(function(courseDB){
-                            courseDB.find({student:studentID}).sort({day:1}).toArray(function(err,course){
-                                for(var i=0;i<course.length;i++){
-                                    output.courseID.push(course[i]._id);
-                                }
-                                hybridSeatDB.find({"student.studentID":studentID}).sort({day:1}).toArray(function(err,hybrid){
-                                    for(var i=0;i<hybrid.length;i++){
-                                        var index=hybrid[i].student.findIndex(function(x){
-                                            return x.studentID==studentID;
-                                        });
-                                        output.hybridDay.push({subject:hybrid[i].student[index].subject,day:hybrid[i].day});//TODO
-                                    }
-                                    res.send(output);
-                                });
+        findUser(res,studentID,{position:"student"},function(result){
+            output=Object.assign(result.student,{firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
+                firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn,
+                email:result.email,phone:result.phone,courseID:[],hybridDay:[]
+            });
+            getCourseDB(function(courseDB){
+                courseDB.find({student:studentID}).sort({day:1}).toArray(function(err,course){
+                    for(var i=0;i<course.length;i++){
+                        output.courseID.push(course[i]._id);
+                    }
+                    hybridSeatDB.find({"student.studentID":studentID}).sort({day:1}).toArray(function(err,hybrid){
+                        for(var i=0;i<hybrid.length;i++){
+                            var index=hybrid[i].student.findIndex(function(x){
+                                return x.studentID==studentID;
                             });
-                        });
-                    // });
-                }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+                            output.hybridDay.push({subject:hybrid[i].student[index].subject,day:hybrid[i].day});//TODO
+                        }
+                        res.send(output);
+                    });
+                });
+            });
         });
     });
     //OK {studentID} return {registrationState}
     post("/post/registrationState",function(req,res){
         var studentID=parseInt(req.body.studentID);
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else if(result.position=="student")res.send({registrationState:result.student.registrationState});
-            else res.send({err:"The requested ID isn't a student."});
+        findUser(res,studentID,{position:"student"},function(result){
+            res.send({registrationState:result.student.registrationState});
         });
     });
     //OK {studentID,registrationState} return {}
     post("/post/changeRegistrationState",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var registrationState=req.body.registrationState;
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested ID doesn't exist."});
-            }
-            else if(result.position=="student"){
-                userDB.updateOne({_id:studentID},{$set:{"student.registrationState":registrationState}},function(){
-                    res.send({});
-                });
-            }
-            else res.send({err:"The requested ID isn't a student."});
+        findUser(res,studentID,{position:"student"},function(result){
+            userDB.updateOne({_id:studentID},{$set:{"student.registrationState":registrationState}},function(){
+                res.send({});
+            });
         });
     });
 
@@ -319,28 +231,20 @@ module.exports=function(app,db){
         var courseID=req.body.courseID;
         var eventEmitter=new events.EventEmitter();
         //TODO var errOutput=[];
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested student ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    var c=0;
-                    eventEmitter.on("finish",function(){
-                        if(c==courseID.length)res.send({});
-                        c++;
-                    });
-                    getCourseDB(function(courseDB){
-                        for(var i=0;i<courseID.length;i++){
-                            courseDB.updateOne({_id:courseID[i]},{$addToSet:{student:studentID}},function(){
-                                eventEmitter.emit("finish");
-                            });
-                        }
+        findUser(res,studentID,{position:"student"},function(result){
+            var c=0;
+            eventEmitter.on("finish",function(){
+                if(c==courseID.length)res.send({});
+                c++;
+            });
+            getCourseDB(function(courseDB){
+                for(var i=0;i<courseID.length;i++){
+                    courseDB.updateOne({_id:courseID[i]},{$addToSet:{student:studentID}},function(){
                         eventEmitter.emit("finish");
                     });
                 }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+                eventEmitter.emit("finish");
+            });
         });
     });
     //OK {studentID,[courseID]} return {}
@@ -349,28 +253,20 @@ module.exports=function(app,db){
         var courseID=req.body.courseID;
         var eventEmitter=new events.EventEmitter();
         //TODO var errOutput=[];
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested student ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    var c=0;
-                    eventEmitter.on("finish",function(){
-                        if(c==courseID.length)res.send({});
-                        c++;
-                    });
-                    getCourseDB(function(courseDB){
-                        for(var i=0;i<courseID.length;i++){
-                            courseDB.updateOne({_id:courseID[i]},{$pull:{student:studentID}},function(){
-                                eventEmitter.emit("finish");
-                            });
-                        }
+        findUser(res,studentID,{position:"student"},function(result){
+            var c=0;
+            eventEmitter.on("finish",function(){
+                if(c==courseID.length)res.send({});
+                c++;
+            });
+            getCourseDB(function(courseDB){
+                for(var i=0;i<courseID.length;i++){
+                    courseDB.updateOne({_id:courseID[i]},{$pull:{student:studentID}},function(){
                         eventEmitter.emit("finish");
                     });
                 }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+                eventEmitter.emit("finish");
+            });
         });
     });
     //OK {studentID,day,subject} return {}
@@ -378,42 +274,26 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested student ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    userDB.updateOne({_id:studentID},
-                        {$addToSet:{"student.skillDay":{subject:subject,day:day}}},
-                        function(){
-                            res.send({});
-                        }
-                    );
+        findUser(res,studentID,{position:"student"},function(result){
+            userDB.updateOne({_id:studentID},
+                {$addToSet:{"student.skillDay":{subject:subject,day:day}}},
+                function(){
+                    res.send({});
                 }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+            );
         });
     });
     //OK {studentID,day} return {}
     post("/post/removeSkillDay",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested student ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    userDB.updateOne({_id:studentID},
-                        {$pull:{"student.skillDay":{day:day}}},
-                        function(){
-                            res.send({});
-                        }
-                    );
+        findUser(res,studentID,{position:"student"},function(result){
+            userDB.updateOne({_id:studentID},
+                {$pull:{"student.skillDay":{day:day}}},
+                function(){
+                    res.send({});
                 }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+            );
         });
     });
     //OK {studentID,day,subject} return {}
@@ -421,43 +301,27 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested student ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    hybridSeatDB.updateOne({day:day},
-                        {$setOnInsert:{_id:moment(day).format("dddHH")},
-                            $addToSet:{student:{studentID:studentID,subject:subject}}
-                        },{upsert:true},function(){
-                            res.send({});
-                        }
-                    );
+        findUser(res,studentID,{position:"student"},function(result){
+            hybridSeatDB.updateOne({day:day},
+                {$setOnInsert:{_id:moment(day).format("dddHH")},
+                    $addToSet:{student:{studentID:studentID,subject:subject}}
+                },{upsert:true},function(){
+                    res.send({});
                 }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+            );
         });
     });
     //OK {studentID,day} return {}
     post("/post/removeHybridDay",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested student ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    hybridSeatDB.updateOne({day:day},
-                        {$pull:{student:{studentID:studentID}}},
-                        function(){
-                            res.send({});
-                        }
-                    );
+        findUser(res,studentID,{position:"student"},function(result){
+            hybridSeatDB.updateOne({day:day},
+                {$pull:{student:{studentID:studentID}}},
+                function(){
+                    res.send({});
                 }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+            );
         });
     });
 
@@ -493,14 +357,10 @@ module.exports=function(app,db){
     //OK {studentID} return {}
     post("/post/removeStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null)res.send({err:"The requested ID doesn't exist."});
-            else if(result.position!="student")res.send({err:"The requested ID isn't a student."});
-            else{
-                userDB.deleteOne({_id:studentID},function(){
-                    res.send({});
-                });
-            }
+        findUser(res,studentID,{position:"student"},function(result){
+            userDB.deleteOne({_id:studentID},function(){
+                res.send({});
+            });
         });
     });
     //TODO {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
@@ -526,16 +386,14 @@ module.exports=function(app,db){
         addField("phone");
         addFieldInt("grade","student.grade");
         addField("phoneParent","student.phoneParent");
-        configDB.findOne({},function(err,config){
-            userDB.findOne({_id:studentID},function(err,result){
-                userDB.updateOne({_id:studentID},{$set:input},function(){
-                    if(result.student.registrationState=="unregistered"){
-                        userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"untransferred"}},function(){
-                            res.send({});
-                        });
-                    }
-                    else res.send({});
-                });
+        findUser(res,studentID,{position:"student"},function(result){
+            userDB.updateOne({_id:studentID},{$set:input},function(){
+                if(result.student.registrationState=="unregistered"){
+                    userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"untransferred"}},function(){
+                        res.send({});
+                    });
+                }
+                else res.send({});
             });
         });
     });
@@ -567,14 +425,10 @@ module.exports=function(app,db){
     //OK {tutorID} return {}
     post("/post/removeTutor",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
-        userDB.findOne({_id:tutorID},function(err,result){
-            if(result==null)res.send({err:"The requested ID doesn't exist."});
-            else if(result.position!="tutor")res.send({err:"The requested ID isn't a tutor."});
-            else{
-                userDB.deleteOne({_id:tutorID},function(){
-                    res.send({});
-                });
-            }
+        findUser(res,studentID,{position:"tutor"},function(result){
+            userDB.deleteOne({_id:tutorID},function(){
+                res.send({});
+            });
         });
     });
     //TODO ADD editTutor
@@ -621,7 +475,7 @@ module.exports=function(app,db){
                     res.send({});
                 });
             }
-            else res.send({err:"The requested ID isn't a tutor."});
+            else res.send({err:"The requested ID isn't a staff."});
         });
 
     });
@@ -767,52 +621,100 @@ module.exports=function(app,db){
     });
     //TODO ADD editCourse
 
-    // Reciept
-    //TODO configPath/File {studentID,file} return {}
+    // File Uploading
+    //OK configPath/File {studentID,file} return {}
     post("/post/submitReceipt",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var file=req.files[0];
-        userDB.findOne({_id:studentID},function(err,result){
-            if(result==null){
-                res.send({err:"The requested student ID doesn't exist."});
-            }
-            else{
-                if(result.position=="student"){
-                    configDB.findOne({},function(err,config){
-                        var newPath=config.receiptPath;
-                        var year=config.year;
-                        var quarter=config.quarter;
-                        newPath+="CR"+year+"Q"+quarter+"/";
+        findUser(res,studentID,{position:"student"},function(result){
+            configDB.findOne({},function(err,config){
+                var newPath=config.receiptPath+"CR"+config.year+"Q"+config.quarter+"/";
+                fs.ensureDir(newPath,function(err){
+                    if(err)res.send({err:err,at:"ensureDir"});
+                    else{
                         var originalName=file.originalname;
                         var originalType=originalName.slice(originalName.lastIndexOf("."));
                         var oldPath=file.path;
-                        if(fs.existsSync(newPath+studentID+".jpg")){
-                            fs.unlinkSync(newPath+studentID+".jpg");
-                        }
-                        if(fs.existsSync(newPath+studentID+".jpeg")){
-                            fs.unlinkSync(newPath+studentID+".jpeg");
-                        }
-                        if(fs.existsSync(newPath+studentID+".png")){
-                            fs.unlinkSync(newPath+studentID+".png");
-                        }
-                        fs.readFile(oldPath,function(err,data){
-                            if(err)res.send({err:err});
-                            else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
-                                if(err)res.send({err:err});
-                                else{
-                                    if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
-                                        userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
-                                            res.send({});
-                                        });
-                                    }
-                                    else res.send({});
+                        fs.readdir(newPath,function(err,files){
+                            for(var i=0;i<files.length;i++){
+                                if(files[i].split(".",1)[0]==studentID){
+                                    fs.removeSync(newPath+files[i]);
                                 }
+                            }
+                            fs.readFile(oldPath,function(err,data){
+                                if(err)res.send({err:err,at:"readFile"});
+                                else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
+                                    if(err)res.send({err:err,at:"writeFile"});
+                                    else{
+                                        if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
+                                            userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
+                                                res.send({});
+                                            });
+                                        }
+                                        else res.send({});
+                                    }
+                                });
                             });
                         });
-                    });
+                    }
+                });
+            });
+        });
+    });
+    //OK {userID,file} return {}
+    post("/post/updateProfilePicture",function(req,res){
+        var userID=parseInt(req.body.userID);
+        var file=req.files[0];
+        findUser(res,userID,{},function(result){
+            configDB.findOne({},function(err,config){
+                var newPath=config.profilePicturePath;
+                fs.ensureDir(newPath,function(err){
+                    if(err)res.send({err:err,at:"ensureDir"});
+                    else{
+                        var originalName=file.originalname;
+                        var originalType=originalName.slice(originalName.lastIndexOf("."));
+                        var oldPath=file.path;
+                        fs.readdir(newPath,function(err,files){
+                            for(var i=0;i<files.length;i++){
+                                if(files[i].split(".",1)[0]==userID){
+                                    fs.removeSync(newPath+files[i]);
+                                }
+                            }
+                            fs.readFile(oldPath,function(err,data){
+                                if(err)res.send({err:err,at:"readFile"});
+                                else fs.writeFile(newPath+userID+originalType.toLowerCase(),data,function(err){
+                                    if(err)res.send({err:err,at:"writeFile"});
+                                    else res.send({});
+                                });
+                            });
+                        });
+                    }
+                });
+            });
+        });
+    });
+    //TODO {file} return {}
+    post("/post/updateStudentSlideshow",function(req,res){
+        configDB.findOne({},function(err,config){
+            var newPath=config.studentSlideshowPath;
+            fs.ensureDir(newPath,function(err){
+                if(err)res.send({err:err,at:"ensureDir"});
+                else{
+                    fs.emptyDirSync(newPath);
+                    for(var i=0;i<req.files.length;i++){
+                        var file=req.files[i];
+                        var originalName=file.originalname;
+                        var oldPath=file.path;
+                        fs.readFile(oldPath,function(err,data){
+                            if(err)res.send({err:err,at:"readFile"});
+                            else fs.writeFile(newPath+originalName,data,function(err){
+                                if(err)res.send({err:err,at:"writeFile"});
+                                else res.send({});
+                            });
+                        });
+                    }
                 }
-                else res.send({err:"The requested ID isn't a student."});
-            }
+            });
         });
     });
 
@@ -825,14 +727,20 @@ module.exports=function(app,db){
     });
     //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,maxHybridSeat} return {}
     post('/post/editConfig',function(req,res){
+        var dirPath=function(path){
+            if(path.endsWith("/"))return path;
+            return path+"/";
+        };
         configDB.updateOne({},{$set:{
             year:parseInt(req.body.year),
             quarter:parseInt(req.body.quarter),
-            courseMaterialPath:req.body.courseMaterialPath,
-            receiptPath:req.body.receiptPath,
+            courseMaterialPath:dirPath(req.body.courseMaterialPath),
+            receiptPath:dirPath(req.body.receiptPath),
             nextStudentID:parseInt(req.body.nextStudentID),
             nextTutorID:parseInt(req.body.nextTutorID),
-            maxHybridSeat:parseInt(req.body.maxHybridSeat)
+            maxHybridSeat:parseInt(req.body.maxHybridSeat),
+            profilePicturePath:dirPath(req.body.profilePicturePath),
+            studentSlideshowPath:dirPath(req.body.studentSlideshowPath)
         }},function(){
             configDB.findOne({},function(err,config){
                 console.log("[SHOW] config");
@@ -869,10 +777,5 @@ module.exports=function(app,db){
         courseSuggestionDB.find().toArray(function(err,result){
             res.send(result);
         });
-    });
-    app.all("*",function(req,res){
-        console.log("[404 REQUEST] "+req.method+" "+req.originalUrl+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        console.log("\treq.body => ",req.body);
-        res.status(404).sendFile(path.join(__dirname,"../404.html"));
     });
 }
