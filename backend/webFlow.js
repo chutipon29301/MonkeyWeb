@@ -44,6 +44,7 @@ module.exports=function(app,db){
     var options={middlewareOptions:{login:true,position:"student"}};
         addPage("home",options);
         addPage("home2",options);
+        addPage("document",options);
         options.middlewareOptions.registrationState={$ne:"unregistered"};
             addPage("studentProfile",options);
         options.middlewareOptions.registrationState="unregistered";
