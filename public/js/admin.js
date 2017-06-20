@@ -93,7 +93,6 @@ function generateStudentHtmlTable(student) {
         cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
-            log(row.getElementsByTagName("td")[0].innerHTML);
             //noinspection SpellCheckingInspection
             writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
             //noinspection SpellCheckingInspection
@@ -177,8 +176,7 @@ function getStudentProfile() {
         document.getElementById("enSName").value = data.lastnameEn;
         document.getElementById("classStudent").value = data.grade;
         document.getElementById("stageStudent").value = data.registrationState;
-        // wait for backend post
-        // document.getElementById("statusStudent").value = data.status;
+        document.getElementById("statusStudent").value = data.status;
         document.getElementById("emailStudent").value = data.email;
         document.getElementById("telStudent").value = data.phone;
         return data;
@@ -546,7 +544,8 @@ function removeCourse() {
  */
 function editStudent() {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
-    let changeStatus = (status) => $.post("post/changeStatus", {
+    let changeStatus = (studentID, status) => $.post("post/changeStatus", {
+        studentID: studentID,
         status: status
     });
 
@@ -571,7 +570,11 @@ function editStudent() {
     }).then(() => {
         return changeRegistrationState(studentID, stage);
     }).then(() => {
-        changeStatus(studentID, status).then(()=>{
+        log("Prepare for change status");
+        log(studentID);
+        log(status);
+        changeStatus(studentID, status).then((data) => {
+            log(data);
             location.reload();
         });
     });
