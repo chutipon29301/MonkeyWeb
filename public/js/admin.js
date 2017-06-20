@@ -853,3 +853,27 @@ function acceptReject(state) {
     document.body.appendChild(aref);
     aref.click();
 }
+function upPic() {
+    //noinspection JSUnresolvedVariable
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let ufile = $('#file-1');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        formData.append('file', files[0], files[0].name);
+        formData.append('studentID', ID);
+        $.ajax({
+            url: 'post/uploadProfilePicture',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                showProfilePic(ID);
+            }
+        });
+    }
+}
