@@ -230,6 +230,12 @@
                                 <input class="form-control" type="number" name="userID" placeholder="userID" required>
                                 <button class="btn btn-default" type="submit">post/status</button>
                             </form>
+                            <br>
+                            <form action="post/changeStatus" method="post">
+                                <input class="form-control" type="number" name="userID" placeholder="userID" required>
+                                <input class="form-control" type="text" name="status" placeholder="status" required>
+                                <button class="btn btn-default" type="submit">post/changeStatus</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -588,11 +594,13 @@
                                 <input class="form-control" type="file" name="file" required>
                                 <button class="btn btn-default" type="submit">post/submitReceipt</button>
                             </form>
+                            <br>
                             <form action="post/updateProfilePicture" method="post" enctype="multipart/form-data">
                                 <input class="form-control" type="number" name="userID" placeholder="userID" required>
                                 <input class="form-control" type="file" name="file" required>
                                 <button class="btn btn-default" type="submit">post/updateProfilePicture</button>
                             </form>
+                            <br>
                             <form action="post/updateStudentSlideshow" method="post" enctype="multipart/form-data">
                                 <input class="form-control" type="file" name="file" multiple required>
                                 <button class="btn btn-default" type="submit">post/updateStudentSlideshow</button>
