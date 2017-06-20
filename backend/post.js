@@ -142,6 +142,23 @@ module.exports=function(app,db){
             else res.send({status:result.tutor.status});
         });
     });
+    //OK {userID,status} return {}
+    post("/post/changeStatus",function(req,res){
+        var userID=parseInt(req.body.userID);
+        var status=req.body.status;
+        findUser(res,userID,{},function(result){
+            if(result.position=="student"){
+                userDB.updateOne({_id:userID},{$set:{"student.status":status}},function(){
+                    res.send({});
+                });
+            }
+            else{
+                userDB.updateOne({_id:userID},{$set:{"tutor.status":status}},function(){
+                    res.send({});
+                });
+            }
+        });
+    });
 
 
     // Student Information
