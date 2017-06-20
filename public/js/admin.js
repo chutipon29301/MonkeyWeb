@@ -77,12 +77,13 @@ function generateStudentHtmlTable(student) {
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
-        let status = student.status;
-        let style = '';
+        log(student);
+        let status = student[0].status;
+        log(status);
         if (status === 'inactive') {
-            style = ' style="background-color: #5fe7ff"';
+            row.style.backgroundColor = "#5fe7ff";
         } else if (status === 'dropped') {
-            style = ' style="background-color: #ff4130"';
+            row.style.backgroundColor = "#ff4130";
         }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
@@ -91,13 +92,13 @@ function generateStudentHtmlTable(student) {
         let cell4 = row.insertCell(4);
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
-        cell0.innerHTML = "<td" + style + ">" + (i + 1) + "</td>";
-        cell1.innerHTML = "<td" + style + ">" + student[i].studentID + "</td>";
-        cell2.innerHTML = "<td" + style + ">" + student[i].nickname + "</td>";
-        cell3.innerHTML = "<td" + style + ">" + student[i].firstname + "</td>";
-        cell4.innerHTML = "<td" + style + ">" + student[i].lastname + "</td>";
-        cell5.innerHTML = "<td" + style + ">" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
-        cell6.innerHTML = "<td" + style + ">" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
+        cell0.innerHTML = "<td>" + (i + 1) + "</td>";
+        cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
+        cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
+        cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
+        cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+        cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
             //noinspection SpellCheckingInspection
