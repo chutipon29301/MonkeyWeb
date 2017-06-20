@@ -38,7 +38,7 @@
                 //     });
                 // })
                 $("form").submit(function(event){
-                    if($(this).attr("action")=="post/submitReceipt"){
+                    if($(this).parents("#fileUploading").length){
                         return true;
                     }
                     event.preventDefault();
@@ -91,8 +91,6 @@
                         return $(x).val();
                     };
                     $(this).find("[name]").filter(function(){return $(this).val()!="";}).each(function(){
-                        console.log($(this).attr("name"));
-                        console.log($(this).val());
                         if($(this).attr("type")=="checkbox"&&!$(this).prop("checked"))return;
                         if($(this).hasClass("input-array")){
                             if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=[];
@@ -262,6 +260,7 @@
                                     <option disabled="" selected="">Select registrationState</option>
                                     <option value="registered">registered</option>
                                     <option value="rejected">rejected</option>
+                                    <option value="pending">pending</option>
                                     <option value="transferred">transferred</option>
                                     <option value="untransferred">untransferred</option>
                                     <option value="unregistered">unregistered</option>
@@ -486,7 +485,7 @@
                                     <option disabled="" selected="">Select position</option>
                                     <option value="tutor">tutor</option>
                                     <option value="admin">admin</option>
-                                    <option value="gg">gg</option>
+                                    <option value="dev">dev</option>
                                 </select>
                                 <button class="btn btn-default" type="submit">post/changePosition</button>
                             </form>
@@ -579,15 +578,24 @@
                 </div>
 
                 <div class="panel panel-default">
-                    <div class="panel-heading" data-toggle="collapse" data-target="#reciept">
-                        <div class="panel-title">Reciept</div>
+                    <div class="panel-heading" data-toggle="collapse" data-target="#fileUploading">
+                        <div class="panel-title">File Uploading</div>
                     </div>
-                    <div id="reciept" class="panel-collapse collapse">
+                    <div id="fileUploading" class="panel-collapse collapse">
                         <div class="panel-body">
                             <form action="post/submitReceipt" method="post" enctype="multipart/form-data">
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
-                                <input class="form-control" type="file" name="file" placeholder="studentID" required>
+                                <input class="form-control" type="file" name="file" required>
                                 <button class="btn btn-default" type="submit">post/submitReceipt</button>
+                            </form>
+                            <form action="post/updateProfilePicture" method="post" enctype="multipart/form-data">
+                                <input class="form-control" type="number" name="userID" placeholder="userID" required>
+                                <input class="form-control" type="file" name="file" required>
+                                <button class="btn btn-default" type="submit">post/updateProfilePicture</button>
+                            </form>
+                            <form action="post/updateStudentSlideshow" method="post" enctype="multipart/form-data">
+                                <input class="form-control" type="file" name="file" multiple required>
+                                <button class="btn btn-default" type="submit">post/updateStudentSlideshow</button>
                             </form>
                         </div>
                     </div>
@@ -607,12 +615,16 @@
                                 <input class="form-control" type="number" name="year" placeholder="year" required>
                                 <input class="form-control" type="number" name="quarter" placeholder="quarter" required>
                                 <input class="form-control" type="text" name="courseMaterialPath" placeholder="courseMaterialPath" required>
-                                <p>ex. D:/folder/destination/receipt/</p>
+                                <p>ex. D:/folder/courseMaterial</p>
                                 <input class="form-control" type="text" name="receiptPath" placeholder="receiptPath" required>
-                                <p>ex. D:/folder/destination/receipt/</p>
+                                <p>ex. D:/folder/receipt</p>
                                 <input class="form-control" type="number" name="nextStudentID" placeholder="nextStudentID" required>
                                 <input class="form-control" type="number" name="nextTutorID" placeholder="nextTutorID" required>
                                 <input class="form-control" type="number" name="maxHybridSeat" placeholder="maxHybridSeat" required>
+                                <input class="form-control" type="text" name="profilePicturePath" placeholder="profilePicturePath" required>
+                                <p>ex. D:/folder/profilePicture</p>
+                                <input class="form-control" type="text" name="studentSlideshowPath" placeholder="studentSlideshowPath" required>
+                                <p>ex. D:/folder/studentSlideshow</p>
                                 <button class="btn btn-default" type="submit">post/editConfig</button>
                             </form>
                             <br>
