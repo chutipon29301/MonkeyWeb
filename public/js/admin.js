@@ -77,6 +77,13 @@ function generateStudentHtmlTable(student) {
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
+        let status = student.status;
+        let style = '';
+        if (status === 'inactive') {
+            style = ' style="background-color: #5fe7ff"';
+        } else if (status === 'dropped') {
+            style = ' style="background-color: #ff4130"';
+        }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
         let cell2 = row.insertCell(2);
@@ -84,13 +91,13 @@ function generateStudentHtmlTable(student) {
         let cell4 = row.insertCell(4);
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
-        cell0.innerHTML = "<td>" + (i + 1) + "</td>";
-        cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
-        cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
-        cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
-        cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
-        cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
-        cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
+        cell0.innerHTML = "<td" + style + ">" + (i + 1) + "</td>";
+        cell1.innerHTML = "<td" + style + ">" + student[i].studentID + "</td>";
+        cell2.innerHTML = "<td" + style + ">" + student[i].nickname + "</td>";
+        cell3.innerHTML = "<td" + style + ">" + student[i].firstname + "</td>";
+        cell4.innerHTML = "<td" + style + ">" + student[i].lastname + "</td>";
+        cell5.innerHTML = "<td" + style + ">" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+        cell6.innerHTML = "<td" + style + ">" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
             //noinspection SpellCheckingInspection
@@ -608,7 +615,7 @@ function generateImage(tableInfo, subj) {
     const borderB = 'border: 1px solid black;border-collapse: collapse;';
     const borderG = 'border-bottom: 1px solid lightgrey;border-right: 1px solid black;border-collapse: collapse;';
     const levelColor = ['#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18',
-        '#28d614', '#28d614', '#28d614', '#28d614', '#28d614', '#28d614', '#28d614'];
+        '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a'];
     const miniT = ['8', '10', '13', '15', '17'];
     let mini = {
         math8: [],
@@ -636,35 +643,35 @@ function generateImage(tableInfo, subj) {
     let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
     let row1 = '';
     if (canvasID === 'mathCanvas') {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
-            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;">' +
-            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:50px;background-color:' +
+            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;font-size: 18px">' +
+            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px;"><p>' +
             name1 + '</p><p>' + name2 + '</p></th>' +
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
-            'height: 32px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
+            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     } else {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
-            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;">' +
-            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:65px;background-color:' +
+            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;font-size: 20px">' +
+            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px;"><p>' +
             name1 + '</p><p>' + name2 + '</p></th>' +
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
-            'height: 32px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
+            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     }
     let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '"> </th>' +
-        '<th style="' + borderB + 'height: 32px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
+        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
     let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inMath) ? "#ffc107" : "white") + ';color: white">' + 'M' + '</th>' +
         '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inPhy) ? "#9c27b0" : "white") + ';color: white">' + 'P' + '</th>' +
-        '<th style="' + borderB + 'height: 32px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, tueCl, borderB) + '</tr>';
+        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, tueCl, borderB) + '</tr>';
     let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
-        loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 32px">' + time[2] + '</th>' +
+        loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
         loop4(2, 1, mini[subj + '13'], 40, tueCl, borderB) + '</tr>';
-    let row5 = '<tr>' + '<th style="' + borderB + 'height: 32px">' + time[3] + '</th>' + loop4(2, 1, mini[subj + '15'], 40, whtCl, borderB) + '</tr>';
-    let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 64px">' + time[0] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 32px">'
+    let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini[subj + '15'], 40, whtCl, borderB) + '</tr>';
+    let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[0] + '</th>' +
+        loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 30px">'
         + time[4] + '</th>' + loop4(2, 1, mini[subj + '17'], 40, satCl, borderB) + '</tr>';
     let row7 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '8'), 120, whtCl, borderB) + '<th rowspan="2" colspan="5" style="' + borderB +
         'background-color: #fffb87">Note : </th>' + '</tr>';
-    let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 64px">' + time[1] + '</th>' +
+    let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[1] + '</th>' +
         loop4(2, 1, tableRow(1, tableInfo, day, '10'), 120, whtCl, borderG) + '</tr>';
     let row9 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '10'), 120, whtCl, borderB) +
         '<th rowspan="7" colspan="5" style="' + borderB + '"></th>' + '</tr>';
@@ -682,7 +689,7 @@ function generateImage(tableInfo, subj) {
         '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="530">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
-        '<table style="border: 1px solid black;border-collapse: collapse">' +
+        '<table style="border: 1px solid black;border-collapse: collapse;">' +
         row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9 + row10 + row11 + row12 + row13 + row14 + row15 +
         '</table>' +
         '</div>' +
@@ -716,7 +723,7 @@ function loop4(type, row, data, w, color, border) {
             }
         } else {
             for (let i = 0; i < 4; i++) {
-                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;height: 32px;width:' + w + 'px;background-color:' + color[i] +
+                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;height: 30px;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</td>';
             }
         }
@@ -728,7 +735,7 @@ function loop4(type, row, data, w, color, border) {
             }
         } else {
             for (let i = 0; i < 4; i++) {
-                text += '<td style="' + border + 'text-align:center;height: 32px;width:' + w + 'px;background-color:' + color[i] +
+                text += '<td style="' + border + 'text-align:center;height: 30px;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</td>';
             }
         }
