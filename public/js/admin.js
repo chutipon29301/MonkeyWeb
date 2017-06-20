@@ -545,18 +545,20 @@ function removeCourse() {
  * Edit student info
  */
 function editStudent() {
-    log("Hello World");
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    let changeStatus = (status) => $.post("post/changeStatus", {
+        status: status
+    });
 
     let selectGrade = document.getElementById("classStudent");
     let grade = parseInt(selectGrade.options[selectGrade.selectedIndex].value);
     let selectStage = document.getElementById("stageStudent");
     let stage = selectStage.options[selectStage.selectedIndex].value;
-    // Wati for post method
-    // let selectStatus = document.getElementById("statusStudent");
-    // let status = selectStatus.options[selectStatus.selectedIndex].value;
+    let selectStatus = document.getElementById("statusStudent");
+    let status = selectStatus.options[selectStatus.selectedIndex].value;
 
     $.post("post/editStudent", {
-        studentID: parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length)),
+        studentID: studentID,
         firstname: document.getElementById("thName").value,
         lastname: document.getElementById("thSName").value,
         nickname: document.getElementById("thNName").value,
@@ -567,7 +569,9 @@ function editStudent() {
         phone: document.getElementById("telStudent").value,
         grade: grade
     }).then(() => {
-        changeRegistrationState(stage).then(() => {
+        return changeRegistrationState(studentID, stage);
+    }).then(() => {
+        changeStatus(studentID, status).then(()=>{
             location.reload();
         });
     });
@@ -813,12 +817,12 @@ function combineCanvas(subj) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     let canvas1 = document.getElementById(subj + 'Canvas');
     let canvas2 = document.getElementById(subj + 'Barcode');
-    let profile=document.getElementById('profilePic');
+    let profile = document.getElementById('profilePic');
     ctx.drawImage(canvas1, 0, 0);
     ctx.drawImage(canvas2, 189, 37);
-    let picH=107;
-    let picW=profile.width*107/profile.height;
-    ctx.drawImage(profile,85,0,picW,picH);
+    let picH = 107;
+    let picW = profile.width * 107 / profile.height;
+    ctx.drawImage(profile, 85, 0, picW, picH);
 }
 
 function acceptReject(state) {
