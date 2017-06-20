@@ -544,8 +544,8 @@ function removeCourse() {
  */
 function editStudent() {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
-    let changeStatus = (studentID, status) => $.post("post/changeStatus", {
-        studentID: studentID,
+    let changeStatus = (userID, status) => $.post("post/changeStatus", {
+        userID: userID,
         status: status
     });
 
@@ -570,11 +570,7 @@ function editStudent() {
     }).then(() => {
         return changeRegistrationState(studentID, stage);
     }).then(() => {
-        log("Prepare for change status");
-        log(studentID);
-        log(status);
         changeStatus(studentID, status).then((data) => {
-            log(data);
             location.reload();
         });
     });
