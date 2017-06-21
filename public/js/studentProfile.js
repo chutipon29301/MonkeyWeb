@@ -139,6 +139,7 @@ function showProfilePic(id) {
     });
 }
 function upPic() {
+    let cookie = getCookieDict();
     //noinspection JSUnresolvedVariable
     let ID = cookie.monkeyWebUser;
     let ufile = $('#file-1');
@@ -149,9 +150,9 @@ function upPic() {
         let files = ufile.get(0).files;
         let formData = new FormData();
         formData.append('file', files[0], files[0].name);
-        formData.append('studentID', ID);
+        formData.append('userID', ID);
         $.ajax({
-            url: 'post/uploadProfilePicture',
+            url: 'post/submitReceipt',
             type: 'POST',
             data: formData,
             processData: false,
@@ -161,4 +162,5 @@ function upPic() {
             }
         });
     }
+
 }

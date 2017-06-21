@@ -62,6 +62,7 @@ module.exports=function(app,db){
         addPage("adminAllcourse",options);
         addPage("adminStudentprofile",options);
         addPage("adminCoursedescription",options);
+        addPage("adminCourseRoom",options);
     addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"admin"}});
     addPage("firstConfig",{backendDir:true});
 

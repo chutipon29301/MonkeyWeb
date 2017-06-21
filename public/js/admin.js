@@ -163,7 +163,7 @@ function getStudentProfile() {
         log(data);
         document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
         document.getElementById("studentNameEng").innerHTML = data.firstnameEn + " (" + data.nicknameEn + ") " + data.lastnameEn;
-        document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
+        document.getElementById("studentLevel").innerHTML = "Grade: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
         document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;

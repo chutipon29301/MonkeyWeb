@@ -9,6 +9,7 @@
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <link rel="stylesheet" type="text/css" href="css/component.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <!-- InstanceEndEditable -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <link href="css/style.min.css" rel="stylesheet" type="text/css">
@@ -23,9 +24,9 @@
 <script src="js/student.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
-<script src="js/studentProfile.min.js" type="text/javascript"></script>
+<script src="js/studentProfile.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
-<style>
+  <style>
 .cr {
 	background-color: #FFE4F5!important;
 	border-color: transparent!important;
@@ -79,6 +80,7 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
+
   <div class="container col-md-5 col-md-offset-1">
     <div class="container col-md-5 w3-hide-large w3-hide-medium" align="left" style="padding: 0px"> 
     <img class="profilePic" src="images/noImage.svg" style="max-width: inherit;max-height: 130px;width: auto;margin-bottom: 10px">
@@ -241,12 +243,13 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onClick="upPic();">ตกลง</button>
+          <button type="submit" class="upload btn btn-primary" onClick="upPic()">ตกลง</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
         </div>
       </div>
     </div>
   </div>
+  <script src="js/custom-file-input.js"></script>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
