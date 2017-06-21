@@ -77,6 +77,14 @@ function generateStudentHtmlTable(student) {
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
+        log(student);
+        let status = student[0].status;
+        log(status);
+        if (status === 'inactive') {
+            row.style.backgroundColor = "#5fe7ff";
+        } else if (status === 'dropped') {
+            row.style.backgroundColor = "#ff4130";
+        }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
         let cell2 = row.insertCell(2);
@@ -93,7 +101,6 @@ function generateStudentHtmlTable(student) {
         cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
-            log(row.getElementsByTagName("td")[0].innerHTML);
             //noinspection SpellCheckingInspection
             writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
             //noinspection SpellCheckingInspection
@@ -177,8 +184,7 @@ function getStudentProfile() {
         document.getElementById("enSName").value = data.lastnameEn;
         document.getElementById("classStudent").value = data.grade;
         document.getElementById("stageStudent").value = data.registrationState;
-        // wait for backend post
-        // document.getElementById("statusStudent").value = data.status;
+        document.getElementById("statusStudent").value = data.status;
         document.getElementById("emailStudent").value = data.email;
         document.getElementById("telStudent").value = data.phone;
         return data;
@@ -545,18 +551,21 @@ function removeCourse() {
  * Edit student info
  */
 function editStudent() {
-    log("Hello World");
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    let changeStatus = (userID, status) => $.post("post/changeStatus", {
+        userID: userID,
+        status: status
+    });
 
     let selectGrade = document.getElementById("classStudent");
     let grade = parseInt(selectGrade.options[selectGrade.selectedIndex].value);
     let selectStage = document.getElementById("stageStudent");
     let stage = selectStage.options[selectStage.selectedIndex].value;
-    // Wati for post method
-    // let selectStatus = document.getElementById("statusStudent");
-    // let status = selectStatus.options[selectStatus.selectedIndex].value;
+    let selectStatus = document.getElementById("statusStudent");
+    let status = selectStatus.options[selectStatus.selectedIndex].value;
 
     $.post("post/editStudent", {
-        studentID: parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length)),
+        studentID: studentID,
         firstname: document.getElementById("thName").value,
         lastname: document.getElementById("thSName").value,
         nickname: document.getElementById("thNName").value,
@@ -567,7 +576,9 @@ function editStudent() {
         phone: document.getElementById("telStudent").value,
         grade: grade
     }).then(() => {
-        changeRegistrationState(stage).then(() => {
+        return changeRegistrationState(studentID, stage);
+    }).then(() => {
+        changeStatus(studentID, status).then((data) => {
             location.reload();
         });
     });
@@ -605,7 +616,7 @@ function generateImage(tableInfo, subj) {
     const borderB = 'border: 1px solid black;border-collapse: collapse;';
     const borderG = 'border-bottom: 1px solid lightgrey;border-right: 1px solid black;border-collapse: collapse;';
     const levelColor = ['#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18',
-        '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60'];
+        '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a'];
     const miniT = ['8', '10', '13', '15', '17'];
     let mini = {
         math8: [],
@@ -633,21 +644,21 @@ function generateImage(tableInfo, subj) {
     let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
     let row1 = '';
     if (canvasID === 'mathCanvas') {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
-            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
-            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:50px;background-color:' +
+            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;font-size: 18px">' +
+            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px;"><p>' +
             name1 + '</p><p>' + name2 + '</p></th>' +
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
             'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     } else {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
-            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
-            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
+        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:65px;background-color:' +
+            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;font-size: 20px">' +
+            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px;"><p>' +
             name1 + '</p><p>' + name2 + '</p></th>' +
             '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
             'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
     }
-    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
+    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '"> </th>' +
         '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
     let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inMath) ? "#ffc107" : "white") + ';color: white">' + 'M' + '</th>' +
         '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inPhy) ? "#9c27b0" : "white") + ';color: white">' + 'P' + '</th>' +
@@ -676,10 +687,10 @@ function generateImage(tableInfo, subj) {
     let row15 = '<tr style="' + borderB + '">' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
     //gen canvas data
     let data =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="480">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="530">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
-        '<table style="border: 1px solid black;border-collapse: collapse">' +
+        '<table style="border: 1px solid black;border-collapse: collapse;">' +
         row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9 + row10 + row11 + row12 + row13 + row14 + row15 +
         '</table>' +
         '</div>' +
@@ -713,7 +724,7 @@ function loop4(type, row, data, w, color, border) {
             }
         } else {
             for (let i = 0; i < 4; i++) {
-                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
+                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;height: 30px;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</td>';
             }
         }
@@ -725,7 +736,7 @@ function loop4(type, row, data, w, color, border) {
             }
         } else {
             for (let i = 0; i < 4; i++) {
-                text += '<td style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
+                text += '<td style="' + border + 'text-align:center;height: 30px;width:' + w + 'px;background-color:' + color[i] +
                     '">' + data[i] + '</td>';
             }
         }
@@ -794,7 +805,7 @@ function barcode(tableInfo) {
     const code = tableInfo.id;
     JsBarcode("#mathBarcode", code + '1', {
         lineColor: "black",
-        width: 2,
+        width: 1.7,
         height: 40,
         displayValue: false
     });
@@ -813,8 +824,12 @@ function combineCanvas(subj) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     let canvas1 = document.getElementById(subj + 'Canvas');
     let canvas2 = document.getElementById(subj + 'Barcode');
+    let profile = document.getElementById('profilePic');
     ctx.drawImage(canvas1, 0, 0);
-    ctx.drawImage(canvas2, 120, 37);
+    ctx.drawImage(canvas2, 189, 37);
+    let picH = 107;
+    let picW = profile.width * 107 / profile.height;
+    ctx.drawImage(profile, 85, 0, picW, picH);
 }
 
 function acceptReject(state) {
@@ -852,4 +867,28 @@ function acceptReject(state) {
     aref.download = studentID + state + '.png';
     document.body.appendChild(aref);
     aref.click();
+}
+function upPic() {
+    //noinspection JSUnresolvedVariable
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let ufile = $('#file-1');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        formData.append('file', files[0], files[0].name);
+        formData.append('studentID', ID);
+        $.ajax({
+            url: 'post/uploadProfilePicture',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                showProfilePic(ID);
+            }
+        });
+    }
 }

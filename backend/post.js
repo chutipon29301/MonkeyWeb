@@ -142,7 +142,23 @@ module.exports=function(app,db){
             else res.send({status:result.tutor.status});
         });
     });
-
+    //OK {userID,status} return {}
+    post("/post/changeStatus",function(req,res){
+        var userID=parseInt(req.body.userID);
+        var status=req.body.status;
+        findUser(res,userID,{},function(result){
+            if(result.position=="student"){
+                userDB.updateOne({_id:userID},{$set:{"student.status":status}},function(){
+                    res.send({});
+                });
+            }
+            else{
+                userDB.updateOne({_id:userID},{$set:{"tutor.status":status}},function(){
+                    res.send({});
+                });
+            }
+        });
+    });
 
     // Student Information
     //OK {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
@@ -198,7 +214,7 @@ module.exports=function(app,db){
                             var index=hybrid[i].student.findIndex(function(x){
                                 return x.studentID==studentID;
                             });
-                            output.hybridDay.push({subject:hybrid[i].student[index].subject,day:hybrid[i].day});//TODO
+                            output.hybridDay.push({subject:hybrid[i].student[index].subject,day:hybrid[i].day});
                         }
                         res.send(output);
                     });
@@ -693,26 +709,42 @@ module.exports=function(app,db){
             });
         });
     });
-    //TODO {file} return {}
+    //OK {file} return {}
     post("/post/updateStudentSlideshow",function(req,res){
+        var files=req.files;
+        var eventEmitter=new events.EventEmitter();
+        var errOutput=[];
         configDB.findOne({},function(err,config){
             var newPath=config.studentSlideshowPath;
-            fs.ensureDir(newPath,function(err){
-                if(err)res.send({err:err,at:"ensureDir"});
+            fs.emptyDir(newPath,function(err){
+                if(err)res.send({err:err,at:"emptyDir"});
                 else{
-                    fs.emptyDirSync(newPath);
-                    for(var i=0;i<req.files.length;i++){
-                        var file=req.files[i];
-                        var originalName=file.originalname;
-                        var oldPath=file.path;
-                        fs.readFile(oldPath,function(err,data){
-                            if(err)res.send({err:err,at:"readFile"});
-                            else fs.writeFile(newPath+originalName,data,function(err){
-                                if(err)res.send({err:err,at:"writeFile"});
-                                else res.send({});
+                    var c=0;
+                    eventEmitter.on("finish",function(){
+                        if(c==files.length){
+                            if(errOutput.length)res.send({err:errOutput});
+                            else res.send({});
+                        }
+                        c++;
+                    });
+                    for(var i=0;i<files.length;i++){
+                        (function(i){
+                            var file=files[i];
+                            var originalName=file.originalname;
+                            var oldPath=file.path;
+                            fs.readFile(oldPath,function(err,data){
+                                if(err)errOutput.push({err:err,at:"readFile#"+(i+1)});
+                                else fs.writeFile(newPath+originalName,data,function(err){
+                                    if(err){
+                                        errOutput.push({err:err,at:"writeFile#"+(i+1)});
+                                        eventEmitter.emit("finish");
+                                    }
+                                    else eventEmitter.emit("finish");
+                                });
                             });
-                        });
+                        })(i);
                     }
+                    eventEmitter.emit("finish");
                 }
             });
         });
