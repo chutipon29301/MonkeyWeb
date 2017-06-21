@@ -317,7 +317,7 @@ function generateImageData() {
                 tableInfo.inPhy = inPhy;
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
-                showProfilePic(tableInfo);
+                showProfilePic();
                 showReceipt(tableInfo);
                 generateImage(tableInfo, 'math');
                 generateImage(tableInfo, 'phy');
@@ -757,8 +757,8 @@ function tableRow(type, tableInfo, day, time) {
     return tableRow;
 }
 //for show profile pic on page
-function showProfilePic(tableInfo) {
-    let picId = tableInfo.id;
+function showProfilePic() {
+    let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     //noinspection ES6ModulesDependencies
     $.get("pic/profile/" + picId + '.jpg', function (data, status) {
         if (status === 'success') {
@@ -879,16 +879,18 @@ function upPic() {
         let files = ufile.get(0).files;
         let formData = new FormData();
         formData.append('file', files[0], files[0].name);
-        formData.append('studentID', ID);
+        formData.append('userID', ID);
         $.ajax({
-            url: 'post/uploadProfilePicture',
+            url: 'post/updateProfilePicture',
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             success: function (data) {
-                showProfilePic(ID);
+                showProfilePic();
+                $('#profileModal').modal('hide');
             }
         });
     }
+
 }

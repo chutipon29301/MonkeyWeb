@@ -152,13 +152,14 @@ function upPic() {
         formData.append('file', files[0], files[0].name);
         formData.append('userID', ID);
         $.ajax({
-            url: 'post/submitReceipt',
+            url: 'post/updateProfilePicture',
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             success: function (data) {
                 showProfilePic(ID);
+                $('#profileModal').modal('hide');
             }
         });
     }
