@@ -690,7 +690,7 @@ function generateImage(tableInfo, subj) {
         '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="530">' +
         '<foreignObject width="100%" height="100%">' +
         '<div xmlns="http://www.w3.org/1999/xhtml">' +
-        '<table style="border: 1px solid black;border-collapse: collapse;">' +
+        '<table style="border: 1px solid black;border-collapse: collapse;font-family:' + '"Itim", cursive' + '">' +
         row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9 + row10 + row11 + row12 + row13 + row14 + row15 +
         '</table>' +
         '</div>' +
