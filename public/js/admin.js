@@ -78,7 +78,7 @@ function generateStudentHtmlTable(student) {
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let status = student[i].status;
-        log(status);
+        let stage = student[i].registrationState;
         switch (status) {
             case 'terminated':
                 row.setAttribute("class", "danger");
@@ -89,6 +89,9 @@ function generateStudentHtmlTable(student) {
             case 'inactive':
                 row.setAttribute("class", "info");
                 break;
+        }
+        if (stage === "finished") {
+            row.setAttribute("class", "success");
         }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
@@ -342,7 +345,7 @@ function setRegistrationState(registrationState) {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            if (registrationState !== "rejected") acceptReject(registrationState);
+            if (registrationState === "registered" || registrationState === "pending") acceptReject(registrationState);
             log("[setRegistrationState()] : post/changeRegistrationState => Success");
         }
     });
