@@ -14,12 +14,14 @@ $(document).ready(function () {
     $('#nname').html(decodeURIComponent(cookie.name.nname));
     $('#name').html(decodeURIComponent(cookie.name.name));
     $('#sname').html(decodeURIComponent(cookie.name.sname));
-    $('#grade').val(cookie.grade);
-    const grade = parseInt($('#grade').val());
+    let $grade = $('#grade');
+    $grade.val(cookie.grade);
+    const grade = parseInt($grade.val());
     if (grade >= 10) {
         $('#info2,#info4').hide()
     }
     genTable();
+    //noinspection ES6ModulesDependencies,JSUnresolvedFunction
     $.post("post/listCourseSuggestion", {grade: grade}, function (suggestCR) {
         allSuggest = suggestCR;
         for (let i = 0; i < allSuggest.course.length; i++) {
@@ -27,6 +29,7 @@ $(document).ready(function () {
             $('#level').append('<option value="' + lv + '">' + lv + '</option>');
         }
     });
+    //noinspection JSValidateTypes
     document.getElementById('show_price').innerHTML = 0;
     availableCourse = {
         sat81: false,
@@ -49,18 +52,20 @@ $(document).ready(function () {
     if (grade !== 0) {
         //add SAT for high school student
         if (grade >= 10) {
+            //noinspection ES6ModulesDependencies,JSUnresolvedFunction
             $.post("post/gradeCourse", {grade: 13}, function (arrayCourse) {
                 updateAvaiCr(arrayCourse)
             });
         }
+        //noinspection ES6ModulesDependencies,JSUnresolvedFunction
         $.post("post/gradeCourse", {grade: grade}, function (arrayCourse) {
             updateAvaiCr(arrayCourse);
             updateTable(availableCourse);
         });
     }
 
-    $('#level').change(function(){
-        if($('#level').val()==='0'){
+    $('#level').change(function () {
+        if ($('#level').val() === '0') {
             $('.suggest').removeClass('suggest')
         }
     })
@@ -147,14 +152,14 @@ function updateTable(course) { /* update table after gen to change from blank to
                 rep = rep.replace(/btn-basic disabled/g, "btn btn-default");
                 temp[j].className = rep;
                 temp[j].innerHTML = course[i].courseName;
-                if(course[i].tutor[0] === 99000){
-                    temp[j].innerHTML+='(HB)'
+                if (course[i].tutor[0] === 99000) {
+                    temp[j].innerHTML += '(HB)'
                 }
-                if(course[i].suggest === true && temp[j].className.indexOf('suggest')===-1){
-                    temp[j].className = temp[j].className+' suggest';
+                if (course[i].suggest === true && temp[j].className.indexOf('suggest') === -1) {
+                    temp[j].className = temp[j].className + ' suggest';
                 }
-                else if(course[i].suggest === false){
-                    temp[j].className = temp[j].className.replace(/ suggest/g,'')
+                else if (course[i].suggest === false) {
+                    temp[j].className = temp[j].className.replace(/ suggest/g, '')
                 }
             }
         }
@@ -176,7 +181,8 @@ function genTable() { /* gen blank table at first */
         sunTable[i].innerHTML = "&nbsp;"
     }
 }
-function calculate(btn) { let temp;
+function calculate(btn) {
+    let temp;
     /* run after click btn in HTML to switch between select and non-select */
     let all_same = document.getElementsByClassName(btn.className.split(' ')[0] + ' ' + btn.className.split(' ')[1]);
     for (let i = 0; i < all_same.length; i++) {
@@ -213,6 +219,7 @@ function calculate(btn) { let temp;
     if (availableCourse[dayHour] !== false) {
         availableCourse[dayHour]["select"] = btn.className.indexOf("btn-success") !== -1;
     }
+    //noinspection JSValidateTypes
     document.getElementById('show_price').innerHTML = document.getElementsByClassName('btn-success').length * pricepercourse / 2;
     nextCheck();
 }
@@ -233,16 +240,16 @@ function deselect(btn) {     /* sub function to deselect duo btn if both is sele
 function nextCheck() { /* check next btn */
     let check = false;
     for (let i in availableCourse) {
-        if (availableCourse[i] !== false) {       
+        if (availableCourse[i] !== false) {
             if (availableCourse[i].select === true && availableCourse[i].tutor[0] !== 99000) {
                 check = true;
             }
         }
     }
-    if (parseInt($('#grade').val())>=10) {
+    if (parseInt($('#grade').val()) >= 10) {
         check = true
     }
-    if (check && document.getElementsByClassName('btn-success').length * pricepercourse / 2 >= 2*pricepercourse) {
+    if (check && document.getElementsByClassName('btn-success').length * pricepercourse / 2 >= 2 * pricepercourse) {
         document.getElementById("next").className = "btn btn-default";
     }
     else {
@@ -251,7 +258,7 @@ function nextCheck() { /* check next btn */
 }
 function next(gg) {
     if (gg.className.indexOf("disabled") === -1) {
-        writeCookie('courseFee',document.getElementsByClassName('btn-success').length * pricepercourse / 2)
+        writeCookie('courseFee', document.getElementsByClassName('btn-success').length * pricepercourse / 2);
         writeCookie("regisCourse", JSON.stringify(availableCourse));
         self.location = "registrationHybrid";
     }
@@ -266,8 +273,8 @@ function highlight() {
             suggestCourse = allSuggest.course[i].courseID;
         }
     }
-    for (let i in availableCourse){
-        if(availableCourse[i]!==false){
+    for (let i in availableCourse) {
+        if (availableCourse[i] !== false) {
             availableCourse[i]["suggest"] = suggestCourse.includes(availableCourse[i].courseID);
         }
     }
@@ -283,55 +290,59 @@ function getDescription() {
         case "4":
         case "5":
         case "6":
-            innerHtml = '<p class="form-control-static"><b>SCIP456z</b>: เนื้อหาทั่วไป (สำหรับทุกคน)</p>'+
-                '<p class="form-control-static"><b>SCIP6x</b>: ตะลุยโจทย์สอบเข้า (สำหรับป.6 สอบเข้า)</p>'+
-                '<p class="form-control-static"><b>MP456a</b>: เนื้อหาสอบเข้าที่จำเป็น</p>'+
-                '<p class="form-control-static"><b>MP456x</b>: ตะลุยโจทย์สอบเข้า (สำหรับทุกคน)</p>'+
+            innerHtml = '<p class="form-control-static"><b>SCIP456z</b>: เนื้อหาทั่วไป (สำหรับทุกคน)</p>' +
+                '<p class="form-control-static"><b>SCIP6x</b>: ตะลุยโจทย์สอบเข้า (สำหรับป.6 สอบเข้า)</p>' +
+                '<p class="form-control-static"><b>MP456a</b>: เนื้อหาสอบเข้าที่จำเป็น</p>' +
+                '<p class="form-control-static"><b>MP456x</b>: ตะลุยโจทย์สอบเข้า (สำหรับทุกคน)</p>' +
                 '<p class="form-control-static"><b>MP456g</b>: กลุ่ม gifted (สำหรับนร.ที่ผ่านคอร์สพี่พรีมาแล้ว)</p>';
             break;
         case "7":
-            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
-                '<p class="form-control-static"><b>ES123b</b>: สำหรับนร.ทั่วไป</p>'+
+            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>' +
+                '<p class="form-control-static"><b>ES123b</b>: สำหรับนร.ทั่วไป</p>' +
                 '<p class="form-control-static"><b>CHS123z</b>: เนื้อหาเคมีทั่วไป (สำหรับทุกคน)</p>';
             break;
         case "8":
-            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
-                '<p class="form-control-static"><b>ES123b</b>: สำหรับนร.ทั่วไป</p>'+
-                '<p class="form-control-static"><b>MS23w</b>: เนื้อหาและโจทย์สอบเข้า (ระดับเริ่มต้น)</p>'+
-                '<p class="form-control-static"><b>MS23x</b>: ตะลุยโจทย์สอบเข้า (ระดับยาก)</p>'+
-                '<p class="form-control-static"><b>PHS12b</b>: กลุ่มพื้นฐาน (สำหรับนร.ที่ผ่านคอร์สพี่แก๊กมาแล้ว)</p>'+
-				'<p class="form-control-static"><b>PHS2g</b>: กลุ่ม gifted (สำหรับนร.ที่ยังไม่เคยผ่านคอร์สพี่เต๋า)</p>'+
-                '<p class="form-control-static"><b>PHS23g</b>: กลุ่ม gifted (สำหรับนร.ที่ผ่านคอร์สพี่เต๋ามาแล้ว)</p>'+
+            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>' +
+                '<p class="form-control-static"><b>ES123b</b>: สำหรับนร.ทั่วไป</p>' +
+                '<p class="form-control-static"><b>MS23w</b>: เนื้อหาและโจทย์สอบเข้า (ระดับเริ่มต้น)</p>' +
+                '<p class="form-control-static"><b>MS23x</b>: ตะลุยโจทย์สอบเข้า (ระดับยาก)</p>' +
+                '<p class="form-control-static"><b>PHS12b</b>: กลุ่มพื้นฐาน (สำหรับนร.ที่ผ่านคอร์สพี่แก๊กมาแล้ว)</p>' +
+                '<p class="form-control-static"><b>PHS2g</b>: กลุ่ม gifted (สำหรับนร.ที่ยังไม่เคยผ่านคอร์สพี่เต๋า)</p>' +
+                '<p class="form-control-static"><b>PHS23g</b>: กลุ่ม gifted (สำหรับนร.ที่ผ่านคอร์สพี่เต๋ามาแล้ว)</p>' +
                 '<p class="form-control-static"><b>CHS123z</b>: เนื้อหาเคมีทั่วไป (สำหรับทุกคน)</p>';
             break;
         case "9":
-            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี หรือ นร.ม.3</p>'+
-                '<p class="form-control-static"><b>ES23b</b>: สำหรับนร.ทั่วไป</p>'+
-                '<p class="form-control-static"><b>MS23w</b>: เนื้อหาและโจทย์สอบเข้า (ระดับเริ่มต้น)</p>'+
-                '<p class="form-control-static"><b>MS23x</b>: ตะลุยโจทย์สอบเข้า (ระดับยาก)</p>'+
-				'<p class="form-control-static"><b>PHS3a</b>: สำหรับนร.ที่ยังไม่เคยผ่านคอร์สพี่เต๋า</p>'+
-                '<p class="form-control-static"><b>PHS23g</b>: สำหรับนร.ที่ผ่านคอร์สพี่เต๋ามาแล้ว</p>'+
+            innerHtml = '<p class="form-control-static"><b>ES123a</b>: สำหรับนร.ที่มีพื้นฐานดี หรือ นร.ม.3</p>' +
+                '<p class="form-control-static"><b>ES23b</b>: สำหรับนร.ทั่วไป</p>' +
+                '<p class="form-control-static"><b>MS23w</b>: เนื้อหาและโจทย์สอบเข้า (ระดับเริ่มต้น)</p>' +
+                '<p class="form-control-static"><b>MS23x</b>: ตะลุยโจทย์สอบเข้า (ระดับยาก)</p>' +
+                '<p class="form-control-static"><b>PHS3a</b>: สำหรับนร.ที่ยังไม่เคยผ่านคอร์สพี่เต๋า</p>' +
+                '<p class="form-control-static"><b>PHS23g</b>: สำหรับนร.ที่ผ่านคอร์สพี่เต๋ามาแล้ว</p>' +
                 '<p class="form-control-static"><b>CHS123z</b>: เนื้อหาเคมีทั่วไป (สำหรับทุกคน)</p>';
             break;
         case "10":
-            innerHtml = '<p class="form-control-static"><b>ES456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
-                '<p class="form-control-static"><b>ES45b</b>: สำหรับนร.ทั่วไป</p>'+
-                '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
+            innerHtml = '<p class="form-control-static"><b>ES456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>' +
+                '<p class="form-control-static"><b>ES45b</b>: สำหรับนร.ทั่วไป</p>' +
+                '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>' +
                 '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>';
             break;
         case "11":
-            innerHtml = '<p class="form-control-static"><b>ES456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
-                '<p class="form-control-static"><b>ES45b</b>: สำหรับนร.ทั่วไป</p>'+
-                '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>'+
-                '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>'+
+            innerHtml = '<p class="form-control-static"><b>ES456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>' +
+                '<p class="form-control-static"><b>ES45b</b>: สำหรับนร.ทั่วไป</p>' +
+                '<p class="form-control-static"><b>ES56s</b>: สำหรับนร.ที่ต้องการสอบ SAT</p>' +
+                '<p class="form-control-static"><b>MS56s</b>: สำหรับนร.ที่ต้องการสอบ SAT</p>' +
+                '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี</p>' +
+                '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>' +
                 '<p class="form-control-static"><b>PHS56v</b>: เนื้อหาพิเศษทางวิศวกรรม (เพิ่มคะแนน PAT3)</p>';
             break;
         case "12":
-            innerHtml = '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี หรือ นร.ม.6</p>'+
-                '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>'+
-                '<p class="form-control-static"><b>PHS56v</b>: เนื้อหาพิเศษทางวิศวกรรม (เพิ่มคะแนน PAT3)</p>'+
-                '<p class="form-control-static"><b>PHS6x</b>: ตะลุยโจทย์ฟิสิกส์สอบเข้า (กสพท.+ PAT3)</p>'+
-                '<p class="form-control-static"><b>MS6x</b>: ตะลุยโจทย์เลขสอบเข้า (สายวิทย์)</p>'+
+            innerHtml = '<p class="form-control-static"><b>ES56s</b>: สำหรับนร.ที่ต้องการสอบ SAT</p>' +
+                '<p class="form-control-static"><b>CHS456a</b>: สำหรับนร.ที่มีพื้นฐานดี หรือ นร.ม.6</p>' +
+                '<p class="form-control-static"><b>CHS456b</b>: สำหรับนร.ทั่วไป</p>' +
+                '<p class="form-control-static"><b>PHS56v</b>: เนื้อหาพิเศษทางวิศวกรรม (เพิ่มคะแนน PAT3)</p>' +
+                '<p class="form-control-static"><b>PHS6x</b>: ตะลุยโจทย์ฟิสิกส์สอบเข้า (กสพท.+ PAT3)</p>' +
+                '<p class="form-control-static"><b>MS56s</b>: สำหรับนร.ที่ต้องการสอบ SAT</p>' +
+                '<p class="form-control-static"><b>MS6x</b>: ตะลุยโจทย์เลขสอบเข้า (สายวิทย์)</p>' +
                 '<p class="form-control-static"><b>MS6w</b>: ตะลุยโจทย์เลขสอบเข้า (สายศิลป์)</p>';
             break;
         default:

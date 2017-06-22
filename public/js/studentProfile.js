@@ -151,6 +151,7 @@ function upPic() {
         let formData = new FormData();
         formData.append('file', files[0], files[0].name);
         formData.append('userID', ID);
+        //noinspection JSUnusedLocalSymbols
         $.ajax({
             url: 'post/updateProfilePicture',
             type: 'POST',

@@ -77,13 +77,18 @@ function generateStudentHtmlTable(student) {
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
-        log(student);
-        let status = student[0].status;
+        let status = student[i].status;
         log(status);
-        if (status === 'inactive') {
-            row.style.backgroundColor = "#5fe7ff";
-        } else if (status === 'dropped') {
-            row.style.backgroundColor = "#ff4130";
+        switch (status) {
+            case 'terminate':
+                row.setAttribute("class", "danger");
+                break;
+            case 'dropped':
+                row.setAttribute("class", "warning");
+                break;
+            case 'inactive':
+                row.setAttribute("class", "info");
+                break;
         }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
