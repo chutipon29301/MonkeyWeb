@@ -107,7 +107,16 @@ $(document).ready(function () {
                 }
             })
         }
-    })
+    });
+    const sDate = new Date("July 1, 2017 0:00:00");
+    document.getElementById("startCr").innerHTML = sDate.toDateString();
+    let nDate = new Date().getTime();
+    let diff = Math.round((nDate - sDate) / 604800000);
+    if (diff <= 0) {
+        document.getElementById("nowCr").innerHTML = "ยังไม่เริ่ม CR60Q3";
+    } else document.getElementById("nowCr").innerHTML = "ครั้งที่" + diff + "/14";
+    const eDate = new Date("October 1, 2017 23:59:59");
+    document.getElementById("endCr").innerHTML = eDate.toDateString();
 });
 
 function genTable() {
