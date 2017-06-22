@@ -133,10 +133,11 @@
   <div class="col-md-1 col-md-offset-1">
     <button type="button" class="btn btn-info" onClick="editProfile()">EDIT</button>
   </div>
-  <div class="btn-group col-md-3 col-md-offset-6">
-    <button type="button" class="btn btn-success" onClick="setRegistrationState('registered');">APPROVE</button>
+  <div class="btn-group col-md-4 col-md-offset-5">
+    <button type="button" class="btn btn-primary" onClick="setRegistrationState('registered');">APPROVE</button>
     <button type="button" class="btn btn-warning" onClick="setRegistrationState('pending');">PENDING</button>
     <button type="button" class="btn btn-danger" onClick="setRegistrationState('rejected');">REJECTED</button>
+    <button type="button" class="btn btn-success" onClick="setRegistrationState('finished');">FINISHED</button>
   </div>
   <canvas id="mathCanvas" style="border:1px solid black" width="790" height="530" hidden="true"></canvas>
   <canvas id="phyCanvas" style="border:1px solid black" width="790" height="530" hidden="true"></canvas>
@@ -202,12 +203,13 @@
           <div class="form-group">
             <label>Stage :</label>
             <select id="stageStudent" class="form-control">
-              <option value="unregistered">Unregister</option>
-              <option value="untransferred">Untransfererd</option>
+              <option value="unregistered">Unregistered</option>
+              <option value="untransferred">Untransferred</option>
               <option value="transferred">Transferred</option>
               <option value="pending">Pending</option>
               <option value="rejected">Rejected</option>
               <option value="registered">Registered</option>
+              <option value="finished">Finished</option>
             </select>
           </div>
           
@@ -216,8 +218,8 @@
           <select id="statusStudent" class="form-control">
                 <option value="active">Active</option>
         		<option value="inactive">Inactive</option>
-        		<option value="dropped">Drop</option>
-        		<option value="terminated">Terminate</option>
+        		<option value="dropped">Dropped</option>
+        		<option value="terminated">Terminated</option>
               </select>
         </div>
 
