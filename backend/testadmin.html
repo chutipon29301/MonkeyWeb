@@ -233,7 +233,13 @@
                             <br>
                             <form action="post/changeStatus" method="post">
                                 <input class="form-control" type="number" name="userID" placeholder="userID" required>
-                                <input class="form-control" type="text" name="status" placeholder="status" required>
+                                <select class="form-control" name="status" required>
+                                    <option disabled="" selected="">Select status</option>
+                                    <option value="inactive">inactive</option>
+                                    <option value="active">active</option>
+                                    <option value="dropped">dropped</option>
+                                    <option value="terminated">terminated</option>
+                                </select>
                                 <button class="btn btn-default" type="submit">post/changeStatus</button>
                             </form>
                         </div>
@@ -264,12 +270,13 @@
                                 <input class="form-control" type="number" name="studentID" placeholder="studentID" required>
                                 <select class="form-control" name="registrationState" required>
                                     <option disabled="" selected="">Select registrationState</option>
-                                    <option value="registered">registered</option>
-                                    <option value="rejected">rejected</option>
-                                    <option value="pending">pending</option>
-                                    <option value="transferred">transferred</option>
-                                    <option value="untransferred">untransferred</option>
                                     <option value="unregistered">unregistered</option>
+                                    <option value="untransferred">untransferred</option>
+                                    <option value="transferred">transferred</option>
+                                    <option value="pending">pending</option>
+                                    <option value="rejected">rejected</option>
+                                    <option value="registered">registered</option>
+                                    <option value="finished">finished</option>
                                 </select>
                                 <button class="btn btn-default" type="submit">post/changeRegistrationState</button>
                             </form>
