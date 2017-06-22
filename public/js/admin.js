@@ -80,7 +80,7 @@ function generateStudentHtmlTable(student) {
         let status = student[i].status;
         log(status);
         switch (status) {
-            case 'terminate':
+            case 'terminated':
                 row.setAttribute("class", "danger");
                 break;
             case 'dropped':
