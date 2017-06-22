@@ -41,7 +41,7 @@ module.exports=function(app,db){
 
     addPage("login");
     addPage("login",{url:"/"});
-    var options={middlewareOptions:{login:true,position:"student"}};
+    var options={middlewareOptions:{login:true,position:"student",studentStatus:{$in:["active","inactive"]}}};
         addPage("home",options);
         addPage("home2",options);
         addPage("document",options);
@@ -57,6 +57,7 @@ module.exports=function(app,db){
         options.middlewareOptions.registrationState={$in:["untransferred","rejected"]};
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
+    delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
         addPage("adminHome",options);
         addPage("adminAllstudent",options);
@@ -64,7 +65,7 @@ module.exports=function(app,db){
         addPage("adminStudentprofile",options);
         addPage("adminCoursedescription",options);
         addPage("adminCourseRoom",options);
-    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"admin"}});
+    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
     addPage("firstConfig",{backendDir:true});
 
     app.all("*",function(req,res){
