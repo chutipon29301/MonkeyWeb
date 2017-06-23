@@ -327,13 +327,24 @@ function generateImageData() {
                 log(tableInfo);
                 showReceipt(tableInfo);
                 barcode(tableInfo);
-                if (tableInfo.inPhy) {
-                    $('#mathImg').attr("src", "images/p" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                if (tableInfo.inPhy && tableInfo.inMath) {
+                    $('#phyImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#phy').attr("class", "btn btn-default");
+                    $('#phy').removeProp("disabled");
+                    generateCover(tableInfo, "phy");
+                    $('#mathImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#math').attr("class", "btn btn-default");
+                    $('#math').removeProp("disabled");
                     generateCover(tableInfo, "math");
+                } else if (tableInfo.inPhy) {
                     $('#phyImg').attr("src", "images/p" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#phy').attr("class", "btn btn-default");
+                    $('#phy').removeProp("disabled");
                     generateCover(tableInfo, "phy");
                 } else if (tableInfo.inMath) {
                     $('#mathImg').attr("src", "images/m" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#math').attr("class", "btn btn-default");
+                    $('#math').removeProp("disabled");
                     generateCover(tableInfo, "math");
                 }
 
@@ -791,10 +802,10 @@ function generateCover(tableInfo, subj) {
             ctx.font = "bold 36px Taviraj";
             let dayM = dayS[i] + timeS[j];
             if (tableInfo.mainTable[dayM] !== undefined) {
-                let str=Object.values(tableInfo.mainTable[dayM])[0];
-                str=str.replace("PH","Ph");
-                str=str.replace("CH","Ch");
-                str=str.replace("SCI","Sci");
+                let str = Object.values(tableInfo.mainTable[dayM])[0];
+                str = str.replace("PH", "Ph");
+                str = str.replace("CH", "Ch");
+                str = str.replace("SCI", "Sci");
                 ctx.fillText(str, mainW[i], mainCrH[j]);
                 if (Object.values(tableInfo.mainTable[dayM])[1] === "Hybrid") {
                     ctx.fillText("HB", mainW[i], mainTutorH[j]);
