@@ -760,7 +760,6 @@ function generateCover(tableInfo, subj) {
     } else {
         ctx.fillText("ID: " + tableInfo.id + "2", 460, 84);
     }
-
     //add Name
     let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
     let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
