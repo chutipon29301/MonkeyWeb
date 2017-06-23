@@ -791,8 +791,14 @@ function generateCover(tableInfo, subj) {
             ctx.font = "bold 36px Taviraj";
             let dayM = dayS[i] + timeS[j];
             if (tableInfo.mainTable[dayM] !== undefined) {
-                ctx.fillText(Object.values(tableInfo.mainTable[dayM])[0], mainW[i], mainCrH[j]);
-                ctx.fillText(Object.values(tableInfo.mainTable[dayM])[1], mainW[i], mainTutorH[j]);
+                let str=Object.values(tableInfo.mainTable[dayM])[0];
+                str=str.replace("PH","Ph");
+                str=str.replace("CH","Ch");
+                str=str.replace("SCI","Sci");
+                ctx.fillText(str, mainW[i], mainCrH[j]);
+                if (Object.values(tableInfo.mainTable[dayM])[1] === "Hybrid") {
+                    ctx.fillText("HB", mainW[i], mainTutorH[j]);
+                } else ctx.fillText(Object.values(tableInfo.mainTable[dayM])[1], mainW[i], mainTutorH[j]);
             }
         }
     }
