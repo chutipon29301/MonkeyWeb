@@ -23,21 +23,21 @@ body {
 #usr, #pwd, #nname, #name, #sname, #level, #station, #skillday, #skilltime, #nnameE, #nameE, #snameE, #stationEng, #skilldayEng, #skilltimeEng, #skillSel, #grade, #parentNum, #studentNum, #email {
 	border-radius: 8px
 }
-#allStudentTable tr:hover {
-	background-color: #d0dbed
-}
+/*#allStudentTable tr:hover {*/
+	/*background-color: #d0dbed*/
+/*}*/
 #allStudentTable tr:active {
 	background-color: #a8aeb7
 }
-#allCourseTable tr:hover {
-	background-color: #d0dbed
-}
+/*#allCourseTable tr:hover {*/
+	/*background-color: #d0dbed*/
+/*}*/
 #allCourseTable tr:active {
 	background-color: #a8aeb7
 }
-#allStudentInCourseTable tr:hover {
-	background-color: #d0dbed
-}
+/*#allStudentInCourseTable tr:hover {*/
+	/*background-color: #d0dbed*/
+/*}*/
 #allStudentInCourseTable tr:active {
 	background-color: #a8aeb7
 }
