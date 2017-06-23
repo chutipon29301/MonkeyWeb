@@ -274,7 +274,7 @@ function generateImageData() {
             mainTable[getDateName(time.getDay()) + time.getHours()] = {};
             mainTable[getDateName(time.getDay()) + time.getHours()].courseName =
                 ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
-            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "HB";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "Hybrid";
             if (data.hybridDay[i].subject === "M") {
                 mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
                 inMath = true;
@@ -756,14 +756,14 @@ function generateCover(tableInfo, subj) {
     //add ID
     ctx.font = "bold 40px Taviraj";
     if (subj === "math") {
-        ctx.fillText("ID: " + tableInfo.id + "1", 460, 84);
+        ctx.fillText("ID: " + tableInfo.id + "1", 445, 84);
     } else {
-        ctx.fillText("ID: " + tableInfo.id + "2", 460, 84);
+        ctx.fillText("ID: " + tableInfo.id + "2", 445, 84);
     }
     //add Name
     let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
     let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
-    ctx.font = "bold 52px Taviraj";
+    ctx.font = "bold 52px Trirong";
     ctx.textAlign = "center";
     ctx.fillText(name1, 930, 94);
     ctx.fillText(name2, 930, 174);
