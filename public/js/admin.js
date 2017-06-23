@@ -743,8 +743,8 @@ function generateCover(tableInfo, subj) {
     let img = document.getElementById(subj + 'Img');
     ctx.drawImage(img, 0, 0, 1654, 1170);
     //add Level
-    ctx.font = "bold 110px Taviraj";
-    ctx.fillText(grade[tableInfo.grade - 1], 50, 124);
+    ctx.font = "100px Oxygen";
+    ctx.fillText(grade[tableInfo.grade - 1], 50, 128);
     //add barcode
     let canvas2 = document.getElementById(subj + 'Barcode');
     ctx.drawImage(canvas2, 418, 115);
