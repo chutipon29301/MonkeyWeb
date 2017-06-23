@@ -26,7 +26,10 @@
 <!-- InstanceBeginEditable name="script" -->
     <script src="js/JsBarcode.code128.min.js" type="text/javascript"></script>
     <script>
-        $(document).ready(getStudentProfile);
+        $(document).ready(function () {
+            getStudentProfile();
+            showProfilePic();
+        });
     </script>
     <!-- InstanceEndEditable -->
 </head>
@@ -139,18 +142,18 @@
     <button type="button" class="btn btn-danger" onClick="setRegistrationState('rejected');">REJECTED</button>
     <button type="button" class="btn btn-success" onClick="setRegistrationState('finished');">FINISHED</button>
   </div>
-  <canvas id="mathCanvas" style="border:1px solid black" width="790" height="530" hidden="true"></canvas>
-  <canvas id="phyCanvas" style="border:1px solid black" width="790" height="530" hidden="true"></canvas>
+  <img src="#" id="mathImg" hidden="true">
+  <img src="#" id="phyImg" hidden="true">
+  <canvas id="mathCanvas" style="border:1px solid black" width="1654" height="1170" hidden="true"></canvas>
+  <canvas id="phyCanvas" style="border:1px solid black" width="1654" height="1170" hidden="true"></canvas>
   <canvas id="mathBarcode" hidden="true"></canvas>
   <canvas id="phyBarcode" hidden="true"></canvas>
-  <canvas id="combine" style="border:1px solid black" width="790" height="530" hidden="true"></canvas>
   <canvas id="appRej" style="border:1px solid black" width="560" height="380" hidden="true"></canvas>
   <script src="js/FileSaver.min.js" type="text/javascript"></script> 
   <script>
     function downloadCanvas(subj) {
 		let sID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
-		combineCanvas(subj);
-        let canvas = document.getElementById("combine"), ctx = canvas.getContext("2d");
+        let canvas = document.getElementById(subj+"Canvas"), ctx = canvas.getContext("2d");
         let dlImg=canvas.toDataURL();
         let aref=document.createElement('a');
         aref.href=dlImg;
