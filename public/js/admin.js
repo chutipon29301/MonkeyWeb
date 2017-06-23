@@ -755,7 +755,11 @@ function generateCover(tableInfo, subj) {
     ctx.drawImage(profile, 205, 30, picW, picH);
     //add ID
     ctx.font = "bold 40px Taviraj";
-    ctx.fillText("ID: " + tableInfo.id, 460, 84);
+    if (subj === "math") {
+        ctx.fillText("ID: " + tableInfo.id + "1", 460, 84);
+    } else {
+        ctx.fillText("ID: " + tableInfo.id + "2", 460, 84);
+    }
     //add Name
     let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
     let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
