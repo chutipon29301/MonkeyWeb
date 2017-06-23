@@ -92,6 +92,21 @@ module.exports=function(app,db){
         });
     };
 
+    var callbackLoop=function(n,inLoop,endLoop){
+        var c=0;
+        var eventEmitter=new events.EventEmitter();
+        eventEmitter.on("finish",function(){
+            if(c==n)endLoop();
+            c++;
+        });
+        for(var i=0;i<n;i++){
+            inLoop(i,function(){
+                eventEmitter.emit("finish");
+            });
+        }
+        eventEmitter.emit("finish");
+    };
+
     // All post will return {err} if error occurs
     var post=function(url,callback){
         app.post(url,function(req,res){
@@ -164,35 +179,28 @@ module.exports=function(app,db){
     //OK {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
     post("/post/allStudent",function(req,res){
         var output=[];
-        var eventEmitter=new events.EventEmitter();
         userDB.find({position:"student"}).sort({_id:1}).toArray(function(err,result){
-            var c=0;
-            eventEmitter.on("finish",function(){
-                if(c==result.length)res.send({student:output});
-                c++;
-            });
-            for(i=0;i<result.length;i++){
-                (function(i){
-                    getCourseDB(function(courseDB){
-                        courseDB.findOne({student:result[i]._id},function(err,course){
-                            hybridSeatDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
-                                output[i]={studentID:result[i]._id,
-                                    firstname:result[i].firstname,
-                                    lastname:result[i].lastname,
-                                    nickname:result[i].nickname,
-                                    grade:result[i].student.grade,
-                                    registrationState:result[i].student.registrationState,
-                                    status:result[i].student.status,
-                                    inCourse:course!=null,
-                                    inHybrid:hybrid!=null
-                                };
-                                eventEmitter.emit("finish");
-                            });
+            callbackLoop(result.length,function(i,continueLoop){
+                getCourseDB(function(courseDB){
+                    courseDB.findOne({student:result[i]._id},function(err,course){
+                        hybridSeatDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
+                            output[i]={studentID:result[i]._id,
+                                firstname:result[i].firstname,
+                                lastname:result[i].lastname,
+                                nickname:result[i].nickname,
+                                grade:result[i].student.grade,
+                                registrationState:result[i].student.registrationState,
+                                status:result[i].student.status,
+                                inCourse:course!=null,
+                                inHybrid:hybrid!=null
+                            };
+                            continueLoop();
                         });
                     });
-                })(i);
-            }
-            eventEmitter.emit("finish");
+                });
+            },function(){
+                res.send({student:output});
+            });
         });
     });
     //OK {studentID} return {user.student,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,[courseID],[hybridDay]}
@@ -245,21 +253,16 @@ module.exports=function(app,db){
     post("/post/addStudentCourse",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var courseID=req.body.courseID;
-        var eventEmitter=new events.EventEmitter();
         //TODO var errOutput=[];
         findUser(res,studentID,{position:"student"},function(result){
-            var c=0;
-            eventEmitter.on("finish",function(){
-                if(c==courseID.length)res.send({});
-                c++;
-            });
             getCourseDB(function(courseDB){
-                for(var i=0;i<courseID.length;i++){
+                callbackLoop(courseID.length,function(i,continueLoop){
                     courseDB.updateOne({_id:courseID[i]},{$addToSet:{student:studentID}},function(){
-                        eventEmitter.emit("finish");
+                        continueLoop();
                     });
-                }
-                eventEmitter.emit("finish");
+                },function(){
+                    res.send({});
+                });
             });
         });
     });
@@ -267,21 +270,16 @@ module.exports=function(app,db){
     post("/post/removeStudentCourse",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var courseID=req.body.courseID;
-        var eventEmitter=new events.EventEmitter();
         //TODO var errOutput=[];
         findUser(res,studentID,{position:"student"},function(result){
-            var c=0;
-            eventEmitter.on("finish",function(){
-                if(c==courseID.length)res.send({});
-                c++;
-            });
             getCourseDB(function(courseDB){
-                for(var i=0;i<courseID.length;i++){
+                callbackLoop(courseID.length,function(i,continueLoop){
                     courseDB.updateOne({_id:courseID[i]},{$pull:{student:studentID}},function(){
-                        eventEmitter.emit("finish");
+                        continueLoop();
                     });
-                }
-                eventEmitter.emit("finish");
+                },function(){
+                    res.send({});
+                });
             });
         });
     });
@@ -493,35 +491,27 @@ module.exports=function(app,db){
             }
             else res.send({err:"The requested ID isn't a staff."});
         });
-
     });
 
     // Course
     //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
     post("/post/allCourse",function(req,res){
         var output=[];
-        var eventEmitter=new events.EventEmitter();
         getCourseDB(function(courseDB){
             courseDB.find().sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
-                var c=0;
-                eventEmitter.on("finish",function(){
-                    if(c==result.length)res.send({course:output});
-                    c++;
+                callbackLoop(result.length,function(i,continueLoop){
+                    getCourseName(result[i]._id,function(courseName){
+                        output[i]={courseID:result[i]._id};
+                        output[i]=Object.assign(output[i],result[i]);
+                        delete output[i]._id;
+                        output[i].grade=gradeBitToArray(output[i].grade);
+                        delete output[i].submission;
+                        output[i].courseName=courseName;
+                        continueLoop();
+                    });
+                },function(){
+                    res.send({course:output});
                 });
-                for(var i=0;i<result.length;i++){
-                    (function(i){
-                        getCourseName(result[i]._id,function(courseName){
-                            output[i]={courseID:result[i]._id};
-                            output[i]=Object.assign(output[i],result[i]);
-                            delete output[i]._id;
-                            output[i].grade=gradeBitToArray(output[i].grade);
-                            delete output[i].submission;
-                            output[i].courseName=courseName;
-                            eventEmitter.emit("finish");
-                        });
-                    })(i);
-                }
-                eventEmitter.emit("finish");
             });
         });
     });
@@ -529,23 +519,16 @@ module.exports=function(app,db){
     post("/post/gradeCourse",function(req,res){
         var grade=parseInt(req.body.grade);
         var output=[];
-        var eventEmitter=new events.EventEmitter();
         getCourseDB(function(courseDB){
             courseDB.find({grade:{$bitsAllSet:[grade-1]}}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
-                var c=0;
-                eventEmitter.on("finish",function(){
-                    if(c==result.length)res.send({course:output});
-                    c++;
-                });
-                for(var i=0;i<result.length;i++){
-                    (function(i){
+                callbackLoop(result.length,function(i,continueLoop){
                         getCourseName(result[i]._id,function(courseName){
                             output.push({courseID:result[i]._id,courseName:courseName,day:result[i].day,tutor:result[i].tutor});
-                            eventEmitter.emit("finish");
+                            continueLoop();
                         });
-                    })(i);
-                }
-                eventEmitter.emit("finish");
+                },function(){
+                    res.send({course:output});
+                });
             });
         });
     });
@@ -712,39 +695,27 @@ module.exports=function(app,db){
     //OK {file} return {}
     post("/post/updateStudentSlideshow",function(req,res){
         var files=req.files;
-        var eventEmitter=new events.EventEmitter();
         var errOutput=[];
         configDB.findOne({},function(err,config){
             var newPath=config.studentSlideshowPath;
             fs.emptyDir(newPath,function(err){
                 if(err)res.send({err:err,at:"emptyDir"});
                 else{
-                    var c=0;
-                    eventEmitter.on("finish",function(){
-                        if(c==files.length){
-                            if(errOutput.length)res.send({err:errOutput});
-                            else res.send({});
-                        }
-                        c++;
-                    });
-                    for(var i=0;i<files.length;i++){
-                        (function(i){
-                            var file=files[i];
-                            var originalName=file.originalname;
-                            var oldPath=file.path;
-                            fs.readFile(oldPath,function(err,data){
-                                if(err)errOutput.push({err:err,at:"readFile#"+(i+1)});
-                                else fs.writeFile(newPath+originalName,data,function(err){
-                                    if(err){
-                                        errOutput.push({err:err,at:"writeFile#"+(i+1)});
-                                        eventEmitter.emit("finish");
-                                    }
-                                    else eventEmitter.emit("finish");
-                                });
+                    callbackLoop(files.length,function(i,continueLoop){
+                        var file=files[i];
+                        var originalName=file.originalname;
+                        var oldPath=file.path;
+                        fs.readFile(oldPath,function(err,data){
+                            if(err)errOutput.push({err:err,at:"readFile#"+(i+1)});
+                            else fs.writeFile(newPath+originalName,data,function(err){
+                                if(err)errOutput.push({err:err,at:"writeFile#"+(i+1)});
+                                continueLoop();
                             });
-                        })(i);
-                    }
-                    eventEmitter.emit("finish");
+                        });
+                    },function(){
+                        if(errOutput.length)res.send({err:errOutput});
+                        else res.send({});
+                    });
                 }
             });
         });
