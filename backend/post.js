@@ -92,6 +92,21 @@ module.exports=function(app,db){
         });
     };
 
+    var callbackLoop=function(n,inLoop,endLoop){
+        var c=0;
+        var eventEmitter=new events.EventEmitter();
+        eventEmitter.on("finish",function(){
+            if(c==n)endLoop();
+            c++;
+        });
+        for(var i=0;i<n;i++){
+            inLoop(i,function(){
+                eventEmitter.emit("finish");
+            });
+        }
+        eventEmitter.emit("finish");
+    };
+
     // All post will return {err} if error occurs
     var post=function(url,callback){
         app.post(url,function(req,res){
@@ -164,37 +179,63 @@ module.exports=function(app,db){
     //OK {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
     post("/post/allStudent",function(req,res){
         var output=[];
-        var eventEmitter=new events.EventEmitter();
         userDB.find({position:"student"}).sort({_id:1}).toArray(function(err,result){
-            var c=0;
-            eventEmitter.on("finish",function(){
-                if(c==result.length)res.send({student:output});
-                c++;
-            });
-            for(i=0;i<result.length;i++){
-                (function(i){
-                    getCourseDB(function(courseDB){
-                        courseDB.findOne({student:result[i]._id},function(err,course){
-                            hybridSeatDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
-                                output[i]={studentID:result[i]._id,
-                                    firstname:result[i].firstname,
-                                    lastname:result[i].lastname,
-                                    nickname:result[i].nickname,
-                                    grade:result[i].student.grade,
-                                    registrationState:result[i].student.registrationState,
-                                    status:result[i].student.status,
-                                    inCourse:course!=null,
-                                    inHybrid:hybrid!=null
-                                };
-                                eventEmitter.emit("finish");
-                            });
+            callbackLoop(result.length,function(i,continueLoop){
+                getCourseDB(function(courseDB){
+                    courseDB.findOne({student:result[i]._id},function(err,course){
+                        hybridSeatDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
+                            output[i]={studentID:result[i]._id,
+                                firstname:result[i].firstname,
+                                lastname:result[i].lastname,
+                                nickname:result[i].nickname,
+                                grade:result[i].student.grade,
+                                registrationState:result[i].student.registrationState,
+                                status:result[i].student.status,
+                                inCourse:course!=null,
+                                inHybrid:hybrid!=null
+                            };
+                            continueLoop();
                         });
                     });
-                })(i);
-            }
-            eventEmitter.emit("finish");
+                });
+            },function(){
+                res.send({student:output});
+            });
         });
     });
+    // post("/post/allStudent",function(req,res){
+    //     var output=[];
+    //     var eventEmitter=new events.EventEmitter();
+    //     userDB.find({position:"student"}).sort({_id:1}).toArray(function(err,result){
+    //         var c=0;
+    //         eventEmitter.on("finish",function(){
+    //             if(c==result.length)res.send({student:output});
+    //             c++;
+    //         });
+    //         for(i=0;i<result.length;i++){
+    //             (function(i){
+    //                 getCourseDB(function(courseDB){
+    //                     courseDB.findOne({student:result[i]._id},function(err,course){
+    //                         hybridSeatDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
+    //                             output[i]={studentID:result[i]._id,
+    //                                 firstname:result[i].firstname,
+    //                                 lastname:result[i].lastname,
+    //                                 nickname:result[i].nickname,
+    //                                 grade:result[i].student.grade,
+    //                                 registrationState:result[i].student.registrationState,
+    //                                 status:result[i].student.status,
+    //                                 inCourse:course!=null,
+    //                                 inHybrid:hybrid!=null
+    //                             };
+    //                             eventEmitter.emit("finish");
+    //                         });
+    //                     });
+    //                 });
+    //             })(i);
+    //         }
+    //         eventEmitter.emit("finish");
+    //     });
+    // });
     //OK {studentID} return {user.student,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,[courseID],[hybridDay]}
     post("/post/studentProfile",function(req,res){
         var studentID=parseInt(req.body.studentID);
