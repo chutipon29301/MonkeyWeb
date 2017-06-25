@@ -69,12 +69,6 @@ const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const password = (userID, password) => $.post("/post/password", {
-    userID: userID,
-    password: password
-});
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const registrationState = (studentID) => $.post("post/registrationState", {
     studentID: studentID
 });
@@ -106,59 +100,6 @@ function deleteCookie(key) {
     "use strict";
     document.cookie = key + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     log("[deleteCookie()] -> " + key + " deleted");
-}
-
-/**
- * Check whether user is login from value store in document.cookie
- * if user is not login, redirect to login page
- */
-function checkLogin() {
-    "use strict";
-    let cookie = getCookieDict();
-    //noinspection JSUnresolvedVariable
-    password(cookie.monkeyWebUser, cookie.monkeyWebPassword).then((data) => {
-        if (data.err) {
-            log("[checkLogin()] : post/password => Error");
-        } else {
-            log("[checkLogin()] : post/password => ");
-            log(data);
-            if (!data.verified) {
-                log("[checkLogin()] : redirecting to login");
-                self.location = "/login";
-            }
-        }
-    });
-}
-/**
- * Check if user is in valid page
- * @param positionArray of available user in page
- */
-function checkValidUser(positionArray) {
-    "use strict";
-    let cookie = getCookieDict();
-    log("[checkValidUser()] : cookie -> ");
-    log(cookie);
-    //noinspection JSUnresolvedVariable
-    position(parseInt(cookie.monkeyWebUser)).then((data) => {
-        if (data.err) {
-            log("[checkValidUser()] : post/position => Error");
-        } else {
-            log("[checkValidUser()] : post/position => ");
-            log(data);
-            if (positionArray.constructor === Array) {
-                if ($.inArray(data.position, positionArray) === -1) {
-                    log("[checkValidUser()] : redirecting to login");
-                    logout();
-                }
-            } else {
-                if (data.position !== positionArray) {
-                    log("[checkValidUser()] : redirecting to login");
-                    logout();
-                }
-            }
-
-        }
-    });
 }
 
 /**
@@ -238,17 +179,12 @@ function loadRegistrationPage() {
                     self.location = "/registrationName";
                     break;
                 case "untransferred":
+                case "rejected":
                     log("[loadRegistrationPage()] : redirection to registrationReceipt");
                     self.location = "/registrationReceipt";
                     break;
                 case "transferred":
-                    log("[loadRegistrationPage()] : redirection to registrationReceipt");
-                    self.location = "/registrationReceipt";
-                    break;
                 case "pending":
-                    log("[loadRegistrationPage()] : redirection to studentProfile");
-                    self.location = "/studentProfile";
-                    break;
                 case "registered":
                     log("[loadRegistrationPage()] : redirection to studentProfile");
                     self.location = "/studentProfile";
