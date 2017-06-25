@@ -5,13 +5,6 @@
 	font-family: "Times New Roman", Times, serif;
 }
 */
-html{
-	position: relative;
-	min-height: 100%;
-}
-body {
-    margin: 0 0 75px; /* bottom = footer height */
-}
 .loginBtn {
 	margin-top: 20px;
 }
