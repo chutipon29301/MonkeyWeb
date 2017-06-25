@@ -295,7 +295,15 @@ function submit() {
                     //noinspection JSUnresolvedVariable
                     changeStatus(parseInt(cookie.monkeyWebUser), status).then(() => {
                         alert('ลงทะเบียนเสร็จสิ้น');
-                        self.location = 'registrationReceipt'
+                        $.post("post/changeStatus", {
+                            userID: parseInt(cookie.monkeyWebUser),
+                            status: "active"
+                        }).then((data) => {
+                            if (data.err) {
+                            } else {
+                                self.location = 'registrationReceipt'
+                            }
+                        });
                     });
 
                 }
