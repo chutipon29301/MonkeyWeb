@@ -1,10 +1,25 @@
 console.log("[START] webFlow.js");
 module.exports=function(app,db){
+    var chalk=require("chalk");
     var moment=require("moment");
     var path=require("path");
 
     var userDB=db.collection("user");
 
+    var logPosition=function(cookie,callback){
+        var userID=parseInt(cookie.monkeyWebUser);
+        var password=cookie.monkeyWebPassword;
+        if(userID&&password){
+            userDB.findOne({_id:userID,password:password},function(err,result){
+                if(result==null)callback(chalk.black.bgRed);
+                else if(result.position=="dev")callback(chalk.black.bgBlue);
+                else if(result.position=="admin")callback(chalk.black.bgCyan);
+                else if(result.position=="tutor")callback(chalk.black.bgMagenta);
+                else callback(chalk.black.bgGreen);
+            });
+        }
+        else callback(chalk.black.bgWhite);
+    }
     var checkAuth=function(options){
         if(options.length==0){
             return function(req,res,next){
@@ -19,7 +34,7 @@ module.exports=function(app,db){
         return function(req,res,next){
             if(options.login)query["_id"]=parseInt(req.cookies.monkeyWebUser),query["password"]=req.cookies.monkeyWebPassword;
             userDB.findOne(query,function(err,result){
-                if(result==null)res.status(404).sendFile(path.join(__dirname,"../404.html"));
+                if(result==null)return404(req,res);
                 else next();
             });
         };
@@ -33,9 +48,17 @@ module.exports=function(app,db){
         var middlewareOptions=options.middlewareOptions;
         if(middlewareOptions==undefined)middlewareOptions={};
         app.get(url,checkAuth(middlewareOptions),function(req,res){
-            console.log("[PAGE REQUEST] "+page+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-            console.log("\treq.cookies => ",req.cookies);
-            res.sendFile(outputPath);
+            logPosition(req.cookies,function(positionColor){
+                console.log(chalk.black.bgGreen("[PAGE REQUEST]"),page,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
+                res.status(200).sendFile(outputPath);
+            });
+        });
+    };
+    var return404=function(req,res){
+        logPosition(req.cookies,function(positionColor){
+            console.log(chalk.black.bgYellow("[404 REQUEST]",req.method,req.originalUrl,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss")));
+            console.log("\treq.body","=>",req.body);
+            res.status(404).sendFile(path.join(__dirname,"../404.html"));
         });
     };
 
@@ -68,9 +91,5 @@ module.exports=function(app,db){
     addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
     addPage("firstConfig",{backendDir:true});
 
-    app.all("*",function(req,res){
-        console.log("[404 REQUEST] "+req.method+" "+req.originalUrl+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-        console.log("\treq.body => ",req.body);
-        res.status(404).sendFile(path.join(__dirname,"../404.html"));
-    });
+    app.all("*",return404);
 }

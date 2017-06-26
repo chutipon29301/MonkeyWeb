@@ -1,6 +1,7 @@
 console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
+var chalk=require("chalk");
 var cookieParser=require('cookie-parser');
 var express=require("express");
 var fs=require("fs-extra");
@@ -25,7 +26,14 @@ app.use(function(req, res, next) {// Allow access from other domain
 // })).listen(80);
 // Uncomment code above and comment code below to automatically redirect to https
 app.listen(80);
-
+console.log(chalk.black.bgBlack("Black"));
+console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
+console.log(chalk.black.bgGreen("Green : [PAGE],student"));
+console.log(chalk.black.bgYellow("Yellow : [404]-full"));
+console.log(chalk.black.bgBlue("Blue : [POST],dev"));
+console.log(chalk.black.bgMagenta("Magenta : tutor"));
+console.log(chalk.black.bgCyan("Cyan : admin"));
+console.log(chalk.black.bgWhite("White : noUser"));
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
         console.error("[ERROR] "+err.message);
@@ -107,7 +115,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         },{upsert:true},function(err,result){
             if(result.upsertedCount){
                 require("opn")("http://127.0.0.1/firstConfig");
-                console.log("[WARNING] Please update path/year/quarter");
+                console.log(chalk.black.bgRed("[WARNING] Please update path/year/quarter"));
             }
             configDB.findOne({},function(err,config){
                 console.log(config);
