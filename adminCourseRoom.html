@@ -57,13 +57,20 @@
     </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
   <div class="tab">
-    <button class="tablinks" onclick="showRoom(event, 'Tue')" id="default">Tuesday</button>
-    <button class="tablinks" onclick="showRoom(event, 'Thu')">Thursday</button>
-    <button class="tablinks" onclick="showRoom(event, 'Sat')">Saturday</button>
-    <button class="tablinks" onclick="showRoom(event, 'Sun')">Sunday</button>
+    <button class="tablinks" onclick="showRoom(event, 'Tue')" id="default">Tue</button>
+    <button class="tablinks" onclick="showRoom(event, 'Thu')">Thu</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sat8')">Sat8</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sat10')">Sat10</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sat13')">Sat13</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sat15')">Sat15</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sun8')">Sun8</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sun10')">Sun10</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sun13')">Sun13</button>
+    <button class="tablinks" onclick="showRoom(event, 'Sun15')">Sun15</button>
   </div>
-  <div ng-app = "tableRoom">
-    <div id="Tue" class="tabcontent" ng-controller = "tue">
+  <div ng-app="tableRoom">
+    <div id="Tue" class="tabcontent" ng-controller="tue">
+      <h2>Tuesday 17:00 - 19:00</h2>
       <div class="table-responsive col-md-8 col-md-offset-2">
         <table class="table table-hover" style="font-family: 'Trirong', serif;">
           <thead>
@@ -75,7 +82,7 @@
             </tr>
           </thead>
           <tbody id="tueTable">
-          <div >
+          <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
               <td>{{ room.room}}</td>
               <td>{{ room.courseName }}</td>
@@ -88,7 +95,8 @@
         </table>
       </div>
     </div>
-    <div id="Thu" class="tabcontent" ng-controller = "thu">
+    <div id="Thu" class="tabcontent" ng-controller="thu">
+      <h2>Thursday 17:00 - 19:00</h2>
       <div class="table-responsive col-md-8 col-md-offset-2">
         <table class="table table-hover" style="font-family: 'Trirong', serif;">
           <thead>
@@ -100,7 +108,7 @@
             </tr>
           </thead>
           <tbody id="thuTable">
-          <div >
+          <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
               <td>{{ room.room}}</td>
               <td>{{ room.courseName }}</td>
@@ -113,7 +121,8 @@
         </table>
       </div>
     </div>
-    <div id="Sat" class="tabcontent" ng-controller = "sat">
+    <div id="Sat8" class="tabcontent" ng-controller="sat8">
+      <h2>Saturday 8:00 - 10:00</h2>
       <div class="table-responsive col-md-8 col-md-offset-2">
         <table class="table table-hover" style="font-family: 'Trirong', serif;">
           <thead>
@@ -124,8 +133,8 @@
               <th class="col-md-1">Full</th>
             </tr>
           </thead>
-          <tbody id="satTable">
-          <div >
+          <tbody id="sat8Table">
+          <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
               <td>{{ room.room}}</td>
               <td>{{ room.courseName }}</td>
@@ -138,7 +147,8 @@
         </table>
       </div>
     </div>
-    <div id="Sun" class="tabcontent" ng-controller = "sun">
+    <div id="Sat10" class="tabcontent" ng-controller="sat10">
+      <h2>Saturday 10:00 - 12:00</h2>
       <div class="table-responsive col-md-8 col-md-offset-2">
         <table class="table table-hover" style="font-family: 'Trirong', serif;">
           <thead>
@@ -149,8 +159,164 @@
               <th class="col-md-1">Full</th>
             </tr>
           </thead>
-          <tbody id="sunTable">
-          <div >
+          <tbody id="sat10Table">
+          <div>
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+              <td>{{ room.room}}</td>
+              <td>{{ room.courseName }}</td>
+              <td>{{ room.noStudent }}</td>
+              <td>{{ room.full }}</td>
+            </tr>
+          </div>
+            </tbody>
+          
+        </table>
+      </div>
+    </div>
+    <div id="Sat13" class="tabcontent" ng-controller="sat13">
+      <h2>Saturday 13:00 - 15:00</h2>
+      <div class="table-responsive col-md-8 col-md-offset-2">
+        <table class="table table-hover" style="font-family: 'Trirong', serif;">
+          <thead>
+            <tr>
+              <th class="col-md-2">Room</th>
+              <th class="col-md-4">Course Name</th>
+              <th class="col-md-1">Number of student</th>
+              <th class="col-md-1">Full</th>
+            </tr>
+          </thead>
+          <tbody id="sat13Table">
+          <div>
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+              <td>{{ room.room}}</td>
+              <td>{{ room.courseName }}</td>
+              <td>{{ room.noStudent }}</td>
+              <td>{{ room.full }}</td>
+            </tr>
+          </div>
+            </tbody>
+          
+        </table>
+      </div>
+    </div>
+    <div id="Sat15" class="tabcontent" ng-controller="sat15">
+      <h2>Saturday 15:00 - 17:00</h2>
+      <div class="table-responsive col-md-8 col-md-offset-2">
+        <table class="table table-hover" style="font-family: 'Trirong', serif;">
+          <thead>
+            <tr>
+              <th class="col-md-2">Room</th>
+              <th class="col-md-4">Course Name</th>
+              <th class="col-md-1">Number of student</th>
+              <th class="col-md-1">Full</th>
+            </tr>
+          </thead>
+          <tbody id="sat15Table">
+          <div>
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+              <td>{{ room.room}}</td>
+              <td>{{ room.courseName }}</td>
+              <td>{{ room.noStudent }}</td>
+              <td>{{ room.full }}</td>
+            </tr>
+          </div>
+            </tbody>
+          
+        </table>
+      </div>
+    </div>
+    <div id="Sun8" class="tabcontent" ng-controller="sun8">
+      <h2>Sunday 8:00 - 10:00</h2>
+      <div class="table-responsive col-md-8 col-md-offset-2">
+        <table class="table table-hover" style="font-family: 'Trirong', serif;">
+          <thead>
+            <tr>
+              <th class="col-md-2">Room</th>
+              <th class="col-md-4">Course Name</th>
+              <th class="col-md-1">Number of student</th>
+              <th class="col-md-1">Full</th>
+            </tr>
+          </thead>
+          <tbody id="sun8Table">
+          <div>
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+              <td>{{ room.room}}</td>
+              <td>{{ room.courseName }}</td>
+              <td>{{ room.noStudent }}</td>
+              <td>{{ room.full }}</td>
+            </tr>
+          </div>
+            </tbody>
+          
+        </table>
+      </div>
+    </div>
+    <div id="Sun10" class="tabcontent" ng-controller="sun10">
+      <h2>Sunday 10:00 - 12:00</h2>
+      <div class="table-responsive col-md-8 col-md-offset-2">
+        <table class="table table-hover" style="font-family: 'Trirong', serif;">
+          <thead>
+            <tr>
+              <th class="col-md-2">Room</th>
+              <th class="col-md-4">Course Name</th>
+              <th class="col-md-1">Number of student</th>
+              <th class="col-md-1">Full</th>
+            </tr>
+          </thead>
+          <tbody id="sun10Table">
+          <div>
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+              <td>{{ room.room}}</td>
+              <td>{{ room.courseName }}</td>
+              <td>{{ room.noStudent }}</td>
+              <td>{{ room.full }}</td>
+            </tr>
+          </div>
+            </tbody>
+          
+        </table>
+      </div>
+    </div>
+    <div id="Sun13" class="tabcontent" ng-controller="sun13">
+      <h2>Sunday 13:00 - 15:00</h2>
+      <div class="table-responsive col-md-8 col-md-offset-2">
+        <table class="table table-hover" style="font-family: 'Trirong', serif;">
+          <thead>
+            <tr>
+              <th class="col-md-2">Room</th>
+              <th class="col-md-4">Course Name</th>
+              <th class="col-md-1">Number of student</th>
+              <th class="col-md-1">Full</th>
+            </tr>
+          </thead>
+          <tbody id="sun13Table">
+          <div>
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+              <td>{{ room.room}}</td>
+              <td>{{ room.courseName }}</td>
+              <td>{{ room.noStudent }}</td>
+              <td>{{ room.full }}</td>
+            </tr>
+          </div>
+            </tbody>
+          
+        </table>
+      </div>
+    </div>
+    <div id="Sun15" class="tabcontent" ng-controller="sun15">
+      <h2>Sunday 15:00 - 17:00</h2>
+      <div class="table-responsive col-md-8 col-md-offset-2">
+        <table class="table table-hover" style="font-family: 'Trirong', serif;">
+          <thead>
+            <tr>
+              <th class="col-md-2">Room</th>
+              <th class="col-md-4">Course Name</th>
+              <th class="col-md-1">Number of student</th>
+              <th class="col-md-1">Full</th>
+            </tr>
+          </thead>
+          <tbody id="sun15Table">
+          <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
               <td>{{ room.room}}</td>
               <td>{{ room.courseName }}</td>

@@ -40,22 +40,40 @@ let tableGenerator = ($scope) => {
         () => console.log('onCompleted'));
 };
 
-app.controller("tue", function ($scope){
+app.controller("tue", function ($scope) {
     tableGenerator($scope);
 });
 
-app.controller("thu", function ($scope){
+app.controller("thu", function ($scope) {
     tableGenerator($scope);
 });
 
-app.controller("sat", function ($scope){
+app.controller("sat8", function ($scope) {
+    tableGenerator($scope);
+});
+app.controller("sat10", function ($scope) {
+    tableGenerator($scope);
+});
+app.controller("sat13", function ($scope) {
+    tableGenerator($scope);
+});
+app.controller("sat15", function ($scope) {
     tableGenerator($scope);
 });
 
-app.controller("sun", function ($scope){
+app.controller("sun8", function ($scope) {
     tableGenerator($scope);
 });
 
+app.controller("sun10", function ($scope) {
+    tableGenerator($scope);
+});
+app.controller("sun13", function ($scope) {
+    tableGenerator($scope);
+});
+app.controller("sun15", function ($scope) {
+    tableGenerator($scope);
+});
 
 function showRoom(evt, cityName) {
     // Declare all variables
