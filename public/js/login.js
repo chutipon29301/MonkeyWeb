@@ -73,10 +73,9 @@ function redirectLocation(user) {
                     studentLogin(user);
                     break;
                 case "tutor":
-                    self.location = "/adminAllstudent";
-                    break;
                 case "admin":
-                    self.location = "/testadmin";
+                case "dev":
+                    self.location = "/adminAllstudent";
                     break;
                 default:
                     break

@@ -78,7 +78,7 @@ function generateStudentHtmlTable(student) {
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let status = student[i].status;
-        log(status);
+        let stage = student[i].registrationState;
         switch (status) {
             case 'terminated':
                 row.setAttribute("class", "danger");
@@ -89,6 +89,9 @@ function generateStudentHtmlTable(student) {
             case 'inactive':
                 row.setAttribute("class", "info");
                 break;
+        }
+        if (stage === "finished") {
+            row.setAttribute("class", "success");
         }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
@@ -271,7 +274,7 @@ function generateImageData() {
             mainTable[getDateName(time.getDay()) + time.getHours()] = {};
             mainTable[getDateName(time.getDay()) + time.getHours()].courseName =
                 ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
-            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "HB";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "Hybrid";
             if (data.hybridDay[i].subject === "M") {
                 mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
                 inMath = true;
@@ -297,7 +300,7 @@ function generateImageData() {
                 dataArray.push(data);
                 let time = new Date(data.day);
                 mainTable[getDateName(time.getDay()) + time.getHours()] = {};
-                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "CR : " + data.courseName;
                 if (data.tutor[0] === 99000) {
                     if (data.courseName[0] === "M") {
                         mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
@@ -322,10 +325,29 @@ function generateImageData() {
                 tableInfo.inPhy = inPhy;
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
-                showProfilePic();
                 showReceipt(tableInfo);
-                generateImage(tableInfo, 'math');
-                generateImage(tableInfo, 'phy');
+                barcode(tableInfo);
+                if (tableInfo.inPhy && tableInfo.inMath) {
+                    $('#phyImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#phy').attr("class", "btn btn-default");
+                    $('#phy').removeProp("disabled");
+                    generateCover(tableInfo, "phy");
+                    $('#mathImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#math').attr("class", "btn btn-default");
+                    $('#math').removeProp("disabled");
+                    generateCover(tableInfo, "math");
+                } else if (tableInfo.inPhy) {
+                    $('#phyImg').attr("src", "images/p" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#phy').attr("class", "btn btn-default");
+                    $('#phy').removeProp("disabled");
+                    generateCover(tableInfo, "phy");
+                } else if (tableInfo.inMath) {
+                    $('#mathImg').attr("src", "images/m" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#math').attr("class", "btn btn-default");
+                    $('#math').removeProp("disabled");
+                    generateCover(tableInfo, "math");
+                }
+
             });
         });
     });
@@ -342,7 +364,7 @@ function setRegistrationState(registrationState) {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            if (registrationState !== "rejected") acceptReject(registrationState);
+            if (registrationState === "registered" || registrationState === "pending") acceptReject(registrationState);
             log("[setRegistrationState()] : post/changeRegistrationState => Success");
         }
     });
@@ -600,167 +622,6 @@ function editStudent() {
 //         }
 //     });
 // }
-
-/**
- * Function for generate image for download
- * @param tableInfo data of image
- * @param subj subject for image
- */
-function generateImage(tableInfo, subj) {
-    let canvasID = subj + 'Canvas';
-    let canvas = document.getElementById(canvasID);
-    let ctx = canvas.getContext('2d');
-    //gen row
-    const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
-    const day = ['TUE', 'THU', 'SAT', 'SUN'];
-    const time = ['8-10', '10-12', '13-15', '15-17', '17-19'];
-    const tableCl = ['#ff82d9', '#ffa133', '#9645cf', '#ff2e2e'];
-    const whtCl = ['#ffffff', '#ffffff', '#ffffff', '#ffffff'];
-    const tueCl = ['#000000', '#000000', '#ffffff', '#ffffff'];
-    const satCl = ['#ffffff', '#ffffff', '#000000', '#000000'];
-    const borderB = 'border: 1px solid black;border-collapse: collapse;';
-    const borderG = 'border-bottom: 1px solid lightgrey;border-right: 1px solid black;border-collapse: collapse;';
-    const levelColor = ['#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18',
-        '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a', '#54ff4a'];
-    const miniT = ['8', '10', '13', '15', '17'];
-    let mini = {
-        math8: [],
-        math10: [],
-        math13: [],
-        math15: [],
-        math17: [],
-        phy8: [],
-        phy10: [],
-        phy13: [],
-        phy15: [],
-        phy17: []
-    };
-    for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 4; j++) {
-            if (tableInfo.mathMiniTable[day[j] + miniT[i]] !== undefined) {
-                mini['math' + miniT[i]][j] = tableInfo.mathMiniTable[day[j] + miniT[i]];
-            } else mini['math' + miniT[i]][j] = '';
-            if (tableInfo.physicsMiniTable[day[j] + miniT[i]] !== undefined) {
-                mini['phy' + miniT[i]][j] = tableInfo.physicsMiniTable[day[j] + miniT[i]];
-            } else mini['phy' + miniT[i]][j] = '';
-        }
-    }
-    let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
-    let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
-    let row1 = '';
-    if (canvasID === 'mathCanvas') {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:50px;background-color:' +
-            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;font-size: 18px">' +
-            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px;"><p>' +
-            name1 + '</p><p>' + name2 + '</p></th>' +
-            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
-            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
-    } else {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:65px;background-color:' +
-            levelColor[tableInfo.grade - 1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + 'padding-left: 100px;font-size: 20px">' +
-            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px;"><p>' +
-            name1 + '</p><p>' + name2 + '</p></th>' +
-            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
-            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
-    }
-    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '"> </th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
-    let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inMath) ? "#ffc107" : "white") + ';color: white">' + 'M' + '</th>' +
-        '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inPhy) ? "#9c27b0" : "white") + ';color: white">' + 'P' + '</th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, tueCl, borderB) + '</tr>';
-    let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
-        loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
-        loop4(2, 1, mini[subj + '13'], 40, tueCl, borderB) + '</tr>';
-    let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini[subj + '15'], 40, whtCl, borderB) + '</tr>';
-    let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[0] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 30px">'
-        + time[4] + '</th>' + loop4(2, 1, mini[subj + '17'], 40, satCl, borderB) + '</tr>';
-    let row7 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '8'), 120, whtCl, borderB) + '<th rowspan="2" colspan="5" style="' + borderB +
-        'background-color: #fffb87">Note : </th>' + '</tr>';
-    let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[1] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '10'), 120, whtCl, borderG) + '</tr>';
-    let row9 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '10'), 120, whtCl, borderB) +
-        '<th rowspan="7" colspan="5" style="' + borderB + '"></th>' + '</tr>';
-    let row10 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[2] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '13'), 120, whtCl, borderG) + '</tr>';
-    let row11 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '13'), 120, whtCl, borderB) + '</tr>';
-    let row12 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[3] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '15'), 120, whtCl, borderG) + '</tr>';
-    let row13 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '15'), 120, whtCl, borderB) + '</tr>';
-    let row14 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[4] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '17'), 120, whtCl, borderG) + '</tr>';
-    let row15 = '<tr style="' + borderB + '">' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
-    //gen canvas data
-    let data =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="530">' +
-        '<foreignObject width="100%" height="100%">' +
-        '<div xmlns="http://www.w3.org/1999/xhtml">' +
-        '<table style="border: 1px solid black;border-collapse: collapse;font-family:' + '"Itim", cursive' + '">' +
-        row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9 + row10 + row11 + row12 + row13 + row14 + row15 +
-        '</table>' +
-        '</div>' +
-        '</foreignObject>' +
-        '</svg>';
-    //noinspection SpellCheckingInspection,JSUnresolvedVariable
-    let DOMURL = window.URL || window.webkitURL || window;
-    let img = new Image();
-    let svg = new Blob([data], {
-        type: 'image/svg+xml'
-    });
-    //noinspection JSUnresolvedFunction
-    let url = DOMURL.createObjectURL(svg);
-    //noinspection SpellCheckingInspection
-    img.onload = function () {
-        ctx.drawImage(img, 0, 0);
-        //noinspection JSUnresolvedFunction
-        DOMURL.revokeObjectURL(url);
-    };
-    img.src = url;
-    barcode(tableInfo);
-}
-//function for generate duplicate 4 row table with a data in each row
-function loop4(type, row, data, w, color, border) {
-    let text = '';
-    if (row > 1) {
-        if (type === 1) {
-            for (let i = 0; i < 4; i++) {
-                text += '<th rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</th>';
-            }
-        } else {
-            for (let i = 0; i < 4; i++) {
-                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;height: 30px;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</td>';
-            }
-        }
-    } else {
-        if (type === 1) {
-            for (let i = 0; i < 4; i++) {
-                text += '<th style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</th>';
-            }
-        } else {
-            for (let i = 0; i < 4; i++) {
-                text += '<td style="' + border + 'text-align:center;height: 30px;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</td>';
-            }
-        }
-    }
-    return text;
-}
-
-//for create data in a row of table from course data
-function tableRow(type, tableInfo, day, time) {
-    let tableRow = ['', '', '', ''];
-    for (let i = 0; i < 4; i++) {
-        if (tableInfo.mainTable[day[i] + time] !== undefined) {
-            if (type === 1) {
-                tableRow[i] = tableInfo.mainTable[day[i] + time].courseName;
-            } else tableRow[i] = tableInfo.mainTable[day[i] + time].tutor;
-        }
-    }
-    return tableRow;
-}
 //for show profile pic on page
 function showProfilePic() {
     let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
@@ -810,32 +671,18 @@ function barcode(tableInfo) {
     const code = tableInfo.id;
     JsBarcode("#mathBarcode", code + '1', {
         lineColor: "black",
-        width: 1.7,
-        height: 40,
+        width: 3.4,
+        height: 68,
         displayValue: false
     });
     JsBarcode("#phyBarcode", code + '2', {
         lineColor: "black",
-        width: 2,
-        height: 40,
+        width: 3.4,
+        height: 68,
         displayValue: false
     });
 }
 
-function combineCanvas(subj) {
-    let canvas = document.getElementById('combine');
-    let ctx = canvas.getContext('2d');
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    let canvas1 = document.getElementById(subj + 'Canvas');
-    let canvas2 = document.getElementById(subj + 'Barcode');
-    let profile = document.getElementById('profilePic');
-    ctx.drawImage(canvas1, 0, 0);
-    ctx.drawImage(canvas2, 189, 37);
-    let picH = 107;
-    let picW = profile.width * 107 / profile.height;
-    ctx.drawImage(profile, 85, 0, picW, picH);
-}
 
 function acceptReject(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
@@ -897,5 +744,73 @@ function upPic() {
             }
         });
     }
-
+}
+function generateCover(tableInfo, subj) {
+    const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
+    let canvasID = subj + 'Canvas';
+    let canvas = document.getElementById(canvasID);
+    let ctx = canvas.getContext('2d');
+    //add Table BG
+    let img = document.getElementById(subj + 'Img');
+    ctx.drawImage(img, 0, 0, 1654, 1170);
+    //add Level
+    ctx.font = "100px Oxygen";
+    ctx.fillText(grade[tableInfo.grade - 1], 50, 128);
+    //add barcode
+    let canvas2 = document.getElementById(subj + 'Barcode');
+    ctx.drawImage(canvas2, 418, 115);
+    //add profilePic
+    let profile = document.getElementById('profilePic');
+    let picH = 184;
+    let picW = profile.width * picH / profile.height;
+    ctx.drawImage(profile, 205, 30, picW, picH);
+    //add ID
+    ctx.font = "bold 40px Taviraj";
+    if (subj === "math") {
+        ctx.fillText("ID: " + tableInfo.id + "1", 445, 84);
+    } else {
+        ctx.fillText("ID: " + tableInfo.id + "2", 445, 84);
+    }
+    //add Name
+    let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
+    let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
+    ctx.font = "bold 52px Trirong";
+    ctx.textAlign = "center";
+    ctx.fillText(name1, 930, 94);
+    ctx.fillText(name2, 930, 174);
+    //add smallTable data & mainTable data
+    ctx.textBaseline = "middle";
+    const dayS = ['TUE', 'THU', 'SAT', 'SUN'];
+    const timeS = ['8', '10', '13', '15', "17"];
+    const miniW = [1342, 1420, 1498, 1576];
+    const miniH = [144, 218, 292, 366, 440];
+    const mainW = [324, 568, 812, 1056];
+    const mainCrH = [386, 514, 642, 770, 898];
+    const mainTutorH = [448, 576, 704, 832, 960];
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 5; j++) {
+            ctx.font = "bold 28px Taviraj";
+            if (subj === 'math') {
+                if (tableInfo.mathMiniTable[dayS[i] + timeS[j]] !== undefined) {
+                    ctx.fillText(tableInfo.mathMiniTable[dayS[i] + timeS[j]], miniW[i], miniH[j])
+                }
+            } else {
+                if (tableInfo.physicsMiniTable[dayS[i] + timeS[j]] !== undefined) {
+                    ctx.fillText(tableInfo.physicsMiniTable[dayS[i] + timeS[j]], miniW[i], miniH[j])
+                }
+            }
+            ctx.font = "bold 36px Taviraj";
+            let dayM = dayS[i] + timeS[j];
+            if (tableInfo.mainTable[dayM] !== undefined) {
+                let str = Object.values(tableInfo.mainTable[dayM])[0];
+                str = str.replace("PH", "Ph");
+                str = str.replace("CH", "Ch");
+                str = str.replace("SCI", "Sci");
+                ctx.fillText(str, mainW[i], mainCrH[j]);
+                if (Object.values(tableInfo.mainTable[dayM])[1] === "Hybrid") {
+                    ctx.fillText("HB", mainW[i], mainTutorH[j]);
+                } else ctx.fillText(Object.values(tableInfo.mainTable[dayM])[1], mainW[i], mainTutorH[j]);
+            }
+        }
+    }
 }
