@@ -100,7 +100,16 @@ module.exports=function(app,db){
         userDB.findOne({_id:userID},function(err,result){
             if(result==null)res.send({err:"The requested userID doesn't exist."});
             else{
-                if(options.position!=undefined&&options.position!=result.position)return res.send({err:"The requested userID isn't a "+options.position+"."});
+                if(options.position!=undefined){
+                    if(typeof(options.position)=="string"){
+                        if(options.position!=result.position)res.send({err:"The requested userID isn't a "+options.position+"."});
+                        else callback(result);
+                    }
+                    else{
+                        if(!options.position.includes(result.position))res.send({err:"The requested userID isn't a "+options.position+"."});
+                        else callback(result);
+                    }
+                }
                 else callback(result);
             }
         });
@@ -404,17 +413,18 @@ module.exports=function(app,db){
             });
         });
     });
-    //TODO {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
+    //OK {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
     post("/post/editStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var input={};
-        var addField=function(field,out){
-            if(out==undefined)out=field;
-            if(req.body[field])input[out]=req.body[field];
-        };
-        var addFieldInt=function(field,out){
-            if(out==undefined)out=field;
-            if(req.body[field])input[out]=parseInt(req.body[field]);
+        var addField=function(field,options){
+            var out=field;
+            if(options==undefined)options={};
+            if(options.out)out=options.out;
+            if(req.body[field]){
+                if(options.toInt)input[out]=parseInt(req.body[field]);
+                else input[out]=req.body[field];
+            }
         };
         addField("password");
         addField("firstname");
@@ -425,8 +435,8 @@ module.exports=function(app,db){
         addField("nicknameEn");
         addField("email");
         addField("phone");
-        addFieldInt("grade","student.grade");
-        addField("phoneParent","student.phoneParent");
+        addField("grade",{out:"student.grade",toInt:true});
+        addField("phoneParent",{out:"student.phoneParent"});
         findUser(res,studentID,{position:"student"},function(result){
             userDB.updateOne({_id:studentID},{$set:input},function(){
                 if(result.student.registrationState=="unregistered"){
@@ -438,7 +448,7 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {password,firstname,lastname,nickname,email,nicknameEng} return {}
+    //OK {password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone} return {}
     post("/post/addTutor",function(req,res){
         var password=req.body.password;
         var firstname=req.body.firstname;
@@ -472,7 +482,34 @@ module.exports=function(app,db){
             });
         });
     });
-    //TODO ADD editTutor
+    //OK editTutor {tutorID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone} return {}
+    post("/post/editTutor",function(req,res){
+        var tutorID=parseInt(req.body.tutorID);
+        var input={};
+        var addField=function(field,options){
+            var out=field;
+            if(options==undefined)options={};
+            if(options.out)out=options.out;
+            if(req.body[field]){
+                if(options.toInt)input[out]=parseInt(req.body[field]);
+                else input[out]=req.body[field];
+            }
+        };
+        addField("password");
+        addField("firstname");
+        addField("lastname");
+        addField("nickname");
+        addField("firstnameEn");
+        addField("lastnameEn");
+        addField("nicknameEn");
+        addField("email");
+        addField("phone");
+        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+            userDB.updateOne({_id:tutorID},{$set:input},function(){
+                res.send({});
+            });
+        });
+    });
     //OK {studentID} return {}
     post("/post/addBlankStudent",function(req,res){
         var studentID=req.body.studentID.split(" ");
@@ -610,8 +647,9 @@ module.exports=function(app,db){
             }
         );
     });
-    //OK {subject,[grade],level,day,[tutor]} return {}
+    //OK {subject,[grade],level,day,[tutor],description,room} return {}
     post('/post/addCourse',function(req,res){
+        var courseID=new ObjectID().toString();
         var subject=req.body.subject;
         var grade=req.body.grade;
         for(var i=0;i<grade.length;i++){
@@ -624,9 +662,10 @@ module.exports=function(app,db){
         for(var i=0;i<tutor.length;i++){
             tutor[i]=parseInt(tutor[i]);
         }
-        var courseID=new ObjectID().toString();
+        var description=req.body.description;
+        var room=parseInt(req.body.room);
         getCourseDB(function(courseDB){
-            courseDB.insertOne({_id:courseID,subject:subject,grade:grade,level:level,day:day,tutor:tutor,student:[],submission:[]},function(err,result){
+            courseDB.insertOne({_id:courseID,subject:subject,grade:grade,level:level,day:day,tutor:tutor,student:[],submission:[],description:description,room:room},function(err,result){
                 res.send(result.ops);//TODO ret {}
             });
         });
@@ -645,7 +684,43 @@ module.exports=function(app,db){
             });
         });
     });
-    //TODO ADD editCourse
+    //OK editCourse {courseID,subject,[grade],level,day,[tutor],description,room} return {}
+    post("/post/editCourse",function(req,res){
+        var courseID=req.body.courseID;
+        var input={};
+        var addField=function(field,options){
+            var out=field;
+            if(options==undefined)options={};
+            if(options.out)out=options.out;
+            if(req.body[field]){
+                if(options.toInt)input[out]=parseInt(req.body[field]);
+                else input[out]=req.body[field];
+            }
+        };
+        addField("subject");
+        if(req.body.grade){
+            for(var i=0;i<req.body.grade.length;i++){
+                req.body.grade[i]=parseInt(req.body.grade[i]);
+            }
+            req.body.grade=gradeArrayToBit(req.body.grade);
+        }
+        addField("grade");
+        addField("level");
+        addField("day",{toInt:true});
+        if(req.body.tutor){
+            for(var i=0;i<req.body.tutor.length;i++){
+                req.body.tutor[i]=parseInt(req.body.tutor[i]);
+            }
+        }
+        addField("tutor");
+        addField("description");
+        addField("room",{toInt:true});
+        getCourseDB(function(courseDB){
+            courseDB.updateOne({_id:courseID},{$set:input},function(){
+                res.send({});
+            });
+        });
+    });
 
     // File Uploading
     //OK configPath/File {studentID,file} return {}
