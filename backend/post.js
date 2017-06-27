@@ -1,7 +1,7 @@
 console.log("[START] post.js");
 module.exports=function(app,db){
+    var chalk=require("chalk");
     var CryptoJS=require("crypto-js");
-    var events=require("events");
     var fs=require("fs-extra");
     var moment=require("moment");
     var ObjectID=require('mongodb').ObjectID;
@@ -82,6 +82,20 @@ module.exports=function(app,db){
         });
     };
 
+    var logPosition=function(cookie,callback){
+        var userID=parseInt(cookie.monkeyWebUser);
+        var password=cookie.monkeyWebPassword;
+        if(userID&&password){
+            userDB.findOne({_id:userID,password:password},function(err,result){
+                if(result==null)callback(chalk.black.bgRed);
+                else if(result.position=="dev")callback(chalk.black.bgBlue);
+                else if(result.position=="admin")callback(chalk.black.bgCyan);
+                else if(result.position=="tutor")callback(chalk.black.bgMagenta);
+                else callback(chalk.black.bgGreen);
+            });
+        }
+        else callback(chalk.black.bgWhite);
+    }
     var findUser=function(res,userID,options,callback){
         userDB.findOne({_id:userID},function(err,result){
             if(result==null)res.send({err:"The requested userID doesn't exist."});
@@ -94,28 +108,37 @@ module.exports=function(app,db){
 
     var callbackLoop=function(n,inLoop,endLoop){
         var c=0;
-        var eventEmitter=new events.EventEmitter();
-        eventEmitter.on("finish",function(){
+        var finish=function(){
             if(c==n)endLoop();
             c++;
-        });
+        };
         for(var i=0;i<n;i++){
             inLoop(i,function(){
-                eventEmitter.emit("finish");
+                finish();
             });
         }
-        eventEmitter.emit("finish");
+        finish();
     };
 
     // All post will return {err} if error occurs
     var post=function(url,callback){
         app.post(url,function(req,res){
-            console.log("[POST REQUEST] "+url.slice(1)+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-            console.log("\treq.body => ",req.body);
-            console.log("\treq.files => ",req.files);
-            console.log("\treq.cookies => ",req.cookies);
-            callback(req,res);
-            console.log("[END REQUEST]");
+            logPosition(req.cookies,function(positionColor){
+                console.log(chalk.black.bgBlue("[POST REQUEST]"),url.slice(1),"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
+                console.log("\treq.body","=>",req.body);
+                console.log("\treq.files","=>",req.files);
+                var oldSend=res.send;
+                res.send=function(){
+                    oldSend.apply(this,arguments);
+                    if(arguments[0].err){
+                        console.log(chalk.black.bgRed("[ERROR POST REQUEST]",url.slice(1),"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss")));
+                        console.log(chalk.black.bgRed("\treq.body","=>",JSON.stringify(req.body,null,2)));
+                        console.log(chalk.black.bgRed("\treq.files","=>",JSON.stringify(req.files,null,2)));
+                        console.log(chalk.black.bgRed("\terror.detail","=>",JSON.stringify(arguments[0],null,2)));
+                    }
+                }
+                callback(req,res);
+            });
         });
     };
 
@@ -129,7 +152,11 @@ module.exports=function(app,db){
                 res.send({verified:false});
             }
             else{
-                res.send({verified:true});
+                if(result.position=="student"){
+                    if(["active","inactive"].includes(result.student.status))res.send({verified:true});
+                    else res.send({verified:false});
+                }
+                else res.send({verified:true});
             }
         });
     });
