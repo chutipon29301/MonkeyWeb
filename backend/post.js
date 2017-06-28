@@ -1,7 +1,7 @@
 console.log("[START] post.js");
 module.exports=function(app,db){
+    var chalk=require("chalk");
     var CryptoJS=require("crypto-js");
-    var events=require("events");
     var fs=require("fs-extra");
     var moment=require("moment");
     var ObjectID=require('mongodb').ObjectID;
@@ -82,11 +82,34 @@ module.exports=function(app,db){
         });
     };
 
+    var logPosition=function(cookie,callback){
+        var userID=parseInt(cookie.monkeyWebUser);
+        var password=cookie.monkeyWebPassword;
+        if(userID&&password){
+            userDB.findOne({_id:userID,password:password},function(err,result){
+                if(result==null)callback(chalk.black.bgRed);
+                else if(result.position=="dev")callback(chalk.black.bgBlue);
+                else if(result.position=="admin")callback(chalk.black.bgCyan);
+                else if(result.position=="tutor")callback(chalk.black.bgMagenta);
+                else callback(chalk.black.bgGreen);
+            });
+        }
+        else callback(chalk.black.bgWhite);
+    }
     var findUser=function(res,userID,options,callback){
         userDB.findOne({_id:userID},function(err,result){
             if(result==null)res.send({err:"The requested userID doesn't exist."});
             else{
-                if(options.position!=undefined&&options.position!=result.position)return res.send({err:"The requested userID isn't a "+options.position+"."});
+                if(options.position!=undefined){
+                    if(typeof(options.position)=="string"){
+                        if(options.position!=result.position)res.send({err:"The requested userID isn't a "+options.position+"."});
+                        else callback(result);
+                    }
+                    else{
+                        if(!options.position.includes(result.position))res.send({err:"The requested userID isn't a "+options.position+"."});
+                        else callback(result);
+                    }
+                }
                 else callback(result);
             }
         });
@@ -94,28 +117,37 @@ module.exports=function(app,db){
 
     var callbackLoop=function(n,inLoop,endLoop){
         var c=0;
-        var eventEmitter=new events.EventEmitter();
-        eventEmitter.on("finish",function(){
+        var finish=function(){
             if(c==n)endLoop();
             c++;
-        });
+        };
         for(var i=0;i<n;i++){
             inLoop(i,function(){
-                eventEmitter.emit("finish");
+                finish();
             });
         }
-        eventEmitter.emit("finish");
+        finish();
     };
 
     // All post will return {err} if error occurs
     var post=function(url,callback){
         app.post(url,function(req,res){
-            console.log("[POST REQUEST] "+url.slice(1)+" FROM "+req.ip+moment().format(" @ dddDDMMMYYYY HH:mm:ss"));
-            console.log("\treq.body => ",req.body);
-            console.log("\treq.files => ",req.files);
-            console.log("\treq.cookies => ",req.cookies);
-            callback(req,res);
-            console.log("[END REQUEST]");
+            logPosition(req.cookies,function(positionColor){
+                console.log(chalk.black.bgBlue("[POST REQUEST]"),url.slice(1),"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
+                console.log("\treq.body","=>",req.body);
+                console.log("\treq.files","=>",req.files);
+                var oldSend=res.send;
+                res.send=function(){
+                    oldSend.apply(this,arguments);
+                    if(arguments[0].err){
+                        console.log(chalk.black.bgRed("[ERROR POST REQUEST]",url.slice(1),"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss")));
+                        console.log(chalk.black.bgRed("\treq.body","=>",JSON.stringify(req.body,null,2)));
+                        console.log(chalk.black.bgRed("\treq.files","=>",JSON.stringify(req.files,null,2)));
+                        console.log(chalk.black.bgRed("\terror.detail","=>",JSON.stringify(arguments[0],null,2)));
+                    }
+                }
+                callback(req,res);
+            });
         });
     };
 
@@ -129,7 +161,11 @@ module.exports=function(app,db){
                 res.send({verified:false});
             }
             else{
-                res.send({verified:true});
+                if(result.position=="student"){
+                    if(["active","inactive"].includes(result.student.status))res.send({verified:true});
+                    else res.send({verified:false});
+                }
+                else res.send({verified:true});
             }
         });
     });
@@ -377,17 +413,18 @@ module.exports=function(app,db){
             });
         });
     });
-    //TODO {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
+    //OK {studentID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone,grade(1-12),phoneParent} return {}
     post("/post/editStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var input={};
-        var addField=function(field,out){
-            if(out==undefined)out=field;
-            if(req.body[field])input[out]=req.body[field];
-        };
-        var addFieldInt=function(field,out){
-            if(out==undefined)out=field;
-            if(req.body[field])input[out]=parseInt(req.body[field]);
+        var addField=function(field,options){
+            var out=field;
+            if(options==undefined)options={};
+            if(options.out)out=options.out;
+            if(req.body[field]){
+                if(options.toInt)input[out]=parseInt(req.body[field]);
+                else input[out]=req.body[field];
+            }
         };
         addField("password");
         addField("firstname");
@@ -398,8 +435,8 @@ module.exports=function(app,db){
         addField("nicknameEn");
         addField("email");
         addField("phone");
-        addFieldInt("grade","student.grade");
-        addField("phoneParent","student.phoneParent");
+        addField("grade",{out:"student.grade",toInt:true});
+        addField("phoneParent",{out:"student.phoneParent"});
         findUser(res,studentID,{position:"student"},function(result){
             userDB.updateOne({_id:studentID},{$set:input},function(){
                 if(result.student.registrationState=="unregistered"){
@@ -411,7 +448,7 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {password,firstname,lastname,nickname,email,nicknameEng} return {}
+    //OK {password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone} return {}
     post("/post/addTutor",function(req,res){
         var password=req.body.password;
         var firstname=req.body.firstname;
@@ -445,7 +482,34 @@ module.exports=function(app,db){
             });
         });
     });
-    //TODO ADD editTutor
+    //OK editTutor {tutorID,password,firstname,lastname,nickname,firstnameEn,lastnameEn,nicknameEn,email,phone} return {}
+    post("/post/editTutor",function(req,res){
+        var tutorID=parseInt(req.body.tutorID);
+        var input={};
+        var addField=function(field,options){
+            var out=field;
+            if(options==undefined)options={};
+            if(options.out)out=options.out;
+            if(req.body[field]){
+                if(options.toInt)input[out]=parseInt(req.body[field]);
+                else input[out]=req.body[field];
+            }
+        };
+        addField("password");
+        addField("firstname");
+        addField("lastname");
+        addField("nickname");
+        addField("firstnameEn");
+        addField("lastnameEn");
+        addField("nicknameEn");
+        addField("email");
+        addField("phone");
+        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+            userDB.updateOne({_id:tutorID},{$set:input},function(){
+                res.send({});
+            });
+        });
+    });
     //OK {studentID} return {}
     post("/post/addBlankStudent",function(req,res){
         var studentID=req.body.studentID.split(" ");
@@ -583,8 +647,9 @@ module.exports=function(app,db){
             }
         );
     });
-    //OK {subject,[grade],level,day,[tutor]} return {}
+    //OK {subject,[grade],level,day,[tutor],description,room} return {}
     post('/post/addCourse',function(req,res){
+        var courseID=new ObjectID().toString();
         var subject=req.body.subject;
         var grade=req.body.grade;
         for(var i=0;i<grade.length;i++){
@@ -597,9 +662,10 @@ module.exports=function(app,db){
         for(var i=0;i<tutor.length;i++){
             tutor[i]=parseInt(tutor[i]);
         }
-        var courseID=new ObjectID().toString();
+        var description=req.body.description;
+        var room=parseInt(req.body.room);
         getCourseDB(function(courseDB){
-            courseDB.insertOne({_id:courseID,subject:subject,grade:grade,level:level,day:day,tutor:tutor,student:[],submission:[]},function(err,result){
+            courseDB.insertOne({_id:courseID,subject:subject,grade:grade,level:level,day:day,tutor:tutor,student:[],submission:[],description:description,room:room},function(err,result){
                 res.send(result.ops);//TODO ret {}
             });
         });
@@ -618,7 +684,43 @@ module.exports=function(app,db){
             });
         });
     });
-    //TODO ADD editCourse
+    //OK editCourse {courseID,subject,[grade],level,day,[tutor],description,room} return {}
+    post("/post/editCourse",function(req,res){
+        var courseID=req.body.courseID;
+        var input={};
+        var addField=function(field,options){
+            var out=field;
+            if(options==undefined)options={};
+            if(options.out)out=options.out;
+            if(req.body[field]){
+                if(options.toInt)input[out]=parseInt(req.body[field]);
+                else input[out]=req.body[field];
+            }
+        };
+        addField("subject");
+        if(req.body.grade){
+            for(var i=0;i<req.body.grade.length;i++){
+                req.body.grade[i]=parseInt(req.body.grade[i]);
+            }
+            req.body.grade=gradeArrayToBit(req.body.grade);
+        }
+        addField("grade");
+        addField("level");
+        addField("day",{toInt:true});
+        if(req.body.tutor){
+            for(var i=0;i<req.body.tutor.length;i++){
+                req.body.tutor[i]=parseInt(req.body.tutor[i]);
+            }
+        }
+        addField("tutor");
+        addField("description");
+        addField("room",{toInt:true});
+        getCourseDB(function(courseDB){
+            courseDB.updateOne({_id:courseID},{$set:input},function(){
+                res.send({});
+            });
+        });
+    });
 
     // File Uploading
     //OK configPath/File {studentID,file} return {}
