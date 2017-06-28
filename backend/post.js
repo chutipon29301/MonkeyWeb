@@ -8,7 +8,8 @@ module.exports=function(app,db){
 
     var configDB=db.collection("config");
     var courseSuggestionDB=db.collection("courseSuggestion");
-    var hybridSeatDB=db.collection("hybridSeat");
+    var fullHybridDB=db.collection("fullHybrid");
+    // var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
@@ -219,7 +220,7 @@ module.exports=function(app,db){
             callbackLoop(result.length,function(i,continueLoop){
                 getCourseDB(function(courseDB){
                     courseDB.findOne({student:result[i]._id},function(err,course){
-                        hybridSeatDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
+                        fullHybridDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
                             output[i]={studentID:result[i]._id,
                                 firstname:result[i].firstname,
                                 lastname:result[i].lastname,
@@ -253,7 +254,7 @@ module.exports=function(app,db){
                     for(var i=0;i<course.length;i++){
                         output.courseID.push(course[i]._id);
                     }
-                    hybridSeatDB.find({"student.studentID":studentID}).sort({day:1}).toArray(function(err,hybrid){
+                    fullHybridDB.find({"student.studentID":studentID}).sort({day:1}).toArray(function(err,hybrid){
                         for(var i=0;i<hybrid.length;i++){
                             var index=hybrid[i].student.findIndex(function(x){
                                 return x.studentID==studentID;
@@ -352,7 +353,7 @@ module.exports=function(app,db){
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
         findUser(res,studentID,{position:"student"},function(result){
-            hybridSeatDB.updateOne({day:day},
+            fullHybridDB.updateOne({day:day},
                 {$setOnInsert:{_id:moment(day).format("dddHH")},
                     $addToSet:{student:{studentID:studentID,subject:subject}}
                 },{upsert:true},function(){
@@ -366,7 +367,7 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         findUser(res,studentID,{position:"student"},function(result){
-            hybridSeatDB.updateOne({day:day},
+            fullHybridDB.updateOne({day:day},
                 {$pull:{student:{studentID:studentID}}},
                 function(){
                     res.send({});
@@ -722,8 +723,19 @@ module.exports=function(app,db){
         });
     });
 
+    // Room Management
+    //TODO {day} return {[course],[courseHybrid],[fullHybrid],maxHybridSeat}
+    post("/post/roomInfo",function(req,res){
+        var day=parseInt(req.body.day);
+        getCourseDB(function(courseDB){
+            courseDB.find({day:day,tutor:{$ne:99000}}).sort({subject:1,grade:1,level:1}).toArray(function(err,course){
+                res.send({course:course});
+            });
+        });
+    });
+
     // File Uploading
-    //OK configPath/File {studentID,file} return {}
+    //OK {studentID,file} return {}
     post("/post/submitReceipt",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var file=req.files[0];
@@ -830,12 +842,16 @@ module.exports=function(app,db){
             res.send(config);
         });
     });
-    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,maxHybridSeat} return {}
+    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,maxHybridSeat,profilePicturePath,studentSlideshowPath} return {}
     post('/post/editConfig',function(req,res){
         var dirPath=function(path){
             if(path.endsWith("/"))return path;
             return path+"/";
         };
+        var maxSeat=[];
+        for(var i=0;i<req.body.maxSeat.length;i++){
+            maxSeat.push(parseInt(req.body.maxSeat[i]));
+        }
         configDB.updateOne({},{$set:{
             year:parseInt(req.body.year),
             quarter:parseInt(req.body.quarter),
@@ -843,9 +859,9 @@ module.exports=function(app,db){
             receiptPath:dirPath(req.body.receiptPath),
             nextStudentID:parseInt(req.body.nextStudentID),
             nextTutorID:parseInt(req.body.nextTutorID),
-            maxHybridSeat:parseInt(req.body.maxHybridSeat),
             profilePicturePath:dirPath(req.body.profilePicturePath),
-            studentSlideshowPath:dirPath(req.body.studentSlideshowPath)
+            studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
+            maxSeat:maxSeat
         }},function(){
             configDB.findOne({},function(err,config){
                 console.log("[SHOW] config");
@@ -873,8 +889,8 @@ module.exports=function(app,db){
             });
         });
     });
-    app.post("/debug/listHybridSeat",function(req,res){
-        hybridSeatDB.find().toArray(function(err,result){
+    app.post("/debug/listfullHybrid",function(req,res){
+        fullHybridDB.find().toArray(function(err,result){
             res.send(result);
         });
     });
