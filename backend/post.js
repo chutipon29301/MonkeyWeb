@@ -103,11 +103,15 @@ module.exports=function(app,db){
             else{
                 if(options.position!=undefined){
                     if(typeof(options.position)=="string"){
-                        if(options.position!=result.position)res.send({err:"The requested userID isn't a "+options.position+"."});
+                        if(options.position!=result.position){
+                            res.send({err:"The requested userID isn't a "+options.position+"."});
+                        }
                         else callback(result);
                     }
                     else{
-                        if(!options.position.includes(result.position))res.send({err:"The requested userID isn't a "+options.position+"."});
+                        if(!options.position.includes(result.position)){
+                            res.send({err:"The requested userID isn't a "+options.position+"."});
+                        }
                         else callback(result);
                     }
                 }
@@ -134,14 +138,20 @@ module.exports=function(app,db){
     var post=function(url,callback){
         app.post(url,function(req,res){
             logPosition(req.cookies,function(positionColor){
-                console.log(chalk.black.bgBlue("[POST REQUEST]"),url.slice(1),"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
+                console.log(chalk.black.bgBlue("[POST REQUEST]"),url.slice(1),
+                    "FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),
+                    moment().format("@ dddDDMMMYYYY HH:mm:ss")
+                );
                 console.log("\treq.body","=>",req.body);
                 console.log("\treq.files","=>",req.files);
                 var oldSend=res.send;
                 res.send=function(){
                     oldSend.apply(this,arguments);
                     if(arguments[0].err){
-                        console.log(chalk.black.bgRed("[ERROR POST REQUEST]",url.slice(1),"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss")));
+                        console.log(chalk.black.bgRed("[ERROR POST REQUEST]",url.slice(1),
+                            "FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),
+                            moment().format("@ dddDDMMMYYYY HH:mm:ss")
+                        ));
                         console.log(chalk.black.bgRed("\treq.body","=>",JSON.stringify(req.body,null,2)));
                         console.log(chalk.black.bgRed("\treq.files","=>",JSON.stringify(req.files,null,2)));
                         console.log(chalk.black.bgRed("\terror.detail","=>",JSON.stringify(arguments[0],null,2)));
@@ -724,12 +734,39 @@ module.exports=function(app,db){
     });
 
     // Room Management
-    //TODO {day} return {[course],[courseHybrid],[fullHybrid],maxHybridSeat}
+    //OK {day} return {[course],[unassignedCourse],[courseHybrid],[fullHybrid],maxHybridSeat}
     post("/post/roomInfo",function(req,res){
         var day=parseInt(req.body.day);
-        getCourseDB(function(courseDB){
-            courseDB.find({day:day,tutor:{$ne:99000}}).sort({subject:1,grade:1,level:1}).toArray(function(err,course){
-                res.send({course:course});
+        var output={course:[],unassignedCourse:[],courseHybrid:[],fullHybrid:[]};
+        configDB.findOne({},function(err,config){
+            getCourseDB(function(courseDB){
+                courseDB.find({day:day}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,course){
+                    for(var i=0;i<course.length;i++){
+                        if(course[i].tutor.includes(99000)){
+                            output.courseHybrid.push(course[i]._id);
+                        }
+                        else{
+                            if(course[i].room>=0){
+                                output.course[course[i].room]={courseID:course[i]._id,
+                                    maxSeat:config.maxSeat[course[i].room]
+                                };
+                            }
+                            else output.unassignedCourse.push(course[i]._id);
+                        }
+                    }
+                    fullHybridDB.findOne({day:day},function(err,fullHybrid){
+                        for(var i=0;i<fullHybrid.student.length;i++){
+                            var index=output.fullHybrid.findIndex(function(x){
+                                return x.subject==fullHybrid.student[i].subject;
+                            });
+                            if(index==-1)index=output.fullHybrid.length;
+                            if(output.fullHybrid[index]==undefined)output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
+                            output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
+                        }
+                        output.maxHybridSeat=config.maxSeat[0];
+                        res.send(output);
+                    });
+                });
             });
         });
     });
