@@ -597,10 +597,10 @@ module.exports=function(app,db){
         getCourseDB(function(courseDB){
             courseDB.find({grade:{$bitsAllSet:[grade-1]}}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
                 callbackLoop(result.length,function(i,continueLoop){
-                        getCourseName(result[i]._id,function(courseName){
-                            output.push({courseID:result[i]._id,courseName:courseName,day:result[i].day,tutor:result[i].tutor});
-                            continueLoop();
-                        });
+                    getCourseName(result[i]._id,function(courseName){
+                        output.push({courseID:result[i]._id,courseName:courseName,day:result[i].day,tutor:result[i].tutor});
+                        continueLoop();
+                    });
                 },function(){
                     res.send({course:output});
                 });
@@ -612,7 +612,7 @@ module.exports=function(app,db){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
             courseDB.findOne({_id:courseID},function(err,result){
-                if(result==null)res.send({err:"No course found."});
+                if(result==null)res.send({err:"The requested course doesn't exist."});
                 else{
                     getCourseName(courseID,function(courseName){
                         res.send({courseName:courseName,day:result.day,tutor:result.tutor,student:result.student});
@@ -776,6 +776,7 @@ module.exports=function(app,db){
     post("/post/submitReceipt",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var file=req.files[0];
+        var errOutput=[];
         findUser(res,studentID,{position:"student"},function(result){
             configDB.findOne({},function(err,config){
                 var newPath=config.receiptPath+"CR"+config.year+"Q"+config.quarter+"/";
@@ -786,24 +787,32 @@ module.exports=function(app,db){
                         var originalType=originalName.slice(originalName.lastIndexOf("."));
                         var oldPath=file.path;
                         fs.readdir(newPath,function(err,files){
-                            for(var i=0;i<files.length;i++){
+                            callbackLoop(files.length,function(i,continueLoop){
                                 if(files[i].split(".",1)[0]==studentID){
-                                    fs.removeSync(newPath+files[i]);
+                                    fs.remove(newPath+files[i],function(err){
+                                        if(err)errOutput.push({err:err,at:"remove#"+(i+1)});
+                                        continueLoop();
+                                    });
                                 }
-                            }
-                            fs.readFile(oldPath,function(err,data){
-                                if(err)res.send({err:err,at:"readFile"});
-                                else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
-                                    if(err)res.send({err:err,at:"writeFile"});
-                                    else{
-                                        if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
-                                            userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
-                                                res.send({});
-                                            });
-                                        }
-                                        else res.send({});
-                                    }
-                                });
+                                else continueLoop();
+                            },function(){
+                                if(errOutput.length)res.send({err:errOutput});
+                                else{
+                                    fs.readFile(oldPath,function(err,data){
+                                        if(err)res.send({err:err,at:"readFile"});
+                                        else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
+                                            if(err)res.send({err:err,at:"writeFile"});
+                                            else{
+                                                if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
+                                                    userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
+                                                        res.send({});
+                                                    });
+                                                }
+                                                else res.send({});
+                                            }
+                                        });
+                                    });
+                                }
                             });
                         });
                     }
@@ -815,6 +824,7 @@ module.exports=function(app,db){
     post("/post/updateProfilePicture",function(req,res){
         var userID=parseInt(req.body.userID);
         var file=req.files[0];
+        var errOutput=[];
         findUser(res,userID,{},function(result){
             configDB.findOne({},function(err,config){
                 var newPath=config.profilePicturePath;
@@ -825,17 +835,25 @@ module.exports=function(app,db){
                         var originalType=originalName.slice(originalName.lastIndexOf("."));
                         var oldPath=file.path;
                         fs.readdir(newPath,function(err,files){
-                            for(var i=0;i<files.length;i++){
+                            callbackLoop(files.length,function(i,continueLoop){
                                 if(files[i].split(".",1)[0]==userID){
-                                    fs.removeSync(newPath+files[i]);
+                                    fs.remove(newPath+files[i],function(err){
+                                        if(err)errOutput.push({err:err,at:"remove#"+(i+1)});
+                                        continueLoop();
+                                    });
                                 }
-                            }
-                            fs.readFile(oldPath,function(err,data){
-                                if(err)res.send({err:err,at:"readFile"});
-                                else fs.writeFile(newPath+userID+originalType.toLowerCase(),data,function(err){
-                                    if(err)res.send({err:err,at:"writeFile"});
-                                    else res.send({});
-                                });
+                                else continueLoop();
+                            },function(){
+                                if(errOutput.length)res.send({err:errOutput});
+                                else{
+                                    fs.readFile(oldPath,function(err,data){
+                                        if(err)res.send({err:err,at:"readFile"});
+                                        else fs.writeFile(newPath+userID+originalType.toLowerCase(),data,function(err){
+                                            if(err)res.send({err:err,at:"writeFile"});
+                                            else res.send({});
+                                        });
+                                    });
+                                }
                             });
                         });
                     }
@@ -857,7 +875,10 @@ module.exports=function(app,db){
                         var originalName=file.originalname;
                         var oldPath=file.path;
                         fs.readFile(oldPath,function(err,data){
-                            if(err)errOutput.push({err:err,at:"readFile#"+(i+1)});
+                            if(err){
+                                errOutput.push({err:err,at:"readFile#"+(i+1)});
+                                continueLoop();
+                            }
                             else fs.writeFile(newPath+originalName,data,function(err){
                                 if(err)errOutput.push({err:err,at:"writeFile#"+(i+1)});
                                 continueLoop();
@@ -866,6 +887,50 @@ module.exports=function(app,db){
                     },function(){
                         if(errOutput.length)res.send({err:errOutput});
                         else res.send({});
+                    });
+                }
+            });
+        });
+    });
+    //OK {courseID,numberOfSub,file} return {}
+    post("/post/submitCourseMaterial",function(req,res){
+        var courseID=req.body.courseID;
+        var numberOfSub=parseInt(req.body.numberOfSub);
+        var files=req.files;
+        var errOutput=[];
+        getCourseDB(function(courseDB){
+            courseDB.findOne({_id:courseID},function(err,result){
+                if(result==null)res.send({err:"The requested course doesn't exist."});
+                else{
+                    configDB.findOne({},function(err,config){
+                        var newPath=config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/";
+                        fs.emptyDir(newPath,function(err){
+                            if(err)res.send({err:err,at:"emptyDir"});
+                            else{
+                                callbackLoop(files.length,function(i,continueLoop){
+                                    var file=files[i];
+                                    var originalName=file.originalname;
+                                    var oldPath=file.path;
+                                    fs.readFile(oldPath,function(err,data){
+                                        if(err){
+                                            errOutput.push({err:err,at:"readFile#"+(i+1)});
+                                            continueLoop();
+                                        }
+                                        else fs.writeFile(newPath+originalName,data,function(err){
+                                            if(err)errOutput.push({err:err,at:"writeFile#"+(i+1)});
+                                            continueLoop();
+                                        });
+                                    });
+                                },function(){
+                                    if(errOutput.length)res.send({err:errOutput});
+                                    else{
+                                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:"pending"}},function(){
+                                            res.send({});
+                                        });
+                                    }
+                                });
+                            }
+                        });
                     });
                 }
             });

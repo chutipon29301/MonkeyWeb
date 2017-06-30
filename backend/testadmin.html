@@ -690,6 +690,13 @@
                                 <input class="form-control" type="file" name="file" multiple required>
                                 <button class="btn btn-default" type="submit">post/updateStudentSlideshow</button>
                             </form>
+                            <br>
+                            <form action="post/submitCourseMaterial" method="post" enctype="multipart/form-data">
+                                <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
+                                <input class="form-control" type="number" name="numberOfSub" placeholder="NumberOfSubmission" required>
+                                <input class="form-control" type="file" name="file" multiple required>
+                                <button class="btn btn-default" type="submit">post/submitCourseMaterial</button>
+                            </form>
                         </div>
                     </div>
                 </div>
