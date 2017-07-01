@@ -325,7 +325,6 @@ function generateImageData() {
                 tableInfo.inPhy = inPhy;
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
-                showReceipt(tableInfo);
                 barcode(tableInfo);
                 if (tableInfo.inPhy && tableInfo.inMath) {
                     $('#phyImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
@@ -645,8 +644,8 @@ function showProfilePic() {
     });
 }
 //for show receipt pic on page
-function showReceipt(tableInfo) {
-    let picId = tableInfo.id;
+function showReceipt() {
+    let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     //noinspection ES6ModulesDependencies
     $.get("pic/CR60Q3/" + picId + '.jpg', function (data, status) {
         if (status === 'success') {
