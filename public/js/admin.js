@@ -745,6 +745,30 @@ function upPic() {
         });
     }
 }
+function upReciept() {
+    //noinspection JSUnresolvedVariable
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let ufile = $('#file-2');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        formData.append('file', files[0], files[0].name);
+        formData.append('studentID', ID);
+        $.ajax({
+            url: 'post/submitReceipt',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $('#rcModal').modal('hide');
+            }
+        });
+    }
+}
 function generateCover(tableInfo, subj) {
     const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
     let canvasID = subj + 'Canvas';
