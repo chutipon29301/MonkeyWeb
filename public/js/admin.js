@@ -325,7 +325,6 @@ function generateImageData() {
                 tableInfo.inPhy = inPhy;
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
-                showReceipt(tableInfo);
                 barcode(tableInfo);
                 if (tableInfo.inPhy && tableInfo.inMath) {
                     $('#phyImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
@@ -645,8 +644,8 @@ function showProfilePic() {
     });
 }
 //for show receipt pic on page
-function showReceipt(tableInfo) {
-    let picId = tableInfo.id;
+function showReceipt() {
+    let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     //noinspection ES6ModulesDependencies
     $.get("pic/CR60Q3/" + picId + '.jpg', function (data, status) {
         if (status === 'success') {
@@ -741,6 +740,30 @@ function upPic() {
             success: function (data) {
                 showProfilePic();
                 $('#profileModal').modal('hide');
+            }
+        });
+    }
+}
+function upReciept() {
+    //noinspection JSUnresolvedVariable
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let ufile = $('#file-2');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        formData.append('file', files[0], files[0].name);
+        formData.append('studentID', ID);
+        $.ajax({
+            url: 'post/submitReceipt',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $('#rcModal').modal('hide');
             }
         });
     }

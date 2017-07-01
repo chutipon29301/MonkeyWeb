@@ -16,7 +16,12 @@
                 $.post("post/getConfig",function(data){
                     for(var prop in data){
                         if(data.hasOwnProperty(prop)){
-                            $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").val(data[prop]);
+                            if(Array.isArray(data[prop])){
+                                $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").each(function(i){
+                                    $(this).val(data[prop][i]);
+                                });
+                            }
+                            else $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").val(data[prop]);
                         }
                     }
                 });
@@ -147,11 +152,11 @@
                         $("#listCourse").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
-                $("#listHybridSeat").empty();
-                $.post("debug/listHybridSeat",function(data,status){
+                $("#listFullHybrid").empty();
+                $.post("debug/listFullHybrid",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#listHybridSeat").append(JSON.stringify(data[i])+"<br>");
-                        $("#listHybridSeat").append(new Date(data[i].day).toString()+"<br><br>");
+                        $("#listFullHybrid").append(JSON.stringify(data[i])+"<br>");
+                        $("#listFullHybrid").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
                 $("#listCourseSuggestion").empty();
@@ -183,11 +188,11 @@
                     </div>
                 </div>
                 <div class="panel panel-default">
-                    <div class="panel-heading" data-toggle="collapse" data-target="#listHybridSeatDiv">
-                        <div class="panel-title">List HybridSeat</div>
+                    <div class="panel-heading" data-toggle="collapse" data-target="#listFullHybridDiv">
+                        <div class="panel-title">List FullHybrid</div>
                     </div>
-                    <div id="listHybridSeatDiv" class="panel-collapse collapse">
-                        <div class="panel-body" id="listHybridSeat"></div>
+                    <div id="listFullHybridDiv" class="panel-collapse collapse">
+                        <div class="panel-body" id="listFullHybrid"></div>
                     </div>
                 </div>
                 <div class="panel panel-default">
@@ -638,6 +643,32 @@
                 </div>
 
                 <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#roomManagement">
+                        <div class="panel-title">Room Management</div>
+                    </div>
+                    <div id="roomManagement" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <form action="post/roomInfo" method="post">
+                                <select class="form-control input-day" name="day">
+                                    <option disabled="" selected="">Select Day</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <select class="form-control input-hour" name="day">
+                                    <option disabled="" selected="">Select Time</option>
+                                    <option value="8">8.00-10.00</option>
+                                    <option value="10">10.00-12.00</option>
+                                    <option value="13">13.00-15.00</option>
+                                    <option value="15">15.00-17.00</option>
+                                </select>
+                                <button class="btn btn-default" type="submit">post/roomInfo</button>
+                            </form>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
                     <div class="panel-heading" data-toggle="collapse" data-target="#fileUploading">
                         <div class="panel-title">File Uploading</div>
                     </div>
@@ -658,6 +689,13 @@
                             <form action="post/updateStudentSlideshow" method="post" enctype="multipart/form-data">
                                 <input class="form-control" type="file" name="file" multiple required>
                                 <button class="btn btn-default" type="submit">post/updateStudentSlideshow</button>
+                            </form>
+                            <br>
+                            <form action="post/submitCourseMaterial" method="post" enctype="multipart/form-data">
+                                <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
+                                <input class="form-control" type="number" name="numberOfSub" placeholder="NumberOfSubmission" required>
+                                <input class="form-control" type="file" name="file" multiple required>
+                                <button class="btn btn-default" type="submit">post/submitCourseMaterial</button>
                             </form>
                         </div>
                     </div>
@@ -682,11 +720,16 @@
                                 <p>ex. D:/folder/receipt</p>
                                 <input class="form-control" type="number" name="nextStudentID" placeholder="nextStudentID" required>
                                 <input class="form-control" type="number" name="nextTutorID" placeholder="nextTutorID" required>
-                                <input class="form-control" type="number" name="maxHybridSeat" placeholder="maxHybridSeat" required>
                                 <input class="form-control" type="text" name="profilePicturePath" placeholder="profilePicturePath" required>
                                 <p>ex. D:/folder/profilePicture</p>
                                 <input class="form-control" type="text" name="studentSlideshowPath" placeholder="studentSlideshowPath" required>
                                 <p>ex. D:/folder/studentSlideshow</p>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxHybridSeat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom1Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom2Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom3Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom4Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom5Seat" required>
                                 <button class="btn btn-default" type="submit">post/editConfig</button>
                             </form>
                             <br>

@@ -90,7 +90,7 @@ module.exports=function(app,db){
         addPage("adminCourseRoom",options);
     addPage("adminCourseTable",options);
     addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
-    addPage("firstConfig",{backendDir:true});
+    // addPage("firstConfig",{backendDir:true});
 
     app.all("*",return404);
 }

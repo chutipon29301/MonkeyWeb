@@ -45,6 +45,8 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.dropCollection("user");
     // db.dropCollection("hybridSeat");
     // db.dropCollection("randomPassword");
+    db.renameCollection("hybridSeat","fullHybrid");
+    db.collection("config").updateOne({},{$set:{maxSeat:[8+6+12+6+6+2,27,12,10,16,12]},$unset:{maxHybridSeat:""}});
     // db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     db.collection("user").updateOne({_id:99033},
         {$set:{
@@ -110,12 +112,13 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateOne({_id:"config"},
         {$setOnInsert:{
             year:60,quarter:3,courseMaterialPath:"courseMaterial",receiptPath:"receipt",
-            nextStudentID:17001,nextTutorID:99035,maxHybridSeat:40,
-            profilePicturePath:"profilePicture",studentSlideshowPath:"studentSlideshow"}
+            nextStudentID:17001,nextTutorID:99035,
+            profilePicturePath:"profilePicture",studentSlideshowPath:"studentSlideshow",
+            maxSeat:[8+6+12+6+6+2,27,12,10,16,12]}
         },{upsert:true},function(err,result){
             if(result.upsertedCount){
-                require("opn")("http://127.0.0.1/firstConfig");
-                console.log("[WARNING] Please update path/year/quarter");
+                require("opn")("http://127.0.0.1/login");
+                console.log(chalk.black.bgRed("[WARNING] Please update configurations"));
             }
             configDB.findOne({},function(err,config){
                 console.log(config);
