@@ -22,7 +22,6 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
     <!--add more script-->
-    <script data-require="angular.js@1.4.x" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js" data-semver="1.4.5"></script>
     <script data-require="rxjs@*" data-semver="2.5.3" src="//cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.3/rx.all.js"></script>
     <script data-require="rx.angular.js@*" data-semver="0.0.14" src="https://cdn.rawgit.com/Reactive-Extensions/rx.angular.js/v0.0.14/dist/rx.angular.js"></script>
     <script src="/js/adminRoom.js"></script>
@@ -71,7 +70,7 @@
   <div ng-app="tableRoom">
     <div id="Tue" class="tabcontent" ng-controller="tue">
       <h2>Tuesday 17:00 - 19:00</h2>
-        <h1>{{roomDayList}}</h1>
+      <h5>{{ a }}</h5>
       <div class="table-responsive col-md-8 col-md-offset-2">
         <table class="table table-hover" style="font-family: 'Trirong', serif;">
           <thead>
@@ -85,7 +84,7 @@
           <tbody id="tueTable">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -111,7 +110,7 @@
           <tbody id="thuTable">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -137,7 +136,7 @@
           <tbody id="sat8Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -163,7 +162,7 @@
           <tbody id="sat10Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -189,7 +188,7 @@
           <tbody id="sat13Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -215,7 +214,7 @@
           <tbody id="sat15Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -241,7 +240,7 @@
           <tbody id="sun8Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -267,7 +266,7 @@
           <tbody id="sun10Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -293,7 +292,7 @@
           <tbody id="sun13Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>
@@ -319,7 +318,7 @@
           <tbody id="sun15Table">
           <div>
             <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
-              <td>{{ room.room}}</td>
+              <td>{{ room.room }</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
               <td>{{ room.full }}</td>

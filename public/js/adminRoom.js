@@ -1,73 +1,66 @@
 let app = angular.module("tableRoom", ['rx']);
 
 let tableGenerator = ($scope, $http, time) => {
-    // $.post("/post/courseInfo",{
-    //     courseID: "5937b91a5201290940356275"
-    // }).then((data)=>{
-    //     log(data)
-    // });
-    // $http({
-    //     method: "POST",
-    //     url: "/post/courseInfo",
-    //     data: {
-    //         courseID: "5937b91a5201290940356275"
-    //     }
-    // }).then(function (success) {
-    //     log(success)
-    // }, function (error) {
-    //     log(error)
-    // });
-    $http.post("/post/courseInfo", {
-        courseID: "5937b91a5201290940356275"
-    }, {
-        "Content-Type": "Content-Type:application"
-    })
-        .then(
-            function (response) {
-                log(response.data);
-            },
-            function (response) {
-                log(response);
-            }
-        );
+    $scope.roomDayList = [];
 
-    $scope.roomDayList = [{
-        room: 1,
-        courseName: "CHS123z",
-        noStudent: 10,
-        full: 50,
-        courseID: "5937b91a5201290940356275"
-    }, {
-        courseName: "PHS3a",
-        room: 2,
-        noStudent: 20,
-        full: 50,
-        courseID: "5937b9ce5201290940356279"
-    }, {
-        room: 3,
-        courseName: "PHS4a",
-        noStudent: 30,
-        full: 50,
-        courseID: "5937baa6520129094035627e"
-    }, {
-        room: 4,
-        courseName: "PHS6x",
-        noStudent: 30,
-        full: 50,
-        courseID: "5937bb085201290940356282"
-    }];
+    let roomInfo = Rx.Observable.fromPromise($.post("post/roomInfo", {
+        day: time
+    }));
+
+    let courseInfo = (courseID) => Rx.Observable.fromPromise($.post("post/roomInfo", {
+        courseID: courseID
+    }));
+
+    let index = 0;
+    roomInfo.subscribe((data) => {
+        let courseID = Rx.Observable.fromArray(data.course);
+        let res = courseID.flatMap(id => Rx.Observable.fromPromise($.post("post/courseInfo", {
+            courseID: (id == null) ? "null" : id.courseID
+        })));
+        res.subscribe((data) => {
+            // $scope.roomDayList.append({
+            //     room: index,
+            //     courseName: courseName,
+            //     noStudent: data.student.length,
+            //     full: 10,
+            //     courseID : hairufewhfi
+            // });
+            console.log(index);
+            console.log(data);
+            index++;
+        });
+    });
+
+    // $scope.roomDayList = [{
+    //     room: 1,
+    //     courseName: "CHS123z",
+    //     noStudent: 10,
+    //     full: 50,
+    //     courseID: "5937b91a5201290940356275"
+    // }, {
+    //     courseName: "PHS3a",
+    //     room: 2,
+    //     noStudent: 20,
+    //     full: 50,
+    //     courseID: "5937b9ce5201290940356279"
+    // }, {
+    //     room: 3,
+    //     courseName: "PHS4a",
+    //     noStudent: 30,
+    //     full: 50,
+    //     courseID: "5937baa6520129094035627e"
+    // }, {
+    //     room: 4,
+    //     courseName: "PHS6x",
+    //     noStudent: 30,
+    //     full: 50,
+    //     courseID: "5937bb085201290940356282"
+    // }];
 
     $scope.tableRowClick = (courseID) => {
         writeCookie("monkeyWebAdminAllcourseSelectedCourseID", courseID);
         self.location = "/adminCoursedescription";
     };
-
-    // var source = Rx.Observable.range(1, 5);
-    //
-    // var subscription = source.subscribe(
-    //     x => console.log('onNext: ' + x),
-    //     e => console.log('onError: ' + e.message),
-    //     () => console.log('onCompleted'));
 };
 
 app.controller("tue", function ($scope, $http) {
@@ -95,19 +88,19 @@ app.controller("sat15", function ($scope, $http) {
 });
 
 app.controller("sun8", function ($scope, $http) {
-    tableGenerator($scope, $http, 262800000);
+    tableGenerator($scope, $http, -342000000);
 });
 
 app.controller("sun10", function ($scope, $http) {
-    tableGenerator($scope, $http, 270000000);
+    tableGenerator($scope, $http, -334800000);
 });
 
 app.controller("sun13", function ($scope, $http) {
-    tableGenerator($scope, $http, 280800000);
+    tableGenerator($scope, $http, -324000000);
 });
 
 app.controller("sun15", function ($scope, $http) {
-    tableGenerator($scope, $http, 288000000);
+    tableGenerator($scope, $http, -316800000);
 });
 
 function showRoom(evt, cityName) {
