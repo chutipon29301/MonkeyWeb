@@ -135,7 +135,6 @@ function getAllCourseContent() {
 }
 
 function filterCourseData(data){
-    log(data);
     let subject = document.getElementById("subject");
     let grade = document.getElementById("grade");
     let name = document.getElementById("name");
@@ -152,7 +151,6 @@ function filterCourseData(data){
     if (time.options[time.selectedIndex].value !== "all"){
         data = data.filter(data => data.day === parseInt(time.options[time.selectedIndex].value));
     }
-    log(data);
     return data
 }
 
