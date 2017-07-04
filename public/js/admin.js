@@ -139,6 +139,7 @@ function filterCourseData(data){
     let subject = document.getElementById("subject");
     let grade = document.getElementById("grade");
     let name = document.getElementById("name");
+    let time = document.getElementById("time");
     if (subject.options[subject.selectedIndex].value !== "all") {
         data = data.filter(data =>  data.subject === subject.options[subject.selectedIndex].value);
     }
@@ -147,6 +148,9 @@ function filterCourseData(data){
     }
     if (name.options[name.selectedIndex].value !== "all"){
         data = data.filter(data => data.tutor.indexOf(parseInt(name.options[name.selectedIndex].value)) !== -1);
+    }
+    if (time.options[time.selectedIndex].value !== "all"){
+        data = data.filter(data => data.day === parseInt(time.options[time.selectedIndex].value));
     }
     log(data);
     return data
