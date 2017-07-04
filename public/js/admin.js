@@ -129,9 +129,27 @@ function getAllCourseContent() {
         } else {
             log("[getAllCourseContent()] : post/allCourse => ");
             log(data);
-            generateCourseHtmlTable(data.course);
+            generateCourseHtmlTable(filterCourseData(data.course));
         }
     });
+}
+
+function filterCourseData(data){
+    log(data);
+    let subject = document.getElementById("subject");
+    let grade = document.getElementById("grade");
+    let name = document.getElementById("name");
+    if (subject.options[subject.selectedIndex].value !== "all") {
+        data = data.filter(data =>  data.subject === subject.options[subject.selectedIndex].value);
+    }
+    if (grade.options[grade.selectedIndex].value !== "all"){
+        data = data.filter(data =>  data.grade.indexOf(parseInt(grade.options[grade.selectedIndex].value)) !== -1);
+    }
+    if (name.options[name.selectedIndex].value !== "all"){
+        data = data.filter(data => data.tutor.indexOf(parseInt(name.options[name.selectedIndex].value)) !== -1);
+    }
+    log(data);
+    return data
 }
 
 /**
@@ -140,6 +158,7 @@ function getAllCourseContent() {
  */
 function generateCourseHtmlTable(course) {
     let table = document.getElementById("allCourseTable");
+    table.innerHTML = "";
     for (let i = 0; i < course.length; i++) {
         let time = new Date(course[i].day);
         let row = table.insertRow(i);
@@ -153,7 +172,7 @@ function generateCourseHtmlTable(course) {
         cell1.innerHTML = "<td>" + course[i].courseName + "</td>";
         cell2.innerHTML = "<td>" + getDateName(time.getDay()) + "</td>";
         cell3.innerHTML = "<td>" + time.getHours() + ":00 - " + (time.getHours() + 2) + ":00</td>";
-        name(course[i].tutor[0]).then((data) => {
+        name(course[i].tutor[0]).then(data => {
             cell4.innerHTML = "<td>" + data.nicknameEn + "</td>";
         });
         let clickHandler = (row) => () => {
