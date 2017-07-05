@@ -1,35 +1,62 @@
 let app = angular.module("tableRoom", ['rx']);
 
+app.config(function ($httpProvider) {
+    $httpProvider.defaults.transformRequest = function (data) {
+        if (data === undefined) {
+            return data;
+        }
+        return $.param(data);
+    }
+});
+
 let tableGenerator = ($scope, $http, time) => {
     $scope.roomDayList = [];
 
-    let roomInfo = Rx.Observable.fromPromise($.post("post/roomInfo", {
-        day: time
-    }));
+    var transform = function (data) {
+        return $.param(data);
+    }
 
-    let courseInfo = (courseID) => Rx.Observable.fromPromise($.post("post/roomInfo", {
+    let roomInfo = Rx.Observable.fromPromise($http.post("post/roomInfo", {
+        day: time
+    }, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            transformRequest: transform
+        })
+    );
+
+    let courseInfo = (courseID) => Rx.Observable.fromPromise($http.post("post/courseInfo", {
         courseID: courseID
-    }));
+    }, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            transformRequest: transform
+        })
+    );
 
     let index = 0;
     roomInfo.subscribe((data) => {
-        let courseID = Rx.Observable.fromArray(data.course);
+        $scope.a = data.data;
+        let courseID = Rx.Observable.fromArray(data.data.course);
         let res = courseID.flatMap(id => Rx.Observable.fromPromise($.post("post/courseInfo", {
             courseID: (id == null) ? "null" : id.courseID
         })));
         res.subscribe((data) => {
-            // $scope.roomDayList.append({
-            //     room: index,
-            //     courseName: courseName,
-            //     noStudent: data.student.length,
-            //     full: 10,
-            //     courseID : hairufewhfi
-            // });
-            console.log(index);
-            console.log(data);
+            if (data.err) {
+                log(index + "Has error");
+            } else {
+                $scope.roomDayList.push({
+                    room: index,
+                    courseName: data.courseName,
+                    noStudent: data.student.length,
+                    full: 10,
+                    courseID: "hello world"
+                });
+                log(data);
+            }
             index++;
+
         });
     });
+
 
     // $scope.roomDayList = [{
     //     room: 1,
