@@ -84,17 +84,16 @@ function genTableGroup(level, suggCr, allCr, outerCr, i) {
     if (suggCr.course.length === 0) {
         $("#tableGroup").append("<td style='text-align: center'></td>");
         for (let j = 0; j < allCr.course.length; j++) {
-            $("#" + dateToDay(allCr.course[j].day) + " td").append(allCr.course[j].courseName);
+            $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "<br>");
         }
         return;
     } else if (i >= suggCr.course.length) return;
     $("#tableGroup").append("<th style='text-align: center'>" + suggCr.course[i].level + "</th>");
-    log(suggCr.course[i].courseID);
     for (let j = 0; j < allCr.course.length; j++) {
-        if (suggCr.course[i].courseID.indexOf(allCr.course[j].courseID) > 0) {
+        if (suggCr.course[i].courseID.indexOf(allCr.course[j].courseID) >= 0) {
             $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "<br>");
         }
-        if (outerCr.indexOf(allCr.course[j].courseID) > 0) {
+        if (outerCr.indexOf(allCr.course[j].courseID) >= 0) {
             $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "<br>");
         }
     }
