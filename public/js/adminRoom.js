@@ -32,10 +32,16 @@ let tableGenerator = ($scope, $http, time) => {
         })
     );
 
+    let tutorName = (userID) => Rx.Observable.fromPromise($http.post("post/name", {
+        userID: userID
+    }, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            transformRequest: transform
+        })
+    );
+
     let index = 0;
     roomInfo.subscribe((res) => {
-        log(time);
-        log(res);
         $scope.a = res.data;
         $scope.roomDayList.push({
             room: "Hybrid",
@@ -57,9 +63,12 @@ let tableGenerator = ($scope, $http, time) => {
                 courseInfo($scope.roomDayList[i].courseID).subscribe(res => {
                     $scope.roomDayList[i].courseName = res.data.courseName;
                     $scope.roomDayList[i].noStudent = res.data.student.length;
+                    tutorName(res.data.tutor[0]).subscribe(response => {
+                        $scope.roomDayList[i].courseName += " (" + response.data.nicknameEn + ")";
+                    });
                 });
             } else {
-                for(let j = 0; j < res.data.courseHybrid.length; j++){
+                for (let j = 0; j < res.data.courseHybrid.length; j++) {
                     courseInfo(res.data.courseHybrid[j]).subscribe(response => {
                         $scope.roomDayList[i].noStudent += response.data.student.length;
                     })
