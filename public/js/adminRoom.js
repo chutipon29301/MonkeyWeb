@@ -33,60 +33,46 @@ let tableGenerator = ($scope, $http, time) => {
     );
 
     let index = 0;
-    roomInfo.subscribe((data) => {
-        $scope.a = data.data;
-        let courseID = Rx.Observable.fromArray(data.data.course);
-        let res = courseID.flatMap(id => Rx.Observable.fromPromise($.post("post/courseInfo", {
-            courseID: (id == null) ? "null" : id.courseID
-        })));
-        res.subscribe((data) => {
-            if (data.err) {
-                log(index + "Has error");
-            } else {
-                $scope.roomDayList.push({
-                    room: index,
-                    courseName: data.courseName,
-                    noStudent: data.student.length,
-                    full: 10,
-                    courseID: "hello world"
-                });
-                log(data);
-            }
-            index++;
-
+    roomInfo.subscribe((res) => {
+        log(time);
+        log(res);
+        $scope.a = res.data;
+        $scope.roomDayList.push({
+            room: "Hybrid",
+            courseName: "Hybrid",
+            noStudent: res.data.fullHybrid[0].studentID.length + res.data.fullHybrid[1].studentID.length,
+            full: res.data.maxHybridSeat,
+            courseID: "Hybrid"
         });
+        for (let i = 0; i < res.data.course.length; i++) {
+            if (res.data.course[i] === null) continue;
+            $scope.roomDayList.push({
+                room: i,
+                full: res.data.course[i].maxSeat,
+                courseID: res.data.course[i].courseID
+            });
+        }
+        for (let i = 0; i < $scope.roomDayList.length; i++) {
+            if ($scope.roomDayList[i].courseID !== "Hybrid") {
+                courseInfo($scope.roomDayList[i].courseID).subscribe(res => {
+                    $scope.roomDayList[i].courseName = res.data.courseName;
+                    $scope.roomDayList[i].noStudent = res.data.student.length;
+                });
+            } else {
+                for(let j = 0; j < res.data.courseHybrid.length; j++){
+                    courseInfo(res.data.courseHybrid[j]).subscribe(response => {
+                        $scope.roomDayList[i].noStudent += response.data.student.length;
+                    })
+                }
+            }
+        }
     });
 
-
-    // $scope.roomDayList = [{
-    //     room: 1,
-    //     courseName: "CHS123z",
-    //     noStudent: 10,
-    //     full: 50,
-    //     courseID: "5937b91a5201290940356275"
-    // }, {
-    //     courseName: "PHS3a",
-    //     room: 2,
-    //     noStudent: 20,
-    //     full: 50,
-    //     courseID: "5937b9ce5201290940356279"
-    // }, {
-    //     room: 3,
-    //     courseName: "PHS4a",
-    //     noStudent: 30,
-    //     full: 50,
-    //     courseID: "5937baa6520129094035627e"
-    // }, {
-    //     room: 4,
-    //     courseName: "PHS6x",
-    //     noStudent: 30,
-    //     full: 50,
-    //     courseID: "5937bb085201290940356282"
-    // }];
-
     $scope.tableRowClick = (courseID) => {
-        writeCookie("monkeyWebAdminAllcourseSelectedCourseID", courseID);
-        self.location = "/adminCoursedescription";
+        if (courseID !== "Hybrid") {
+            writeCookie("monkeyWebAdminAllcourseSelectedCourseID", courseID);
+            self.location = "/adminCoursedescription";
+        }
     };
 };
 
