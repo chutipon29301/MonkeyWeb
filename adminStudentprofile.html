@@ -14,7 +14,7 @@
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <link href="/css/style.min.css" rel="stylesheet" type="text/css">
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-<script src="js/jquery-1.11.3.min.js"></script>
+<script src="js/jquery-3.2.1.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
@@ -28,6 +28,7 @@
 			$('#math,#phy').prop("disabled",true);
             getStudentProfile();
             showProfilePic();
+            showReceipt();
         });
     </script>
     <!-- InstanceEndEditable -->
@@ -141,8 +142,7 @@
     <button type="button" class="btn btn-danger" onClick="setRegistrationState('rejected');">REJECTED</button>
     <button type="button" class="btn btn-success" onClick="setRegistrationState('finished');">FINISHED</button>
   </div>
-  <img src="#" id="mathImg" hidden="true">
-  <img src="#" id="phyImg" hidden="true">
+  <img src="#" id="mathImg" hidden="true"> <img src="#" id="phyImg" hidden="true">
   <canvas id="mathCanvas" style="border:1px solid black" width="1654" height="1170" hidden="true"></canvas>
   <canvas id="phyCanvas" style="border:1px solid black" width="1654" height="1170" hidden="true"></canvas>
   <canvas id="mathBarcode" hidden="true"></canvas>
@@ -165,6 +165,9 @@
 		}
 	  $('#profilePic').click(function () {
         $('#profileModal').modal();
+    });
+	  $('#imgTrans').click(function () {
+        $('#rcModal').modal();
     });
 </script> 
   <!--   Modal for editProfile-->
@@ -214,17 +217,15 @@
               <option value="finished">Finished</option>
             </select>
           </div>
-          
-            <div class="form-group">
-          <label>Status :</label>
-          <select id="statusStudent" class="form-control">
-                <option value="active">Active</option>
-        		<option value="inactive">Inactive</option>
-        		<option value="dropped">Dropped</option>
-        		<option value="terminated">Terminated</option>
-              </select>
-        </div>
-
+          <div class="form-group">
+            <label>Status :</label>
+            <select id="statusStudent" class="form-control">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="dropped">Dropped</option>
+              <option value="terminated">Terminated</option>
+            </select>
+          </div>
           <div class="form-group">
             <label>E-mail :</label>
             <input id="emailStudent" type="text" class="form-control col-md-2" placeholder="Input e-mail">
@@ -306,7 +307,32 @@
       </div>
     </div>
   </div>
-  <script src="js/custom-file-input.js"></script>
+  <!--  Modal for uploadReciept Picture-->
+  <div id="rcModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>เปลี่ยนรูปใบโอน</h4>
+        </div>
+        <div class="modal-body form-group">
+          <div class="box" align="center">
+            <input type="file" name="file-2[]" id="file-2" style="opacity: 0;height: 0;" class="inputfile inputfile-1"
+               data-multiple-caption="{count} files selected" multiple/>
+            <label for="file-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
+              </svg>
+              <span>เลือกรูป</span></label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onClick="upReciept();">ตกลง</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/custom-file-input.js"></script> 
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
