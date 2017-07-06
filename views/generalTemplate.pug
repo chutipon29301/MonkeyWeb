@@ -1,0 +1,29 @@
+-
+    var removeWhitespace=function(x){
+        return x.replace(/\s/g,"");
+    }
+mixin panel-group
+    .container
+        .panel-group
+            block
+mixin panel(title)
+    - var collapseID=removeWhitespace(title)+"Collapse"
+    .panel.panel-default
+        .panel-heading(data-toggle="collapse" data-target="#"+collapseID)
+            .panel-title= title
+        div(id=collapseID).panel-collapse.collapse
+            .panel-body
+                block
+mixin form(action)
+    form(action=action method="post")
+        block
+mixin form-group(name)
+    .form-group
+        label.control-label.col-sm-2(for=name+"Input")= name
+        .col-sm-10
+            block
+//-+panel-group
+    +panel("newfunc")
+        +form("newfunc")
+            +form-group("newfunc")
+                input(type="number")
