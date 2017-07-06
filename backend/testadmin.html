@@ -16,7 +16,12 @@
                 $.post("post/getConfig",function(data){
                     for(var prop in data){
                         if(data.hasOwnProperty(prop)){
-                            $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").val(data[prop]);
+                            if(Array.isArray(data[prop])){
+                                $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").each(function(i){
+                                    $(this).val(data[prop][i]);
+                                });
+                            }
+                            else $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").val(data[prop]);
                         }
                     }
                 });
@@ -90,7 +95,7 @@
                         else if($(x).attr("type")=="number"||$(x).hasClass("input-int"))return parseInt($(x).val());
                         return $(x).val();
                     };
-                    $(this).find("[name]").filter(function(){return $(this).val()!="";}).each(function(){
+                    $(this).find("[name]").filter(function(){return $(this).val()!=""&&$(this).val()!=null;}).each(function(){
                         if($(this).attr("type")=="checkbox"&&!$(this).prop("checked"))return;
                         if($(this).hasClass("input-array")){
                             if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=[];
@@ -147,11 +152,11 @@
                         $("#listCourse").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
-                $("#listHybridSeat").empty();
-                $.post("debug/listHybridSeat",function(data,status){
+                $("#listFullHybrid").empty();
+                $.post("debug/listFullHybrid",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#listHybridSeat").append(JSON.stringify(data[i])+"<br>");
-                        $("#listHybridSeat").append(new Date(data[i].day).toString()+"<br><br>");
+                        $("#listFullHybrid").append(JSON.stringify(data[i])+"<br>");
+                        $("#listFullHybrid").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
                 $("#listCourseSuggestion").empty();
@@ -183,11 +188,11 @@
                     </div>
                 </div>
                 <div class="panel panel-default">
-                    <div class="panel-heading" data-toggle="collapse" data-target="#listHybridSeatDiv">
-                        <div class="panel-title">List HybridSeat</div>
+                    <div class="panel-heading" data-toggle="collapse" data-target="#listFullHybridDiv">
+                        <div class="panel-title">List FullHybrid</div>
                     </div>
-                    <div id="listHybridSeatDiv" class="panel-collapse collapse">
-                        <div class="panel-body" id="listHybridSeat"></div>
+                    <div id="listFullHybridDiv" class="panel-collapse collapse">
+                        <div class="panel-body" id="listFullHybrid"></div>
                     </div>
                 </div>
                 <div class="panel panel-default">
@@ -481,7 +486,19 @@
                                 <button class="btn btn-default" type="submit">post/removeTutor</button>
                             </form>
                             <br>
-                            <p>editTutor TODO</p>
+                            <form action="post/editTutor" method="post">
+                                <input class="form-control" type="number" name="tutorID" placeholder="tutorID" required>
+                                <input class="form-control" type="password" name="password" placeholder="Password">
+                                <input class="form-control" type="text" name="firstname" placeholder="Firstname">
+                                <input class="form-control" type="text" name="lastname" placeholder="Lastname">
+                                <input class="form-control" type="text" name="nickname" placeholder="Nickname">
+                                <input class="form-control" type="text" name="firstnameEn" placeholder="FirstnameEn">
+                                <input class="form-control" type="text" name="lastnameEn" placeholder="LastnameEn">
+                                <input class="form-control" type="text" name="nicknameEn" placeholder="NicknameEn">
+                                <input class="form-control" type="email" name="email" placeholder="Email">
+                                <input class="form-control" type="text" name="phone" placeholder="Phone">
+                                <button class="btn btn-default" type="submit">post/editTutor</button>
+                            </form>
                             <br>
                             <form action="post/addBlankStudent" method="post">
                                 <input class="form-control" type="text" name="studentID" placeholder="studentID" required>
@@ -577,6 +594,8 @@
                                 </select>
                                 <input class="form-control input-array" type="number" name="tutor" placeholder="tutor" required>
                                 <button class="btn btn-default col-sm-1 addTut">+</button>
+                                <input class="form-control" type="text" name="description" placeholder="description" required>
+                                <input class="form-control" type="number" name="room" placeholder="room" required>
                                 <button class="btn btn-default" type="submit">post/addCourse</button>
                             </form>
                             <br>
@@ -585,7 +604,66 @@
                                 <button class="btn btn-default" type="submit">post/removeCourse</button>
                             </form>
                             <br>
-                            <p>editCourse TODO</p>
+                            <form action="post/editCourse" method="post">
+                                <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
+                                <input class="form-control" type="text" name="subject" placeholder="subject">
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="1">P1</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="2">P2</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="3">P3</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="4">P4</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="5">P5</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="6">P6</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="7">S1</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="8">S2</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="9">S3</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="10">S4</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="11">S5</label>
+                                <label class="checkbox-inline"><input class="input-array input-int" type="checkbox" name="grade" value="12">S6</label>
+                                <input class="form-control" type="text" name="level" placeholder="level">
+                                <select class="form-control input-day" name="day">
+                                    <option disabled="" selected="">Select Day</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <select class="form-control input-hour" name="day">
+                                    <option disabled="" selected="">Select Time</option>
+                                    <option value="8">8.00-10.00</option>
+                                    <option value="10">10.00-12.00</option>
+                                    <option value="13">13.00-15.00</option>
+                                    <option value="15">15.00-17.00</option>
+                                </select>
+                                <input class="form-control input-array" type="number" name="tutor" placeholder="tutor">
+                                <button class="btn btn-default col-sm-1 addTut">+</button>
+                                <input class="form-control" type="text" name="description" placeholder="description">
+                                <input class="form-control" type="number" name="room" placeholder="room">
+                                <button class="btn btn-default" type="submit">post/editCourse</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#roomManagement">
+                        <div class="panel-title">Room Management</div>
+                    </div>
+                    <div id="roomManagement" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <form action="post/roomInfo" method="post">
+                                <select class="form-control input-day" name="day">
+                                    <option disabled="" selected="">Select Day</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <select class="form-control input-hour" name="day">
+                                    <option disabled="" selected="">Select Time</option>
+                                    <option value="8">8.00-10.00</option>
+                                    <option value="10">10.00-12.00</option>
+                                    <option value="13">13.00-15.00</option>
+                                    <option value="15">15.00-17.00</option>
+                                </select>
+                                <button class="btn btn-default" type="submit">post/roomInfo</button>
+                            </form>
+                            <br>
                         </div>
                     </div>
                 </div>
@@ -612,6 +690,13 @@
                                 <input class="form-control" type="file" name="file" multiple required>
                                 <button class="btn btn-default" type="submit">post/updateStudentSlideshow</button>
                             </form>
+                            <br>
+                            <form action="post/submitCourseMaterial" method="post" enctype="multipart/form-data">
+                                <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
+                                <input class="form-control" type="number" name="numberOfSub" placeholder="NumberOfSubmission" required>
+                                <input class="form-control" type="file" name="file" multiple required>
+                                <button class="btn btn-default" type="submit">post/submitCourseMaterial</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -635,11 +720,16 @@
                                 <p>ex. D:/folder/receipt</p>
                                 <input class="form-control" type="number" name="nextStudentID" placeholder="nextStudentID" required>
                                 <input class="form-control" type="number" name="nextTutorID" placeholder="nextTutorID" required>
-                                <input class="form-control" type="number" name="maxHybridSeat" placeholder="maxHybridSeat" required>
                                 <input class="form-control" type="text" name="profilePicturePath" placeholder="profilePicturePath" required>
                                 <p>ex. D:/folder/profilePicture</p>
                                 <input class="form-control" type="text" name="studentSlideshowPath" placeholder="studentSlideshowPath" required>
                                 <p>ex. D:/folder/studentSlideshow</p>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxHybridSeat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom1Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom2Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom3Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom4Seat" required>
+                                <input class="form-control input-array" type="number" name="maxSeat" placeholder="maxRoom5Seat" required>
                                 <button class="btn btn-default" type="submit">post/editConfig</button>
                             </form>
                             <br>

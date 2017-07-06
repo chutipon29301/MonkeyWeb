@@ -1,6 +1,7 @@
 console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
+var chalk=require("chalk");
 var cookieParser=require('cookie-parser');
 var express=require("express");
 var fs=require("fs-extra");
@@ -13,11 +14,12 @@ app.use(cookieParser());
 app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
 app.use(express.static("public"));// node index.js
 app.use(express.static("../public"));// node backend/index.js
-app.use(function(req, res, next) {// Allow access from other domain
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+app.use(function(req,res,next){// Allow access from other domain
+    res.header("Access-Control-Allow-Origin","*");
+    res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
 // var credentials = {key:fs.readFileSync('private.key'),cert:fs.readFileSync('certificate.crt')};
 // require("https").createServer(credentials,app).listen(443);
 // require("http").createServer(express().use(function(req,res){
@@ -26,28 +28,35 @@ app.use(function(req, res, next) {// Allow access from other domain
 // Uncomment code above and comment code below to automatically redirect to https
 app.listen(80);
 
+console.log(chalk.black.bgBlack("Black"));
+console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
+console.log(chalk.black.bgGreen("Green : [PAGE],student"));
+console.log(chalk.black.bgYellow("Yellow : [404]-full"));
+console.log(chalk.black.bgBlue("Blue : [POST],dev"));
+console.log(chalk.black.bgMagenta("Magenta : tutor"));
+console.log(chalk.black.bgCyan("Cyan : admin"));
+console.log(chalk.black.bgWhite("White : noUser"));
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
-        console.error("[ERROR] "+err.message);
+        console.error(chalk.black.bgRed("[ERROR]",err.message));
         return;
     }
     // db.dropDatabase();
     // db.dropCollection("user");
     // db.dropCollection("hybridSeat");
     // db.dropCollection("randomPassword");
+    db.renameCollection("hybridSeat","fullHybrid");
+    db.collection("config").updateOne({},{$set:{maxSeat:[8+6+12+6+6+2,27,12,10,16,12]},$unset:{maxHybridSeat:""}});
     // db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     db.collection("user").updateOne({_id:99033},
-		{
-			$set:{
-				password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130",
-				position:"dev",
-				firstname:"สิรภพ",lastname:"ครองอภิรดี",nickname:"เชี้ยง",
-				firstnameEn:"Siraphop",lastnameEn:"Krongapiradee",nicknameEn:"Chiang",
-				email:"chiang-siraphop@mkyhybrid.com",phone:"0820105315",
-				tutor:{status:"active"}
-			}
-		},
-		{upsert:true}
+        {$set:{
+            password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130",
+            position:"dev",
+            firstname:"สิรภพ",lastname:"ครองอภิรดี",nickname:"เชี้ยง",
+            firstnameEn:"Siraphop",lastnameEn:"Krongapiradee",nicknameEn:"Chiang",
+            email:"chiang-siraphop@mkyhybrid.com",phone:"0820105315",
+            tutor:{status:"active"}}
+        },{upsert:true}
     );
     // db.collection("user").deleteMany({position:"student"});
     // var moment=require("moment");
@@ -55,25 +64,26 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
     // db.collection("user").updateMany({},{$set:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}});
     function splitCourseName(name){
-        if (typeof name == 'string'){
+        if(typeof(name)=='string'){
             if(name.slice(0,3).toLowerCase()=='sat'){
                 return {subject:name.slice(3),grade:"SAT",level:""}
             }
             var subject,grade,level;
-            var firstdigit = name.indexOf(name.match(/\d/));
-            subject = name.slice(0,firstdigit-1).toUpperCase();
+            var firstdigit=name.indexOf(name.match(/\d/));
+            subject=name.slice(0,firstdigit-1).toUpperCase();
             if(/[0-9]/.test(name[name.length-1])){
-                grade = name.slice(firstdigit-1,name.length).toUpperCase();
-                level = "";
+                grade=name.slice(firstdigit-1,name.length).toUpperCase();
+                level="";
             }
             else{
-                grade = name.slice(firstdigit-1,name.length-1).toUpperCase();
-                level = name[name.length-1].toLowerCase();
+                grade=name.slice(firstdigit-1,name.length-1).toUpperCase();
+                level=name[name.length-1].toLowerCase();
             }
             return {subject:subject,grade:grade,level:level};
         }
-        else return {subject:'Wrong input' , grade:'Wrong input' , level:'Wrong input'};
-    }
+        else return {subject:'Wrong input',grade:'Wrong input',level:'Wrong input'};
+    };
+
     var stringToBit=function(grade){
         var output=0,p=false,s=false;
         if(grade[0]=='S'&&grade[1]=='A')return (1<<12);
@@ -102,12 +112,13 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateOne({_id:"config"},
         {$setOnInsert:{
             year:60,quarter:3,courseMaterialPath:"courseMaterial",receiptPath:"receipt",
-            nextStudentID:17001,nextTutorID:99001,maxHybridSeat:40,
-            profilePicturePath:"profilePicture",studentSlideshowPath:"studentSlideshow"}
+            nextStudentID:17001,nextTutorID:99035,
+            profilePicturePath:"profilePicture",studentSlideshowPath:"studentSlideshow",
+            maxSeat:[8+6+12+6+6+2,27,12,10,16,12]}
         },{upsert:true},function(err,result){
             if(result.upsertedCount){
-                require("opn")("http://127.0.0.1/firstConfig");
-                console.log("[WARNING] Please update path/year/quarter");
+                require("opn")("http://127.0.0.1/login");
+                console.log(chalk.black.bgRed("[WARNING] Please update configurations"));
             }
             configDB.findOne({},function(err,config){
                 console.log(config);

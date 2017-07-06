@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/AdminTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Course Profile</title>
+<title>Course Table</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <!-- InstanceEndEditable -->
@@ -13,7 +14,6 @@
 <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <link href="/css/style.min.css" rel="stylesheet" type="text/css">
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 <script src="js/jquery-1.11.3.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
@@ -21,8 +21,7 @@
 <script src="/js/admin.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
-<!--add more script-->
-<script>$(document).ready(getCourseDescription);</script>
+<script src="js/adminCrTable.min.js" type="text/javascript"></script>
 <!-- InstanceEndEditable -->
 </head>
 <body>
@@ -45,36 +44,45 @@
     </div>
     <!-- /.navbar-collapse --> 
   </div>
-  <!-- /.container-fluid --> 
+  <!-- /.container-fluid -->
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  <div class="col-md-8 col-md-offset-2">
-    <h1 id="courseName">&nbsp;</h1>
-    <h3 id="tutorName">&nbsp;</h3>
+  <div class="container col-md-8 col-md-offset-2">
+    <form id="level">
+      <label>เลือกระดับชั้น</label>
+      <label class="checkbox-inline"><input type="checkbox" value="1">P1</label>
+      <label class="checkbox-inline"><input type="checkbox" value="2">P2</label>
+      <label class="checkbox-inline"><input type="checkbox" value="3">P3</label>
+      <label class="checkbox-inline"><input type="checkbox" value="4">P4</label>
+      <label class="checkbox-inline"><input type="checkbox" value="5">P5</label>
+      <label class="checkbox-inline"><input type="checkbox" value="6">P6</label>
+      <label class="checkbox-inline"><input type="checkbox" value="7">S1</label>
+      <label class="checkbox-inline"><input type="checkbox" value="8">S2</label>
+      <label class="checkbox-inline"><input type="checkbox" value="9">S3</label>
+      <label class="checkbox-inline"><input type="checkbox" value="10">S4</label>
+      <label class="checkbox-inline"><input type="checkbox" value="11">S5</label>
+      <label class="checkbox-inline"><input type="checkbox" value="12">S6</label>
+      <button onclick="sendLevel()" type="button" class="btn btn-default">SUBMIT</button>
+    </form>
     <br>
   </div>
-  <div>
-  	<p class="col-md-2 col-md-offset-2" id="day">&nbsp;</p>
-  	<p class="col-md-2" id="time">&nbsp;</p>
-  	<p class="col-md-2" id="courseID">&nbsp;</p>
-<!--
-  	<button class="btn btn-default col-md-1 col-md-offset-3" type="button">SHEET</button>
-  	<button class="btn btn-default col-md-1" type="button">EDIT</button>
--->
-  </div>
-  <div class="table-responsive col-md-8 col-md-offset-2">
-    <table class="table">
+    <div class="container table-responsive">
+    <table class="table table-hover table-bordered">
       <thead>
-        <tr>
-          <th class="col-md-1">No.</th>
-          <th class="col-md-1">ID</th>
-          <th class="col-md-2">Nickname</th>
-          <th class="col-md-2">Name</th>
-          <th class="col-md-2">Surname</th>
-        </tr>
+        <tr id="tableLevel"></tr>
+        <tr id="tableGroup"></tr>
       </thead>
-      <thead  id="allStudentInCourseTable">
-      </thead>
+      <tbody>
+        <tr id="sat8"></tr>
+        <tr id="sat10"></tr>
+        <tr id="sat13"></tr>
+        <tr id="sat15"></tr>
+        <tr id="spaceRow"></tr>
+        <tr id="sun8"></tr>
+        <tr id="sun10"></tr>
+        <tr id="sun13"></tr>
+        <tr id="sun15"></tr>
+      </tbody>
     </table>
   </div>
   <!-- InstanceEndEditable --> </div>
@@ -87,4 +95,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
