@@ -157,7 +157,7 @@ function updateTable() {
                         else {
                             var x = $('#skilltimeEng option:selected').text().split('-')[0]
                         }
-                        skillClass[j].innerHTM = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
+                        skillClass[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                     }
                     else {
                         skillClass[j].className = skillClass[j].className + ' sk';
