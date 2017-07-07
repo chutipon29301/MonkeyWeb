@@ -48,11 +48,13 @@ module.exports=function(app,db){
         var middlewareOptions=options.middlewareOptions;
         if(middlewareOptions==undefined)middlewareOptions={};
         var type="html";
-        if(options.type)type="pug";
+        if(options.type)type=options.type;
+        var local={};
+        if(options.local)local=options.local;
         app.get(url,checkAuth(middlewareOptions),function(req,res){
             logPosition(req.cookies,function(positionColor){
                 console.log(chalk.black.bgGreen("[PAGE REQUEST]"),page,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
-                if(type=="pug")res.status(200).render(page);
+                if(type=="pug")res.status(200).render(page,local);
                 else res.status(200).sendFile(outputPath);
             });
         });
@@ -63,6 +65,58 @@ module.exports=function(app,db){
             console.log("\treq.body","=>",req.body);
             res.status(404).sendFile(path.join(__dirname,"../404.html"));
         });
+    };
+
+    var getCourseDB=function(callback){
+        db.collection("config").findOne({},function(err,config){
+            callback(db.collection("CR"+config.year+"Q"+config.quarter));
+        });
+    };
+    var getCourseName=function(courseID,callback){
+        getCourseDB(function(courseDB){
+            courseDB.findOne({_id:courseID},function(err,result){
+                var subject=result.subject;
+                var grade=result.grade;
+                var level=result.level;
+                callback(subject+gradeBitToString(grade)+level);
+            });
+        });
+    };
+    var callbackLoop=function(n,inLoop,endLoop){
+        var c=0;
+        var finish=function(){
+            if(c==n)endLoop();
+            c++;
+        };
+        for(var i=0;i<n;i++){
+            inLoop(i,function(){
+                finish();
+            });
+        }
+        finish();
+    };
+    var gradeBitToString=function(bit){
+        var output="",p=false,s=false;
+        for(var i=0;i<6;i++){
+            if(bit&(1<<i)){
+                if(p==false){
+                    p=true;
+                    output+="P";
+                }
+                output+=(i+1);
+            }
+        }
+        for(var i=0;i<6;i++){
+            if(bit&(1<<(i+6))){
+                if(s==false){
+                    s=true;
+                    output+="S";
+                }
+                output+=(i+1);
+            }
+        }
+        if(bit&(1<<12))output+="SAT";
+        return output;
     };
 
     addPage("login");
@@ -92,10 +146,46 @@ module.exports=function(app,db){
         addPage("adminCoursedescription",options);
         addPage("adminCourseRoom",options);
         addPage("adminCourseTable",options);
-    options.type="pug";
-        addPage("adminCourseSubmission",options);
-    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
-    // addPage("firstConfig",{backendDir:true});
+        app.get("/adminCourseMaterial",checkAuth(options.middlewareOptions),function(req,res){
+            logPosition(req.cookies,function(positionColor){
+                console.log(chalk.black.bgGreen("[PAGE REQUEST]"),"adminCourseMaterial","FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
+                (function(options,callback){
+                    var output=[];
+                    getCourseDB(function(courseDB){
+                        courseDB.find({tutor:{$ne:99000}}).sort({tutor:1,day:1,subject:1,grade:1,level:1}).toArray(function(err,course){
+                            callbackLoop(course.length,function(i,continueLoop){
+                                getCourseName(course[i]._id,function(courseName){
+                                    var tutorNicknameEn=[];
+                                    callbackLoop(course[i].tutor.length,function(j,continueLoop){
+                                        userDB.findOne({_id:course[i].tutor[j]},function(err,tutor){
+                                            tutorNicknameEn[j]=tutor.nicknameEn;
+                                            continueLoop();
+                                        });
+                                    },function(){
+                                        output[i]={courseID:course[i]._id,
+                                            tutor:course[i].tutor,tutorNicknameEn:tutorNicknameEn,
+                                            day:course[i].day,courseName:courseName,
+                                            submission:course[i].submission
+                                        };
+                                        continueLoop();
+                                    });
+                                });
+                            },function(){
+                                db.collection("config").findOne({},function(err,config){
+                                    callback(options,{course:output,moment:moment,config:config});
+                                });
+                            });
+                        });
+                    });
+                })(options,function(options,output){
+                    res.status(200).render("adminCourseMaterial",output);
+                    addPage("tutorCourseMaterial",Object.assign({},options,{type:"pug"}));
+                    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
+                    app.all("*",return404);
+                });
+            });
+        });
+            // addPage("adminCourseMaterial",Object.assign({},options,{type:"pug",local:Object.assign({},output,{moment:moment})}));
 
-    app.all("*",return404);
+    // addPage("firstConfig",{backendDir:true});
 }
