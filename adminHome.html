@@ -14,7 +14,7 @@
 <link href="css/w3.css" rel="stylesheet" type="text/css">
 <link href="/css/style.min.css" rel="stylesheet" type="text/css">
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-<script src="js/jquery-1.11.3.min.js"></script>
+<script src="js/jquery-3.2.1.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/global-1.0.0.custom.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
@@ -53,14 +53,24 @@
   </div>
   <script>
 	  slideShow('slide','classic',true);
-        $(document).ready(function(){
-            $("body").dblclick(function(){
-                self.location="\adminHome";
-            });
-        });
+      $(document).ready(function(){
+          $("body").dblclick(function(){
+              $(".galleria").empty();
+//              slideShow('slide','classic',true);
+          });
+      });
     </script>
-  <div class="col-md-offset-1">
-    <button class="btn btn-default">UPLOAD</button>
+  <div class="container-fluid">
+    <br>
+    <div class="col-md-6"><button class="btn btn-primary">UPLOAD SLIDE</button></div>
+    <div class="col-md-6" align="right">
+      <div class="btn-group">
+        <button type="button" class="btn btn-info">PORTRAIT</button>
+        <button type="button" class="btn btn-info">LANDSCAPE</button>
+        <button type="button" class="btn btn-info">NEWS</button>
+        <button type="button" class="btn btn-info">FULL-SCREEN</button>
+      </div>
+    </div>
   </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
