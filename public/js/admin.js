@@ -56,6 +56,7 @@ function filterData(data) {
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
+    let course = document.getElementById("course");
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => data.status === status.options[status.selectedIndex].value);
     }
@@ -64,6 +65,18 @@ function filterData(data) {
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
         data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
+    }
+    if (course.options[course.selectedIndex].value !== "all") {
+        data = data.filter(data => {
+            switch (course.options[course.selectedIndex].value) {
+                case "hb":
+                    return data.inHybrid;
+                case "cr":
+                    return data.inCourse;
+                default:
+                    break;
+            }
+        })
     }
     return data;
 }
@@ -134,21 +147,21 @@ function getAllCourseContent() {
     });
 }
 
-function filterCourseData(data){
+function filterCourseData(data) {
     let subject = document.getElementById("subject");
     let grade = document.getElementById("grade");
     let name = document.getElementById("name");
     let time = document.getElementById("time");
     if (subject.options[subject.selectedIndex].value !== "all") {
-        data = data.filter(data =>  data.subject === subject.options[subject.selectedIndex].value);
+        data = data.filter(data => data.subject === subject.options[subject.selectedIndex].value);
     }
-    if (grade.options[grade.selectedIndex].value !== "all"){
-        data = data.filter(data =>  data.grade.indexOf(parseInt(grade.options[grade.selectedIndex].value)) !== -1);
+    if (grade.options[grade.selectedIndex].value !== "all") {
+        data = data.filter(data => data.grade.indexOf(parseInt(grade.options[grade.selectedIndex].value)) !== -1);
     }
-    if (name.options[name.selectedIndex].value !== "all"){
+    if (name.options[name.selectedIndex].value !== "all") {
         data = data.filter(data => data.tutor.indexOf(parseInt(name.options[name.selectedIndex].value)) !== -1);
     }
-    if (time.options[time.selectedIndex].value !== "all"){
+    if (time.options[time.selectedIndex].value !== "all") {
         data = data.filter(data => data.day === parseInt(time.options[time.selectedIndex].value));
     }
     return data
@@ -482,7 +495,7 @@ function addRemoveCourse(timeID) {
                     let grade = "";
                     if (course.grade[0] > 6) {
                         grade = "S" + course.grade.map((x) => (x - 6)
-                            ).join("");
+                        ).join("");
                     } else {
                         grade = "P" + course.grade.join("");
                     }
@@ -493,7 +506,7 @@ function addRemoveCourse(timeID) {
                         let grade = "";
                         if (data.course[i].grade[0] > 6) {
                             grade = "S" + data.course[i].grade.map((x) => (x - 6)
-                                ).join("");
+                            ).join("");
                         } else {
                             grade = "P" + data.course[i].grade.join("");
                         }
