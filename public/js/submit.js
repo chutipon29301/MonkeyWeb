@@ -72,6 +72,9 @@ $(document).ready(function () {
     if ($('#hb').html().length === 0) {
         $('#hb').html('ไม่ลงทะเบียนในระบบ FHB')
     }
+    if ($('#sk').html().length === 0) {
+        $('#sk').html('ไม่ลงทะเบียนในระบบ SKILL')
+    }
 });
 
 function genTable() {
@@ -154,7 +157,7 @@ function updateTable() {
                         else {
                             var x = $('#skilltimeEng option:selected').text().split('-')[0]
                         }
-                        skillClass[j].innerHTM = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
+                        skillClass[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
                     }
                     else {
                         skillClass[j].className = skillClass[j].className + ' sk';
