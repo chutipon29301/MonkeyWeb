@@ -936,6 +936,72 @@ module.exports=function(app,db){
             });
         });
     });
+    //OK {courseID,numberOfSub,action} return {}
+    post("/post/judgeCourseMaterial",function(req,res){
+        var action=req.body.action;
+        var courseID=req.body.courseID;
+        var numberOfSub=parseInt(req.body.numberOfSub);
+        getCourseDB(function(courseDB){
+            courseDB.findOne({_id:courseID},function(err,result){
+                if(result==null)res.send({err:"The requested course doesn't exist."});
+                else{
+                    if(action=="accept"){
+                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:"accepted"}},function(){
+                            res.send({});
+                        });
+                    }
+                    else if(action=="reject"||action=="remove"){
+                        configDB.findOne({},function(err,config){
+                            var newPath=config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/";
+                            fs.remove(newPath,function(err){
+                                if(err)res.send({err:err,at:"remove"});
+                                else{
+                                    if(action=="reject"){
+                                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:"rejected"}},function(){
+                                            res.send({});
+                                        });
+                                    }
+                                    else if(action=="remove"){
+                                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:null}},function(){
+                                            res.send({});
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                    }
+                }
+            });
+        });
+    });
+    //OK {} return {[course->courseID,tutor,tutorNicknameEn,day,courseName,[submission]]}
+    post("/post/allCourseMaterial",function(req,res){
+        var output=[];
+        getCourseDB(function(courseDB){
+            courseDB.find({tutor:{$ne:99000}}).sort({tutor:1,day:1,subject:1,grade:1,level:1}).toArray(function(err,course){
+                callbackLoop(course.length,function(i,continueLoop){
+                    getCourseName(course[i]._id,function(courseName){
+                        var tutorNicknameEn=[];
+                        callbackLoop(course[i].tutor.length,function(j,continueLoop){
+                            userDB.findOne({_id:course[i].tutor[j]},function(err,tutor){
+                                tutorNicknameEn[j]=tutor.nicknameEn;
+                                continueLoop();
+                            });
+                        },function(){
+                            output[i]={courseID:course[i]._id,
+                                tutor:course[i].tutor,tutorNicknameEn:tutorNicknameEn,
+                                day:course[i].day,courseName:courseName,
+                                submission:course[i].submission
+                            };
+                            continueLoop();
+                        });
+                    });
+                },function(){
+                    res.send({course:output});
+                });
+            });
+        });
+    });
 
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID}

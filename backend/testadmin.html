@@ -43,7 +43,8 @@
                 //     });
                 // })
                 $("form").submit(function(event){
-                    if($(this).parents("#fileUploading").length){
+                    // if($(this).parents("#fileUploading").length){
+                    if($(this).attr("enctype")=="multipart/form-data"){
                         return true;
                     }
                     event.preventDefault();
@@ -103,6 +104,9 @@
                         }
                         else input[$(this).attr("name")]=getValue(this);
                     });
+                    if(event.originalEvent.explicitOriginalTarget.name){
+                        input[event.originalEvent.explicitOriginalTarget.name]=event.originalEvent.explicitOriginalTarget.value;
+                    }
                     console.log("===>",$(this).attr("action"));
                     console.log(input);
                     $.post($(this).attr("action"),input,function(data,status){
@@ -696,6 +700,18 @@
                                 <input class="form-control" type="number" name="numberOfSub" placeholder="NumberOfSubmission" required>
                                 <input class="form-control" type="file" name="file" multiple required>
                                 <button class="btn btn-default" type="submit">post/submitCourseMaterial</button>
+                            </form>
+                            <br>
+                            <form action="post/judgeCourseMaterial" method="post">
+                                <input class="form-control" type="text" name="courseID" placeholder="courseID" required>
+                                <input class="form-control" type="number" name="numberOfSub" placeholder="NumberOfSubmission" required>
+                                <button class="btn btn-default" name="from" value="accept" type="submit">post/judgeCourseMaterial accept</button>
+                                <button class="btn btn-default" name="from" value="reject" type="submit">post/judgeCourseMaterial reject</button>
+                                <button class="btn btn-default" name="from" value="remove" type="submit">post/judgeCourseMaterial remove</button>
+                            </form>
+                            <br>
+                            <form action="post/allCourseMaterial" method="post">
+                                <button class="btn btn-default" type="submit">post/allCourseMaterial</button>
                             </form>
                         </div>
                     </div>

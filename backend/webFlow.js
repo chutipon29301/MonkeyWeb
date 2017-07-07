@@ -47,10 +47,13 @@ module.exports=function(app,db){
         if(options.backendDir==true)outputPath=path.join(__dirname,page+".html");
         var middlewareOptions=options.middlewareOptions;
         if(middlewareOptions==undefined)middlewareOptions={};
+        var type="html";
+        if(options.type)type="pug";
         app.get(url,checkAuth(middlewareOptions),function(req,res){
             logPosition(req.cookies,function(positionColor){
                 console.log(chalk.black.bgGreen("[PAGE REQUEST]"),page,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
-                res.status(200).sendFile(outputPath);
+                if(type=="pug")res.status(200).render(page);
+                else res.status(200).sendFile(outputPath);
             });
         });
     };
@@ -88,7 +91,9 @@ module.exports=function(app,db){
         addPage("adminStudentprofile",options);
         addPage("adminCoursedescription",options);
         addPage("adminCourseRoom",options);
-    addPage("adminCourseTable",options);
+        addPage("adminCourseTable",options);
+    options.type="pug";
+        addPage("adminCourseSubmission",options);
     addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
     // addPage("firstConfig",{backendDir:true});
 
