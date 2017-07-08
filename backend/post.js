@@ -756,16 +756,19 @@ module.exports=function(app,db){
                         }
                     }
                     fullHybridDB.findOne({day:day},function(err,fullHybrid){
-                        for(var i=0;i<fullHybrid.student.length;i++){
-                            var index=output.fullHybrid.findIndex(function(x){
-                                return x.subject==fullHybrid.student[i].subject;
-                            });
-                            if(index==-1)index=output.fullHybrid.length;
-                            if(output.fullHybrid[index]==undefined)output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
-                            output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
+                        if(!fullHybrid)res.send(output);
+                        else{
+                            for(var i=0;i<fullHybrid.student.length;i++){
+                                var index=output.fullHybrid.findIndex(function(x){
+                                    return x.subject==fullHybrid.student[i].subject;
+                                });
+                                if(index==-1)index=output.fullHybrid.length;
+                                if(output.fullHybrid[index]==undefined)output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
+                                output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
+                            }
+                            output.maxHybridSeat=config.maxSeat[0];
+                            res.send(output);
                         }
-                        output.maxHybridSeat=config.maxSeat[0];
-                        res.send(output);
                     });
                 });
             });
