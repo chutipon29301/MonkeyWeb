@@ -7,18 +7,20 @@ var express=require("express");
 var fs=require("fs-extra");
 var multer=require("multer");
 var MongoClient=require('mongodb').MongoClient;
+var path=require("path");
 
 var app=express();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
-app.use(express.static("public"));// node index.js
-app.use(express.static("../public"));// node backend/index.js
+app.use(express.static(path.join(__dirname,"../public")));// Serve static files
 app.use(function(req,res,next){// Allow access from other domain
     res.header("Access-Control-Allow-Origin","*");
     res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+app.set("views",path.join(__dirname,"../views"));
+app.set("view engine","pug");
 
 // var credentials = {key:fs.readFileSync('private.key'),cert:fs.readFileSync('certificate.crt')};
 // require("https").createServer(credentials,app).listen(443);
@@ -45,8 +47,8 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.dropCollection("user");
     // db.dropCollection("hybridSeat");
     // db.dropCollection("randomPassword");
-    db.renameCollection("hybridSeat","fullHybrid");
-    db.collection("config").updateOne({},{$set:{maxSeat:[8+6+12+6+6+2,27,12,10,16,12]},$unset:{maxHybridSeat:""}});
+    // db.renameCollection("hybridSeat","fullHybrid");
+    // db.collection("config").updateOne({},{$set:{maxSeat:[8+6+12+6+6+2,27,12,10,16,12]},$unset:{maxHybridSeat:""}});
     // db.collection("user").updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     db.collection("user").updateOne({_id:99033},
         {$set:{
