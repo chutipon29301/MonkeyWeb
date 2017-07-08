@@ -11,7 +11,7 @@ mixin panel(title)
     .panel.panel-default
         .panel-heading(data-toggle="collapse" data-target="#"+collapseID)
             .panel-title= title
-        div(id=collapseID).panel-collapse.collapse
+        div(id=collapseID).panel-collapse.collapse.in
             .panel-body
                 block
 mixin form(action)

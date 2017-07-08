@@ -1,0 +1,22 @@
+th{
+    color:rgb(255,255,255);
+    font-size:120%;
+}
+.table-bordered>thead>tr>th{
+    border-bottom-width:1px;
+}
+.table-bordered>thead>tr:last-child>th{
+    border-bottom-width:2px;
+}
+.thead-tutor{
+    background-color:rgb(49,193,193);
+}
+.thead-sat{
+    background-color:rgb(128,82,121);
+}
+.thead-sun{
+    background-color:rgb(225,86,63);
+}
+.thead-time,.thead-course-name{
+    background-color:rgb(255,138,9);
+}
