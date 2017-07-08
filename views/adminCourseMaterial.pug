@@ -1,8 +1,11 @@
 extend htmlTemplate.pug
 block head
+    - var pageTitle="Admin Course Material"
     link(rel="stylesheet" href="css/adminCourseMaterial.css")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
+    //- script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
     script(src="js/adminCourseMaterial.js")
+block header
+    - var removeNavbarBottomMargin=true;
 block body
     include generalTemplate.pug
     //- p= JSON.stringify(config)

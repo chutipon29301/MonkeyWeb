@@ -136,6 +136,7 @@ module.exports=function(app,db){
 
     // All post will return {err} if error occurs
     var post=function(url,callback){
+        app.locals.postFunction[url.slice(1)]=callback;
         app.post(url,function(req,res){
             logPosition(req.cookies,function(positionColor){
                 console.log(chalk.black.bgBlue("[POST REQUEST]"),url.slice(1),

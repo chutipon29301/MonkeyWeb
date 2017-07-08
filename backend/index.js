@@ -124,6 +124,12 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
             }
             configDB.findOne({},function(err,config){
                 console.log(config);
+                app.locals.post=function(method,input,callback){
+                    app.locals.postFunction[method]({body:input},{send:function(output){
+                        callback(output);
+                    }});
+                };
+                app.locals.postFunction={};
                 require("./post.js")(app,db);
                 require("./webFlow.js")(app,db);
             });
