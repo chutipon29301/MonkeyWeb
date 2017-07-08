@@ -179,12 +179,12 @@ module.exports=function(app,db){
                     });
                 })(options,function(options,output){
                     res.status(200).render("adminCourseMaterial",output);
-                    addPage("tutorCourseMaterial",Object.assign({},options,{type:"pug"}));
-                    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
-                    app.all("*",return404);
                 });
             });
         });
+                    addPage("tutorCourseMaterial",Object.assign({},options,{type:"pug"}));
+                    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
+                    app.all("*",return404);
             // addPage("adminCourseMaterial",Object.assign({},options,{type:"pug",local:Object.assign({},output,{moment:moment})}));
 
     // addPage("firstConfig",{backendDir:true});
