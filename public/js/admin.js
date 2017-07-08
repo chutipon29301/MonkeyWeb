@@ -244,6 +244,9 @@ function getStudentProfile() {
                     document.getElementById(courseTimeID).innerHTML = course.courseName;
                     document.getElementById(courseTimeID).value = data.courseID[i];
                     document.getElementById(courseTimeID).className = "btn btn-warning col-md-12";
+                    name(course.tutor[0]).then(tutorName => {
+                        document.getElementById(courseTimeID).innerHTML += " - " + tutorName.nicknameEn;
+                    })
                 }
             });
         }
