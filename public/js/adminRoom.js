@@ -42,14 +42,15 @@ let tableGenerator = ($scope, $http, time) => {
 
     let index = 0;
     roomInfo.subscribe((res) => {
-        $scope.a = res.data;
-        $scope.roomDayList.push({
-            room: "Hybrid",
-            courseName: "Hybrid",
-            noStudent: res.data.fullHybrid[0].studentID.length + res.data.fullHybrid[1].studentID.length,
-            full: res.data.maxHybridSeat,
-            courseID: "Hybrid"
-        });
+        if (indexOfObjectInArray($scope.roomDayList, "Hybrid") === -1) {
+            $scope.roomDayList.push({
+                room: "Hybrid",
+                courseName: "Hybrid",
+                noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length + res.data.fullHybrid[1].studentID.length),
+                full: res.data.maxHybridSeat,
+                courseID: "Hybrid"
+            });
+        }
         for (let i = 0; i < res.data.course.length; i++) {
             if (res.data.course[i] === null) continue;
             $scope.roomDayList.push({
@@ -110,19 +111,55 @@ app.controller("sat15", function ($scope, $http) {
 });
 
 app.controller("sun8", function ($scope, $http) {
-    tableGenerator($scope, $http, -342000000);
+    var promise = new Promise((res, rej) => {
+        tableGenerator($scope, $http, -342000000);
+        res();
+    });
+    promise.then(() => {
+        tableGenerator($scope, $http, 262800000);
+    });
 });
 
 app.controller("sun10", function ($scope, $http) {
-    tableGenerator($scope, $http, -334800000);
+    var promise = new Promise((res, rej) => {
+        tableGenerator($scope, $http, -334800000);
+        res();
+    });
+    promise.then(() => {
+        tableGenerator($scope, $http, 270000000);
+    });
 });
 
 app.controller("sun13", function ($scope, $http) {
-    tableGenerator($scope, $http, -324000000);
+    var promise = new Promise((res, rej) => {
+        tableGenerator($scope, $http, -324000000);
+        res();
+    });
+    promise.then(() => {
+        tableGenerator($scope, $http, 280800000);
+    });
+    // var promise = new Promise((res, rej) => {
+    //     tableGenerator($scope, $http, -324000000);
+    // });
+    // // promise.then(() => {
+    // // })
+    // tableGenerator($scope, $http, 280800000);
 });
 
 app.controller("sun15", function ($scope, $http) {
-    tableGenerator($scope, $http, -316800000);
+    var promise = new Promise((res, rej) => {
+        tableGenerator($scope, $http, -316800000);
+        res();
+    });
+    promise.then(() => {
+        tableGenerator($scope, $http, 288000000);
+    });
+    // var promise = new Promise((res, rej) => {
+    //     tableGenerator($scope, $http, -316800000);
+    // });
+    // promise.then(() => {
+    //     tableGenerator($scope, $http, 288000000);
+    // });
 });
 
 function showRoom(evt, cityName) {
@@ -144,4 +181,13 @@ function showRoom(evt, cityName) {
     // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(cityName).style.display = "block";
     evt.currentTarget.className += " active";
+}
+
+function indexOfObjectInArray(array, key) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].room === key) {
+            return i;
+        }
+    }
+    return -1;
 }
