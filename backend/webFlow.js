@@ -4,6 +4,7 @@ module.exports=function(app,db){
     var moment=require("moment");
     var path=require("path");
 
+    var configDB=db.collection("config");
     var userDB=db.collection("user");
 
     var logPosition=function(cookie,callback){
@@ -95,9 +96,10 @@ module.exports=function(app,db){
         addPage("adminCourseRoom",options);
         addPage("adminCourseTable",options);
     app.locals.post("post/allCourseMaterial",{},function(output){
-        db.collection("config").findOne({},function(err,config){
+        configDB.findOne({},function(err,config){
+            addPage("tutorCourseMaterial",Object.assign({},options,{type:"pug",local:Object.assign({},output,{moment:moment,config:config})}));
+            options.middlewareOptions.position={$in:["admin","dev"]};
             addPage("adminCourseMaterial",Object.assign({},options,{type:"pug",local:Object.assign({},output,{moment:moment,config:config})}));
-            addPage("tutorCourseMaterial",Object.assign({},options,{type:"pug"}));
             addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
 
             app.all("*",return404);
