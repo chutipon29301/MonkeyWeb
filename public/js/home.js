@@ -13,7 +13,7 @@ function slideShow(type, mode, autoPlay) {
         });
     };
     let recur = function (i) {
-        //noinspection ES6ModulesDependencies,JSUnusedLocalSymbols
+        //noinspection ES6ModulesDependencies,JSUnusedLocalSymbols,JSUnresolvedFunction
         $.get("images/news/" + type + i + ".png").done(function (result) {
             console.log("success" + i);
             recur(i + 1);
@@ -23,4 +23,7 @@ function slideShow(type, mode, autoPlay) {
         });
     };
     recur(1);
+}
+function uploadSlide() {
+    $("#uploadModal").modal();
 }

@@ -366,21 +366,21 @@ function generateImageData() {
                 if (tableInfo.inPhy && tableInfo.inMath) {
                     $('#phyImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
                     $('#phy').attr("class", "btn btn-default");
-                    $('#phy').removeProp("disabled");
+                    $('#phy').prop("disabled",false);
                     generateCover(tableInfo, "phy");
                     $('#mathImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
                     $('#math').attr("class", "btn btn-default");
-                    $('#math').removeProp("disabled");
+                    $('#math').prop("disabled",false);
                     generateCover(tableInfo, "math");
                 } else if (tableInfo.inPhy) {
                     $('#phyImg').attr("src", "images/p" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
                     $('#phy').attr("class", "btn btn-default");
-                    $('#phy').removeProp("disabled");
+                    $('#phy').prop("disabled",false);
                     generateCover(tableInfo, "phy");
                 } else if (tableInfo.inMath) {
                     $('#mathImg').attr("src", "images/m" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
                     $('#math').attr("class", "btn btn-default");
-                    $('#math').removeProp("disabled");
+                    $('#math').prop("disabled",false);
                     generateCover(tableInfo, "math");
                 }
 
@@ -498,7 +498,7 @@ function addRemoveCourse(timeID) {
                     let grade = "";
                     if (course.grade[0] > 6) {
                         grade = "S" + course.grade.map((x) => (x - 6)
-                        ).join("");
+                            ).join("");
                     } else {
                         grade = "P" + course.grade.join("");
                     }
@@ -509,7 +509,7 @@ function addRemoveCourse(timeID) {
                         let grade = "";
                         if (data.course[i].grade[0] > 6) {
                             grade = "S" + data.course[i].grade.map((x) => (x - 6)
-                            ).join("");
+                                ).join("");
                         } else {
                             grade = "P" + data.course[i].grade.join("");
                         }
