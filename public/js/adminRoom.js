@@ -48,17 +48,44 @@ let tableGenerator = ($scope, $http, time) => {
                 courseName: "Hybrid",
                 noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length + res.data.fullHybrid[1].studentID.length),
                 full: res.data.maxHybridSeat,
-                courseID: "Hybrid"
+                courseID: "Hybrid",
+                property: "nonExpandable",
+                isHidden: false
+            });
+            $scope.roomDayList.push({
+                courseID: "Hybrid",
+                courseName: "Full Hybrid Math",
+                noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length),
+                property: "expandable",
+                isHidden: true
+            });
+            $scope.roomDayList.push({
+                courseID: "Hybrid",
+                courseName: "Full Hybrid Physics",
+                noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[1].studentID.length),
+                property: "expandable",
+                isHidden: true
             });
         }
+        for (let i = 0; i < res.data.courseHybrid.length; i++) {
+            $scope.roomDayList.push({
+                courseID: res.data.courseHybrid[i],
+                property: "expandable",
+                isHidden: true
+            });
+        }
+
         for (let i = 0; i < res.data.course.length; i++) {
             if (res.data.course[i] === null) continue;
             $scope.roomDayList.push({
                 room: i,
                 full: res.data.course[i].maxSeat,
-                courseID: res.data.course[i].courseID
+                courseID: res.data.course[i].courseID,
+                property: "nonExpandable",
+                isHidden: false
             });
         }
+
         for (let i = 0; i < $scope.roomDayList.length; i++) {
             if ($scope.roomDayList[i].courseID !== "Hybrid") {
                 courseInfo($scope.roomDayList[i].courseID).subscribe(res => {
@@ -70,6 +97,7 @@ let tableGenerator = ($scope, $http, time) => {
                 });
             } else {
                 for (let j = 0; j < res.data.courseHybrid.length; j++) {
+                    if ($scope.roomDayList[i].property === "expandable") continue;
                     courseInfo(res.data.courseHybrid[j]).subscribe(response => {
                         $scope.roomDayList[i].noStudent += response.data.student.length;
                     })
@@ -82,8 +110,15 @@ let tableGenerator = ($scope, $http, time) => {
         if (courseID !== "Hybrid") {
             writeCookie("monkeyWebAdminAllcourseSelectedCourseID", courseID);
             self.location = "/adminCoursedescription";
+        } else {
+            for (let i = 0; i < $scope.roomDayList.length; i++) {
+                if ($scope.roomDayList[i].property === "expandable") {
+                    $scope.roomDayList[i].isHidden = !$scope.roomDayList[i].isHidden
+                }
+            }
         }
     };
+
 };
 
 app.controller("tue", function ($scope, $http) {
@@ -138,12 +173,6 @@ app.controller("sun13", function ($scope, $http) {
     promise.then(() => {
         tableGenerator($scope, $http, 280800000);
     });
-    // var promise = new Promise((res, rej) => {
-    //     tableGenerator($scope, $http, -324000000);
-    // });
-    // // promise.then(() => {
-    // // })
-    // tableGenerator($scope, $http, 280800000);
 });
 
 app.controller("sun15", function ($scope, $http) {
@@ -154,12 +183,6 @@ app.controller("sun15", function ($scope, $http) {
     promise.then(() => {
         tableGenerator($scope, $http, 288000000);
     });
-    // var promise = new Promise((res, rej) => {
-    //     tableGenerator($scope, $http, -316800000);
-    // });
-    // promise.then(() => {
-    //     tableGenerator($scope, $http, 288000000);
-    // });
 });
 
 function showRoom(evt, cityName) {
