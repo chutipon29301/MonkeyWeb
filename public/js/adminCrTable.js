@@ -84,17 +84,23 @@ function genTableGroup(level, suggCr, allCr, outerCr, i) {
     if (suggCr.course.length === 0) {
         $("#tableGroup").append("<td style='text-align: center'></td>");
         for (let j = 0; j < allCr.course.length; j++) {
-            $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "<br>");
+            $.post("post/name", {userID: allCr.course[j].tutor[0]}).then((name) => {
+                $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "-" + name.nicknameEn + "<br>");
+            })
         }
         return;
     } else if (i >= suggCr.course.length) return;
     $("#tableGroup").append("<th style='text-align: center'>" + suggCr.course[i].level + "</th>");
     for (let j = 0; j < allCr.course.length; j++) {
         if (suggCr.course[i].courseID.indexOf(allCr.course[j].courseID) >= 0) {
-            $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "<br>");
+            $.post("post/name", {userID: allCr.course[j].tutor[0]}).then((name) => {
+                $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "-" + name.nicknameEn + "<br>");
+            })
         }
         if (outerCr.indexOf(allCr.course[j].courseID) >= 0) {
-            $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "<br>");
+            $.post("post/name", {userID: allCr.course[j].tutor[0]}).then((name) => {
+                $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "-" + name.nicknameEn + "<br>");
+            })
         }
     }
     genTableGroup(level, suggCr, allCr, outerCr, i + 1)

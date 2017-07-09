@@ -54,16 +54,10 @@
   </div>
   <script>
 	  slideShow('slide','classic',true);
-      $(document).ready(function(){
-          $("body").dblclick(function(){
-              $(".galleria").empty();
-//              slideShow('slide','classic',true);
-          });
-      });
     </script>
   <div class="container-fluid"> <br>
     <div class="col-md-6">
-      <button class="btn btn-primary">UPLOAD SLIDE</button>
+      <button class="btn btn-primary" onClick="uploadSlide()">UPLOAD SLIDE</button>
     </div>
     <div class="col-md-6" align="right">
       <div class="btn-group">
@@ -71,6 +65,23 @@
         <button type="button" class="btn btn-info">LANDSCAPE</button>
         <button type="button" class="btn btn-info">NEWS</button>
         <button type="button" class="btn btn-info">FULL-SCREEN</button>
+      </div>
+    </div>
+  </div>
+  <!--  Modal for upload pic-->
+  <div id="uploadModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>Upload Slide</h4>
+        </div>
+        <div class="modal-body form-group">
+          <p>p=portrait, l=landscape, n=news, f=fullscreen</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">ตกลง</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+        </div>
       </div>
     </div>
   </div>
