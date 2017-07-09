@@ -14,10 +14,10 @@ function slideShow(type, mode, autoPlay) {
     };
     let recur = function (i) {
         //noinspection ES6ModulesDependencies,JSUnusedLocalSymbols
-        $.get("images/news/" + type + i + ".png").success(function (result) {
+        $.get("images/news/" + type + i + ".png").done(function (result) {
             console.log("success" + i);
             recur(i + 1);
-        }).error(function () {
+        }).fail(function () {
             console.log("end at " + i);
             finish(i);
         });
