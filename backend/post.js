@@ -136,6 +136,7 @@ module.exports=function(app,db){
 
     // All post will return {err} if error occurs
     var post=function(url,callback){
+        app.locals.postFunction[url.slice(1)]=callback;
         app.post(url,function(req,res){
             logPosition(req.cookies,function(positionColor){
                 console.log(chalk.black.bgBlue("[POST REQUEST]"),url.slice(1),
@@ -755,16 +756,19 @@ module.exports=function(app,db){
                         }
                     }
                     fullHybridDB.findOne({day:day},function(err,fullHybrid){
-                        for(var i=0;i<fullHybrid.student.length;i++){
-                            var index=output.fullHybrid.findIndex(function(x){
-                                return x.subject==fullHybrid.student[i].subject;
-                            });
-                            if(index==-1)index=output.fullHybrid.length;
-                            if(output.fullHybrid[index]==undefined)output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
-                            output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
+                        if(!fullHybrid)res.send(output);
+                        else{
+                            for(var i=0;i<fullHybrid.student.length;i++){
+                                var index=output.fullHybrid.findIndex(function(x){
+                                    return x.subject==fullHybrid.student[i].subject;
+                                });
+                                if(index==-1)index=output.fullHybrid.length;
+                                if(output.fullHybrid[index]==undefined)output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
+                                output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
+                            }
+                            output.maxHybridSeat=config.maxSeat[0];
+                            res.send(output);
                         }
-                        output.maxHybridSeat=config.maxSeat[0];
-                        res.send(output);
                     });
                 });
             });
