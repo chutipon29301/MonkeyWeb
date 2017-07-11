@@ -120,7 +120,7 @@
                             $("#message").append("<div id=\"success\"></div>");
                             $("#success").addClass("alert alert-success");
                             if($.isEmptyObject(data))$("#success").append("Successful");
-                            else $("#success").html(JSON.stringify(data));
+                            else $("#success").html(JSON.stringify(data,null,2));
                         }
                         refresh();
                     });
@@ -146,27 +146,27 @@
                 $("#listUser").empty();
                 $.post("debug/listUser",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#listUser").append(JSON.stringify(data[i])+"<br><br>");
+                        $("#listUser").append(JSON.stringify(data[i],null,2)+"<br><br>");
                     }
                 });
                 $("#listCourse").empty();
                 $.post("debug/listCourse",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#listCourse").append(JSON.stringify(data[i])+"<br>");
+                        $("#listCourse").append(JSON.stringify(data[i],null,2)+"<br>");
                         $("#listCourse").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
                 $("#listFullHybrid").empty();
                 $.post("debug/listFullHybrid",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#listFullHybrid").append(JSON.stringify(data[i])+"<br>");
+                        $("#listFullHybrid").append(JSON.stringify(data[i],null,2)+"<br>");
                         $("#listFullHybrid").append(new Date(data[i].day).toString()+"<br><br>");
                     }
                 });
                 $("#listCourseSuggestion").empty();
                 $.post("debug/listCourseSuggestion",function(data,status){
                     for(var i=0;i<data.length;i++){
-                        $("#listCourseSuggestion").append(JSON.stringify(data[i])+"<br>");
+                        $("#listCourseSuggestion").append(JSON.stringify(data[i],null,2)+"<br>");
                     }
                 });
             };
