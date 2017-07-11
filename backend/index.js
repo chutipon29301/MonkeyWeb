@@ -28,7 +28,7 @@ app.set("view engine","pug");
 // 	res.redirect("https://"+req.hostname+req.url);
 // })).listen(80);
 // Uncomment code above and comment code below to automatically redirect to https
-app.listen(8080);
+app.listen(80);
 
 console.log(chalk.black.bgBlack("Black"));
 console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));

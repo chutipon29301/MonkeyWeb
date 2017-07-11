@@ -131,20 +131,26 @@ function genTable() {
     }
 }
 function showProfilePic(id) {
-    $.get('pic/profile/' + id + '.jpg', function (data, status) {
-        if (status === 'success') {
-            $('.profilePic').attr("src", "pic/profile/" + id + '.jpg');
-        }
-    });
-    $.get('pic/profile/' + id + '.jpeg', function (data, status) {
-        if (status === 'success') {
-            $('.profilePic').attr("src", "pic/profile/" + id + '.jpeg');
-        }
-    });
-    $.get('pic/profile/' + id + '.png', function (data, status) {
-        if (status === 'success') {
-            $('.profilePic').attr("src", "pic/profile/" + id + '.png');
-        }
+    //noinspection ES6ModulesDependencies
+    $.post("post/getConfig").then((config) => {
+        //noinspection ES6ModulesDependencies
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('.profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('.profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpeg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.png', function (data, status) {
+            if (status === 'success') {
+                $('.profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.png');
+            }
+        });
     });
 }
 function upPic() {
