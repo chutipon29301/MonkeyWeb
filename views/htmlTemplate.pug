@@ -1,23 +1,23 @@
+//- var webUser={position:"dev",firstname:"ชื่อจริง",lastname:"นามสกุล"}
 doctype html
-html(lang="en")
+html(lang="en" style="position:relative;min-height:100%;")
     head
         meta(charset="utf-8")
         meta(name="viewport" content="width=device-width,initial-scale=1")
         link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
         link(rel="stylesheet" type="text/css" href="css/bootstrap.min.css")
-        link(rel="stylesheet" type="text/css" href='css/w3.css')
         link(rel="stylesheet" type="text/css" href='style.min.css')
         script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js")
         script(src="js/jquery-3.2.1.min.js")
         script(src="js/bootstrap.min.js")
-        script(type="text/javascript" src="js/global-1.0.0.custom.min.js")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
+        script(type="text/javascript" src="js/global-1.0.0.custom.min.js")
         block head
-        title= pageTitle ? pageTitle : "Monkey-Monkey Official Website"
-    body
+        title= pageTitle?pageTitle:"Monkey-Monkey Official Website"
+    body(style="margin-bottom:90px;")
         block header
         if(!hideNavbar)
-            nav.navbar.navbar-default(style="border-radius:0px;" + (removeNavbarBottomMargin ? "margin-bottom:0px;" : ""))
+            nav.navbar.navbar-default(style="border-radius:0px;"+(removeNavbarBottomMargin?"margin-bottom:0px;":""))
                 .container-fluid
                     .navbar-header
                         button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#navbar")
@@ -27,8 +27,7 @@ html(lang="en")
                         a.navbar-brand(href="/") Monkey
                     #navbar.collapse.navbar-collapse
                         ul.nav.navbar-nav
-                            - var user={position:"dev",firstname:"ชื่อจริง",lastname:"นามสกุล"}
-                            if(user.position == "student")
+                            if(webUser.position=="student")
                                 li: a(href="/") ลงทะเบียน
                                 li.dropdown
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") Course
@@ -47,63 +46,31 @@ html(lang="en")
                                         li: a(href="#") เพิ่มตลอดไป
                             else
                                 li: a(href="tutorCourseMaterial") Tutor Course Material
-                                if(user.position != "tutor")
+                                if(webUser.position!="tutor")
                                     li: a(href="adminAllCourse") All Course
                                     li: a(href="adminAllStudent") All Student
                                     li: a(href="adminCourseRoom") Room
                                     li: a(href="adminCourseMaterial") Admin Course Material
                         ul.nav.navbar-nav.navbar-right
-                            if(user.position == "student")
+                            if(webUser.position=="student")
                                 li: a(href="studentProfile")
                                     span.glyphicon.glyphicon-user
-                                    = " " + user.firstname + " " + user.lastname
-                            else if(user.position == "dev")
-                                li: a(href="testadmin")
+                                    = " "+webUser.firstname+" "+webUser.lastname
+                            else if(webUser.position=="dev")
+                                li: a(href="testDev")
                                     span.glyphicon.glyphicon-user
-                                    = " " + user.firstname + " " + user.lastname
+                                    = " "+webUser.firstname+" "+webUser.lastname
                             else
                                 li: a(href="adminAllStudent")
                                     span.glyphicon.glyphicon-user
-                                    = " " + user.firstname + " " + user.lastname
+                                    = " "+webUser.firstname+" "+webUser.lastname
                             li: a(href="login" onclick="logout();")
                                 span.glyphicon.glyphicon-log-out
                                 |  Logout
-        //-
-            <nav class="navbar navbar-inverse">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="#">WebSiteName</a>
-                        </div>
-                        <div class="collapse navbar-collapse" id="myNavbar">
-                          <ul class="nav navbar-nav">
-                            <li class="active"><a href="#">Home</a></li>
-                            <li class="dropdown">
-                              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Page 1 <span class="caret"></span></a>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">Page 1-1</a></li>
-                                <li><a href="#">Page 1-2</a></li>
-                                <li><a href="#">Page 1-3</a></li>
-                              </ul>
-                            </li>
-                            <li><a href="#">Page 2</a></li>
-                            <li><a href="#">Page 3</a></li>
-                          </ul>
-                          <ul class="nav navbar-nav navbar-right">
-                            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                            <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                          </ul>
-                    </div>
-                </div>
-            </nav>
         block body
-        div.container
-            div.row
-                div.text-center.center-block
+        block footer
+        if(!hideFooter)
+            footer.footer(style="position:absolute;bottom:0px;width:100%;height:80px;")
+                .text-center.center-block
                     h4 Powered by MonkeyIT
                     p Copyright &copy; 2017 &middot; All Rights Reserved
-                    block footer

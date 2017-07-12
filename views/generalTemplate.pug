@@ -17,6 +17,9 @@ mixin panel(title)
 mixin form(action)
     form(action=action method="post")
         block
+mixin form-horizontal(action)
+    form.form-horizontal(action=action method="post")
+        block
 mixin form-group(name)
     .form-group
         label.control-label.col-sm-2(for=name+"Input")= name
