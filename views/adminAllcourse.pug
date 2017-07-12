@@ -1,6 +1,6 @@
 extends htmlTemplate
 block head
-    -const pageTitle = "Admin All Course"
+    -const pageTitle = "All Course"
     script(src="js/admin.min.js")
     script.
         window.onload = getAllCourseContent();
@@ -11,7 +11,7 @@ block body
         .col-md-3
             a(href="adminCourseTable") คัมภีร์เทวดา
         div
-            .col-md-w.col-md-offset-2
+            .col-md-2.col-md-offset-2
                 select.form-control.col-md-1#subject(onChange="getAllCourseContent()" style="margin-bottom:5px")
                     option(value="all") All Subject
                     option(value="M") Math

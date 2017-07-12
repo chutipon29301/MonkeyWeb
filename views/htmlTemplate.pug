@@ -6,7 +6,7 @@ html(lang="en" style="position:relative;min-height:100%;")
         meta(name="viewport" content="width=device-width,initial-scale=1")
         link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
         link(rel="stylesheet" type="text/css" href="css/bootstrap.min.css")
-        link(rel="stylesheet" type="text/css" href='style.min.css')
+        link(rel="stylesheet" type="text/css" href='css/style.min.css')
         script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js")
         script(src="js/jquery-3.2.1.min.js")
         script(src="js/bootstrap.min.js")
@@ -24,7 +24,10 @@ html(lang="en" style="position:relative;min-height:100%;")
                             span.icon-bar
                             span.icon-bar
                             span.icon-bar
-                        a.navbar-brand(href="/") Monkey
+                        if(webUser.position=="student")
+                            a.navbar-brand(href="home") Monkey
+                        else
+                            a.navbar-brand(href="adminHome") Monkey
                     #navbar.collapse.navbar-collapse
                         ul.nav.navbar-nav
                             if(webUser.position=="student")
