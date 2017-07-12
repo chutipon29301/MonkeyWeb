@@ -7,6 +7,8 @@ module.exports=function(app,db){
     var configDB=db.collection("config");
     var userDB=db.collection("user");
 
+    var post=app.locals.post;
+
     var logPosition=function(cookie,callback){
         var userID=parseInt(cookie.monkeyWebUser);
         var password=cookie.monkeyWebPassword;
@@ -39,6 +41,28 @@ module.exports=function(app,db){
                 else next();
             });
         };
+    };
+    var addPugPage=function(page,options,callback){
+        if(options==undefined)options={};
+        var url=options.url;
+        if(url==undefined)url="/"+page;
+        var middlewareOptions=options.middlewareOptions;
+        if(middlewareOptions==undefined)middlewareOptions={};
+        if(callback==undefined)callback=function(x){x({});};
+        app.get(url,checkAuth(middlewareOptions),function(req,res){
+            logPosition(req.cookies,function(positionColor){
+                console.log(chalk.black.bgGreen("[PAGE REQUEST]"),page,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
+                callback(function(local){
+                    post("post/name",{userID:req.cookies.monkeyWebUser},function(result){
+                        local.webUser={firstname:result.firstname,lastname:result.lastname};
+                        post("post/position",{userID:req.cookies.monkeyWebUser},function(result){
+                            local.webUser.position=result.position;
+                            res.status(200).render(page,local);
+                        });
+                    });
+                });
+            });
+        });
     };
     var addPage=function(page,options){
         if(options==undefined)options={};
@@ -95,15 +119,28 @@ module.exports=function(app,db){
         addPage("adminCoursedescription",options);
         addPage("adminCourseRoom",options);
         addPage("adminCourseTable",options);
-    app.locals.post("post/allCourseMaterial",{},function(output){
-        configDB.findOne({},function(err,config){
-            addPage("tutorCourseMaterial",Object.assign({},options,{type:"pug",local:Object.assign({},output,{moment:moment,config:config})}));
-            options.middlewareOptions.position={$in:["admin","dev"]};
-            addPage("adminCourseMaterial",Object.assign({},options,{type:"pug",local:Object.assign({},output,{moment:moment,config:config})}));
-            addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
-
-            app.all("*",return404);
+        addPugPage("tutorCourseMaterial",options,function(callback){
+            var local={moment:moment};
+            post("post/allCourseMaterial",{},function(result){
+                Object.assign(local,result);
+                post("post/getConfig",{},function(result){
+                    Object.assign(local,{config:result});
+                    callback(local);
+                });
+            });
         });
-    });
+        options.middlewareOptions.position={$in:["admin","dev"]};
+        addPugPage("adminCourseMaterial",options,function(callback){
+            var local={moment:moment};
+            post("post/allCourseMaterial",{},function(result){
+                Object.assign(local,result);
+                post("post/getConfig",{},function(result){
+                    Object.assign(local,{config:result});
+                    callback(local);
+                });
+            });
+        });
+    addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
     // addPage("firstConfig",{backendDir:true});
+    app.all("*",return404);
 }

@@ -53,6 +53,26 @@ module.exports=function(app,db){
         }
         return output;
     };
+    // function splitCourseName(name){
+    //     if(typeof(name)=='string'){
+    //         if(name.slice(0,3).toLowerCase()=='sat'){
+    //             return {subject:name.slice(3),grade:"SAT",level:""}
+    //         }
+    //         var subject,grade,level;
+    //         var firstdigit=name.indexOf(name.match(/\d/));
+    //         subject=name.slice(0,firstdigit-1).toUpperCase();
+    //         if(/[0-9]/.test(name[name.length-1])){
+    //             grade=name.slice(firstdigit-1,name.length).toUpperCase();
+    //             level="";
+    //         }
+    //         else{
+    //             grade=name.slice(firstdigit-1,name.length-1).toUpperCase();
+    //             level=name[name.length-1].toLowerCase();
+    //         }
+    //         return {subject:subject,grade:grade,level:level};
+    //     }
+    //     else return {subject:'Wrong input',grade:'Wrong input',level:'Wrong input'};
+    // };
     // var gradeStringToBit=function(grade){
     //     var output=0;
     //     if(grade[0]=='P'){
@@ -1008,13 +1028,13 @@ module.exports=function(app,db){
     });
 
     // Configuration
-    //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID}
+    //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
     post('/post/getConfig',function(req,res){
         configDB.findOne({},function(err,config){
             res.send(config);
         });
     });
-    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,maxHybridSeat,profilePicturePath,studentSlideshowPath} return {}
+    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat} return {}
     post('/post/editConfig',function(req,res){
         var dirPath=function(path){
             if(path.endsWith("/"))return path;

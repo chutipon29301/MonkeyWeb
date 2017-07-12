@@ -65,42 +65,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.collection("user").insertOne({day:moment(0).hour(8).day(6).toDate()});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
     // db.collection("user").updateMany({},{$set:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}});
-    function splitCourseName(name){
-        if(typeof(name)=='string'){
-            if(name.slice(0,3).toLowerCase()=='sat'){
-                return {subject:name.slice(3),grade:"SAT",level:""}
-            }
-            var subject,grade,level;
-            var firstdigit=name.indexOf(name.match(/\d/));
-            subject=name.slice(0,firstdigit-1).toUpperCase();
-            if(/[0-9]/.test(name[name.length-1])){
-                grade=name.slice(firstdigit-1,name.length).toUpperCase();
-                level="";
-            }
-            else{
-                grade=name.slice(firstdigit-1,name.length-1).toUpperCase();
-                level=name[name.length-1].toLowerCase();
-            }
-            return {subject:subject,grade:grade,level:level};
-        }
-        else return {subject:'Wrong input',grade:'Wrong input',level:'Wrong input'};
-    };
 
-    var stringToBit=function(grade){
-        var output=0,p=false,s=false;
-        if(grade[0]=='S'&&grade[1]=='A')return (1<<12);
-        if(grade[0]=='P'){
-            for(var i=1;i<grade.length;i++){
-                output|=(1<<(grade[i]-'1'));
-            }
-        }
-        if(grade[0]=='S'){
-            for(var i=1;i<grade.length;i++){
-                output|=(1<<(grade[i]-'1'+6));
-            }
-        }
-        return output;
-    };
     console.log("[CONNECT] MonkeyDB successfully");
     db.admin().listDatabases(function(err,result){
         console.log("[SHOW] All databases");

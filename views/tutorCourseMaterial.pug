@@ -1,5 +1,6 @@
 extend htmlTemplate.pug
 block head
+    - var pageTitle="Tutor Course Material"
     script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
     //- script(src="js/adminCourseMaterial.js")
 block body
@@ -10,7 +11,7 @@ block body
             p Provide your information below.
     +panel-group
         +panel("Upload files")
-            form(action="post/submitCourseMaterial" method="post" enctype="multipart/form-data")
+            form.form-horizontal(action="post/submitCourseMaterial" method="post" enctype="multipart/form-data")
                 +form-group("Course ID : ")
                     input.form-control(type="text" name="courseID" placeholder="Course ID" required)
                 +form-group("# Of Submission : ")
