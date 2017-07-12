@@ -1,0 +1,26 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Admin Course Description"
+    script(src="js/admin.min.js")
+    script.
+        $(document).ready(getCourseDescription)
+block body
+    .container-fluid
+        .col-md-8.col-md-offset-2
+            h1#courseName &nbsp;
+            h3#tutorName &nbsp;
+            br
+        div
+            p.col-md-2.col-md-offset-2#day &nbsp;
+            p.col-md-2#time &nbsp;
+            p.col-md-2#courseID &nbsp;
+        .table-responsive.col-md-8.col-md-offset-2
+            table.table
+                thead
+                    tr
+                        th.col-md-1 No.
+                        th.col-md-1 ID
+                        th.col-md-2 Nickname
+                        th.col-md-2 Name
+                        th.col-md-2 Surname
+                thead#allStudentInCourseTable

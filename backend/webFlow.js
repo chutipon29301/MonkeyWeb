@@ -112,6 +112,7 @@ module.exports=function(app,db){
         delete options.middlewareOptions.registrationState;
     delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
+        addPage("tutorCourse",options);
         addPage("adminHome",options);
         addPage("adminAllstudent",options);
         addPage("adminAllcourse",options);

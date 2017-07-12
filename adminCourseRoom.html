@@ -82,7 +82,7 @@
           </thead>
           <tbody id="tueTable">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -108,7 +108,7 @@
           </thead>
           <tbody id="thuTable">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -134,7 +134,7 @@
           </thead>
           <tbody id="sat8Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -160,7 +160,7 @@
           </thead>
           <tbody id="sat10Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -186,7 +186,7 @@
           </thead>
           <tbody id="sat13Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -212,7 +212,7 @@
           </thead>
           <tbody id="sat15Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -238,7 +238,7 @@
           </thead>
           <tbody id="sun8Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -264,7 +264,7 @@
           </thead>
           <tbody id="sun10Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -290,7 +290,7 @@
           </thead>
           <tbody id="sun13Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>
@@ -316,7 +316,7 @@
           </thead>
           <tbody id="sun15Table">
           <div>
-            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)">
+            <tr ng-repeat="room in roomDayList" ng-click="tableRowClick(room.courseID)" ng-hide="room.isHidden">
               <td>{{ room.room }}</td>
               <td>{{ room.courseName }}</td>
               <td>{{ room.noStudent }}</td>

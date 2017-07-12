@@ -1,4 +1,3 @@
-
 function upPic() {
     let cookie = getCookieDict();
     //noinspection JSUnresolvedVariable
@@ -14,6 +13,7 @@ function upPic() {
             $('.upload').prepend('<i class="fa fa-circle-o-notch fa-spin"></i>');
             formData.append('file', files[0], files[0].name);
             formData.append('studentID', ID);
+            //noinspection JSUnusedLocalSymbols
             $.ajax({
                 url: 'post/submitReceipt',
                 type: 'POST',
@@ -30,22 +30,25 @@ function upPic() {
 }
 function showReceipt(id) {
     //noinspection ES6ModulesDependencies
-    $.get('pic/CR60Q3/' + id + '.jpg', function (data, status) {
-        if (status === 'success') {
-            $('#preview').attr("src", "pic/CR60Q3/" + id + '.jpg');
-        }
-    });
-    //noinspection ES6ModulesDependencies
-    $.get('pic/CR60Q3/' + id + '.jpeg', function (data, status) {
-        if (status === 'success') {
-            $('#preview').attr("src", "pic/CR60Q3/" + id + '.jpeg');
-        }
-    });
-    //noinspection ES6ModulesDependencies
-    $.get('pic/CR60Q3/' + id + '.png', function (data, status) {
-        if (status === 'success') {
-            $('#preview').attr("src", "pic/CR60Q3/" + id + '.png');
-        }
+    $.post("post/getConfig").then((config) => {
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpeg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.png', function (data, status) {
+            if (status === 'success') {
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.png');
+            }
+        });
     });
 }
 function next() {

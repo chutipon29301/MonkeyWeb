@@ -86,3 +86,4 @@ function nextbtn() {
     		self.location = 'registrationSkill2'
     }
 }
+	
