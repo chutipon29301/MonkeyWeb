@@ -3,15 +3,21 @@ html(lang="en")
     head
         meta(charset="utf-8")
         meta(name="viewport" content="width=device-width,initial-scale=1")
-        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
-        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
-        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js")
+        link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
+        link(rel="stylesheet" type="text/css" href="css/bootstrap.min.css")
+        link(rel="stylesheet" type="text/css" href='css/w3.css')
+        link(rel="stylesheet" type="text/css" href='style.min.css')
+        script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js")
+        script(src="js/jquery-3.2.1.min.js")
+        script(src="js/bootstrap.min.js")
+        script(type="text/javascript" src="js/global-1.0.0.custom.min.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
         block head
-        title= pageTitle?pageTitle:"Monkey-Monkey Official Website"
+        title= pageTitle ? pageTitle : "Monkey-Monkey Official Website"
     body
         block header
         if(!hideNavbar)
-            nav.navbar.navbar-default(style="border-radius:0px;"+(removeNavbarBottomMargin?"margin-bottom:0px;":""))
+            nav.navbar.navbar-default(style="border-radius:0px;" + (removeNavbarBottomMargin ? "margin-bottom:0px;" : ""))
                 .container-fluid
                     .navbar-header
                         button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#navbar")
@@ -22,7 +28,7 @@ html(lang="en")
                     #navbar.collapse.navbar-collapse
                         ul.nav.navbar-nav
                             - var user={position:"dev",firstname:"ชื่อจริง",lastname:"นามสกุล"}
-                            if(user.position=="student")
+                            if(user.position == "student")
                                 li: a(href="/") ลงทะเบียน
                                 li.dropdown
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") Course
@@ -41,24 +47,24 @@ html(lang="en")
                                         li: a(href="#") เพิ่มตลอดไป
                             else
                                 li: a(href="tutorCourseMaterial") Tutor Course Material
-                                if(user.position!="tutor")
+                                if(user.position != "tutor")
                                     li: a(href="adminAllCourse") All Course
                                     li: a(href="adminAllStudent") All Student
                                     li: a(href="adminCourseRoom") Room
                                     li: a(href="adminCourseMaterial") Admin Course Material
                         ul.nav.navbar-nav.navbar-right
-                            if(user.position=="student")
+                            if(user.position == "student")
                                 li: a(href="studentProfile")
                                     span.glyphicon.glyphicon-user
-                                    = " "+user.firstname+" "+user.lastname
-                            else if(user.position=="dev")
+                                    = " " + user.firstname + " " + user.lastname
+                            else if(user.position == "dev")
                                 li: a(href="testadmin")
                                     span.glyphicon.glyphicon-user
-                                    = " "+user.firstname+" "+user.lastname
+                                    = " " + user.firstname + " " + user.lastname
                             else
                                 li: a(href="adminAllStudent")
                                     span.glyphicon.glyphicon-user
-                                    = " "+user.firstname+" "+user.lastname
+                                    = " " + user.firstname + " " + user.lastname
                             li: a(href="login" onclick="logout();")
                                 span.glyphicon.glyphicon-log-out
                                 |  Logout
@@ -95,4 +101,9 @@ html(lang="en")
                 </div>
             </nav>
         block body
-        block footer
+        div.container
+            div.row
+                div.text-center.center-block
+                    h4 Powered by MonkeyIT
+                    p Copyright &copy; 2017 &middot; All Rights Reserved
+                    block footer
