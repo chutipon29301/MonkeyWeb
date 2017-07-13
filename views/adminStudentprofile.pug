@@ -190,8 +190,10 @@ block body
                     .modal-header
                         h1 Remove Course
                     .modal-body
-                        h4 Are you sure to delete 
+                        h4
+                            |Are you sure to delete 
                             span#courseName
+                            |&nbsp;?
                     .modal-footer
                         button#confirmDelete.btn.btn-danger(type="button" onClick="removeCourse();") Yes
                         button.btn.btn-default(type="button" data-dismiss="modal") No
