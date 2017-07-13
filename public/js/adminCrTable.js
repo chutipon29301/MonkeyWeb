@@ -34,7 +34,7 @@ function sendLevel() {
     });
     $("#tableLevel").empty().append("<td rowspan='2' style='background-color: black'></td>");
     $("#tableGroup").empty();
-    $("#sat8").empty().append("<th width='70px' style='background-color: #cf95ff;text-align: center'>8-10</th>");
+    $("#sat8").empty().append("<th width='70px' style='background-color: #cf95ff;text-align: center;vertical-align: middle'>8-10</th>");
     $("#sat10").empty().append("<th style='background-color: #cf95ff;text-align: center;vertical-align: middle'>10-12</th>");
     $("#sat13").empty().append("<th style='background-color: #cf95ff;text-align: center;vertical-align: middle'>13-15</th>");
     $("#sat15").empty().append("<th style='background-color: #cf95ff;text-align: center;vertical-align: middle'>15-17</th>");
@@ -48,8 +48,8 @@ function sendLevel() {
 function genTable(allLevel, i) {
     if (i >= allLevel.length) return;
     let position = allLevel[i] - 1;
-    $.post("post/gradeCourse", {grade: allLevel[i]}).then((allCr) => {
-        $.post("post/listCourseSuggestion", {grade: allLevel[i]}).then((suggCr) => {
+    $.post("post/gradeCourse", { grade: allLevel[i] }).then((allCr) => {
+        $.post("post/listCourseSuggestion", { grade: allLevel[i] }).then((suggCr) => {
             //init column
             for (let j = 0; j < suggCr.course.length; j++) {
                 $("#sat8").append("<td style='text-align: center' id=" + allLevel[i] + 'sat8' + (j + 1) + "></td>");
@@ -84,7 +84,7 @@ function genTableGroup(level, suggCr, allCr, outerCr, i) {
     if (suggCr.course.length === 0) {
         $("#tableGroup").append("<td style='text-align: center'></td>");
         for (let j = 0; j < allCr.course.length; j++) {
-            $.post("post/name", {userID: allCr.course[j].tutor[0]}).then((name) => {
+            $.post("post/name", { userID: allCr.course[j].tutor[0] }).then((name) => {
                 $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "-" + name.nicknameEn + "<br>");
             })
         }
@@ -93,12 +93,12 @@ function genTableGroup(level, suggCr, allCr, outerCr, i) {
     $("#tableGroup").append("<th style='text-align: center'>" + suggCr.course[i].level + "</th>");
     for (let j = 0; j < allCr.course.length; j++) {
         if (suggCr.course[i].courseID.indexOf(allCr.course[j].courseID) >= 0) {
-            $.post("post/name", {userID: allCr.course[j].tutor[0]}).then((name) => {
+            $.post("post/name", { userID: allCr.course[j].tutor[0] }).then((name) => {
                 $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "-" + name.nicknameEn + "<br>");
             })
         }
         if (outerCr.indexOf(allCr.course[j].courseID) >= 0) {
-            $.post("post/name", {userID: allCr.course[j].tutor[0]}).then((name) => {
+            $.post("post/name", { userID: allCr.course[j].tutor[0] }).then((name) => {
                 $("#" + level + dateToDay(allCr.course[j].day) + (i + 1)).append(allCr.course[j].courseName + "-" + name.nicknameEn + "<br>");
             })
         }

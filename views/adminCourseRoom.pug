@@ -1,6 +1,6 @@
 extends htmlTemplate
 block head
-    -const pageTitle = "Admin Course Description"
+    -const pageTitle = "Course Room"
     script(src="js/admin.min.js")
     script(
         data-require="rxjs@*"
@@ -12,11 +12,11 @@ block head
         data-semver="0.0.14"
         src="https://cdn.rawgit.com/Reactive-Extensions/rx.angular.js/v0.0.14/dist/rx.angular.js"
     )
-    script(src="/js/adminRoom.js")
+    script(src="js/adminRoom.js")
     script(type="text/javascript").
-        window.onload = function(){
-		    document.getElementById("default").click();
-	    }
+        $(document).ready(function(){
+            document.getElementById("default").click();
+        })
 block body
     .container-fluid
         .tab
