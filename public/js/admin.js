@@ -36,7 +36,7 @@ const getLetterGrade = (grade) => {
  */
 function getAllStudentContent() {
     "use strict";
-    allStudent.then((data) => {
+    allStudent().then((data) => {
         if (data.err) {
             log("[getAllStudentContent()] : post/allStudent => " + data.err);
         } else {
@@ -136,7 +136,7 @@ function generateStudentHtmlTable(student) {
  * Generate element for adminAllcourse page
  */
 function getAllCourseContent() {
-    allCourse.then((data) => {
+    allCourse().then((data) => {
         if (data.err) {
             log("[getAllCourseContent()] : post/allCourse => " + data.err);
         } else {
@@ -464,7 +464,7 @@ function getCourseDescription() {
 function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
     if (button.innerHTML === "Add Course") {
-        allCourse.then((data) => {
+        allCourse().then((data) => {
             log(data);
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
