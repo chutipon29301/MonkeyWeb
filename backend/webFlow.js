@@ -113,13 +113,13 @@ module.exports=function(app,db){
     delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
         addPage("tutorCourse",options);
-        addPage("adminHome",options);
-        addPage("adminAllstudent",options);
-        addPage("adminAllcourse",options);
-        addPage("adminStudentprofile",options);
-        addPage("adminCoursedescription",options);
-        addPage("adminCourseRoom",options);
-        addPage("adminCourseTable",options);
+        addPugPage("adminHome",options);
+        addPugPage("adminAllstudent",options);
+        addPugPage("adminAllcourse",options);
+        addPugPage("adminStudentprofile",options);
+        addPugPage("adminCoursedescription",options);
+        addPugPage("adminCourseRoom",options);
+        addPugPage("adminCourseTable",options);
         addPugPage("tutorCourseMaterial",options,function(callback){
             var local={moment:moment};
             post("post/allCourseMaterial",{},function(result){

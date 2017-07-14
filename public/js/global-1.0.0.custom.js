@@ -1,8 +1,8 @@
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const allStudent = $.post("post/allStudent", {});
+const allStudent = () => $.post("post/allStudent", {});
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const allCourse = $.post("/post/allCourse", {});
+const allCourse = () => $.post("/post/allCourse", {});
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const studentProfile = (studentID) => $.post("post/studentProfile", {
