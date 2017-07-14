@@ -1,10 +1,12 @@
 extends htmlTemplate
 block head
     - var pageTitle="Tutor Course Material"
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
-    //- script(src="js/adminCourseMaterial.js")
+    script(src="js/tutorCourseMaterial.js")
 block body
-    include generalTemplate.pug
+    include generalTemplate
+    include inputTemplate
+    //- = JSON.stringify(course,null,2)
+    //- = JSON.stringify(webUser)
     .jumbotron
         .container
             h1 Upload files
@@ -13,11 +15,14 @@ block body
         +panel("Upload files")
             form.form-horizontal(action="post/submitCourseMaterial" method="post" enctype="multipart/form-data")
                 +form-group("Course ID : ")
-                    input.form-control(type="text" name="courseID" placeholder="Course ID" required)
+                    +select("courseID","Select course")
+                        - for(var i in course)
+                            if(course[i].tutor.includes(webUser.userID))
+                                +option(course[i].courseID,course[i].courseName)
                 +form-group("# Of Submission : ")
-                    input.form-control(type="number" name="numberOfSub" placeholder="Number Of Submission" required)
+                    +select-number-of-sub
                 +form-group("Files : ")
                     label.btn.btn-default.btn-file Browse file
                         input(type="file" style="display:none" name="file" multiple required)
-                    input.btn.btn-default(type="submit" value="submit")
+                    +button-submit Submit
     #message.container

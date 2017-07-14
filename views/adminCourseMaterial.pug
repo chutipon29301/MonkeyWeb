@@ -7,39 +7,40 @@ block head
 block header
     - var removeNavbarBottomMargin=true;
 block body
-    include generalTemplate.pug
+    include generalTemplate
+    include inputTemplate
     //- p= JSON.stringify(config)
     //- include: ../backend/node_modules/moment/src/moment.js
-    mixin cell(status,numberOfSub,courseID)
+    mixin cell(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
         if(status==null)
             td.bg-info -
         else if(status=="accepted")
             td.bg-success
                 a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
                 code Accepted
-                +cell-control(status,numberOfSub,courseID)
+                +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
         else if(status=="rejected")
             td.bg-danger
                 a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
                 code Rejected
-                +cell-control(status,numberOfSub,courseID)
+                +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
         else if(status=="pending")
             td.bg-warning
                 a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
                 code Pending
-                +cell-control(status,numberOfSub,courseID)
-    mixin cell-control(status,numberOfSub,courseID)
-        +form("post/judgeCourseMaterial")
+                +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
+    mixin cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
+        +form("post/judgeCourseMaterial")(tutorNicknameEn=tutorNicknameEn.toString() tutorEmail=tutorEmail.toString() courseName=courseName)
             input(name="courseID" type="hidden" value=courseID)
             input(name="numberOfSub" type="hidden" value=numberOfSub)
             .btn-group
                 //- input.btn.btn-success.btn-xs(name="action" onclick="window.location=&quot;mailto:?subject=TO%20(name),PHS6x01%20ACCEPTED&quot;" type="submit" value="accept")
-                input.btn.btn-success.btn-xs(name="action" onclick="location.reload();" type="submit" value="accept")
-                input.btn.btn-danger.btn-xs(name="action" onclick="location.reload();" type="submit" value="reject")
-                //-input.btn.btn-warning.btn-xs(name="action" type="submit" value="remove")
-    //- for(var i in course)
+                input.btn.btn-success.btn-xs(name="action" type="submit" value="accept")
+                input.btn.btn-danger.btn-xs(name="action" type="submit" value="reject")
+                //- input.btn.btn-warning.btn-xs(name="action" type="submit" value="remove")
+    //- - for(var i in course)
         div= JSON.stringify(course[i])
-    .container-fluid.text-center(style="padding:0px")
+    +container-liquid.text-center
         .table-responsive
             table#tracking.table.table-bordered.table-hover(style="margin:0px")
                 thead
@@ -59,5 +60,5 @@ block body
                     - for(var i=0;i<12;i++)
                         tr
                             - for(var j in course)
-                                +cell(course[j].submission[i],i+1,course[j].courseID)
+                                +cell(course[j].submission[i],i+1,course[j].courseID,course[j].tutorNicknameEn,course[j].tutorEmail,course[j].courseName)
     #message.container
