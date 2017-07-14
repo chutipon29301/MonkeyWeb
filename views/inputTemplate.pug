@@ -1,0 +1,27 @@
+mixin form(action)
+    form(action=action method="post")&attributes(attributes)
+        block
+mixin form-horizontal(action)
+    form.form-horizontal(action=action method="post")&attributes(attributes)
+        block
+mixin form-group(name)
+    .form-group
+        label.control-label.col-sm-2(for=name+"Input")= name
+        .col-sm-10
+            block
+mixin select(name,placeholder)
+    select.form-control(name=name)&attributes(attributes)
+        option(disabled selected)= placeholder?placeholder:"Select "+name
+        block
+mixin option(value,description)
+    option(value=value)&attributes(attributes)= description?description:value
+mixin button-submit
+    button.btn.btn-default(type="submit")&attributes(attributes)
+        block
+mixin select-number-of-sub
+    +select("numberOfSub","Select number of submission")
+        - for(i=1;i<=14;i++)
+            +option(i)
+//- +button-submit.asdf(id="<asdf>" a="<b>") asdf
+//- +select("sasdf")
+//-     +option("asdf","asdf")

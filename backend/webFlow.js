@@ -54,7 +54,7 @@ module.exports=function(app,db){
                 console.log(chalk.black.bgGreen("[PAGE REQUEST]"),page,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
                 callback(function(local){
                     post("post/name",{userID:req.cookies.monkeyWebUser},function(result){
-                        local.webUser={firstname:result.firstname,lastname:result.lastname};
+                        local.webUser={userID:parseInt(req.cookies.monkeyWebUser),firstname:result.firstname,lastname:result.lastname};
                         post("post/position",{userID:req.cookies.monkeyWebUser},function(result){
                             local.webUser.position=result.position;
                             res.status(200).render(page,local);
@@ -124,10 +124,7 @@ module.exports=function(app,db){
             var local={moment:moment};
             post("post/allCourseMaterial",{},function(result){
                 Object.assign(local,result);
-                post("post/getConfig",{},function(result){
-                    Object.assign(local,{config:result});
-                    callback(local);
-                });
+                callback(local);
             });
         });
         options.middlewareOptions.position={$in:["admin","dev"]};

@@ -962,9 +962,9 @@ module.exports=function(app,db){
     });
     //OK {courseID,numberOfSub,action} return {}
     post("/post/judgeCourseMaterial",function(req,res){
-        var action=req.body.action;
         var courseID=req.body.courseID;
         var numberOfSub=parseInt(req.body.numberOfSub);
+        var action=req.body.action;
         getCourseDB(function(courseDB){
             courseDB.findOne({_id:courseID},function(err,result){
                 if(result==null)res.send({err:"The requested course doesn't exist."});
@@ -998,7 +998,7 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {} return {[course->courseID,tutor,tutorNicknameEn,day,courseName,[submission]]}
+    //OK {} return {[course->courseID,[tutor],[tutorNicknameEn],[tutorEmail],day,courseName,[submission]]}
     post("/post/allCourseMaterial",function(req,res){
         var output=[];
         getCourseDB(function(courseDB){
@@ -1006,14 +1006,17 @@ module.exports=function(app,db){
                 callbackLoop(course.length,function(i,continueLoop){
                     getCourseName(course[i]._id,function(courseName){
                         var tutorNicknameEn=[];
+                        var tutorEmail=[];
                         callbackLoop(course[i].tutor.length,function(j,continueLoop){
                             userDB.findOne({_id:course[i].tutor[j]},function(err,tutor){
                                 tutorNicknameEn[j]=tutor.nicknameEn;
+                                tutorEmail[j]=tutor.email;
                                 continueLoop();
                             });
                         },function(){
                             output[i]={courseID:course[i]._id,
-                                tutor:course[i].tutor,tutorNicknameEn:tutorNicknameEn,
+                                tutor:course[i].tutor,
+                                tutorNicknameEn:tutorNicknameEn,tutorEmail:tutorEmail,
                                 day:course[i].day,courseName:courseName,
                                 submission:course[i].submission
                             };

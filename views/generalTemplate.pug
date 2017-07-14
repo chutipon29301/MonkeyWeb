@@ -2,6 +2,9 @@
     var removeWhitespace=function(x){
         return x.replace(/\s/g,"");
     }
+mixin container-liquid
+    .container-fluid(style="padding:0px")&attributes(attributes)
+        block
 mixin panel-group
     .container
         .panel-group
@@ -14,19 +17,3 @@ mixin panel(title)
         div(id=collapseID).panel-collapse.collapse.in
             .panel-body
                 block
-mixin form(action)
-    form(action=action method="post")
-        block
-mixin form-horizontal(action)
-    form.form-horizontal(action=action method="post")
-        block
-mixin form-group(name)
-    .form-group
-        label.control-label.col-sm-2(for=name+"Input")= name
-        .col-sm-10
-            block
-//-+panel-group
-    +panel("newfunc")
-        +form("newfunc")
-            +form-group("newfunc")
-                input(type="number")
