@@ -139,7 +139,13 @@ module.exports=function(app,db){
             });
         });
     addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
-    addPugPage("testDev",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
+    addPugPage("testDev",{backendDir:true,middlewareOptions:{login:true,position:"dev"}},function(callback){
+        var local={moment:moment};
+        post("post/allCourse",{},function(result){
+            Object.assign(local,result);
+            callback(local);
+        });
+    });
     // addPage("firstConfig",{backendDir:true});
     app.all("*",return404);
 }

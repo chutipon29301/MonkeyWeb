@@ -590,7 +590,7 @@ module.exports=function(app,db){
     });
 
     // Course
-    //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName}]}
+    //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName,[tutorNicknameEn]}]}
     post("/post/allCourse",function(req,res){
         var output=[];
         getCourseDB(function(courseDB){
@@ -603,7 +603,15 @@ module.exports=function(app,db){
                         output[i].grade=gradeBitToArray(output[i].grade);
                         delete output[i].submission;
                         output[i].courseName=courseName;
-                        continueLoop();
+                        output[i].tutorNicknameEn=[];
+                        callbackLoop(result[i].tutor.length,function(j,continueLoop){
+                            userDB.findOne({_id:result[i].tutor[j]},function(err,tutor){
+                                output[i].tutorNicknameEn[j]=tutor.nicknameEn;
+                                continueLoop();
+                            });
+                        },function(){
+                            continueLoop();
+                        });
                     });
                 },function(){
                     res.send({course:output});
