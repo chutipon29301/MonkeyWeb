@@ -42,9 +42,9 @@
                 //         refresh();
                 //     });
                 // })
-                $("form").submit(function(event){
-                    // if($(this).parents("#fileUploading").length){
-                    if($(this).attr("enctype")=="multipart/form-data"){
+                $("[type=submit]").click(function(event){
+                    var form=$(this).closest("form");
+                    if(form.attr("enctype")=="multipart/form-data"){
                         return true;
                     }
                     event.preventDefault();
@@ -96,7 +96,7 @@
                         else if($(x).attr("type")=="number"||$(x).hasClass("input-int"))return parseInt($(x).val());
                         return $(x).val();
                     };
-                    $(this).find("[name]").filter(function(){return $(this).val()!=""&&$(this).val()!=null;}).each(function(){
+                    form.find("[name]").filter(function(){return $(this).val()!=""&&$(this).val()!=null;}).each(function(){
                         if($(this).attr("type")=="checkbox"&&!$(this).prop("checked"))return;
                         if($(this).hasClass("input-array")){
                             if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=[];
@@ -104,12 +104,12 @@
                         }
                         else input[$(this).attr("name")]=getValue(this);
                     });
-                    if(event.originalEvent.explicitOriginalTarget.name){
-                        input[event.originalEvent.explicitOriginalTarget.name]=event.originalEvent.explicitOriginalTarget.value;
+                    if($(this).attr("name")){
+                        input[$(this).attr("name")]=$(this).val();
                     }
-                    console.log("===>",$(this).attr("action"));
+                    console.log("===>",form.attr("action"));
                     console.log(input);
-                    $.post($(this).attr("action"),input,function(data,status){
+                    $.post(form.attr("action"),input,function(data,status){
                         console.log(data);
                         $("#message").empty();
                         if(data.err){

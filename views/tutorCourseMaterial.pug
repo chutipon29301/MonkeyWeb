@@ -5,24 +5,26 @@ block head
 block body
     include generalTemplate
     include inputTemplate
+    +modal-loading("Uploading files")
     //- = JSON.stringify(course,null,2)
     //- = JSON.stringify(webUser)
     .jumbotron
         .container
             h1 Upload files
             p Provide your information below.
-    +panel-group
-        +panel("Upload files")
-            form.form-horizontal(action="post/submitCourseMaterial" method="post" enctype="multipart/form-data")
-                +form-group("Course ID : ")
-                    +select("courseID","Select course")
-                        - for(var i in course)
-                            if(course[i].tutor.includes(webUser.userID))
-                                +option(course[i].courseID,course[i].courseName)
-                +form-group("# Of Submission : ")
-                    +select-number-of-sub
-                +form-group("Files : ")
-                    label.btn.btn-default.btn-file Browse file
-                        input(type="file" style="display:none" name="file" multiple required)
-                    +button-submit Submit
+    .container
+        .panel-group
+            +panel("Upload files",true)
+                +form-horizontal("post/submitCourseMaterial")(enctype="multipart/form-data")
+                    +form-group("Course ID")
+                        +select("courseID","Select course")(required)
+                            - for(var i in course)
+                                if(course[i].tutor.includes(webUser.userID))
+                                    +option(course[i].courseID,course[i].courseName)
+                    +form-group("# Of Submission")
+                        +select-number-of-sub()(required)
+                    +form-group("Files")
+                        label.btn.btn-default.btn-file Browse file
+                            input(type="file" style="display:none" name="file" multiple required)
+                        +button-submit Submit
     #message.container

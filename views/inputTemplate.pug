@@ -6,22 +6,54 @@ mixin form-horizontal(action)
         block
 mixin form-group(name)
     .form-group
-        label.control-label.col-sm-2(for=name+"Input")= name
+        label.control-label.col-sm-2(for=name+"Input")= name+" :"
         .col-sm-10
             block
+mixin form-title(name)
+    .form-group
+        .col-sm-offset-1.col-sm-11
+            h3= name
+
 mixin select(name,placeholder)
     select.form-control(name=name)&attributes(attributes)
         option(disabled selected)= placeholder?placeholder:"Select "+name
         block
 mixin option(value,description)
-    option(value=value)&attributes(attributes)= description?description:value
+    - value=value.toString()
+    option(value=value)&attributes(attributes)= description?description:capitalize(value)
+mixin input-text(name,placeholder)
+    input.form-control(type="text" name=name placeholder=placeholder?placeholder:capitalize(name))&attributes(attributes)
+mixin input-number(name,placeholder)
+    input.form-control(type="number" name=name placeholder=placeholder?placeholder:capitalize(name))&attributes(attributes)
+mixin input-password(name,placeholder)
+    input.form-control(type="password" name=name placeholder=placeholder?placeholder:capitalize(name))&attributes(attributes)
+mixin input-email(name,placeholder)
+    input.form-control(type="email" name=name placeholder=placeholder?placeholder:capitalize(name))&attributes(attributes)
+
 mixin button-submit
     button.btn.btn-default(type="submit")&attributes(attributes)
         block
+mixin select-status
+    +select("status")&attributes(attributes)
+        +option("inactive")
+        +option("active")
+        +option("dropped")
+        +option("terminated")
+mixin select-registration-state
+    +select("registrationState")&attributes(attributes)
+        +option("unregistered")
+        +option("untransferred")
+        +option("transferred")
+        +option("pending")
+        +option("rejected")
+        +option("registered")
+        +option("finished")
 mixin select-number-of-sub
-    +select("numberOfSub","Select number of submission")
+    +select("numberOfSub","Select number of submission")&attributes(attributes)
         - for(i=1;i<=14;i++)
             +option(i)
 //- +button-submit.asdf(id="<asdf>" a="<b>") asdf
 //- +select("sasdf")
 //-     +option("asdf","asdf")
+//- include generalTemplate
+//- +select-status()(required)
