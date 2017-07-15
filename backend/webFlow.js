@@ -114,12 +114,8 @@ module.exports=function(app,db){
     options.middlewareOptions.position={$ne:"student"};
         addPage("tutorCourse",options);
         addPugPage("adminHome",options);
-        addPugPage("adminAllstudent",options);
         addPugPage("adminAllcourse",options);
-        addPugPage("adminStudentprofile",options);
         addPugPage("adminCoursedescription",options);
-        addPugPage("adminCourseRoom",options);
-        addPugPage("adminCourseTable",options);
         addPugPage("tutorCourseMaterial",options,function(callback){
             var local={moment:moment};
             post("post/allCourseMaterial",{},function(result){
@@ -128,6 +124,10 @@ module.exports=function(app,db){
             });
         });
         options.middlewareOptions.position={$in:["admin","dev"]};
+        addPugPage("adminAllstudent",options);
+        addPugPage("adminCourseRoom",options);
+        addPugPage("adminCourseTable",options);
+        addPugPage("adminStudentprofile",options);
         addPugPage("adminCourseMaterial",options,function(callback){
             var local={moment:moment};
             post("post/allCourseMaterial",{},function(result){
