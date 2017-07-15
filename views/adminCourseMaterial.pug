@@ -57,7 +57,7 @@ block body
                         - for(var i in course)
                             th.thead-course-name.text-center= course[i].courseName
                 tbody
-                    - for(var i=0;i<12;i++)
+                    - for(var i=0;i<14;i++)
                         tr
                             - for(var j in course)
                                 +cell(course[j].submission[i],i+1,course[j].courseID,course[j].tutorNicknameEn,course[j].tutorEmail,course[j].courseName)

@@ -2,18 +2,39 @@
     var removeWhitespace=function(x){
         return x.replace(/\s/g,"");
     }
+    var capitalize=function(x){
+        return x[0].toUpperCase()+x.slice(1);
+    }
 mixin container-liquid
     .container-fluid(style="padding:0px")&attributes(attributes)
         block
-mixin panel-group
-    .container
-        .panel-group
-            block
-mixin panel(title)
+mixin panel-prototype(title,open)
     - var collapseID=removeWhitespace(title)+"Collapse"
     .panel.panel-default
         .panel-heading(data-toggle="collapse" data-target="#"+collapseID)
             .panel-title= title
-        div(id=collapseID).panel-collapse.collapse.in
-            .panel-body
-                block
+        div(id=collapseID class=open?"in":"").panel-collapse.collapse&attributes(attributes)
+            block
+mixin panel(title,open)
+    +panel-prototype(title,open)
+        .panel-body&attributes(attributes)
+            block
+mixin panel-list-group(title,open)
+    +panel-prototype(title,open)
+        +list-group
+            block
+mixin list-group
+    ul.list-group
+        block
+mixin list-group-item
+    li.list-group-item
+        block
+
+mixin modal-loading(title)
+    #loadingModal.modal.fade
+        .modal-dialog.modal-sm
+            .modal-content
+                .modal-header
+                    h4.modal-title= title
+                .modal-body
+                    .loader.center-block

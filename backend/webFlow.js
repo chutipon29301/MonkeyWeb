@@ -139,6 +139,7 @@ module.exports=function(app,db){
             });
         });
     addPage("testadmin",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
+    addPugPage("testDev",{backendDir:true,middlewareOptions:{login:true,position:"dev"}});
     // addPage("firstConfig",{backendDir:true});
     app.all("*",return404);
 }

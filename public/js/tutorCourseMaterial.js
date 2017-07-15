@@ -16,6 +16,7 @@ $(document).ready(function(){
         data.append("courseID",courseID);
         data.append("numberOfSub",numberOfSub);
         if(confirm(confirmMessage)){
+            $("#loadingModal").modal({backdrop:"static"});
             $.ajax({
                 url:$(this).attr("action"),
                 type:"post",
