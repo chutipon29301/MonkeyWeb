@@ -1,10 +1,10 @@
 $(document).ready(function(){
-    $("form").submit(function(event){
+    $("[type=submit]").click(function(event){
         event.preventDefault();
-        var form=$(this);
+        var form=$(this).closest("form");
         var courseID=form.find("[name=courseID]").val();
         var numberOfSub=form.find("[name=numberOfSub]").val();
-        var action=event.originalEvent.explicitOriginalTarget.value;
+        var action=$(this).val();
         var tutorEmail=form.attr("tutorEmail");
         var tutorNicknameEn=form.attr("tutorNicknameEn");
         var courseName=form.attr("courseName");
