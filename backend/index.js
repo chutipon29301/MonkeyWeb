@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
 app.use(express.static(path.join(__dirname,"../public")));// Serve static files
+app.use(express.static(path.join(__dirname,"../../MonkeyWebData")));// Serve static files
 app.use(function(req,res,next){// Allow access from other domain
     res.header("Access-Control-Allow-Origin","*");
     res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
