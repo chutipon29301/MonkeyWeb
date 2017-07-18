@@ -1,7 +1,7 @@
 extends htmlTemplate
 block head
     - var pageTitle="Tutor Course Material"
-    script(src="js/tutorCourseMaterial.js")
+    script(src="/js/tutorCourseMaterial.js")
 block body
     include generalTemplate
     include inputTemplate
@@ -15,7 +15,7 @@ block body
     .container
         .panel-group
             +panel("Upload files",true)
-                +form-horizontal("post/submitCourseMaterial")(enctype="multipart/form-data")
+                +form-horizontal("/post/submitCourseMaterial")(enctype="multipart/form-data")
                     +form-group("Course ID")
                         +select("courseID","Select course")(required)
                             - for(var i in course)

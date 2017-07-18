@@ -1,8 +1,8 @@
 extends htmlTemplate
 block head
     - var pageTitle="Test Dev"
-    script(src="js/sha3.js")
-    script(src="js/testDev.js")
+    script(src="/js/sha3.js")
+    script(src="/js/testDev.js")
         
 block body
     include generalTemplate
@@ -76,11 +76,36 @@ block body
                         //-TODO array
                         +form-group("courseID"): +select-course("courseID").input-array(required)
                         +submit("post/addStudentCourse")
+                +list-group-item
                     +form-horizontal-title("post/removeStudentCourse")
                         +form-group("studentID"): +input-number("studentID")(required)
                         //-TODO array
                         +form-group("courseID"): +select-course("courseID").input-array(required)
                         +submit("post/removeStudentCourse")
+                +list-group-item
+                    +form-horizontal-title("post/addSkillDay")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("subject"): +select-skill-subject()(required)
+                        +form-group("day(day)"): +select-skill-day()(required)
+                        +form-group("day(time)"): +select-skill-time()(required)
+                        +submit("post/addSkillDay")
+                +list-group-item
+                    +form-horizontal-title("post/removeSkillDay")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("day(day)"): +select-skill-day()(required)
+                        +form-group("day(time)"): +select-skill-time()(required)
+                        +submit("post/removeSkillDay")
+                +list-group-item
+                    +form-horizontal-title("post/addHybridDay")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("subject"): +select-hybrid-subject()(required)
+                        +form-group("day"): +select-hybrid-day()(required)
+                        +submit("post/addHybridDay")
+                +list-group-item
+                    +form-horizontal-title("post/removeHybridDay")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("day"): +select-hybrid-day()(required)
+                        +submit("post/removeHybridDay")
             +panel-list-group("User Management")
                 +list-group-item
                     .loader.center-block
