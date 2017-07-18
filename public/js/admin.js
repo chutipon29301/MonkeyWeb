@@ -498,7 +498,7 @@ function addRemoveCourse(timeID) {
                     let grade = "";
                     if (course.grade[0] > 6) {
                         grade = "S" + course.grade.map((x) => (x - 6)
-                            ).join("");
+                        ).join("");
                     } else {
                         grade = "P" + course.grade.join("");
                     }
@@ -509,7 +509,7 @@ function addRemoveCourse(timeID) {
                         let grade = "";
                         if (data.course[i].grade[0] > 6) {
                             grade = "S" + data.course[i].grade.map((x) => (x - 6)
-                                ).join("");
+                            ).join("");
                         } else {
                             grade = "P" + data.course[i].grade.join("");
                         }
@@ -663,21 +663,21 @@ function showProfilePic() {
     let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     $.post("post/getConfig").then((config) => {
         //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + picId + '.jpg', function (data, status) {
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpg', function (data, status) {
             if (status === 'success') {
-                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + picId + '.jpg');
+                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + picId + '.jpeg', function (data, status) {
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpeg', function (data, status) {
             if (status === 'success') {
-                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + picId + '.jpeg');
+                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpeg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + picId + '.png', function (data, status) {
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.png', function (data, status) {
             if (status === 'success') {
-                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + picId + '.png');
+                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.png');
             }
         });
     });
@@ -688,21 +688,21 @@ function showReceipt() {
     //noinspection ES6ModulesDependencies
     $.post("post/getConfig").then((config) => {
         //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + picId + '.jpg', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpg', function (data, status) {
             if (status === 'success') {
-                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + picId + '.jpg');
+                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + picId + '.jpeg', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpeg', function (data, status) {
             if (status === 'success') {
-                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + picId + '.jpeg');
+                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpeg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + picId + '.png', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png', function (data, status) {
             if (status === 'success') {
-                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + picId + '.png');
+                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png');
             }
         });
     });
