@@ -1,8 +1,16 @@
+var config = '';
+$(document).ready(function () {
+    $.post("post/getConfig").then((cf) => {
+        config = cf;
+        log(config);
+        showSlide();
+    })
+});
 // function for show slide
 function slideShow(type, mode, autoPlay) {
     let finish = function (n) {
         const gal = $('.galleria');
-        for (let i = 1; i < n; i++)gal.append("<img src='images/news/" + type + i + ".png'>");
+        for (let i = 1; i < n; i++)gal.append("<img src='" + config.studentSlideshowPath.slice(config.studentSlideshowPath.search("MonkeyWebData") + 14) + type + i + ".png'>");
         Galleria.loadTheme('galleria/themes/' + mode + '/galleria.' + mode + '.min.js');
         Galleria.run(gal, {
             extend: function () {
@@ -15,7 +23,7 @@ function slideShow(type, mode, autoPlay) {
     };
     let recur = function (i) {
         //noinspection ES6ModulesDependencies,JSUnusedLocalSymbols,JSUnresolvedFunction
-        $.get("images/news/" + type + i + ".png").done(function (result) {
+        $.get(config.studentSlideshowPath.slice(config.studentSlideshowPath.search("MonkeyWebData") + 14) + type + i + ".png").done(function (result) {
             console.log("success" + i);
             recur(i + 1);
         }).fail(function () {

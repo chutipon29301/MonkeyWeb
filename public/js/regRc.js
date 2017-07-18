@@ -32,21 +32,21 @@ function showReceipt(id) {
     //noinspection ES6ModulesDependencies
     $.post("post/getConfig").then((config) => {
         //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpg', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpg', function (data, status) {
             if (status === 'success') {
-                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpg');
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpeg', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpeg', function (data, status) {
             if (status === 'success') {
-                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.jpeg');
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpeg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.png', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.png', function (data, status) {
             if (status === 'success') {
-                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("monkeyWebData")) + 'CR60Q3/' + id + '.png');
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.png');
             }
         });
     });

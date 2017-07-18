@@ -134,21 +134,21 @@ function showProfilePic(id) {
     //noinspection ES6ModulesDependencies
     $.post("post/getConfig").then((config) => {
         //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpg', function (data, status) {
+        $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpg', function (data, status) {
             if (status === 'success') {
-                $('.profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpg');
+                $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpeg', function (data, status) {
+        $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpeg', function (data, status) {
             if (status === 'success') {
-                $('.profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.jpeg');
+                $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpeg');
             }
         });
         //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.png', function (data, status) {
+        $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.png', function (data, status) {
             if (status === 'success') {
-                $('.profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("monkeyWebData")) + id + '.png');
+                $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.png');
             }
         });
     });
