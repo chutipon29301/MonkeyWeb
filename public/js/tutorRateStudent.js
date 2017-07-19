@@ -2,7 +2,9 @@ $(document).ready(function () {
     var student = [];
     $.post("post/allStudent").then((data) => {
         for (let i = 0; i < data.student.length; i++) {
-            student[i] = data.student[i].firstname;
+            if (data.student[i].status === "active") {
+                student[i] = data.student[i].nickname + " " + data.student[i].firstname;
+            }
         }
         var search = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
