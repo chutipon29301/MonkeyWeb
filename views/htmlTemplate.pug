@@ -5,13 +5,13 @@ html(lang="en" style="position:relative;min-height:100%;")
         meta(charset="utf-8")
         meta(name="viewport" content="width=device-width,initial-scale=1")
         link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
-        link(rel="stylesheet" type="text/css" href="css/bootstrap.min.css")
-        link(rel="stylesheet" type="text/css" href='css/style.min.css')
+        link(rel="stylesheet" type="text/css" href="/css/bootstrap.min.css")
+        link(rel="stylesheet" type="text/css" href="/css/style.min.css")
         script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js")
-        script(src="js/jquery-3.2.1.min.js")
-        script(src="js/bootstrap.min.js")
+        script(src="/js/jquery-3.2.1.min.js")
+        script(src="/js/bootstrap.min.js")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
-        script(type="text/javascript" src="js/global-1.0.0.custom.min.js")
+        script(type="text/javascript" src="/js/global-1.0.0.custom.min.js")
         block head
         title= pageTitle?pageTitle:"Monkey-Monkey Official Website"
     body(style="margin-bottom:90px;")
@@ -36,38 +36,41 @@ html(lang="en" style="position:relative;min-height:100%;")
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") Course
                                         span.caret
                                     ul.dropdown-menu
-                                        li: a(href="#") ลา
-                                        li: a(href="#") ชดเชย
+                                        li.disabled: a(href="#") ลา
+                                        li.disabled: a(href="#") ชดเชย
                                 li.dropdown
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") Full Hybrid
                                         span.caret
                                     ul.dropdown-menu
-                                        li: a(href="#") ลา
-                                        li: a(href="#") เพิ่ม
+                                        li.disabled: a(href="#") ลา
+                                        li.disabled: a(href="#") เพิ่ม
                                         li.divider
-                                        li: a(href="#") ลาตลอดไป
-                                        li: a(href="#") เพิ่มตลอดไป
+                                        li.disabled: a(href="#") ลาตลอดไป
+                                        li.disabled: a(href="#") เพิ่มตลอดไป
                             else
-                                li: a(href="tutorCourseMaterial") Tutor Course Material
-                                li: a(href="adminAllCourse") All Course
-                                if(webUser.position!="tutor")
-                                    li: a(href="adminAllStudent") All Student
-                                    li: a(href="adminCourseRoom") Room
-                                    li: a(href="adminCourseMaterial") Admin Course Material
+                                li: a(href="/tutorCourseMaterial") My Course Material
+                                if(webUser.position=="tutor")
+                                    li: a(href="/adminAllCourse") My Course
+                                    li: a(href="/tutorRateStudent") Rate Students
+                                else
+                                    li: a(href="/adminAllCourse") All Course
+                                    li: a(href="/adminAllStudent") All Student
+                                    li: a(href="/adminCourseRoom") Room
+                                    li: a(href="/adminCourseMaterial") Course Material Management
                         ul.nav.navbar-nav.navbar-right
                             if(webUser.position=="student")
-                                li: a(href="studentProfile")
+                                li: a(href="/studentProfile")
                                     span.glyphicon.glyphicon-user
                                     = " "+webUser.firstname+" "+webUser.lastname
                             else if(webUser.position=="dev")
-                                li: a(href="testDev")
+                                li: a(href="/testDev")
                                     span.glyphicon.glyphicon-user
                                     = " "+webUser.firstname+" "+webUser.lastname
                             else
-                                li: a(href="adminAllStudent")
+                                li: a(href="/adminAllStudent")
                                     span.glyphicon.glyphicon-user
                                     = " "+webUser.firstname+" "+webUser.lastname
-                            li: a(href="login" onclick="logout();")
+                            li: a(href="/login")
                                 span.glyphicon.glyphicon-log-out
                                 |  Logout
         block body

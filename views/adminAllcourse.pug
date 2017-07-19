@@ -1,6 +1,7 @@
 extends htmlTemplate
 block head
-    -const pageTitle = "All Course"
+    - var pageTitle = "All Course"
+    - if(webUser.position=="tutor")pageTitle="My Course"
     script(src="js/admin.min.js")
     script.
         window.onload = getAllCourseContent();
