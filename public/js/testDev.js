@@ -30,36 +30,20 @@ $(document).ready(function(){
     //     });
     // })
     $("[type=submit]").click(function(event){
-        var form=$(this).closest("form");
+        var button=$(this);
+        var form=button.closest("form");
+        if(button.attr("name")){
+            if(form.find("temp").length==0)form.append("<temp></temp>");
+            form.find("temp").html('<input name="'+button.attr("name")+'" val="'+button.val()+'" type="hidden">');
+        }
+    });
+    $("form").submit(function(event){
+        event.preventDefault();
+        var form=$(this);
         if(form.attr("enctype")=="multipart/form-data"){
             return true;
         }
-        event.preventDefault();
-        // var input=$(this).find("[name]");
         var input={};
-        // $(this).find("[name]").each(function(){
-        //     if($(this).attr("type")=="checkbox"||$(this).attr("type")=="day"||$(this).attr("type")=="hour"||$(this).hasClass("array"))return;
-        //     if($(this).attr("type")=="password")input[$(this).attr("name")]=CryptoJS.SHA3($(this).val()).toString();
-        //     else if($(this).attr("type")=="number")input[$(this).attr("name")]=parseInt($(this).val());
-        //     else input[$(this).attr("name")]=$(this).val();
-        // });
-        // $(this).find("[type=checkbox]:checked").each(function(){
-        //     if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=[];
-        //     input[$(this).attr("name")].push($(this).val());
-        // });
-        // $(this).find("[type=day]").each(function(){
-        //     if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=moment(0).valueOf();
-        //     input[$(this).attr("name")]=moment(input[$(this).attr("name")]).day(parseInt($(this).val())).valueOf();
-        // });
-        // $(this).find("[type=hour]").each(function(){
-        //     if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=moment(0).valueOf();
-        //     input[$(this).attr("name")]=moment(input[$(this).attr("name")]).hour(parseInt($(this).val())).valueOf();
-        // });
-        // $(this).find(".array").each(function(){
-        //     if(input[$(this).attr("name")]==undefined)input[$(this).attr("name")]=[];
-        //     if($(this).attr("type")=="number")input[$(this).attr("name")].push(parseInt($(this).val()));
-        //     else input[$(this).attr("name")].push($(this).val());
-        // });
         var getValue=function(x){
             if($(x).attr("type")=="checkbox"){
                 if($(x).prop("checked")){
@@ -70,15 +54,11 @@ $(document).ready(function(){
             if($(x).attr("type")=="password")return CryptoJS.SHA3($(x).val()).toString();
             else if($(x).hasClass("input-day")){
                 if(input[$(x).attr("name")]==undefined)input[$(x).attr("name")]=moment(0).valueOf();
-                return moment(input[$(x).attr("name")]).day(parseInt($(x).val())).valueOf();
+                return moment(input[$(x).attr("name")]).day(moment(parseInt($(x).val())).day()).valueOf();
             }
-            else if($(x).hasClass("input-hour")){
+            else if($(x).hasClass("input-time")){
                 if(input[$(x).attr("name")]==undefined)input[$(x).attr("name")]=moment(0).valueOf();
-                return moment(input[$(x).attr("name")]).hour(parseInt($(x).val())).valueOf();
-            }
-            else if($(x).hasClass("input-minute")){
-                if(input[$(x).attr("name")]==undefined)input[$(x).attr("name")]=moment(0).valueOf();
-                return moment(input[$(x).attr("name")]).hour(parseInt($(x).val())).valueOf();
+                return moment(input[$(x).attr("name")]).hour(moment(parseInt($(x).val())).hour()).minute(moment(parseInt($(x).val())).minute()).valueOf();
             }
             else if($(x).attr("type")=="number"||$(x).hasClass("input-int"))return parseInt($(x).val());
             return $(x).val();
@@ -91,9 +71,7 @@ $(document).ready(function(){
             }
             else input[$(this).attr("name")]=getValue(this);
         });
-        if($(this).attr("name")){
-            input[$(this).attr("name")]=$(this).val();
-        }
+        form.find("temp").remove();
         console.log("===>",form.attr("action"));
         console.log(input);
         $.post(form.attr("action"),input,function(data,status){
