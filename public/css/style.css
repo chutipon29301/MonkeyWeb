@@ -24,6 +24,7 @@ footer{
 [data-toggle=collapse]{
 	cursor:pointer;
 }
+/*Spining circular loader*/
 .loader {
   border: 5px solid;
   border-radius: 50%;
@@ -41,6 +42,29 @@ footer{
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/*Table highlight only cell*/
+.table-hover-cell > tbody > tr > td.active:hover,
+.table-hover-cell > tbody > tr > th.active:hover {
+  background-color: #e8e8e8;
+}
+.table-hover-cell > tbody > tr > td.success:hover,
+.table-hover-cell > tbody > tr > th.success:hover {
+  background-color: #d0e9c6;
+}
+.table-hover-cell > tbody > tr > td.info:hover,
+.table-hover-cell > tbody > tr > th.info:hover {
+  background-color: #c4e3f3;
+}
+.table-hover-cell > tbody > tr > td.warning:hover,
+.table-hover-cell > tbody > tr > th.warning:hover {
+  background-color: #faf2cc;
+}
+.table-hover-cell > tbody > tr > td.danger:hover,
+.table-hover-cell > tbody > tr > th.danger:hover {
+  background-color: #ebcccc;
+}
+
 .loginBtn {
 	margin-top: 20px;
 }
