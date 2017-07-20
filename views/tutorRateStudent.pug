@@ -4,6 +4,9 @@ block head
     script(src="js/typeahead.bundle.min.js")
     script(src="js/tutorRateStudent.js")
     style.
+        .jumbotron{
+            padding-left: 10vw;
+        }
         .tt-input{
             width: 20vw;
             font-size: 20px;
@@ -22,6 +25,9 @@ block head
             margin-top:6px;
         }
 block body
+    .jumbotron
+        h1 Rate Student
+        p This page use for comment and rate student
     .container
         #search-box
             input.typeahead(type="text" placeholder="Name of Student")
