@@ -116,7 +116,7 @@ module.exports=function(app,db){
         addPugPage("adminHome",options);
         addPugPage("adminAllcourse",options);
         addPugPage("adminCoursedescription",options);
-        addPugPage("tutorRateStudent",options);
+        addPugPage("tutorCommentStudent",options);
         addPugPage("tutorCourseMaterial",options,function(callback){
             var local={moment:moment};
             post("post/allCourseMaterial",{},function(result){
