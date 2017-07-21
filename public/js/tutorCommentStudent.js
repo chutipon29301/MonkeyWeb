@@ -16,12 +16,14 @@ function postComment() {
     let comm = $('#search-box .typeahead').typeahead("getActive");
     let x = $('#comment').val();
     if (comm !== undefined) {
-        $.post("post/addStudentComment", {
-            studentID: comm.slice(-6, -1),
-            tutorID: cookie.monkeyWebUser,
-            message: $('#comment').val()
-        }, function (data, status) {
-            location.reload();
-        });
-    }else alert("Please Input Student Name");
+        if (comm.length > 5) {
+            $.post("post/addStudentComment", {
+                studentID: comm.slice(-6, -1),
+                tutorID: cookie.monkeyWebUser,
+                message: $('#comment').val()
+            }, function (data, status) {
+                location.reload();
+            });
+        } else alert("Please Select Correct Name")
+    } else alert("Please Input Student Name");
 }
