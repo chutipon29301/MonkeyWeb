@@ -4,13 +4,14 @@ module.exports=function(app,db){
     var CryptoJS=require("crypto-js");
     var fs=require("fs-extra");
     var moment=require("moment");
-    var ObjectID=require('mongodb').ObjectID;
+    var ObjectID=require("mongodb").ObjectID;
 
     var configDB=db.collection("config");
     var courseSuggestionDB=db.collection("courseSuggestion");
     var fullHybridDB=db.collection("fullHybrid");
     // var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
+    var studentComment=db.collection("studentComment");
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
 
@@ -54,8 +55,8 @@ module.exports=function(app,db){
         return output;
     };
     // function splitCourseName(name){
-    //     if(typeof(name)=='string'){
-    //         if(name.slice(0,3).toLowerCase()=='sat'){
+    //     if(typeof(name)=="string"){
+    //         if(name.slice(0,3).toLowerCase()=="sat"){
     //             return {subject:name.slice(3),grade:"SAT",level:""}
     //         }
     //         var subject,grade,level;
@@ -71,18 +72,18 @@ module.exports=function(app,db){
     //         }
     //         return {subject:subject,grade:grade,level:level};
     //     }
-    //     else return {subject:'Wrong input',grade:'Wrong input',level:'Wrong input'};
+    //     else return {subject:"Wrong input",grade:"Wrong input",level:"Wrong input"};
     // };
     // var gradeStringToBit=function(grade){
     //     var output=0;
-    //     if(grade[0]=='P'){
+    //     if(grade[0]=="P"){
     //         for(var i=1;i<grade.length;i++){
-    //             output|=(1<<(grade[i]-'1'));
+    //             output|=(1<<(grade[i]-"1"));
     //         }
     //     }
-    //     if(grade[0]=='S'){
+    //     if(grade[0]=="S"){
     //         for(var i=1;i<grade.length;i++){
-    //             output|=(1<<(grade[i]-'1'+6));
+    //             output|=(1<<(grade[i]-"1"+6));
     //         }
     //     }
     //     return output;
@@ -578,14 +579,10 @@ module.exports=function(app,db){
     post("/post/changePosition",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
         var position=req.body.position;
-        userDB.findOne({_id:tutorID},function(err,result){
-            if(result==null)res.send({err:"The requested ID doesn't exist."});
-            else if(result.position!="student"){
-                userDB.updateOne({_id:tutorID},{$set:{position:position}},function(){
-                    res.send({});
-                });
-            }
-            else res.send({err:"The requested ID isn't a staff."});
+        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+            userDB.updateOne({_id:tutorID},{$set:{position:position}},function(){
+                res.send({});
+            });
         });
     });
 
@@ -688,7 +685,7 @@ module.exports=function(app,db){
         );
     });
     //OK {subject,[grade],level,day,[tutor],description,room} return {}
-    post('/post/addCourse',function(req,res){
+    post("/post/addCourse",function(req,res){
         var courseID=new ObjectID().toString();
         var subject=req.body.subject;
         var grade=req.body.grade;
@@ -776,7 +773,8 @@ module.exports=function(app,db){
                         }
                         else{
                             if(course[i].room>=0){
-                                output.course[course[i].room]={courseID:course[i]._id,
+                                output.course[course[i].room]={
+                                    courseID:course[i]._id,
                                     maxSeat:config.maxSeat[course[i].room]
                                 };
                             }
@@ -791,7 +789,9 @@ module.exports=function(app,db){
                                     return x.subject==fullHybrid.student[i].subject;
                                 });
                                 if(index==-1)index=output.fullHybrid.length;
-                                if(output.fullHybrid[index]==undefined)output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
+                                if(output.fullHybrid[index]==undefined){
+                                    output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
+                                }
                                 output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
                             }
                             output.maxHybridSeat=config.maxSeat[0];
@@ -836,7 +836,9 @@ module.exports=function(app,db){
                                             if(err)res.send({err:err,at:"writeFile"});
                                             else{
                                                 if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
-                                                    userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"transferred"}},function(){
+                                                    userDB.updateOne({_id:studentID},{
+                                                        $set:{"student.registrationState":"transferred"}
+                                                    },function(){
                                                         res.send({});
                                                     });
                                                 }
@@ -956,7 +958,9 @@ module.exports=function(app,db){
                                 },function(){
                                     if(errOutput.length)res.send({err:errOutput});
                                     else{
-                                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:"pending"}},function(){
+                                        courseDB.updateOne({_id:courseID},{
+                                            $set:{["submission."+(numberOfSub-1)]:"pending"}
+                                        },function(){
                                             res.send({});
                                         });
                                     }
@@ -978,7 +982,9 @@ module.exports=function(app,db){
                 if(result==null)res.send({err:"The requested course doesn't exist."});
                 else{
                     if(action=="accept"){
-                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:"accepted"}},function(){
+                        courseDB.updateOne({_id:courseID},{
+                            $set:{["submission."+(numberOfSub-1)]:"accepted"}
+                        },function(){
                             res.send({});
                         });
                     }
@@ -989,12 +995,16 @@ module.exports=function(app,db){
                                 if(err)res.send({err:err,at:"remove"});
                                 else{
                                     if(action=="reject"){
-                                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:"rejected"}},function(){
+                                        courseDB.updateOne({_id:courseID},{
+                                            $set:{["submission."+(numberOfSub-1)]:"rejected"}
+                                        },function(){
                                             res.send({});
                                         });
                                     }
                                     else if(action=="remove"){
-                                        courseDB.updateOne({_id:courseID},{$set:{["submission."+(numberOfSub-1)]:null}},function(){
+                                        courseDB.updateOne({_id:courseID},{
+                                            $set:{["submission."+(numberOfSub-1)]:null}
+                                        },function(){
                                             res.send({});
                                         });
                                     }
@@ -1006,7 +1016,7 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {} return {[course->courseID,[tutor],[tutorNicknameEn],[tutorEmail],day,courseName,[submission]]}
+    //OK {} return {[course]->courseID,[tutor],[tutorNicknameEn],[tutorEmail],day,courseName,[submission]}
     post("/post/allCourseMaterial",function(req,res){
         var output=[];
         getCourseDB(function(courseDB){
@@ -1022,7 +1032,8 @@ module.exports=function(app,db){
                                 continueLoop();
                             });
                         },function(){
-                            output[i]={courseID:course[i]._id,
+                            output[i]={
+                                courseID:course[i]._id,
                                 tutor:course[i].tutor,
                                 tutorNicknameEn:tutorNicknameEn,tutorEmail:tutorEmail,
                                 day:course[i].day,courseName:courseName,
@@ -1038,15 +1049,56 @@ module.exports=function(app,db){
         });
     });
 
+    // Assessment
+    //OK {studentID,tutorID,message} return {}
+    post("/post/addStudentComment",function(req,res){
+        var studentID=parseInt(req.body.studentID);
+        var tutorID=parseInt(req.body.tutorID);
+        var message=req.body.message;
+        findUser(res,studentID,{position:"student"},function(){
+            findUser(res,tutorID,{position:["tutor","admin","dev"]},function(){
+                studentComment.updateOne({_id:studentID},{
+                    $push:{
+                        comment:{from:tutorID,message:message,timestamp:moment().valueOf()}
+                    }
+                },{upsert:true},function(){
+                    res.send({});
+                });
+            });
+        });
+    });
+    //OK {studentID,timestamp} return {}
+    post("/post/removeStudentComment",function(req,res){
+        var studentID=parseInt(req.body.studentID);
+        var timestamp=parseInt(req.body.timestamp);
+        findUser(res,studentID,{position:"student"},function(){
+            studentComment.updateOne({_id:studentID},{
+                $pull:{comment:{timestamp:timestamp}}
+            },function(){
+                res.send({});
+            });
+        });
+    });
+    //OK {studentID} return {[comment]->from,message,timestamp}
+    post("/post/listStudentComment",function(req,res){
+        var studentID=parseInt(req.body.studentID);
+        findUser(res,studentID,{position:"student"},function(){
+            studentComment.findOne({_id:studentID},function(err,result){
+                if(result==null)res.send({comment:[]});
+                else res.send({comment:result.comment});
+            });
+        });
+    });
+
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
-    post('/post/getConfig',function(req,res){
+    post("/post/getConfig",function(req,res){
         configDB.findOne({},function(err,config){
             res.send(config);
         });
     });
     //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat} return {}
-    post('/post/editConfig',function(req,res){
+    post("/post/editConfig",function(req,res){
         var dirPath=function(path){
             if(path.endsWith("/"))return path;
             return path+"/";
@@ -1055,17 +1107,19 @@ module.exports=function(app,db){
         for(var i=0;i<req.body.maxSeat.length;i++){
             maxSeat.push(parseInt(req.body.maxSeat[i]));
         }
-        configDB.updateOne({},{$set:{
-            year:parseInt(req.body.year),
-            quarter:parseInt(req.body.quarter),
-            courseMaterialPath:dirPath(req.body.courseMaterialPath),
-            receiptPath:dirPath(req.body.receiptPath),
-            nextStudentID:parseInt(req.body.nextStudentID),
-            nextTutorID:parseInt(req.body.nextTutorID),
-            profilePicturePath:dirPath(req.body.profilePicturePath),
-            studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
-            maxSeat:maxSeat
-        }},function(){
+        configDB.updateOne({},{
+            $set:{
+                year:parseInt(req.body.year),
+                quarter:parseInt(req.body.quarter),
+                courseMaterialPath:dirPath(req.body.courseMaterialPath),
+                receiptPath:dirPath(req.body.receiptPath),
+                nextStudentID:parseInt(req.body.nextStudentID),
+                nextTutorID:parseInt(req.body.nextTutorID),
+                profilePicturePath:dirPath(req.body.profilePicturePath),
+                studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
+                maxSeat:maxSeat
+            }
+        },function(){
             configDB.findOne({},function(err,config){
                 console.log("[SHOW] config");
                 console.log(config);
@@ -1074,12 +1128,12 @@ module.exports=function(app,db){
         });
     });
     //OK {toAdd} return {}
-    post('/post/addStudentGrade',function(req,res){
+    post("/post/addStudentGrade",function(req,res){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
 
-
+    // Debug
     app.post("/debug/listUser",function(req,res){
         userDB.find().toArray(function(err,result){
             res.send(result);

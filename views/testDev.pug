@@ -176,7 +176,7 @@ block body
                         +submit("post/removeTutor")
                 +list-group-item
                     +form-horizontal-title("post/editTutor")
-                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("tutorID"): +input-number("tutorID")(required)
                         +form-group("password"): +input-password("password")
                         +form-group("firstname"): +input-text("firstname")
                         +form-group("lastname"): +input-text("lastname")
@@ -270,6 +270,22 @@ block body
                     .loader.center-block
                     //- +form-horizontal-title("post/submitReceipt")
                         +submit("post/submitReceipt")
+            +panel-list-group("Assessment")
+                +list-group-item
+                    +form-horizontal-title("post/addStudentComment")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("tutorID"): +input-number("tutorID")(required)
+                        +form-group("message"): +input-text("message")(required)
+                        +submit("post/addStudentComment")
+                +list-group-item
+                    +form-horizontal-title("post/removeStudentComment")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("timestamp"): +input-number("timestamp")(required)
+                        +submit("post/removeStudentComment")
+                +list-group-item
+                    +form-horizontal-title("post/listStudentComment")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +submit("post/listStudentComment")
             +panel-list-group("Configuration")
                 +list-group-item
                     +form-horizontal-title("post/getConfig")
