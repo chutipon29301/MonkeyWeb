@@ -879,3 +879,14 @@ function generateCover(tableInfo, subj) {
         }
     }
 }
+function showComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+        for (let i = 0; i < data.comment.length; i++) {
+            log("=======================");
+            log(data.comment[i])
+            $("#comment").append("<h4>" + data.comment[i].from + "</h4>");
+            $("#comment").append("<p>" + data.comment[i].message + "</p>");
+        }
+    })
+}
