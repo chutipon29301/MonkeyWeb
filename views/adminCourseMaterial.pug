@@ -13,19 +13,19 @@ block body
     //- include: ../backend/node_modules/moment/src/moment.js
     mixin cell(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
         if(status==null)
-            td.bg-info -
+            td.info -
         else if(status=="accepted")
-            td.bg-success
+            td.success
                 a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
                 code Accepted
                 +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
         else if(status=="rejected")
-            td.bg-danger
+            td.danger
                 a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
                 code Rejected
                 +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
         else if(status=="pending")
-            td.bg-warning
+            td.warning
                 a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
                 code Pending
                 +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
@@ -42,7 +42,7 @@ block body
         div= JSON.stringify(course[i])
     +container-liquid.text-center
         .table-responsive
-            table#tracking.table.table-bordered.table-hover(style="margin:0px")
+            table#tracking.table.table-bordered.table-hover-cell(style="margin:0px")
                 thead
                     tr
                         - for(var i in course)
