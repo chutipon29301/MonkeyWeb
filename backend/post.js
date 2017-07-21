@@ -54,6 +54,9 @@ module.exports=function(app,db){
         }
         return output;
     };
+    var prettify=function(str){
+        return JSON.stringify(str,null,2);
+    };
     // function splitCourseName(name){
     //     if(typeof(name)=="string"){
     //         if(name.slice(0,3).toLowerCase()=="sat"){
@@ -164,8 +167,10 @@ module.exports=function(app,db){
                     "FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),
                     moment().format("@ dddDDMMMYYYY HH:mm:ss")
                 );
+                var file=[];
+                if(req.files!=undefined)file=req.files.map(function(x){return x.originalname});
                 console.log("\treq.body","=>",req.body);
-                console.log("\treq.files","=>",req.files);
+                console.log("\treq.files","=>",file);
                 var oldSend=res.send;
                 res.send=function(){
                     oldSend.apply(this,arguments);
@@ -174,9 +179,9 @@ module.exports=function(app,db){
                             "FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),
                             moment().format("@ dddDDMMMYYYY HH:mm:ss")
                         ));
-                        console.log(chalk.black.bgRed("\treq.body","=>",JSON.stringify(req.body,null,2)));
-                        console.log(chalk.black.bgRed("\treq.files","=>",JSON.stringify(req.files,null,2)));
-                        console.log(chalk.black.bgRed("\terror.detail","=>",JSON.stringify(arguments[0],null,2)));
+                        console.log(chalk.black.bgRed("\treq.body","=>",prettify(req.body)));
+                        console.log(chalk.black.bgRed("\treq.files","=>",prettify(file)));
+                        console.log(chalk.black.bgRed("\terror.detail","=>",prettify(arguments[0])));
                     }
                 }
                 callback(req,res);
@@ -195,7 +200,9 @@ module.exports=function(app,db){
             }
             else{
                 if(result.position=="student"){
-                    if(["active","inactive"].includes(result.student.status))res.send({verified:true});
+                    if(["active","inactive"].includes(result.student.status)){
+                        res.send({verified:true});
+                    }
                     else res.send({verified:false});
                 }
                 else res.send({verified:true});
@@ -206,8 +213,13 @@ module.exports=function(app,db){
     post("/post/name",function(req,res){
         var userID=parseInt(req.body.userID);
         findUser(res,userID,{},function(result){
-            res.send({firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
-                firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn
+            res.send({
+                firstname:result.firstname,
+                lastname:result.lastname,
+                nickname:result.nickname,
+                firstnameEn:result.firstnameEn,
+                lastnameEn:result.lastnameEn,
+                nicknameEn:result.nicknameEn
             });
         });
     });
@@ -222,7 +234,9 @@ module.exports=function(app,db){
     post("/post/status",function(req,res){
         var userID=parseInt(req.body.userID);
         findUser(res,userID,{},function(result){
-            if(result.position=="student")res.send({status:result.student.status});
+            if(result.position=="student"){
+                res.send({status:result.student.status});
+            }
             else res.send({status:result.tutor.status});
         });
     });
@@ -232,12 +246,16 @@ module.exports=function(app,db){
         var status=req.body.status;
         findUser(res,userID,{},function(result){
             if(result.position=="student"){
-                userDB.updateOne({_id:userID},{$set:{"student.status":status}},function(){
+                userDB.updateOne({_id:userID},{
+                    $set:{"student.status":status}
+                },function(){
                     res.send({});
                 });
             }
             else{
-                userDB.updateOne({_id:userID},{$set:{"tutor.status":status}},function(){
+                userDB.updateOne({_id:userID},{
+                    $set:{"tutor.status":status}
+                },function(){
                     res.send({});
                 });
             }
@@ -253,7 +271,8 @@ module.exports=function(app,db){
                 getCourseDB(function(courseDB){
                     courseDB.findOne({student:result[i]._id},function(err,course){
                         fullHybridDB.findOne({"student.studentID":result[i]._id},function(err,hybrid){
-                            output[i]={studentID:result[i]._id,
+                            output[i]={
+                                studentID:result[i]._id,
                                 firstname:result[i].firstname,
                                 lastname:result[i].lastname,
                                 nickname:result[i].nickname,
@@ -277,9 +296,15 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var output={};
         findUser(res,studentID,{position:"student"},function(result){
-            output=Object.assign(result.student,{firstname:result.firstname,lastname:result.lastname,nickname:result.nickname,
-                firstnameEn:result.firstnameEn,lastnameEn:result.lastnameEn,nicknameEn:result.nicknameEn,
-                email:result.email,phone:result.phone,courseID:[],hybridDay:[]
+            output=Object.assign(result.student,{
+                firstname:result.firstname,
+                lastname:result.lastname,
+                nickname:result.nickname,
+                firstnameEn:result.firstnameEn,
+                lastnameEn:result.lastnameEn,
+                nicknameEn:result.nicknameEn,
+                email:result.email,phone:result.phone,
+                courseID:[],hybridDay:[]
             });
             getCourseDB(function(courseDB){
                 courseDB.find({student:studentID}).sort({day:1}).toArray(function(err,course){
@@ -291,7 +316,10 @@ module.exports=function(app,db){
                             var index=hybrid[i].student.findIndex(function(x){
                                 return x.studentID==studentID;
                             });
-                            output.hybridDay.push({subject:hybrid[i].student[index].subject,day:hybrid[i].day});
+                            output.hybridDay.push({
+                                subject:hybrid[i].student[index].subject,
+                                day:hybrid[i].day
+                            });
                         }
                         res.send(output);
                     });
@@ -311,7 +339,9 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var registrationState=req.body.registrationState;
         findUser(res,studentID,{position:"student"},function(result){
-            userDB.updateOne({_id:studentID},{$set:{"student.registrationState":registrationState}},function(){
+            userDB.updateOne({_id:studentID},{
+                $set:{"student.registrationState":registrationState}
+            },function(){
                 res.send({});
             });
         });
@@ -326,7 +356,9 @@ module.exports=function(app,db){
         findUser(res,studentID,{position:"student"},function(result){
             getCourseDB(function(courseDB){
                 callbackLoop(courseID.length,function(i,continueLoop){
-                    courseDB.updateOne({_id:courseID[i]},{$addToSet:{student:studentID}},function(){
+                    courseDB.updateOne({_id:courseID[i]},{
+                        $addToSet:{student:studentID}
+                    },function(){
                         continueLoop();
                     });
                 },function(){
@@ -343,7 +375,9 @@ module.exports=function(app,db){
         findUser(res,studentID,{position:"student"},function(result){
             getCourseDB(function(courseDB){
                 callbackLoop(courseID.length,function(i,continueLoop){
-                    courseDB.updateOne({_id:courseID[i]},{$pull:{student:studentID}},function(){
+                    courseDB.updateOne({_id:courseID[i]},{
+                        $pull:{student:studentID}
+                    },function(){
                         continueLoop();
                     });
                 },function(){
@@ -358,12 +392,11 @@ module.exports=function(app,db){
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
         findUser(res,studentID,{position:"student"},function(result){
-            userDB.updateOne({_id:studentID},
-                {$addToSet:{"student.skillDay":{subject:subject,day:day}}},
-                function(){
-                    res.send({});
-                }
-            );
+            userDB.updateOne({_id:studentID},{
+                $addToSet:{"student.skillDay":{subject:subject,day:day}}
+            },function(){
+                res.send({});
+            });
         });
     });
     //OK {studentID,day} return {}
@@ -371,12 +404,11 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         findUser(res,studentID,{position:"student"},function(result){
-            userDB.updateOne({_id:studentID},
-                {$pull:{"student.skillDay":{day:day}}},
-                function(){
-                    res.send({});
-                }
-            );
+            userDB.updateOne({_id:studentID},{
+                $pull:{"student.skillDay":{day:day}}
+            },function(){
+                res.send({});
+            });
         });
     });
     //OK {studentID,day,subject} return {}
@@ -385,13 +417,12 @@ module.exports=function(app,db){
         var day=parseInt(req.body.day);
         var subject=req.body.subject;
         findUser(res,studentID,{position:"student"},function(result){
-            fullHybridDB.updateOne({day:day},
-                {$setOnInsert:{_id:moment(day).format("dddHH")},
-                    $addToSet:{student:{studentID:studentID,subject:subject}}
-                },{upsert:true},function(){
-                    res.send({});
-                }
-            );
+            fullHybridDB.updateOne({day:day},{
+                $setOnInsert:{_id:moment(day).format("dddHH")},
+                $addToSet:{student:{studentID:studentID,subject:subject}}
+            },{upsert:true},function(){
+                res.send({});
+            });
         });
     });
     //OK {studentID,day} return {}
@@ -399,12 +430,11 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
         findUser(res,studentID,{position:"student"},function(result){
-            fullHybridDB.updateOne({day:day},
-                {$pull:{student:{studentID:studentID}}},
-                function(){
-                    res.send({});
-                }
-            );
+            fullHybridDB.updateOne({day:day},{
+                $pull:{student:{studentID:studentID}}
+            },function(){
+                res.send({});
+            });
         });
     });
 
@@ -429,7 +459,11 @@ module.exports=function(app,db){
                 firstname:firstname,lastname:lastname,nickname:nickname,
                 firstnameEn:firstnameEn,lastnameEn:lastnameEn,nicknameEn:nicknameEn,
                 email:email,phone:phone,
-                student:{grade:grade,registrationState:"unregistered",skillDay:[],balance:balance,phoneParent:phoneParent,status:"active"}
+                student:{
+                    grade:grade,registrationState:"unregistered",
+                    skillDay:[],balance:balance,
+                    phoneParent:phoneParent,status:"active"
+                }
             },function(err,result){
                 configDB.updateOne({},{$inc:{nextStudentID:1}});
                 // res.send({}); TODO
@@ -473,7 +507,9 @@ module.exports=function(app,db){
         findUser(res,studentID,{position:"student"},function(result){
             userDB.updateOne({_id:studentID},{$set:input},function(){
                 if(result.student.registrationState=="unregistered"){
-                    userDB.updateOne({_id:studentID},{$set:{"student.registrationState":"untransferred"}},function(){
+                    userDB.updateOne({_id:studentID},{
+                        $set:{"student.registrationState":"untransferred"}
+                    },function(){
                         res.send({});
                     });
                 }
@@ -555,13 +591,18 @@ module.exports=function(app,db){
             password+=Math.floor(Math.random()*10);
             password+=Math.floor(Math.random()*10);
             userDB.insertOne({
-                _id:studentID[i],password:CryptoJS.SHA3(password).toString(),position:"student",
+                _id:studentID[i],password:CryptoJS.SHA3(password).toString(),
+                position:"student",
                 firstname:"",lastname:"",nickname:"",
                 firstnameEn:"",lastnameEn:"",nicknameEn:"",
                 email:"",phone:"",
-                student:{grade:0,registrationState:"unregistered",skillDay:[],balance:balance,phoneParent:"",status:"active"}
+                student:{
+                    grade:0,registrationState:"unregistered",
+                    skillDay:[],balance:balance,phoneParent:"",
+                    status:"active"
+                }
             });
-            randomPasswordDB.insertOne({_id:studentID[i],password:password})
+            randomPasswordDB.insertOne({_id:studentID[i],password:password});
         }
         res.send({});
     });
@@ -570,7 +611,10 @@ module.exports=function(app,db){
         var output=[];
         randomPasswordDB.find().sort({_id:1}).toArray(function(err,result){
             for(var i=0;i<result.length;i++){
-                output[i]={studentID:result[i]._id,password:result[i].password};
+                output[i]={
+                    studentID:result[i]._id,
+                    password:result[i].password
+                };
             }
             res.send({student:output});
         });
@@ -580,7 +624,9 @@ module.exports=function(app,db){
         var tutorID=parseInt(req.body.tutorID);
         var position=req.body.position;
         findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
-            userDB.updateOne({_id:tutorID},{$set:{position:position}},function(){
+            userDB.updateOne({_id:tutorID},{
+                $set:{position:position}
+            },function(){
                 res.send({});
             });
         });
@@ -624,7 +670,10 @@ module.exports=function(app,db){
             courseDB.find({grade:{$bitsAllSet:[grade-1]}}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
                 callbackLoop(result.length,function(i,continueLoop){
                     getCourseName(result[i]._id,function(courseName){
-                        output.push({courseID:result[i]._id,courseName:courseName,day:result[i].day,tutor:result[i].tutor});
+                        output.push({
+                            courseID:result[i]._id,courseName:courseName,
+                            day:result[i].day,tutor:result[i].tutor
+                        });
                         continueLoop();
                     });
                 },function(){
@@ -641,7 +690,10 @@ module.exports=function(app,db){
                 if(result==null)res.send({err:"The requested course doesn't exist."});
                 else{
                     getCourseName(courseID,function(courseName){
-                        res.send({courseName:courseName,day:result.day,tutor:result.tutor,student:result.student});
+                        res.send({
+                            courseName:courseName,day:result.day,
+                            tutor:result.tutor,student:result.student
+                        });
                     });
                 }
             });
@@ -655,7 +707,10 @@ module.exports=function(app,db){
             if(result==null)res.send({course:output});
             else{
                 for(var i=0;i<result.length;i++){
-                    output[i]={level:result[i].level,courseID:result[i].courseID};
+                    output[i]={
+                        level:result[i].level,
+                        courseID:result[i].courseID
+                    };
                 }
                 res.send({course:output});
             }
@@ -666,23 +721,23 @@ module.exports=function(app,db){
         var grade=parseInt(req.body.grade);
         var level=req.body.level;
         var courseID=req.body.courseID;
-        courseSuggestionDB.updateOne({grade:grade,level:level},
-            {$setOnInsert:{_id:grade+level},$addToSet:{courseID:{$each:courseID}}},
-            {upsert:true},function(){
-                res.send({});
-            }
-        );
+        courseSuggestionDB.updateOne({grade:grade,level:level},{
+            $setOnInsert:{_id:grade+level},
+            $addToSet:{courseID:{$each:courseID}}
+        },{upsert:true},function(){
+            res.send({});
+        });
     });
     //OK {grade,level,[courseID]} return {}
     post("/post/removeCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
         var level=req.body.level;
         var courseID=req.body.courseID;
-        courseSuggestionDB.updateOne({grade:grade,level:level},
-            {$pull:{courseID:{$in:courseID}}},function(){
-                res.send({});
-            }
-        );
+        courseSuggestionDB.updateOne({grade:grade,level:level},{
+            $pull:{courseID:{$in:courseID}}
+        },function(){
+            res.send({});
+        });
     });
     //OK {subject,[grade],level,day,[tutor],description,room} return {}
     post("/post/addCourse",function(req,res){
@@ -702,7 +757,13 @@ module.exports=function(app,db){
         var description=req.body.description;
         var room=parseInt(req.body.room);
         getCourseDB(function(courseDB){
-            courseDB.insertOne({_id:courseID,subject:subject,grade:grade,level:level,day:day,tutor:tutor,student:[],submission:[],description:description,room:room},function(err,result){
+            courseDB.insertOne({
+                _id:courseID,
+                subject:subject,grade:grade,level:level,
+                day:day,tutor:tutor,
+                student:[],submission:[],
+                description:description,room:room
+            },function(err,result){
                 res.send(result.ops);//TODO ret {}
             });
         });
@@ -790,7 +851,10 @@ module.exports=function(app,db){
                                 });
                                 if(index==-1)index=output.fullHybrid.length;
                                 if(output.fullHybrid[index]==undefined){
-                                    output.fullHybrid[index]={subject:fullHybrid.student[i].subject,studentID:[]};
+                                    output.fullHybrid[index]={
+                                        subject:fullHybrid.student[i].subject,
+                                        studentID:[]
+                                    };
                                 }
                                 output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
                             }
