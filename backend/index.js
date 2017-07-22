@@ -15,9 +15,14 @@ app.use(cookieParser());
 app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
 app.use(express.static(path.join(__dirname,"../public")));// Serve static files
 app.use(express.static(path.join(__dirname,"../../MonkeyWebData")));// Serve static files
-app.use(function(req,res,next){// Allow access from other domain
+app.use(function(req,res,next){
+    // Allow access from other domain
     res.header("Access-Control-Allow-Origin","*");
     res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+    // No cache kept in local
+    res.header("Cache-Control","no-cache, no-store, must-revalidate");
+    res.header("Pragma","no-cache");
+    res.header("Expires","0");
     next();
 });
 app.set("views",path.join(__dirname,"../views"));
@@ -26,7 +31,7 @@ app.set("view engine","pug");
 // var credentials = {key:fs.readFileSync('private.key'),cert:fs.readFileSync('certificate.crt')};
 // require("https").createServer(credentials,app).listen(443);
 // require("http").createServer(express().use(function(req,res){
-// 	res.redirect("https://"+req.hostname+req.url);
+//     res.redirect("https://"+req.hostname+req.url);
 // })).listen(80);
 // Uncomment code above and comment code below to automatically redirect to https
 app.listen(80);

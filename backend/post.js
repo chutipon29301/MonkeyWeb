@@ -1153,6 +1153,24 @@ module.exports=function(app,db){
             });
         });
     });
+    //OK {day} return {[comment]->from,message,timestamp}
+    post("/post/listStudentCommentDay",function(req,res){
+        var day=parseInt(req.body.day);
+        var output=[];
+        studentComment.find().toArray(function(err,result){
+            console.log(prettify(result));
+            for(var i=0;i<result.length;i++){
+                var comment=[];
+                for(var j=0;j<result[i].comment.length;j++){
+                    if(moment(day).isSame(moment(result[i].comment[j].timestamp),"day")){
+                        comment.push(result[i].comment[j]);
+                    }
+                }
+                if(comment.length)output.push({studentID:result[i]._id,comment:comment});
+            }
+            res.send({student:output});
+        });
+    });
 
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
