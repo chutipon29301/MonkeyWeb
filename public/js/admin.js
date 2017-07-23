@@ -882,9 +882,33 @@ function generateCover(tableInfo, subj) {
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
-        for (let i = 0; i < data.comment.length; i++) {
+        if (data.comment.length > 10) {
+            $("#comment").append("<a onClick='showAllComment()'>Click here for all comment</a>");
+            for (let i = data.comment.length - 1; i > data.comment.length - 11; i--) {
+                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                    $("#comment").append("<h4>" + info.nickname + " (" + day + ")</h4>");
+                    $("#comment").append("<p>" + data.comment[i].message + "</p>");
+                })
+            }
+        } else {
+            for (let i = data.comment.length - 1; i > -1; i--) {
+                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                    $("#comment").append("<h4>" + info.nickname + " (" + day + ")</h4>");
+                    $("#comment").append("<p>" + data.comment[i].message + "</p>");
+                })
+            }
+        }
+    })
+}
+function showAllComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+        for (let i = data.comment.length - 11; i > -1; i--) {
             $.post("post/name", { userID: data.comment[i].from }).then((info) => {
-                $("#comment").append("<h4>" + info.nickname + "</h4>");
+                let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                $("#comment").append("<h4>" + info.nickname + " (" + day + ")</h4>");
                 $("#comment").append("<p>" + data.comment[i].message + "</p>");
             })
         }

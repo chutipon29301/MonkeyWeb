@@ -48,7 +48,7 @@ html(lang="en" style="position:relative;min-height:100%;")
                                         li.disabled: a(href="#") ลาตลอดไป
                                         li.disabled: a(href="#") เพิ่มตลอดไป
                             else
-                                li: a(href="/tutorCourseMaterial") My Course Material
+                                li: a(href="/tutorCourseMaterial") CR Material
                                 li: a(href="/tutorCommentStudent") Comment Students
                                 if(webUser.position=="tutor")
                                     li: a(href="/adminAllCourse") My Course
@@ -56,7 +56,7 @@ html(lang="en" style="position:relative;min-height:100%;")
                                     li: a(href="/adminAllCourse") All Course
                                     li: a(href="/adminAllStudent") All Student
                                     li: a(href="/adminCourseRoom") Room
-                                    li: a(href="/adminCourseMaterial") Course Material Management
+                                    li: a(href="/adminCourseMaterial") CR Tracking
                         ul.nav.navbar-nav.navbar-right
                             if(webUser.position=="student")
                                 li: a(href="/studentProfile")
