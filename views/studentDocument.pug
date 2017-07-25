@@ -1,0 +1,8 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Student Document"
+    script(src="js/student.min.js")
+block body
+    .container
+        h3 คู่มือ
+        a(href="doc/ใบฟ้า.pdf"): span.glyphicon.glyphicon-book &nbsp;เอกสารอธิบายรายละเอียด(ใบฟ้า)
