@@ -95,11 +95,11 @@ module.exports=function(app,db){
     addPage("login");
     addPage("login",{url:"/"});
     var options={middlewareOptions:{login:true,position:"student",studentStatus:{$in:["active","inactive"]}}};
-        addPage("home",options);
-        addPage("home2",options);
+        addPugPage("home",options);
         addPage("document",options);
+        addPugPage("studentDocument",options);
         options.middlewareOptions.registrationState={$ne:"unregistered"};
-            addPage("studentProfile",options);
+            addPugPage("studentProfile",options);
         options.middlewareOptions.registrationState="unregistered";
             addPage("registrationName",options);
             addPage("registrationCourse",options);
@@ -112,7 +112,6 @@ module.exports=function(app,db){
         delete options.middlewareOptions.registrationState;
     delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
-        addPage("tutorCourse",options);
         addPugPage("adminHome",options);
         addPugPage("adminAllcourse",options);
         addPugPage("adminCoursedescription",options);
