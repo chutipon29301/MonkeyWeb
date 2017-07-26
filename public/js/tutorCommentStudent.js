@@ -33,6 +33,7 @@ function showComment() {
         if (ID.length > 5) {
             ID = ID.slice(-6, -1);
             $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+                $("#commentList").empty();
                 for (let i = data.comment.length - 1; i > -1; i--) {
                     $.post("post/name", { userID: data.comment[i].from }).then((info) => {
                         let day = moment(data.comment[i].timestamp, "x").format("DD MMM");

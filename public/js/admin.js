@@ -909,7 +909,8 @@ function showAllComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     $("#showAll").toggle();
     $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
-        for (let i = data.comment.length - 11; i > -1; i--) {
+        $("#comment").empty();
+        for (let i = data.comment.length - 1; i > -1; i--) {
             $.post("post/name", { userID: data.comment[i].from }).then((info) => {
                 let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
                 $("#comment").append("<h4>" + info.nickname + " (" + day +
