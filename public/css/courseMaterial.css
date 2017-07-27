@@ -1,0 +1,112 @@
+.table-bordered>thead>tr>th{
+    color:rgb(255,255,255);
+    font-size:120%;
+}
+.table-bordered>thead>tr>th{
+    border-bottom-width:1px;
+}
+.table-bordered>thead>tr:last-child>th{
+    border-bottom-width:2px;
+}
+.thead-tutor{
+    background-color:rgb(49,193,193);
+}
+.thead-sat{
+    background-color:rgb(128,82,121);
+}
+.thead-sun{
+    background-color:rgb(225,86,63);
+}
+.thead-time,.thead-course-name{
+    background-color:rgb(255,138,9);
+}
+
+
+.table-bubble{
+    border-spacing:5px;
+    border-collapse:separate;
+}
+.table-bubble > tbody > tr > td,
+.table-bubble > thead > tr > th{
+    border:none;
+    border-radius:6px;
+    text-align:center;
+    vertical-align:middle;
+}
+.course-link{
+    cursor:pointer;
+}
+.course-link>h4{
+    margin:5px 0;
+}
+.popup{
+    font-size:36px;
+    cursor:pointer;
+}
+
+#submitModal .modal-header,
+#submitModal .modal-footer{
+    border:none;
+}
+.big-symbol{
+    font-size:100px;
+}
+
+.grey,.c-grey {
+    background-color: #f5f5f5;
+}
+.c-grey:hover {
+    background-color: #eeeeee;
+}
+.c-grey:active {
+    background-color: #e0e0e0;
+}
+.lightgreen,.c-lightgreen {
+    background-color: #dcedc8;
+}
+.c-lightgreen:hover {
+    background-color: #c5e1a5;
+}
+.c-lightgreen:active {
+    background-color: #aed581;
+}
+.blue,.c-blue {
+    background-color: #bbdefb;
+}
+.c-blue:hover {
+    background-color: #90caf9;
+}
+.c-blue:active {
+    background-color: #64b5f6;
+}
+.yellow,.c-yellow {
+    background-color: #fff9c4;
+}
+.c-yellow:hover {
+    background-color: #fff59d;
+}
+.c-yellow:active {
+    background-color: #fff176;
+}
+.red,.c-red {
+    background-color: #ffcdd2;
+}
+.c-red:hover {
+    background-color: #ef9a9a;
+}
+.c-red:active {
+    background-color: #e57373;
+}
+.purple,.c-purple {
+    background-color: #d1c4e9;
+}
+.c-purple:hover {
+    background-color: #b39ddb;
+}
+.c-purple:active {
+    background-color: #9575cd;
+}
+.brown {
+    color:white;
+    background-color: #795548;
+}

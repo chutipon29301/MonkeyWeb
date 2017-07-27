@@ -1,30 +1,107 @@
 extends htmlTemplate
 block head
     - var pageTitle="My Course Material"
+    link(rel="stylesheet" href="/css/courseMaterial.css")
     script(src="/js/tutorCourseMaterial.js")
 block body
     include generalTemplate
-    include inputTemplate
+    include courseMaterial
+    mixin first-col(courseName,day)
+        if(course[i].day.day()==6)
+            td.course-link.c-purple&attributes(attributes)
+                +first-col-content(courseName,day)
+        else if(course[i].day.day()==0)
+            td.course-link.c-red&attributes(attributes)
+                +first-col-content(courseName,day)
+        else
+            td.course-link&attributes(attributes)
+                +first-col-content(courseName,day)
+    mixin first-col-content(courseName,day)
+        h4= courseName
+        h4.small= day.format("ddd H-").toUpperCase()+moment(day).add(2,"h").hour()
+    -
+        course=course.filter(function(x){
+            return x.tutor.includes(webUser.userID);
+        });
+        course.sort(function(x,y){
+            if(x.day!=y.day)return x.day-y.day;
+            if(x.courseName!=y.courseName)return compareString(x.courseName,y.courseName);
+            return compareString(x.courseID,y.courseID);
+        });
+        for(var i in course){
+            course[i].day=moment(course[i].day);
+        }
+    #submitModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal") &times;
+                .modal-body.text-center
+                    .big-symbol
+                        span.glyphicon.glyphicon-minus.no
+                        span.glyphicon.glyphicon-ok.accepted
+                        span.glyphicon.glyphicon-remove.rejected
+                        span.glyphicon.glyphicon-hourglass.pending
+                    h1
+                        span.no Not submitted yet
+                        span.accepted Accepted
+                        span.rejected Rejected
+                        span.pending Pending
+                    .row: p.col-sm-offset-2.col-sm-8
+                        span.no Please upload your
+                        span.no.courseName
+                        span.no below.
+                        span.accepted Congratulations! Your
+                        span.accepted.courseName
+                        span.accepted has been approved.
+                        span.rejected Your
+                        span.rejected.courseName
+                        span.rejected has been rejected. Check your email for further details. Please upload the new one.
+                        span.pending Your
+                        span.pending.courseName
+                        span.pending is in progress of approving. However, you can upload the new one to replace.
+                    form(action="post/submitCourseMaterial" type="post")
+                        input(name="courseID" type="hidden" required)
+                        input(name="numberOfSub" type="hidden" required)
+                        .row(style="margin-top:20px;")
+                            .col-sm-offset-2.col-sm-5
+                                .btn-group.btn-group-justified
+                                    label.btn.btn-default Browse files
+                                        input.hidden(type="file" multiple required)
+                                    .btn-group
+                                        button.btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                                            span.badge 0
+                                            |
+                                            |
+                                            span.caret
+                                        ul.dropdown-menu
+                                            li.dropdown-header List of selected files
+                            .col-sm-3
+                                button.btn.btn-default.col-sm-12(type="submit") Submit
+                .modal-footer
     +modal-loading("Uploading files")
-    //- = JSON.stringify(course,null,2)
-    //- = JSON.stringify(webUser)
     .jumbotron
         .container
-            h1 Upload files
-            p Provide your information below.
-    .container
-        .panel-group
-            +panel("Upload files",true)
-                +form-horizontal("/post/submitCourseMaterial")(enctype="multipart/form-data")
-                    +form-group("Course ID")
-                        +select("courseID","Select course")(required)
-                            - for(var i in course)
-                                if(course[i].tutor.includes(webUser.userID))
-                                    +option(course[i].courseID,course[i].courseName)
-                    +form-group("# Of Submission")
-                        +select-number-of-sub()(required)
-                    +form-group("Files")
-                        label.btn.btn-default.btn-file Browse file
-                            input(type="file" style="display:none" name="file" multiple required)
-                        +button-submit Submit
-    #message.container
+            h1 Your course materials progress
+            p.
+                Table below shows progress of your course materials.
+                Click on table cells to see the detail.
+    .container-fluid
+        .table-responsive
+            table#tracking.table.table-bubble(style="margin:0px")
+                thead
+                    tr
+                        th
+                        - for(var i=1;i<=14;i++)
+                            th.brown= i
+                tbody
+                    - for(var i in course)
+                        tr
+                            +first-col(course[i].courseName,course[i].day)(data-course-id=course[i].courseID)
+                            - for(var j=0;j<14;j++)
+                                +new-cell(course[i].submission[j])(
+                                    data-course-id=course[i].courseID
+                                    data-number-of-sub=j+1
+                                    data-course-name=course[i].courseName
+                                    data-status=course[i].submission[j]?course[i].submission[j]:"no"
+                                )

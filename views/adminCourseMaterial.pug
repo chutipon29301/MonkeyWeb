@@ -1,7 +1,7 @@
 extends htmlTemplate
 block head
     - var pageTitle="Course Material Management"
-    link(rel="stylesheet" href="/css/adminCourseMaterial.css")
+    link(rel="stylesheet" href="/css/courseMaterial.css")
     //- script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
     script(src="/js/adminCourseMaterial.js")
 block header
@@ -9,35 +9,9 @@ block header
 block body
     include generalTemplate
     include inputTemplate
+    include courseMaterial
     //- p= JSON.stringify(config)
     //- include: ../backend/node_modules/moment/src/moment.js
-    mixin cell(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
-        if(status==null)
-            td.info -
-        else if(status=="accepted")
-            td.success
-                a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
-                code Accepted
-                +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
-        else if(status=="rejected")
-            td.danger
-                a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
-                code Rejected
-                +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
-        else if(status=="pending")
-            td.warning
-                a(href="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/")= "#"+numberOfSub
-                code Pending
-                +cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
-    mixin cell-control(status,numberOfSub,courseID,tutorNicknameEn,tutorEmail,courseName)
-        +form("post/judgeCourseMaterial")(tutorNicknameEn=tutorNicknameEn.toString() tutorEmail=tutorEmail.toString() courseName=courseName)
-            input(name="courseID" type="hidden" value=courseID)
-            input(name="numberOfSub" type="hidden" value=numberOfSub)
-            .btn-group
-                //- input.btn.btn-success.btn-xs(name="action" onclick="window.location=&quot;mailto:?subject=TO%20(name),PHS6x01%20ACCEPTED&quot;" type="submit" value="accept")
-                input.btn.btn-success.btn-xs(name="action" type="submit" value="accept")
-                input.btn.btn-danger.btn-xs(name="action" type="submit" value="reject")
-                //- input.btn.btn-warning.btn-xs(name="action" type="submit" value="remove")
     //- - for(var i in course)
         div= JSON.stringify(course[i])
     +container-liquid.text-center

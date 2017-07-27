@@ -5,6 +5,11 @@
     var capitalize=function(x){
         return x[0].toUpperCase()+x.slice(1);
     }
+    var compareString=function(x,y){
+        if(x==y)return 0;
+        else if(x<y)return -1;
+        else return 1;
+    }
 mixin container-liquid
     .container-fluid(style="padding:0px")&attributes(attributes)
         block
