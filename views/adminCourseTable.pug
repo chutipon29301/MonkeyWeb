@@ -4,8 +4,8 @@ block head
     script(src="js/admin.min.js")
     script(src="js/adminCrTable.min.js" type="text/javascript")
 block body
-    .container-fluid
-        .container.col-md-8.col-md-offset-3
+    .container
+        .col-md-8.col-md-offset-2
             form#level
                 label เลือกระดับชั้น
                 label.checkbox-inline
@@ -46,7 +46,8 @@ block body
                     |S6
                 button.btn.btn-default(onclick="sendLevel()" type="button") SUBMIT
             br
-        .container.table-responsive
+    .container-fluid
+        .table-responsive
             table.table.table-hover.table-bordered
                 thead
                     tr#tableLevel

@@ -5,10 +5,10 @@ block head
     script.
         window.onload = getAllStudentContent();
 block body
-    .container-fluid
-        .col-md-2.col-md-offset-2
+    .container
+        .col-md-2
             h1 Student
-        .col-md-6#formHead
+        .col-md-10#formHead
             .form-group.col-md-3
                 label Filter:
                 select.form-control.col-md-1#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
@@ -50,13 +50,13 @@ block body
                     option(value="all" ) CR &amp; FHB
                     option(value="cr") CR
                     option(value="hb") FHB
-        .table-responsive.col-md-8.col-md-offset-2
+        .table-responsive.col-md-12
             table.table.table-hover(style="font-family:'Trirong',serif;")
                 thead
                     tr
                         th.col-md-1 No.
-                        th.col-md-1 ID
-                        th.col-md-1 Nickname
+                        th.col-md-2 ID
+                        th.col-md-2 Nickname
                         th.col-md-2 Name
                         th.col-md-2 Surname
                         th.col-md-1 CR

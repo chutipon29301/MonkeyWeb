@@ -1,23 +1,23 @@
 extends htmlTemplate
 block head
     -const pageTitle = "Admin Home"
+    link(href="css/component.css", rel="stylesheet")
     script(src="js/admin.min.js")
     script(src="galleria/galleria-1.5.7.min.js")
     script(type="text/javascript" src="js/home.min.js")
 block body
     .container-fluid
-        #slideShow.container-fluid(align="center")
+        #slideShow(align="center")
             .galleria
-        .container-fluid
-            br
-            .col-md-6
-                button.btn.btn-primary(onClick="uploadSlide()") UPLOAD SLIDE
-            .col-md-6(align="right")
-                .btn-group
-                    button.btn.btn-info(type="button" onClick="portrait()") PORTRAIT
-                    button.btn.btn-info(type="button" onClick="landscape()") LANDSCAPE
-                    button.btn.btn-info(type="button" onClick="news()") NEWS
-                    button.btn.btn-info(type="button" onClick="full()") FULL-SCREEN
+        br
+        .col-md-6
+            button.btn.btn-primary(onClick="uploadSlide()") UPLOAD SLIDE
+        .col-md-6(align="right")
+            .btn-group
+                button.btn.btn-info(type="button" onClick="portrait()") PORTRAIT
+                button.btn.btn-info(type="button" onClick="landscape()") LANDSCAPE
+                button.btn.btn-info(type="button" onClick="news()") NEWS
+                button.btn.btn-info(type="button" onClick="full()") FULL-SCREEN
         //- Modal for uploadPic
         #uploadModal.modal.fade(role="dialog")
             .modal-dialog

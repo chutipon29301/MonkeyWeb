@@ -879,3 +879,53 @@ function generateCover(tableInfo, subj) {
         }
     }
 }
+function showComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $comment = $("#comment");
+    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+        if (data.comment.length > 10) {
+            $comment.append("<a id='showAll' onClick='showAllComment()'>Click here for all comment</a>");
+            for (let i = data.comment.length - 1; i > data.comment.length - 11; i--) {
+                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                    $comment.append("<h4>" + info.nickname + " (" + day +
+                        ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p>- " + data.comment[i].message + "</p>");
+                })
+            }
+        } else {
+            for (let i = data.comment.length - 1; i > -1; i--) {
+                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                    $comment.append("<h4>" + info.nickname + " (" + day +
+                        ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p>- " + data.comment[i].message + "</p>");
+                })
+            }
+        }
+    })
+}
+function showAllComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $("#showAll").toggle();
+    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+        $("#comment").empty();
+        for (let i = data.comment.length - 1; i > -1; i--) {
+            $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                $("#comment").append("<h4>" + info.nickname + " (" + day +
+                    ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                $("#comment").append("<p>- " + data.comment[i].message + "</p>");
+            })
+        }
+    })
+}
+function deleteComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let time = $("#confirm").attr("timestamp");
+    $.post("post/removeStudentComment", { studentID: ID, timestamp: time }, function (data, status) {
+        log("=============delete===============");
+        log("id:" + ID + "time:" + time);
+        location.reload();
+    })
+}

@@ -2,19 +2,22 @@ extends htmlTemplate
 block head
     -const pageTitle = "Comment Students"
     script(src="js/bootstrap3-typeahead.min.js")
-    script(src="js/tutorCommentStudent.js")
+    script(src="js/tutorCommentStudent.min.js")
 block body
     .jumbotron
         .container
-            h1 Rate Student
-            p This page use for comment student
+            h1 Comment Students
+            p Please input any comment for each student
     .container
         #search-box
             input.typeahead(type="text" placeholder="Name of Student")
-    .container
         br
         form
             .form-group
                 label(for="comment") Comment:
                 textarea.form-control#comment(rows="5")
-        button.btn.btn-default.col-md-offset-11.col-xs-offset-9(onClick="postComment()") SUBMIT
+        button.btn.btn-info.col-md-2.col-xs-5(onClick="showComment()") Show Comment
+        button.btn.btn-default.col-md-1.col-md-offset-9.col-xs-3.col-xs-offset-4(onClick="postComment()") SUBMIT
+    .container
+        hr
+        #commentList
