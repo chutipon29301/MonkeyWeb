@@ -6,27 +6,14 @@ block head
 block body
     include generalTemplate
     include courseMaterial
-    mixin first-col(courseName,day)
-        if(course[i].day.day()==6)
-            td.course-link.c-purple&attributes(attributes)
-                +first-col-content(courseName,day)
-        else if(course[i].day.day()==0)
-            td.course-link.c-red&attributes(attributes)
-                +first-col-content(courseName,day)
-        else
-            td.course-link&attributes(attributes)
-                +first-col-content(courseName,day)
-    mixin first-col-content(courseName,day)
-        h4= courseName
-        h4.small= day.format("ddd H-").toUpperCase()+moment(day).add(2,"h").hour()
     -
         course=course.filter(function(x){
             return x.tutor.includes(webUser.userID);
         });
         course.sort(function(x,y){
             if(x.day!=y.day)return x.day-y.day;
-            if(x.courseName!=y.courseName)return compareString(x.courseName,y.courseName);
-            return compareString(x.courseID,y.courseID);
+            if(x.courseName!=y.courseName)return compare(x.courseName,y.courseName);
+            return compare(x.courseID,y.courseID);
         });
         for(var i in course){
             course[i].day=moment(course[i].day);
@@ -60,10 +47,10 @@ block body
                         span.pending Your
                         span.pending.courseName
                         span.pending is in progress of approving. However, you can upload the new one to replace.
-                    form(action="post/submitCourseMaterial" type="post")
+                    form.no.rejected.pending(action="post/submitCourseMaterial" type="post")
                         input(name="courseID" type="hidden" required)
                         input(name="numberOfSub" type="hidden" required)
-                        .row(style="margin-top:20px;")
+                        .row.margin-top
                             .col-sm-offset-2.col-sm-5
                                 .btn-group.btn-group-justified
                                     label.btn.btn-default Browse files
@@ -88,18 +75,18 @@ block body
                 Click on table cells to see the detail.
     .container-fluid
         .table-responsive
-            table#tracking.table.table-bubble(style="margin:0px")
+            table.table.table-bubble
                 thead
                     tr
                         th
-                        - for(var i=1;i<=14;i++)
+                        - for(var i=1;i<=13;i++)
                             th.brown= i
                 tbody
                     - for(var i in course)
                         tr
-                            +first-col(course[i].courseName,course[i].day)(data-course-id=course[i].courseID)
-                            - for(var j=0;j<14;j++)
-                                +new-cell(course[i].submission[j])(
+                            +course-link(course[i].courseName,course[i].day)(data-course-id=course[i].courseID)
+                            - for(var j=0;j<13;j++)
+                                +cell(course[i].submission[j])(
                                     data-course-id=course[i].courseID
                                     data-number-of-sub=j+1
                                     data-course-name=course[i].courseName
