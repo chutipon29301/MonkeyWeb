@@ -452,7 +452,6 @@ module.exports=function(app,db){
         var phone=req.body.phone;
         var grade=parseInt(req.body.grade);
         var phoneParent=req.body.phoneParent;
-        var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         configDB.findOne({},function(err,config){
             userDB.insertOne({
                 _id:config.nextStudentID,password:password,position:"student",
@@ -461,8 +460,7 @@ module.exports=function(app,db){
                 email:email,phone:phone,
                 student:{
                     grade:grade,registrationState:"unregistered",
-                    skillDay:[],balance:balance,
-                    phoneParent:phoneParent,status:"active"
+                    skillDay:[],phoneParent:phoneParent,status:"active"
                 }
             },function(err,result){
                 configDB.updateOne({},{$inc:{nextStudentID:1}});
@@ -582,7 +580,6 @@ module.exports=function(app,db){
     //OK {studentID} return {}
     post("/post/addBlankStudent",function(req,res){
         var studentID=req.body.studentID.split(" ");
-        var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         for(var i=0;i<studentID.length;i++){
             studentID[i]=parseInt(studentID[i]);
             var password="";
@@ -598,8 +595,7 @@ module.exports=function(app,db){
                 email:"",phone:"",
                 student:{
                     grade:0,registrationState:"unregistered",
-                    skillDay:[],balance:balance,phoneParent:"",
-                    status:"active"
+                    skillDay:[],phoneParent:"",status:"active"
                 }
             });
             randomPasswordDB.insertOne({_id:studentID[i],password:password});

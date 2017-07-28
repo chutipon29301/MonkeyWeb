@@ -75,4 +75,8 @@ $(document).ready(function(){
         $("#localLink").select();
         document.execCommand("copy");
     });
+    $(".course-link").click(function(){
+        writeCookie("monkeyWebAdminAllcourseSelectedCourseID",$(this).data("course-id"));
+        location.assign("/adminCoursedescription");
+    });
 });
