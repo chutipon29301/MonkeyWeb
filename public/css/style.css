@@ -24,6 +24,11 @@ footer{
 [data-toggle=collapse]{
 	cursor:pointer;
 }
+[readonly]:focus{
+    border-color:#cccccc;
+    outline:none;
+    box-shadow:none;
+}
 
 /*Spining circular loader*/
 .loader {

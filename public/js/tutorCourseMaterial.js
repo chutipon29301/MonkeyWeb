@@ -10,8 +10,13 @@ $(document).ready(function(){
 
         modal.attr("class","modal-content");
         modal.find(".no,.accepted,.rejected,.pending").addClass("hidden");
+        if(status=="no")modal.addClass("grey");
+        else if(status=="accepted")modal.addClass("lightgreen");
+        else if(status=="rejected")modal.addClass("red");
+        else if(status=="pending")modal.addClass("blue");
+        modal.find("."+status).removeClass("hidden");
+
         modal.find(".courseName").text(" "+courseName+"#"+numberOfSub+" ");
-        form.removeClass("hidden");
         form.trigger("reset");
         form.find(".badge").text("0");
         form.find("li:not(.dropdown-header)").remove();
@@ -19,23 +24,6 @@ $(document).ready(function(){
         form.find("[name=courseID]").val(courseID);
         form.find("[name=numberOfSub]").val(numberOfSub);
 
-        if(status=="no"){
-            modal.addClass("grey");
-            modal.find(".no").removeClass("hidden");
-        }
-        else if(status=="accepted"){
-            modal.addClass("lightgreen");
-            modal.find(".accepted").removeClass("hidden");
-            modal.find("form").addClass("hidden");
-        }
-        else if(status=="rejected"){
-            modal.addClass("red");
-            modal.find(".rejected").removeClass("hidden");
-        }
-        else if(status=="pending"){
-            modal.addClass("blue");
-            modal.find(".pending").removeClass("hidden");
-        }
         outerModal.modal();
     });
     $("[type=file]").change(function(event){
@@ -77,16 +65,15 @@ $(document).ready(function(){
             contentType:false,
             success:function(data){
                 if(data.err){
-                    alert(JSON.stringify(data));
+                    console.log(data);
+                    alert("Some errors occur.\nPlease contact administrator.");
                 }
-                else location.reload();
+                location.reload();
             }
         });
     });
     $(".course-link").click(function(){
-        var courseID=$(this).data("course-id");
-        console.log(courseID);
-        writeCookie("monkeyWebAdminAllcourseSelectedCourseID",courseID);
-        self.location="/adminCoursedescription";
+        writeCookie("monkeyWebAdminAllcourseSelectedCourseID",$(this).data("course-id"));
+        location.assign("/adminCoursedescription");
     });
 });

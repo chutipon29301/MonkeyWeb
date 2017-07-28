@@ -1,28 +1,5 @@
-.table-bordered>thead>tr>th{
-    color:rgb(255,255,255);
-    font-size:120%;
-}
-.table-bordered>thead>tr>th{
-    border-bottom-width:1px;
-}
-.table-bordered>thead>tr:last-child>th{
-    border-bottom-width:2px;
-}
-.thead-tutor{
-    background-color:rgb(49,193,193);
-}
-.thead-sat{
-    background-color:rgb(128,82,121);
-}
-.thead-sun{
-    background-color:rgb(225,86,63);
-}
-.thead-time,.thead-course-name{
-    background-color:rgb(255,138,9);
-}
-
-
 .table-bubble{
+    margin:0px;
     border-spacing:5px;
     border-collapse:separate;
 }
@@ -44,12 +21,17 @@
     cursor:pointer;
 }
 
+#judgeModal .modal-header,
+#judgeModal .modal-footer,
 #submitModal .modal-header,
 #submitModal .modal-footer{
     border:none;
 }
 .big-symbol{
     font-size:100px;
+}
+.margin-top{
+    margin-top:20px;
 }
 
 .grey,.c-grey {
@@ -105,6 +87,15 @@
 }
 .c-purple:active {
     background-color: #9575cd;
+}
+.teal,.c-teal {
+    background-color: #b2dfdb;
+}
+.c-teal:hover {
+    background-color: #80cbc4;
+}
+.c-teal:active {
+    background-color: #4db6ac;
 }
 .brown {
     color:white;
