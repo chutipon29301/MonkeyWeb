@@ -11,9 +11,12 @@ module.exports=function(app,db){
     var fullHybridDB=db.collection("fullHybrid");
     // var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
-    var studentComment=db.collection("studentComment");
+    var studentCommentDB=db.collection("studentComment");
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
+
+
+    userDB.updateMany({position:"student"},{$unset:{"student.balance":""}});
 
     var gradeBitToString=function(bit){
         var output="",p=false,s=false;
@@ -452,7 +455,6 @@ module.exports=function(app,db){
         var phone=req.body.phone;
         var grade=parseInt(req.body.grade);
         var phoneParent=req.body.phoneParent;
-        var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         configDB.findOne({},function(err,config){
             userDB.insertOne({
                 _id:config.nextStudentID,password:password,position:"student",
@@ -461,8 +463,7 @@ module.exports=function(app,db){
                 email:email,phone:phone,
                 student:{
                     grade:grade,registrationState:"unregistered",
-                    skillDay:[],balance:balance,
-                    phoneParent:phoneParent,status:"active"
+                    skillDay:[],phoneParent:phoneParent,status:"active"
                 }
             },function(err,result){
                 configDB.updateOne({},{$inc:{nextStudentID:1}});
@@ -582,7 +583,6 @@ module.exports=function(app,db){
     //OK {studentID} return {}
     post("/post/addBlankStudent",function(req,res){
         var studentID=req.body.studentID.split(" ");
-        var balance=[{subject:"M",value:0},{subject:"PH",value:0}];
         for(var i=0;i<studentID.length;i++){
             studentID[i]=parseInt(studentID[i]);
             var password="";
@@ -598,8 +598,7 @@ module.exports=function(app,db){
                 email:"",phone:"",
                 student:{
                     grade:0,registrationState:"unregistered",
-                    skillDay:[],balance:balance,phoneParent:"",
-                    status:"active"
+                    skillDay:[],phoneParent:"",status:"active"
                 }
             });
             randomPasswordDB.insertOne({_id:studentID[i],password:password});
@@ -1121,7 +1120,7 @@ module.exports=function(app,db){
         var message=req.body.message;
         findUser(res,studentID,{position:"student"},function(){
             findUser(res,tutorID,{position:["tutor","admin","dev"]},function(){
-                studentComment.updateOne({_id:studentID},{
+                studentCommentDB.updateOne({_id:studentID},{
                     $push:{
                         comment:{from:tutorID,message:message,timestamp:moment().valueOf()}
                     }
@@ -1136,7 +1135,7 @@ module.exports=function(app,db){
         var studentID=parseInt(req.body.studentID);
         var timestamp=parseInt(req.body.timestamp);
         findUser(res,studentID,{position:"student"},function(){
-            studentComment.updateOne({_id:studentID},{
+            studentCommentDB.updateOne({_id:studentID},{
                 $pull:{comment:{timestamp:timestamp}}
             },function(){
                 res.send({});
@@ -1157,7 +1156,7 @@ module.exports=function(app,db){
     post("/post/listStudentCommentDay",function(req,res){
         var day=parseInt(req.body.day);
         var output=[];
-        studentComment.find().toArray(function(err,result){
+        studentCommentDB.find().toArray(function(err,result){
             console.log(prettify(result));
             for(var i=0;i<result.length;i++){
                 var comment=[];

@@ -60,16 +60,18 @@ block body
                             .input-group-btn
                                 button#copyLink.btn.btn-default(type="button" data-toggle="tooltip" title="Copy to clipboard")
                                     span.glyphicon.glyphicon-duplicate
-                    form.pending(action="post/judgeCourseMaterial" type="post")
+                    form.accepted.pending(action="post/judgeCourseMaterial" type="post")
                         input(name="courseID" type="hidden" required)
                         input(name="numberOfSub" type="hidden" required)
                         .row.margin-top
-                            .col-sm-offset-2.col-sm-8
+                            .pending.col-sm-offset-2.col-sm-8
                                 .row
                                     button.btn.btn-success.col-sm-5(name="action" type="submit" value="accept")
                                         span.glyphicon.glyphicon-ok
                                     button.btn.btn-danger.col-sm-offset-2.col-sm-5(name="action" type="submit" value="reject")
                                         span.glyphicon.glyphicon-remove
+                            button.accepted.btn.btn-danger.col-sm-offset-4.col-sm-4(name="action" type="submit" value="reject")
+                                span.glyphicon.glyphicon-remove
                 .modal-footer
     #confirmModal.modal.fade
         .modal-dialog.modal-sm
