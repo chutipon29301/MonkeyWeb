@@ -36,7 +36,7 @@ const getLetterGrade = (grade) => {
  */
 function getAllStudentContent() {
     "use strict";
-    allStudent.then((data) => {
+    allStudent().then((data) => {
         if (data.err) {
             log("[getAllStudentContent()] : post/allStudent => " + data.err);
         } else {
@@ -56,6 +56,7 @@ function filterData(data) {
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
+    let course = document.getElementById("course");
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => data.status === status.options[status.selectedIndex].value);
     }
@@ -64,6 +65,18 @@ function filterData(data) {
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
         data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
+    }
+    if (course.options[course.selectedIndex].value !== "all") {
+        data = data.filter(data => {
+            switch (course.options[course.selectedIndex].value) {
+                case "hb":
+                    return data.inHybrid;
+                case "cr":
+                    return data.inCourse;
+                default:
+                    break;
+            }
+        })
     }
     return data;
 }
@@ -77,12 +90,30 @@ function generateStudentHtmlTable(student) {
     table.innerHTML = "";
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
-        let cell4 = row.insertCell(3);
-        let cell5 = row.insertCell(4);
-        let cell6 = row.insertCell(5);
+        let status = student[i].status;
+        let stage = student[i].registrationState;
+        switch (status) {
+            case 'terminated':
+                row.setAttribute("class", "danger");
+                break;
+            case 'dropped':
+                row.setAttribute("class", "warning");
+                break;
+            case 'inactive':
+                row.setAttribute("class", "info");
+                break;
+        }
+        if (stage === "finished") {
+            row.setAttribute("class", "success");
+        }
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+        let cell2 = row.insertCell(2);
+        let cell3 = row.insertCell(3);
+        let cell4 = row.insertCell(4);
+        let cell5 = row.insertCell(5);
+        let cell6 = row.insertCell(6);
+        cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
         cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
         cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
@@ -91,9 +122,8 @@ function generateStudentHtmlTable(student) {
         cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
-            log(row.getElementsByTagName("td")[0].innerHTML);
             //noinspection SpellCheckingInspection
-            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
             //noinspection SpellCheckingInspection
             self.location = "/adminStudentprofile";
         };
@@ -106,15 +136,35 @@ function generateStudentHtmlTable(student) {
  * Generate element for adminAllcourse page
  */
 function getAllCourseContent() {
-    allCourse.then((data) => {
+    allCourse().then((data) => {
         if (data.err) {
             log("[getAllCourseContent()] : post/allCourse => " + data.err);
         } else {
             log("[getAllCourseContent()] : post/allCourse => ");
             log(data);
-            generateCourseHtmlTable(data.course);
+            generateCourseHtmlTable(filterCourseData(data.course));
         }
     });
+}
+
+function filterCourseData(data) {
+    let subject = document.getElementById("subject");
+    let grade = document.getElementById("grade");
+    let name = document.getElementById("name");
+    let time = document.getElementById("time");
+    if (subject.options[subject.selectedIndex].value !== "all") {
+        data = data.filter(data => data.subject === subject.options[subject.selectedIndex].value);
+    }
+    if (grade.options[grade.selectedIndex].value !== "all") {
+        data = data.filter(data => data.grade.indexOf(parseInt(grade.options[grade.selectedIndex].value)) !== -1);
+    }
+    if (name.options[name.selectedIndex].value !== "all") {
+        data = data.filter(data => data.tutor.indexOf(parseInt(name.options[name.selectedIndex].value)) !== -1);
+    }
+    if (time.options[time.selectedIndex].value !== "all") {
+        data = data.filter(data => data.day === parseInt(time.options[time.selectedIndex].value));
+    }
+    return data
 }
 
 /**
@@ -123,18 +173,21 @@ function getAllCourseContent() {
  */
 function generateCourseHtmlTable(course) {
     let table = document.getElementById("allCourseTable");
+    table.innerHTML = "";
     for (let i = 0; i < course.length; i++) {
         let time = new Date(course[i].day);
         let row = table.insertRow(i);
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
-        let cell4 = row.insertCell(3);
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+        let cell2 = row.insertCell(2);
+        let cell3 = row.insertCell(3);
+        let cell4 = row.insertCell(4);
         row.id = course[i].courseID;
+        cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + course[i].courseName + "</td>";
         cell2.innerHTML = "<td>" + getDateName(time.getDay()) + "</td>";
         cell3.innerHTML = "<td>" + time.getHours() + ":00 - " + (time.getHours() + 2) + ":00</td>";
-        name(course[i].tutor[0]).then((data) => {
+        name(course[i].tutor[0]).then(data => {
             cell4.innerHTML = "<td>" + data.nicknameEn + "</td>";
         });
         let clickHandler = (row) => () => {
@@ -159,11 +212,23 @@ function getStudentProfile() {
         log(data);
         document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
         document.getElementById("studentNameEng").innerHTML = data.firstnameEn + " (" + data.nicknameEn + ") " + data.lastnameEn;
-        document.getElementById("studentLevel").innerHTML = "LEVEL: " + getLetterGrade(data.grade);
+        document.getElementById("studentLevel").innerHTML = "Grade: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
         document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
+        //add student data to modal
+        document.getElementById("thNName").value = data.nickname;
+        document.getElementById("thName").value = data.firstname;
+        document.getElementById("thSName").value = data.lastname;
+        document.getElementById("enNName").value = data.nicknameEn;
+        document.getElementById("enName").value = data.firstnameEn;
+        document.getElementById("enSName").value = data.lastnameEn;
+        document.getElementById("classStudent").value = data.grade;
+        document.getElementById("stageStudent").value = data.registrationState;
+        document.getElementById("statusStudent").value = data.status;
+        document.getElementById("emailStudent").value = data.email;
+        document.getElementById("telStudent").value = data.phone;
         return data;
     }).then((data) => {
         for (let i = 0; i < data.courseID.length; i++) {
@@ -179,6 +244,9 @@ function getStudentProfile() {
                     document.getElementById(courseTimeID).innerHTML = course.courseName;
                     document.getElementById(courseTimeID).value = data.courseID[i];
                     document.getElementById(courseTimeID).className = "btn btn-warning col-md-12";
+                    name(course.tutor[0]).then(tutorName => {
+                        document.getElementById(courseTimeID).innerHTML += " - " + tutorName.nicknameEn;
+                    })
                 }
             });
         }
@@ -243,7 +311,7 @@ function generateImageData() {
             mainTable[getDateName(time.getDay()) + time.getHours()] = {};
             mainTable[getDateName(time.getDay()) + time.getHours()].courseName =
                 ((data.hybridDay[i].subject === "M") ? "FHB : M" : "FHB : PH");
-            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "HB";
+            mainTable[getDateName(time.getDay()) + time.getHours()].tutor = "Hybrid";
             if (data.hybridDay[i].subject === "M") {
                 mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "HB";
                 inMath = true;
@@ -269,7 +337,7 @@ function generateImageData() {
                 dataArray.push(data);
                 let time = new Date(data.day);
                 mainTable[getDateName(time.getDay()) + time.getHours()] = {};
-                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = data.courseName;
+                mainTable[getDateName(time.getDay()) + time.getHours()].courseName = "CR : " + data.courseName;
                 if (data.tutor[0] === 99000) {
                     if (data.courseName[0] === "M") {
                         mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
@@ -294,9 +362,28 @@ function generateImageData() {
                 tableInfo.inPhy = inPhy;
                 log("[generateImageData()] : Generated info => ");
                 log(tableInfo);
-                showReceipt(tableInfo);
-                generateImage(tableInfo, 'math');
-                generateImage(tableInfo, 'phy');
+                barcode(tableInfo);
+                if (tableInfo.inPhy && tableInfo.inMath) {
+                    $('#phyImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#phy').attr("class", "btn btn-default");
+                    $('#phy').prop("disabled", false);
+                    generateCover(tableInfo, "phy");
+                    $('#mathImg').attr("src", "images/mp" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#math').attr("class", "btn btn-default");
+                    $('#math').prop("disabled", false);
+                    generateCover(tableInfo, "math");
+                } else if (tableInfo.inPhy) {
+                    $('#phyImg').attr("src", "images/p" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#phy').attr("class", "btn btn-default");
+                    $('#phy').prop("disabled", false);
+                    generateCover(tableInfo, "phy");
+                } else if (tableInfo.inMath) {
+                    $('#mathImg').attr("src", "images/m" + ((tableInfo.grade > 6) ? 'h' : 'j') + ".png");
+                    $('#math').attr("class", "btn btn-default");
+                    $('#math').prop("disabled", false);
+                    generateCover(tableInfo, "math");
+                }
+
             });
         });
     });
@@ -313,7 +400,7 @@ function setRegistrationState(registrationState) {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            acceptReject(registrationState);
+            if (registrationState === "registered" || registrationState === "pending") acceptReject(registrationState);
             log("[setRegistrationState()] : post/changeRegistrationState => Success");
         }
     });
@@ -346,10 +433,12 @@ function getCourseDescription() {
         let table = document.getElementById("allStudentInCourseTable");
         for (let i = 0; i < student.length; i++) {
             let row = table.insertRow(i);
-            let cell1 = row.insertCell(0);
-            let cell2 = row.insertCell(1);
-            let cell3 = row.insertCell(2);
-            let cell4 = row.insertCell(3);
+            let cell0 = row.insertCell(0);
+            let cell1 = row.insertCell(1);
+            let cell2 = row.insertCell(2);
+            let cell3 = row.insertCell(3);
+            let cell4 = row.insertCell(4);
+            cell0.innerHTML = "<td>" + (i + 1) + "</td>";
             cell1.innerHTML = "<td>" + student[i] + "</td>";
             name(student[i]).then((data) => {
                 cell2.innerHTML = "<td>" + data.nickname + "</td>";
@@ -358,7 +447,7 @@ function getCourseDescription() {
             });
             let clickHandler = (row) => () => {
                 //noinspection SpellCheckingInspection
-                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
+                writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
                 //noinspection SpellCheckingInspection
                 self.location = "/adminStudentprofile";
             };
@@ -375,7 +464,8 @@ function getCourseDescription() {
 function addRemoveCourse(timeID) {
     let button = document.getElementById(timeID);
     if (button.innerHTML === "Add Course") {
-        allCourse.then((data) => {
+        allCourse().then((data) => {
+            log(data);
             if (data.err) {
                 log("[addRemoveCourse()] : post/allCourse => " + data.err);
             } else {
@@ -391,21 +481,6 @@ function addRemoveCourse(timeID) {
                 select.value = timeID;
                 select.innerHTML = "";
 
-                for (let i = 0; i < data.course.length; i++) {
-                    let course = data.course[i];
-                    let grade = "";
-                    if (course.grade[0] > 6) {
-                        grade = "S" + course.grade.map((x) => (x - 6)
-                            ).join("");
-                    } else {
-                        grade = "P" + course.grade.join("");
-                    }
-                    name(course.tutor[0]).then((data) => {
-                        select.innerHTML += "<option id='" + course.courseID + "'>" + course.subject + grade + course.level +
-                            " - " + data.nicknameEn + "</option>";
-                    });
-                }
-
                 let time = new Date(parseInt(timeID));
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                 select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
@@ -417,8 +492,32 @@ function addRemoveCourse(timeID) {
                         time.setMinutes(time.getMinutes() + 30);
                     }
                 }
-
-                $("#addModal").modal();
+                let promise = [];
+                for (let i = 0; i < data.course.length; i++) {
+                    let course = data.course[i];
+                    let grade = "";
+                    if (course.grade[0] > 6) {
+                        grade = "S" + course.grade.map((x) => (x - 6)
+                        ).join("");
+                    } else {
+                        grade = "P" + course.grade.join("");
+                    }
+                    promise.push(name(course.tutor[0]));
+                }
+                Promise.all(promise).then((allName) => {
+                    for (let i = 0; i < data.course.length; i++) {
+                        let grade = "";
+                        if (data.course[i].grade[0] > 6) {
+                            grade = "S" + data.course[i].grade.map((x) => (x - 6)
+                            ).join("");
+                        } else {
+                            grade = "P" + data.course[i].grade.join("");
+                        }
+                        select.innerHTML += "<option id='" + data.course[i].courseID + "'>" + data.course[i].subject + grade + data.course[i].level +
+                            " - " + allName[i].nicknameEn + "</option>";
+                    }
+                    $("#addModal").modal();
+                });
             }
         });
     } else {
@@ -510,211 +609,122 @@ function removeCourse() {
         });
     }
 }
+
 /**
- *
- * @param tableInfo
- * @param subj
+ * Edit student info
  */
-function generateImage(tableInfo, subj) {
-    let canvasID = subj + 'Canvas';
-    let canvas = document.getElementById(canvasID);
-    let ctx = canvas.getContext('2d');
-    //gen row
-    const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
-    const day = ['TUE', 'THU', 'SAT', 'SUN'];
-    const time = ['8-10', '10-12', '13-15', '15-17', '17-19'];
-    const tableCl = ['#ff82d9', '#ffa133', '#9645cf', '#ff2e2e'];
-    const whtCl = ['#ffffff', '#ffffff', '#ffffff', '#ffffff'];
-    const tueCl = ['#000000', '#000000', '#ffffff', '#ffffff'];
-    const satCl = ['#ffffff', '#ffffff', '#000000', '#000000'];
-    const borderB = 'border: 1px solid black;border-collapse: collapse;';
-    const borderG = 'border-bottom: 1px solid lightgrey;border-right: 1px solid black;border-collapse: collapse;';
-    const levelColor = ['#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18', '#ff0c18',
-        '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60', '#7cff60'];
-    const miniT = ['8', '10', '13', '15', '17'];
-    let mini = {
-        math8: [],
-        math10: [],
-        math13: [],
-        math15: [],
-        math17: [],
-        phy8: [],
-        phy10: [],
-        phy13: [],
-        phy15: [],
-        phy17: []
-    };
-    for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 4; j++) {
-            if (tableInfo.mathMiniTable[day[j] + miniT[i]] !== undefined) {
-                mini['math' + miniT[i]][j] = tableInfo.mathMiniTable[day[j] + miniT[i]];
-            } else mini['math' + miniT[i]][j] = '';
-            if (tableInfo.physicsMiniTable[day[j] + miniT[i]] !== undefined) {
-                mini['phy' + miniT[i]][j] = tableInfo.physicsMiniTable[day[j] + miniT[i]];
-            } else mini['phy' + miniT[i]][j] = '';
-        }
-    }
-    let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
-    let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
-    let row1 = '';
-    if (canvasID === 'mathCanvas') {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
-            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
-            'ID : ' + tableInfo.id + '1</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
-            name1 + '</p><p>' + name2 + '</p></th>' +
-            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
-            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
-    } else {
-        row1 += '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'font-size:40px;background-color:' +
-            levelColor[1] + '">' + grade[tableInfo.grade - 1] + '</th>' + '<th colspan="2" style="' + borderB + '">' +
-            'ID : ' + tableInfo.id + '2</th>' + '<th rowspan="3" colspan="2" style="' + borderB + 'font-size: 18px"><p>' +
-            name1 + '</p><p>' + name2 + '</p></th>' +
-            '<th rowspan="15" style="' + borderB + 'width: 5px"></th>' + '<th style="' + borderB +
-            'height: 30px;width: 40px;background-color: black"></th>' + loop4(1, 1, day, 40, tableCl, borderB) + '</tr>';
-    }
-    let row2 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + '">' + 'BARCODE' + '</th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[0] + '</th>' + loop4(2, 1, mini[subj + '8'], 40, tueCl, borderB) + '</tr>';
-    let row3 = '<tr>' + '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inMath) ? "#ffc107" : "white") + ';color: white">' + 'M' + '</th>' +
-        '<th style="' + borderB + 'width: 40px;background-color:' + ((tableInfo.inPhy) ? "#9c27b0" : "white") + ';color: white">' + 'P' + '</th>' +
-        '<th style="' + borderB + 'height: 30px">' + time[1] + '</th>' + loop4(2, 1, mini[subj + '10'], 40, tueCl, borderB) + '</tr>';
-    let row4 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'background-color: black"></th>' +
-        loop4(1, 2, day, 120, tableCl, borderB) + '<th style="' + borderB + 'height: 30px">' + time[2] + '</th>' +
-        loop4(2, 1, mini[subj + '13'], 40, tueCl, borderB) + '</tr>';
-    let row5 = '<tr>' + '<th style="' + borderB + 'height: 30px">' + time[3] + '</th>' + loop4(2, 1, mini[subj + '15'], 40, whtCl, borderB) + '</tr>';
-    let row6 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[0] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '8'), 120, whtCl, borderG) + '<th style="' + borderB + 'height: 30px">'
-        + time[4] + '</th>' + loop4(2, 1, mini[subj + '17'], 40, satCl, borderB) + '</tr>';
-    let row7 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '8'), 120, whtCl, borderB) + '<th rowspan="2" colspan="5" style="' + borderB +
-        'background-color: #fffb87">Note : </th>' + '</tr>';
-    let row8 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[1] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '10'), 120, whtCl, borderG) + '</tr>';
-    let row9 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '10'), 120, whtCl, borderB) +
-        '<th rowspan="7" colspan="5" style="' + borderB + '"></th>' + '</tr>';
-    let row10 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[2] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '13'), 120, whtCl, borderG) + '</tr>';
-    let row11 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '13'), 120, whtCl, borderB) + '</tr>';
-    let row12 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[3] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '15'), 120, whtCl, borderG) + '</tr>';
-    let row13 = '<tr>' + loop4(2, 1, tableRow(2, tableInfo, day, '15'), 120, whtCl, borderB) + '</tr>';
-    let row14 = '<tr>' + '<th rowspan="2" colspan="2" style="' + borderB + 'height: 60px">' + time[4] + '</th>' +
-        loop4(2, 1, tableRow(1, tableInfo, day, '17'), 120, whtCl, borderG) + '</tr>';
-    let row15 = '<tr style="' + borderB + '">' + loop4(2, 1, tableRow(2, tableInfo, day, '17'), 120, whtCl, borderB) + '</tr>';
-    //gen canvas data
-    let data =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="790" height="480">' +
-        '<foreignObject width="100%" height="100%">' +
-        '<div xmlns="http://www.w3.org/1999/xhtml">' +
-        '<table style="border: 1px solid black;border-collapse: collapse">' +
-        row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9 + row10 + row11 + row12 + row13 + row14 + row15 +
-        '</table>' +
-        '</div>' +
-        '</foreignObject>' +
-        '</svg>';
-    //noinspection SpellCheckingInspection,JSUnresolvedVariable
-    let DOMURL = window.URL || window.webkitURL || window;
-    let img = new Image();
-    let svg = new Blob([data], {
-        type: 'image/svg+xml'
+function editStudent() {
+    let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
+    let changeStatus = (userID, status) => $.post("post/changeStatus", {
+        userID: userID,
+        status: status
     });
-    //noinspection JSUnresolvedFunction
-    let url = DOMURL.createObjectURL(svg);
-    //noinspection SpellCheckingInspection
-    img.onload = function () {
-        ctx.drawImage(img, 0, 0);
-        //noinspection JSUnresolvedFunction
-        DOMURL.revokeObjectURL(url);
-    };
-    img.src = url;
-    barcode(tableInfo);
-}
-//function for generate duplicate 4 row table with a data in each row
-function loop4(type, row, data, w, color, border) {
-    let text = '';
-    if (row > 1) {
-        if (type === 1) {
-            for (let i = 0; i < 4; i++) {
-                text += '<th rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</th>';
-            }
-        } else {
-            for (let i = 0; i < 4; i++) {
-                text += '<td rowspan="' + row + '" style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</td>';
-            }
-        }
-    } else {
-        if (type === 1) {
-            for (let i = 0; i < 4; i++) {
-                text += '<th style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</th>';
-            }
-        } else {
-            for (let i = 0; i < 4; i++) {
-                text += '<td style="' + border + 'text-align:center;width:' + w + 'px;background-color:' + color[i] +
-                    '">' + data[i] + '</td>';
-            }
-        }
-    }
-    return text;
+
+    let selectGrade = document.getElementById("classStudent");
+    let grade = parseInt(selectGrade.options[selectGrade.selectedIndex].value);
+    let selectStage = document.getElementById("stageStudent");
+    let stage = selectStage.options[selectStage.selectedIndex].value;
+    let selectStatus = document.getElementById("statusStudent");
+    let status = selectStatus.options[selectStatus.selectedIndex].value;
+
+    $.post("post/editStudent", {
+        studentID: studentID,
+        firstname: document.getElementById("thName").value,
+        lastname: document.getElementById("thSName").value,
+        nickname: document.getElementById("thNName").value,
+        firstnameEn: document.getElementById("enName").value,
+        lastnameEn: document.getElementById("enSName").value,
+        nicknameEn: document.getElementById("enNName").value,
+        email: document.getElementById("emailStudent").value,
+        phone: document.getElementById("telStudent").value,
+        grade: grade
+    }).then(() => {
+        return changeRegistrationState(studentID, stage);
+    }).then(() => {
+        changeStatus(studentID, status).then((data) => {
+            location.reload();
+        });
+    });
 }
 
-//for create data in a row of table from course data
-function tableRow(type, tableInfo, day, time) {
-    let tableRow = ['', '', '', ''];
-    for (let i = 0; i < 4; i++) {
-        if (tableInfo.mainTable[day[i] + time] !== undefined) {
-            if (type === 1) {
-                tableRow[i] = tableInfo.mainTable[day[i] + time].courseName;
-            } else tableRow[i] = tableInfo.mainTable[day[i] + time].tutor;
-        }
-    }
-    return tableRow;
+// /**
+//  * Reset student
+//  */
+// function resetStudent() {
+//     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+//     studentProfile(parseInt(studentID)).then((data) => {
+//         for (let i = 0; i < data.courseID.length; i++) {
+//             // removeStudentCourse(stu)
+//         }
+//     });
+// }
+//for show profile pic on page
+function showProfilePic() {
+    let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $.post("post/getConfig").then((config) => {
+        //noinspection ES6ModulesDependencies
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.jpeg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.png', function (data, status) {
+            if (status === 'success') {
+                $('#profilePic').attr("src", config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + picId + '.png');
+            }
+        });
+    });
 }
-
 //for show receipt pic on page
-function showReceipt(tableInfo) {
-    let picId = tableInfo.id;
-    $.get("pic/CR60Q3/" + picId + '.jpg', function (data, status) {
-        if (status === 'success') {
-            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpg');
-        }
-    });
-    $.get("pic/CR60Q3/" + picId + '.jpeg', function (data, status) {
-        if (status === 'success') {
-            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.jpeg');
-        }
-    });
-    $.get("pic/CR60Q3/" + picId + '.png', function (data, status) {
-        if (status === 'success') {
-            $('#imgTrans').attr("src", "pic/CR60Q3/" + picId + '.png');
-        }
+function showReceipt() {
+    let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    //noinspection ES6ModulesDependencies
+    $.post("post/getConfig").then((config) => {
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.jpeg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png', function (data, status) {
+            if (status === 'success') {
+                $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png');
+            }
+        });
     });
 }
+
 function barcode(tableInfo) {
     const code = tableInfo.id;
     JsBarcode("#mathBarcode", code + '1', {
         lineColor: "black",
-        width: 2,
-        height: 40,
+        width: 3.4,
+        height: 68,
         displayValue: false
     });
     JsBarcode("#phyBarcode", code + '2', {
         lineColor: "black",
-        width: 2,
-        height: 40,
+        width: 3.4,
+        height: 68,
         displayValue: false
     });
 }
-function combineCanvas(subj) {
-    let canvas = document.getElementById('combine');
-    let ctx = canvas.getContext('2d');
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    let canvas1 = document.getElementById(subj + 'Canvas');
-    let canvas2 = document.getElementById(subj + 'Barcode');
-    ctx.drawImage(canvas1, 0, 0);
-    ctx.drawImage(canvas2, 120, 37);
-}
+
+
 function acceptReject(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     let cfCanvas = document.getElementById('appRej');
@@ -723,17 +733,17 @@ function acceptReject(state) {
     let img = document.getElementById('imgTrans');
     ctxCf.fillStyle = "white";
     ctxCf.fillRect(0, 0, cfCanvas.width, cfCanvas.height);
-    if (state === 'rejected') {
+    if (state === 'pending') {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
         ctxCf.drawImage(img, 90, 70, 220, 165);
         ctxCf.rotate(11 * Math.PI / 6);
         ctxCf.font = "bold 55px Cordia New";
-        ctxCf.fillStyle = "red";
+        ctxCf.fillStyle = "orange";
         ctxCf.textAlign = 'center';
-        ctxCf.fillText('Rejected กรุณาติดต่อครูแมว', 150, 340);
+        ctxCf.fillText('Pending กรุณาติดต่อครูแมว', 150, 340);
         ctxCf.restore();
-    } else {
+    } else if (state === 'registered') {
         ctxCf.save();
         ctxCf.drawImage(canvas1, 0, -100);
         ctxCf.drawImage(img, 90, 70, 220, 165);
@@ -744,10 +754,178 @@ function acceptReject(state) {
         ctxCf.fillText('Approved', 150, 340);
         ctxCf.restore();
     }
-    let dlImg=cfCanvas.toDataURL();
-    let aref=document.createElement('a');
-    aref.href=dlImg;
-    aref.download=studentID+state+'.png';
+    let dlImg = cfCanvas.toDataURL();
+    let aref = document.createElement('a');
+    aref.href = dlImg;
+    aref.download = studentID + state + '.png';
     document.body.appendChild(aref);
     aref.click();
+}
+function upPic() {
+    //noinspection JSUnresolvedVariable
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let ufile = $('#file-1');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        formData.append('file', files[0], files[0].name);
+        formData.append('userID', ID);
+        $.ajax({
+            url: 'post/updateProfilePicture',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                showProfilePic();
+                $('#profileModal').modal('hide');
+            }
+        });
+    }
+}
+function upReciept() {
+    //noinspection JSUnresolvedVariable
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let ufile = $('#file-2');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        formData.append('file', files[0], files[0].name);
+        formData.append('studentID', ID);
+        $.ajax({
+            url: 'post/submitReceipt',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $('#rcModal').modal('hide');
+            }
+        });
+    }
+}
+function generateCover(tableInfo, subj) {
+    const grade = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'SAT'];
+    let canvasID = subj + 'Canvas';
+    let canvas = document.getElementById(canvasID);
+    let ctx = canvas.getContext('2d');
+    //add Table BG
+    let img = document.getElementById(subj + 'Img');
+    ctx.drawImage(img, 0, 0, 1654, 1170);
+    //add Level
+    ctx.font = "100px Oxygen";
+    ctx.fillText(grade[tableInfo.grade - 1], 50, 128);
+    //add barcode
+    let canvas2 = document.getElementById(subj + 'Barcode');
+    ctx.drawImage(canvas2, 418, 115);
+    //add profilePic
+    let profile = document.getElementById('profilePic');
+    let picH = 184;
+    let picW = profile.width * picH / profile.height;
+    ctx.drawImage(profile, 205, 30, picW, picH);
+    //add ID
+    ctx.font = "bold 40px Taviraj";
+    if (subj === "math") {
+        ctx.fillText("ID: " + tableInfo.id + "1", 445, 84);
+    } else {
+        ctx.fillText("ID: " + tableInfo.id + "2", 445, 84);
+    }
+    //add Name
+    let name1 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? tableInfo.firstname : tableInfo.firstname + ' (' + tableInfo.nickname + ')';
+    let name2 = ((tableInfo.firstname + tableInfo.nickname).length > 18) ? '(' + tableInfo.nickname + ') ' + tableInfo.lastname : tableInfo.lastname;
+    ctx.font = "bold 52px Trirong";
+    ctx.textAlign = "center";
+    ctx.fillText(name1, 930, 94);
+    ctx.fillText(name2, 930, 174);
+    //add smallTable data & mainTable data
+    ctx.textBaseline = "middle";
+    const dayS = ['TUE', 'THU', 'SAT', 'SUN'];
+    const timeS = ['8', '10', '13', '15', "17"];
+    const miniW = [1342, 1420, 1498, 1576];
+    const miniH = [144, 218, 292, 366, 440];
+    const mainW = [324, 568, 812, 1056];
+    const mainCrH = [386, 514, 642, 770, 898];
+    const mainTutorH = [448, 576, 704, 832, 960];
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 5; j++) {
+            ctx.font = "bold 28px Taviraj";
+            if (subj === 'math') {
+                if (tableInfo.mathMiniTable[dayS[i] + timeS[j]] !== undefined) {
+                    ctx.fillText(tableInfo.mathMiniTable[dayS[i] + timeS[j]], miniW[i], miniH[j])
+                }
+            } else {
+                if (tableInfo.physicsMiniTable[dayS[i] + timeS[j]] !== undefined) {
+                    ctx.fillText(tableInfo.physicsMiniTable[dayS[i] + timeS[j]], miniW[i], miniH[j])
+                }
+            }
+            ctx.font = "bold 36px Taviraj";
+            let dayM = dayS[i] + timeS[j];
+            if (tableInfo.mainTable[dayM] !== undefined) {
+                let str = Object.values(tableInfo.mainTable[dayM])[0];
+                str = str.replace("PH", "Ph");
+                str = str.replace("CH", "Ch");
+                str = str.replace("SCI", "Sci");
+                ctx.fillText(str, mainW[i], mainCrH[j]);
+                if (Object.values(tableInfo.mainTable[dayM])[1] === "Hybrid") {
+                    ctx.fillText("HB", mainW[i], mainTutorH[j]);
+                } else ctx.fillText(Object.values(tableInfo.mainTable[dayM])[1], mainW[i], mainTutorH[j]);
+            }
+        }
+    }
+}
+function showComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $comment = $("#comment");
+    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+        if (data.comment.length > 10) {
+            $comment.append("<a id='showAll' onClick='showAllComment()'>Click here for all comment</a>");
+            for (let i = data.comment.length - 1; i > data.comment.length - 11; i--) {
+                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                    $comment.append("<h4>" + info.nickname + " (" + day +
+                        ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p>- " + data.comment[i].message + "</p>");
+                })
+            }
+        } else {
+            for (let i = data.comment.length - 1; i > -1; i--) {
+                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                    $comment.append("<h4>" + info.nickname + " (" + day +
+                        ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p>- " + data.comment[i].message + "</p>");
+                })
+            }
+        }
+    })
+}
+function showAllComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $("#showAll").toggle();
+    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+        $("#comment").empty();
+        for (let i = data.comment.length - 1; i > -1; i--) {
+            $.post("post/name", { userID: data.comment[i].from }).then((info) => {
+                let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
+                $("#comment").append("<h4>" + info.nickname + " (" + day +
+                    ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                $("#comment").append("<p>- " + data.comment[i].message + "</p>");
+            })
+        }
+    })
+}
+function deleteComment() {
+    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let time = $("#confirm").attr("timestamp");
+    $.post("post/removeStudentComment", { studentID: ID, timestamp: time }, function (data, status) {
+        log("=============delete===============");
+        log("id:" + ID + "time:" + time);
+        location.reload();
+    })
 }

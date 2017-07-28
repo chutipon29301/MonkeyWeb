@@ -73,10 +73,11 @@ function redirectLocation(user) {
                     studentLogin(user);
                     break;
                 case "tutor":
-                    self.location = "/adminAllstudent";
+                    self.location = "/tutorCourseMaterial";
                     break;
                 case "admin":
-                    self.location = "/testadmin";
+                case "dev":
+                    self.location = "/adminAllstudent";
                     break;
                 default:
                     break
@@ -93,7 +94,7 @@ function studentLogin(studentID) {
             log("[studentLogin()] : post/registrationState => ");
             log(data);
             //noinspection SpellCheckingInspection
-            if (data.registrationState === "untransferred") {
+            if (data.registrationState === "untransferred" || data.registrationState === "rejected") {
                 self.location = "/registrationReceipt";
             } else {
                 self.location = "/home";

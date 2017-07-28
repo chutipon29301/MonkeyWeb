@@ -14,7 +14,7 @@ $(document).ready(function () {
     $('#parentTel').html(cookie.tel.parent + '(ผู้ปกครอง)');
     $('#studentTel').html(cookie.tel.student + '(นักเรียน)');
     $('#email').html(cookie.email);
-    $('#crFee').html(cookie.courseFee.slice(0, cookie.courseFee.length - 3) + ','+cookie.courseFee.slice(cookie.courseFee.length - 3,cookie.courseFee.length ) + ' บาท');
+    $('#crFee').html(cookie.courseFee.slice(0, cookie.courseFee.length - 3) + ',' + cookie.courseFee.slice(cookie.courseFee.length - 3, cookie.courseFee.length) + ' บาท');
     $('#grade').html(gradetoText(cookie.grade));
     var crPrint = '';
     for (let i in cookie.regisCourse) {
@@ -38,16 +38,16 @@ $(document).ready(function () {
                 var time = cookie.regisHybrid[i].day.getHours();
                 for (j = -1; j < 4; j++) {
                     var temp = (10 * time) + (j * 5);
-                    if (!($("#skilltime").find("option[value=" + temp + "]").parent().is("span"))){
-                    	$("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
+                    if (!($("#skilltime").find("option[value=" + temp + "]").parent().is("span"))) {
+                        $("#skilltime,#skilltimeEng").find("option[value=" + temp + "]").wrap("<span>");
                     }
                 }
             }
-        }   
+        }
     }
     $('#hb').html(hbPrint);
     var skPrint = '';
-    if(cookie.skillSel!='4'){
+    if (cookie.skillSel != '4') {
         if ($('#station').val() === '2') {
             skPrint += 'MATH : สาย 3 ' + '<br>'
         }
@@ -65,12 +65,15 @@ $(document).ready(function () {
             }
         }
     }
-    else{
+    else {
         skPrint += 'Complete'
     }
     $('#sk').html(skPrint);
     if ($('#hb').html().length === 0) {
         $('#hb').html('ไม่ลงทะเบียนในระบบ FHB')
+    }
+    if ($('#sk').html().length === 0) {
+        $('#sk').html('ไม่ลงทะเบียนในระบบ SKILL')
     }
 });
 
@@ -82,7 +85,7 @@ function genTable() {
             name += temp[i].className.split(' ')[j] + ' ';
         }
         temp[i].className = name;
-        temp[i].innerHTML = '&nbsp;'+'<br>'+'&nbsp;';
+        temp[i].innerHTML = '&nbsp;' + '<br>' + '&nbsp;';
     }
 }
 
@@ -90,7 +93,7 @@ function updateTable() {
     var cookie = getCookieDict();
     cookie.regisCourse = JSON.parse(cookie.regisCourse);
     cookie.regisHybrid = JSON.parse(cookie.regisHybrid);
-    if(cookie.skillSel != '4'){
+    if (cookie.skillSel != '4') {
         cookie.regisSkill = JSON.parse(cookie.regisSkill);
         $('#skilltime').val(cookie.regisSkill.M.time)
         $('#station').val(cookie.regisSkill.M.station)
@@ -138,70 +141,69 @@ function updateTable() {
             }
         }
     }
-    if($('#station').val()=='1' && $('#skilltime').val()!='0'){
-		var disTime = [8,10,13,15]
-		for(i=0;i<disTime.length;i++){
-			if(Math.floor(parseInt($('#skilltime').val())/10) == disTime[i] || Math.floor(parseInt($('#skilltime').val())/10)-1 == disTime[i]){
-				var skillClass = document.getElementsByClassName('btn-' + $('#skillday').val() + ' ' + disTime[i] + '.1');
+    if ($('#station').val() == '1' && $('#skilltime').val() != '0') {
+        var disTime = [8, 10, 13, 15]
+        for (i = 0; i < disTime.length; i++) {
+            if (Math.floor(parseInt($('#skilltime').val()) / 10) == disTime[i] || Math.floor(parseInt($('#skilltime').val()) / 10) - 1 == disTime[i]) {
+                var skillClass = document.getElementsByClassName('btn-' + $('#skillday').val() + ' ' + disTime[i] + '.1');
                 for (let j = 0; j < skillClass.length; j++) {
-                    if(skillClass[j].className.indexOf('sk')!=-1){
-                		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
-                			var x = $('#skilltimeEng option:selected').text().split('-')[0]
-                		}
-                		else if($('skilltime').val()!='0'){
-                            var x = $('#skilltime option:selected').text().split('-')[0]    
+                    if (skillClass[j].className.indexOf('sk') != -1) {
+                        if (parseInt($('#skilltimeEng option:selected').val()) <= parseInt($('#skilltime option:selected').val())) {
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]
                         }
-                        else{
-                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                        else if ($('skilltime').val() != '0') {
+                            var x = $('#skilltime option:selected').text().split('-')[0]
                         }
-                		skillClass[j].innerHTM = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
-                	}
-                	else{
-	                    skillClass[j].className = skillClass[j].className + ' sk';
-	                    skillClass[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + $('#skilltime option:selected').text().split('-')[0]+' น.';
-	                }
+                        else {
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]
+                        }
+                        skillClass[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
+                    }
+                    else {
+                        skillClass[j].className = skillClass[j].className + ' sk';
+                        skillClass[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + $('#skilltime option:selected').text().split('-')[0] + ' น.';
+                    }
                 }
-			}
-		}
+            }
+        }
     }
-    if($('#stationEng').val()=='1' && $('#skilltimeEng').val()!='0'){
-		var disTime = [8,10,13,15]
-		for(i=0;i<disTime.length;i++){
-			if(Math.floor(parseInt($('#skilltimeEng').val())/10) == disTime[i] || Math.floor(parseInt($('#skilltimeEng').val())/10)-1 == disTime[i]){
-				var skillClassE = document.getElementsByClassName('btn-' + $('#skilldayEng').val() + ' ' + disTime[i] + '.1');
+    if ($('#stationEng').val() == '1' && $('#skilltimeEng').val() != '0') {
+        var disTime = [8, 10, 13, 15]
+        for (i = 0; i < disTime.length; i++) {
+            if (Math.floor(parseInt($('#skilltimeEng').val()) / 10) == disTime[i] || Math.floor(parseInt($('#skilltimeEng').val()) / 10) - 1 == disTime[i]) {
+                var skillClassE = document.getElementsByClassName('btn-' + $('#skilldayEng').val() + ' ' + disTime[i] + '.1');
                 for (let j = 0; j < skillClassE.length; j++) {
-                	if(skillClassE[j].className.indexOf('sk')!=-1){
-                		if(parseInt($('#skilltimeEng option:selected').val())<=parseInt($('#skilltime option:selected').val())){
-                			var x = $('#skilltimeEng option:selected').text().split('-')[0]
-                		}
-                		else if($('skilltime').val()!='0'){
-                			var x = $('#skilltime option:selected').text().split('-')[0]	
-                		}
-                        else{
-                            var x = $('#skilltimeEng option:selected').text().split('-')[0]   
+                    if (skillClassE[j].className.indexOf('sk') != -1) {
+                        if (parseInt($('#skilltimeEng option:selected').val()) <= parseInt($('#skilltime option:selected').val())) {
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]
                         }
-                		skillClassE[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
-                	}
-                	else{
-	                    skillClassE[j].className = skillClassE[j].className + ' sk';
-	                    skillClassE[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + $('#skilltimeEng option:selected').text().split('-')[0]+' น.';
-	                }
-	            }
-			}
-		}
+                        else if ($('skilltime').val() != '0') {
+                            var x = $('#skilltime option:selected').text().split('-')[0]
+                        }
+                        else {
+                            var x = $('#skilltimeEng option:selected').text().split('-')[0]
+                        }
+                        skillClassE[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + x + ' น.';
+                    }
+                    else {
+                        skillClassE[j].className = skillClassE[j].className + ' sk';
+                        skillClassE[j].innerHTML = '<strong>SKILL :</strong>' + '<br>' + $('#skilltimeEng option:selected').text().split('-')[0] + ' น.';
+                    }
+                }
+            }
+        }
     }
 }
 
 function back() {
     var cookie = getCookieDict()
-    if (cookie.skillSel == '4'){
+    if (cookie.skillSel == '4') {
         self.location = "registrationSkill"
     }
-    else{
+    else {
         self.location = "registrationSkill2"
     }
 }
-
 
 
 window.onclick = function (event) {
@@ -210,7 +212,7 @@ window.onclick = function (event) {
     }
 };
 
-function notsubmit(){
+function notsubmit() {
     modal.style.display = "none";
 }
 
@@ -289,8 +291,23 @@ function submit() {
                             }
                         })
                     }
-                    alert('ลงทะเบียนเสร็จสิ้น');
-                    self.location = 'registrationReceipt'
+                    let changeStatus = (userID, status) => $.post("post/changeStatus", {
+                        userID: userID,
+                        status: status
+                    });
+                    //noinspection JSUnresolvedVariable
+                    changeStatus(parseInt(cookie.monkeyWebUser), status).then(() => {
+                        alert('ลงทะเบียนเสร็จสิ้น');
+                        $.post("post/changeStatus", {
+                            userID: parseInt(cookie.monkeyWebUser),
+                            status: "active"
+                        }).then((data) => {
+                            if (data.err) {
+                            } else {
+                                self.location = 'registrationReceipt'
+                            }
+                        });
+                    });
 
                 }
             })

@@ -1,0 +1,26 @@
+mixin course-link(courseName,day)
+    if(day.day()==6)
+        td.course-link.c-purple&attributes(attributes)
+            +course-link-content(courseName,day)
+    else if(day.day()==0)
+        td.course-link.c-red&attributes(attributes)
+            +course-link-content(courseName,day)
+    else
+        td.course-link&attributes(attributes)
+            +course-link-content(courseName,day)
+mixin course-link-content(courseName,day)
+    h4= courseName
+    h4.small= day.format("ddd H-").toUpperCase()+moment(day).add(2,"h").hour()
+mixin cell(status)
+    if(status==null)
+        td.popup.c-grey&attributes(attributes)
+            span.glyphicon.glyphicon-minus
+    else if(status=="accepted")
+        td.popup.c-lightgreen&attributes(attributes)
+            span.glyphicon.glyphicon-ok
+    else if(status=="rejected")
+        td.popup.c-red&attributes(attributes)
+            span.glyphicon.glyphicon-remove
+    else if(status=="pending")
+        td.popup.c-blue&attributes(attributes)
+            span.glyphicon.glyphicon-hourglass
