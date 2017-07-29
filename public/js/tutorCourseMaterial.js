@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $("[data-toggle=tooltip]").tooltip();
     $(".popup").click(function(){
         var courseID=$(this).data("course-id");
         var numberOfSub=$(this).data("number-of-sub");
@@ -17,6 +18,7 @@ $(document).ready(function(){
         modal.find("."+status).removeClass("hidden");
 
         modal.find(".courseName").text(" "+courseName+"#"+numberOfSub+" ");
+        modal.find("#localLink").val(modal.find("#localLink").data("link")+courseID+"/"+numberOfSub+"/");
         form.trigger("reset");
         form.find(".badge").text("0");
         form.find("li:not(.dropdown-header)").remove();
@@ -71,6 +73,10 @@ $(document).ready(function(){
                 location.reload();
             }
         });
+    });
+    $("#copyLink").click(function(event){
+        $("#localLink").select();
+        document.execCommand("copy");
     });
     $(".course-link").click(function(){
         writeCookie("monkeyWebAdminAllcourseSelectedCourseID",$(this).data("course-id"));

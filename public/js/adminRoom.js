@@ -1,4 +1,4 @@
-let app = angular.module("tableRoom", ['rx']);
+let app = angular.module("tableRoom", ['rx','ngMaterial']);
 
 app.config(function ($httpProvider) {
     $httpProvider.defaults.transformRequest = function (data) {
