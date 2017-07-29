@@ -7,7 +7,7 @@ html(lang="en")
         link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
         link(rel="stylesheet" type="text/css" href="/css/bootstrap.min.css")
         link(rel="stylesheet" type="text/css" href="/css/style.min.css")
-        //- script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js")
+        link(rel="stylesheet" href="/node_modules/angular-material/angular-material.css")
         script(src="/node_modules/angular/angular.js")
         script(src="/js/jquery-3.2.1.min.js")
         script(src="/js/bootstrap.min.js")
@@ -43,11 +43,8 @@ html(lang="en")
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") Full Hybrid
                                         span.caret
                                     ul.dropdown-menu
-                                        li.disabled: a(href="#") ลา
-                                        li.disabled: a(href="#") เพิ่ม
-                                        li.divider
-                                        li.disabled: a(href="#") ลาตลอดไป
-                                        li.disabled: a(href="#") เพิ่มตลอดไป
+                                        li: a(href="fhbAbsentForm") ลา
+                                        li: a(href="#") เพิ่ม
                                 li: a(href="studentDocument") Document
                             else
                                 li: a(href="/tutorCourseMaterial") CR Material

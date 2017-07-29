@@ -12,55 +12,49 @@ block head
         data-semver="0.0.14"
         src="https://cdn.rawgit.com/Reactive-Extensions/rx.angular.js/v0.0.14/dist/rx.angular.js"
     )
-    link(
-        rel="stylesheet" 
-        href="/node_modules/angular-material/angular-material.css"
-    )
     //- script(type="text/javascript").
     //-     $(document).ready(function(){
     //-         document.getElementById("default").click();
     //-     })
 block body
-    div(ng-app="tableRoom" ng-cloak layout layout-align="center center")
-        .md-whiteframe-5dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
-            div(ng-cloak)
-                md-content
-                    md-tabs(md-dynamic-height='', md-border-bottom='')
-                        md-tab(label='Tue')
-                            md-content.md-padding
-                                h3.md-display-2 Tuesday
-                        md-tab(label='Thu')
-                            md-content.md-padding
-                                h3.md-display-2 Thursday
-                        md-tab(label='Sat8')
-                            md-content.md-padding
-                                h3.md-display-2 Saturday 8:00 - 10:00
-                        md-tab(label='Sat10')
-                            md-content.md-padding
-                                h3.md-display-2 Saturday 10:00 - 12:00
-                        md-tab(label='Sat13')
-                            md-content.md-padding
-                                h3.md-display-2 Saturday 13:00 - 15:00
-                        md-tab(label='Sat15')
-                            md-content.md-padding
-                                h3.md-display-2 Saturday 15:00 - 17:00
-                        md-tab(label='Sun8')
-                            md-content.md-padding
-                                h3.md-display-2 Sunday 8:00 - 10:00
-                        md-tab(label='Sun10')
-                            md-content.md-padding
-                                h3.md-display-2 Sunday 10:00 - 12:00
-                        md-tab(label='Sun13')
-                            md-content.md-padding
-                                h3.md-display-2 Sunday 13:00 - 15:00
-                        md-tab(label='Sun15')
-                            md-content.md-padding
-                                h3.md-display-2 Sunday 15:00 - 17:00
-
-        script(src="/node_modules/angular-aria/angular-aria.js")
-        script(src="/node_modules/angular-animate/angular-animate.js")
-        script(src="/node_modules/angular-material/angular-material.js")
-
+    include generalTemplate
+    +angular-template("tableRoom")
+        div(layout layout-align="center center")
+            .md-whiteframe-5dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
+                div(ng-cloak)
+                    md-content
+                        md-tabs(md-dynamic-height='', md-border-bottom='')
+                            md-tab(label='Tue')
+                                md-content.md-padding
+                                    h3.md-display-2 Tuesday
+                            md-tab(label='Thu')
+                                md-content.md-padding
+                                    h3.md-display-2 Thursday
+                            md-tab(label='Sat8')
+                                md-content.md-padding
+                                    h3.md-display-2 Saturday 8:00 - 10:00
+                            md-tab(label='Sat10')
+                                md-content.md-padding
+                                    h3.md-display-2 Saturday 10:00 - 12:00
+                            md-tab(label='Sat13')
+                                md-content.md-padding
+                                    h3.md-display-2 Saturday 13:00 - 15:00
+                            md-tab(label='Sat15')
+                                md-content.md-padding
+                                    h3.md-display-2 Saturday 15:00 - 17:00
+                            md-tab(label='Sun8')
+                                md-content.md-padding
+                                    h3.md-display-2 Sunday 8:00 - 10:00
+                            md-tab(label='Sun10')
+                                md-content.md-padding
+                                    h3.md-display-2 Sunday 10:00 - 12:00
+                            md-tab(label='Sun13')
+                                md-content.md-padding
+                                    h3.md-display-2 Sunday 13:00 - 15:00
+                            md-tab(label='Sun15')
+                                md-content.md-padding
+                                    h3.md-display-2 Sunday 15:00 - 17:00
+        +angular-js
         script(src="js/adminRoom.js")
 
 
