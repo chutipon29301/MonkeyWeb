@@ -119,7 +119,10 @@ module.exports=function(app,db){
             var local={moment:moment};
             post("post/allCourseMaterial",{},function(result){
                 Object.assign(local,result);
-                callback(local);
+                post("post/getConfig",{},function(result){
+                    Object.assign(local,{config:result});
+                    callback(local);
+                });
             });
         });
         options.middlewareOptions.position={$in:["admin","dev"]};
