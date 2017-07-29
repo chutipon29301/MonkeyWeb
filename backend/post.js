@@ -1146,7 +1146,7 @@ module.exports=function(app,db){
     post("/post/listStudentComment",function(req,res){
         var studentID=parseInt(req.body.studentID);
         findUser(res,studentID,{position:"student"},function(){
-            studentComment.findOne({_id:studentID},function(err,result){
+            studentCommentDB.findOne({_id:studentID},function(err,result){
                 if(result==null)res.send({comment:[]});
                 else res.send({comment:result.comment});
             });
