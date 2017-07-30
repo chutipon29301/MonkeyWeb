@@ -22,38 +22,41 @@ block head
     //-     })
 block body
     div(ng-app="tableRoom" ng-cloak layout layout-align="center center")
-        .md-whiteframe-5dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
+        .md-whiteframe-5dp(flex-xs="90" flex-gt-xs="80")
             div(ng-cloak)
                 md-content
-                    md-tabs(md-dynamic-height='', md-border-bottom='')
-                        md-tab(label='Tue')
-                            md-content.md-padding
-                                h3.md-display-2 Tuesday
-                        md-tab(label='Thu')
+                    md-tabs(md-dynamic-height="", md-border-bottom="")
+                        md-tab(label="Tue")
+                            div(ng-controller="tue")
+                                md-content.md-padding
+                                    md-card(layout-align="center center")
+                                        div(layout="row")
+                                        
+                        md-tab(label="Thu")
                             md-content.md-padding
                                 h3.md-display-2 Thursday
-                        md-tab(label='Sat8')
+                        md-tab(label="Sat8")
                             md-content.md-padding
                                 h3.md-display-2 Saturday 8:00 - 10:00
-                        md-tab(label='Sat10')
+                        md-tab(label="Sat10")
                             md-content.md-padding
                                 h3.md-display-2 Saturday 10:00 - 12:00
-                        md-tab(label='Sat13')
+                        md-tab(label="Sat13")
                             md-content.md-padding
                                 h3.md-display-2 Saturday 13:00 - 15:00
-                        md-tab(label='Sat15')
+                        md-tab(label="Sat15")
                             md-content.md-padding
                                 h3.md-display-2 Saturday 15:00 - 17:00
-                        md-tab(label='Sun8')
+                        md-tab(label="Sun8")
                             md-content.md-padding
                                 h3.md-display-2 Sunday 8:00 - 10:00
-                        md-tab(label='Sun10')
+                        md-tab(label="Sun10")
                             md-content.md-padding
                                 h3.md-display-2 Sunday 10:00 - 12:00
-                        md-tab(label='Sun13')
+                        md-tab(label="Sun13")
                             md-content.md-padding
                                 h3.md-display-2 Sunday 13:00 - 15:00
-                        md-tab(label='Sun15')
+                        md-tab(label="Sun15")
                             md-content.md-padding
                                 h3.md-display-2 Sunday 15:00 - 17:00
 
