@@ -1,0 +1,9 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Absent Form"
+    script(src="js/student.min.js")
+    script(src="js/studentForm.js")
+block body
+    .container
+        label.col-md-3.col-xs-6: kbd ชื่อเล่น ชื่อจริง นามสกุล:
+        p.col-md-9.col-xs-6#name
