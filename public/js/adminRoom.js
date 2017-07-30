@@ -1,4 +1,4 @@
-let app = angular.module("tableRoom", ['rx','ngMaterial']);
+let app = angular.module('tableRoom', ['rx', 'ngMaterial']);
 
 app.config(function ($httpProvider) {
     $httpProvider.defaults.transformRequest = function (data) {
@@ -9,6 +9,7 @@ app.config(function ($httpProvider) {
     }
 });
 
+
 let tableGenerator = ($scope, $http, time) => {
     $scope.roomDayList = [];
 
@@ -16,7 +17,7 @@ let tableGenerator = ($scope, $http, time) => {
         return $.param(data);
     }
 
-    let roomInfo = Rx.Observable.fromPromise($http.post("post/roomInfo", {
+    let roomInfo = Rx.Observable.fromPromise($http.post('post/roomInfo', {
         day: time
     }, {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
@@ -24,7 +25,7 @@ let tableGenerator = ($scope, $http, time) => {
         })
     );
 
-    let courseInfo = (courseID) => Rx.Observable.fromPromise($http.post("post/courseInfo", {
+    let courseInfo = (courseID) => Rx.Observable.fromPromise($http.post('post/courseInfo', {
         courseID: courseID
     }, {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
@@ -32,7 +33,7 @@ let tableGenerator = ($scope, $http, time) => {
         })
     );
 
-    let tutorName = (userID) => Rx.Observable.fromPromise($http.post("post/name", {
+    let tutorName = (userID) => Rx.Observable.fromPromise($http.post('post/name', {
         userID: userID
     }, {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
@@ -42,35 +43,35 @@ let tableGenerator = ($scope, $http, time) => {
 
     let index = 0;
     roomInfo.subscribe((res) => {
-        if (indexOfObjectInArray($scope.roomDayList, "Hybrid") === -1) {
+        if (indexOfObjectInArray($scope.roomDayList, 'Hybrid') === -1) {
             $scope.roomDayList.push({
-                room: "Hybrid",
-                courseName: "Hybrid",
+                room: 'Hybrid',
+                courseName: 'Hybrid',
                 noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length + res.data.fullHybrid[1].studentID.length),
                 full: res.data.maxHybridSeat,
-                courseID: "Hybrid",
-                property: "nonExpandable",
+                courseID: 'Hybrid',
+                property: 'nonExpandable',
                 isHidden: false
             });
             $scope.roomDayList.push({
-                courseID: "Hybrid",
-                courseName: "Full Hybrid Math",
+                courseID: 'Hybrid',
+                courseName: 'Full Hybrid Math',
                 noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length),
-                property: "expandable",
+                property: 'expandable',
                 isHidden: true
             });
             $scope.roomDayList.push({
-                courseID: "Hybrid",
-                courseName: "Full Hybrid Physics",
+                courseID: 'Hybrid',
+                courseName: 'Full Hybrid Physics',
                 noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[1].studentID.length),
-                property: "expandable",
+                property: 'expandable',
                 isHidden: true
             });
         }
         for (let i = 0; i < res.data.courseHybrid.length; i++) {
             $scope.roomDayList.push({
                 courseID: res.data.courseHybrid[i],
-                property: "expandable",
+                property: 'expandable',
                 isHidden: true
             });
         }
@@ -81,23 +82,23 @@ let tableGenerator = ($scope, $http, time) => {
                 room: i,
                 full: res.data.course[i].maxSeat,
                 courseID: res.data.course[i].courseID,
-                property: "nonExpandable",
+                property: 'nonExpandable',
                 isHidden: false
             });
         }
 
         for (let i = 0; i < $scope.roomDayList.length; i++) {
-            if ($scope.roomDayList[i].courseID !== "Hybrid") {
+            if ($scope.roomDayList[i].courseID !== 'Hybrid') {
                 courseInfo($scope.roomDayList[i].courseID).subscribe(res => {
                     $scope.roomDayList[i].courseName = res.data.courseName;
                     $scope.roomDayList[i].noStudent = res.data.student.length;
                     tutorName(res.data.tutor[0]).subscribe(response => {
-                        $scope.roomDayList[i].courseName += " (" + response.data.nicknameEn + ")";
+                        $scope.roomDayList[i].courseName += ' (' + response.data.nicknameEn + ')';
                     });
                 });
             } else {
                 for (let j = 0; j < res.data.courseHybrid.length; j++) {
-                    if ($scope.roomDayList[i].property === "expandable") continue;
+                    if ($scope.roomDayList[i].property === 'expandable') continue;
                     courseInfo(res.data.courseHybrid[j]).subscribe(response => {
                         $scope.roomDayList[i].noStudent += response.data.student.length;
                     })
@@ -106,46 +107,47 @@ let tableGenerator = ($scope, $http, time) => {
         }
     });
 
-    // $scope.tableRowClick = (courseID) => {
-    //     if (courseID !== "Hybrid") {
-    //         writeCookie("monkeyWebAdminAllcourseSelectedCourseID", courseID);
-    //         self.location = "/adminCoursedescription";
-    //     } else {
-    //         for (let i = 0; i < $scope.roomDayList.length; i++) {
-    //             if ($scope.roomDayList[i].property === "expandable") {
-    //                 $scope.roomDayList[i].isHidden = !$scope.roomDayList[i].isHidden
-    //             }
-    //         }
-    //     }
-    // };
+    $scope.tableRowClick = (courseID) => {
+        console.log('Hello World');
+        if (courseID !== 'Hybrid') {
+            writeCookie('monkeyWebAdminAllcourseSelectedCourseID', courseID);
+            self.location = '/adminCoursedescription';
+        } else {
+            for (let i = 0; i < $scope.roomDayList.length; i++) {
+                if ($scope.roomDayList[i].property === 'expandable') {
+                    $scope.roomDayList[i].isHidden = !$scope.roomDayList[i].isHidden
+                }
+            }
+        }
+    };
 
 };
 
-app.controller("tue", function ($scope, $http) {
+app.controller('tue', function ($scope, $http) {
     tableGenerator($scope, $http, -136800000);
 });
 
-app.controller("thu", function ($scope, $http) {
+app.controller('thu', function ($scope, $http) {
     tableGenerator($scope, $http, 36000000);
 });
 
-app.controller("sat8", function ($scope, $http) {
+app.controller('sat8', function ($scope, $http) {
     tableGenerator($scope, $http, 176400000);
 });
 
-app.controller("sat10", function ($scope, $http) {
+app.controller('sat10', function ($scope, $http) {
     tableGenerator($scope, $http, 183600000);
 });
 
-app.controller("sat13", function ($scope, $http) {
+app.controller('sat13', function ($scope, $http) {
     tableGenerator($scope, $http, 194400000);
 });
 
-app.controller("sat15", function ($scope, $http) {
+app.controller('sat15', function ($scope, $http) {
     tableGenerator($scope, $http, 201600000);
 });
 
-app.controller("sun8", function ($scope, $http) {
+app.controller('sun8', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
         tableGenerator($scope, $http, -342000000);
         res();
@@ -155,7 +157,7 @@ app.controller("sun8", function ($scope, $http) {
     });
 });
 
-app.controller("sun10", function ($scope, $http) {
+app.controller('sun10', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
         tableGenerator($scope, $http, -334800000);
         res();
@@ -165,7 +167,7 @@ app.controller("sun10", function ($scope, $http) {
     });
 });
 
-app.controller("sun13", function ($scope, $http) {
+app.controller('sun13', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
         tableGenerator($scope, $http, -324000000);
         res();
@@ -175,7 +177,7 @@ app.controller("sun13", function ($scope, $http) {
     });
 });
 
-app.controller("sun15", function ($scope, $http) {
+app.controller('sun15', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
         tableGenerator($scope, $http, -316800000);
         res();
@@ -184,27 +186,6 @@ app.controller("sun15", function ($scope, $http) {
         tableGenerator($scope, $http, 288000000);
     });
 });
-
-// function showRoom(evt, cityName) {
-//     // Declare all variables
-//     let i, tabcontent, tablinks;
-
-//     // Get all elements with class="tabcontent" and hide them
-//     tabcontent = document.getElementsByClassName("tabcontent");
-//     for (i = 0; i < tabcontent.length; i++) {
-//         tabcontent[i].style.display = "none";
-//     }
-
-//     // Get all elements with class="tablinks" and remove the class "active"
-//     tablinks = document.getElementsByClassName("tablinks");
-//     for (i = 0; i < tablinks.length; i++) {
-//         tablinks[i].className = tablinks[i].className.replace(" active", "");
-//     }
-
-//     // Show the current tab, and add an "active" class to the button that opened the tab
-//     document.getElementById(cityName).style.display = "block";
-//     evt.currentTarget.className += " active";
-// }
 
 function indexOfObjectInArray(array, key) {
     for (let i = 0; i < array.length; i++) {
