@@ -33,14 +33,14 @@ html(lang="en")
                         ul.nav.navbar-nav
                             if(webUser.position=="student")
                                 li: a(href="/") ลงทะเบียน
+                                //- li.dropdown
+                                //-     a.dropdown-toggle(data-toggle="dropdown" href="#") Course
+                                //-         span.caret
+                                //-     ul.dropdown-menu
+                                //-         li.disabled: a(href="#") ลา
+                                //-         li.disabled: a(href="#") ชดเชย
                                 li.dropdown
-                                    a.dropdown-toggle(data-toggle="dropdown" href="#") Course
-                                        span.caret
-                                    ul.dropdown-menu
-                                        li.disabled: a(href="#") ลา
-                                        li.disabled: a(href="#") ชดเชย
-                                li.dropdown
-                                    a.dropdown-toggle(data-toggle="dropdown" href="#") Full Hybrid
+                                    a.dropdown-toggle(data-toggle="dropdown" href="#") แบบฟอร์ม
                                         span.caret
                                     ul.dropdown-menu
                                         li: a(href="fhbAbsentForm") ลา
