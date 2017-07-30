@@ -9,6 +9,18 @@ app.config(function ($httpProvider) {
     }
 });
 
+app.config(function($mdThemingProvider) {
+    $mdThemingProvider.theme('default')
+});
+
+var subjectColor={
+    'M': 'Orange-200',
+    'P': 'Purple-100',
+    'C': 'Grey-400',
+    'S': 'Red-100',
+    'E': 'Blue-100',
+}
+
 
 let tableGenerator = ($scope, $http, time) => {
     $scope.roomDayList = [];
@@ -51,21 +63,24 @@ let tableGenerator = ($scope, $http, time) => {
                 full: res.data.maxHybridSeat,
                 courseID: 'Hybrid',
                 property: 'nonExpandable',
-                isHidden: false
+                isHidden: false,
+                bgColor: 'Grey-200'
             });
             $scope.roomDayList.push({
                 courseID: 'Hybrid',
                 courseName: 'Full Hybrid Math',
                 noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length),
                 property: 'expandable',
-                isHidden: true
+                isHidden: true,
+                bgColor: 'Orange-200'
             });
             $scope.roomDayList.push({
                 courseID: 'Hybrid',
                 courseName: 'Full Hybrid Physics',
                 noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[1].studentID.length),
                 property: 'expandable',
-                isHidden: true
+                isHidden: true,
+                bgColor: 'Purple-100'
             });
         }
         for (let i = 0; i < res.data.courseHybrid.length; i++) {
@@ -92,6 +107,7 @@ let tableGenerator = ($scope, $http, time) => {
                 courseInfo($scope.roomDayList[i].courseID).subscribe(res => {
                     $scope.roomDayList[i].courseName = res.data.courseName;
                     $scope.roomDayList[i].noStudent = res.data.student.length;
+                    $scope.roomDayList[i].bgColor = subjectColor[res.data.courseName.charAt(0)];
                     tutorName(res.data.tutor[0]).subscribe(response => {
                         $scope.roomDayList[i].courseName += ' (' + response.data.nicknameEn + ')';
                     });
@@ -101,6 +117,7 @@ let tableGenerator = ($scope, $http, time) => {
                     if ($scope.roomDayList[i].property === 'expandable') continue;
                     courseInfo(res.data.courseHybrid[j]).subscribe(response => {
                         $scope.roomDayList[i].noStudent += response.data.student.length;
+                        $scope.roomDayList[i].bgColor = subjectColor[res.data.courseName.charAt(0)];;
                     })
                 }
             }

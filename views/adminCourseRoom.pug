@@ -47,8 +47,8 @@ mixin adminRoom(label, controller, display)
             div(ng-controller=controller)
                 .md-display-1= display
                     md-content.md-padding
-                        md-list-item(ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room)")
-                            md-card.md-title.md-padding(flex="100" layout="row" layout-align="space-between center" )
+                        md-list-item.clickCard(ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room)")
+                            md-card.md-title.md-padding(flex="100" layout="row" layout-align="space-between center" md-colors="{background: room.bgColor}")
                                 div
                                     span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
                                     span(ng-if="room.property=='expandable'") 
