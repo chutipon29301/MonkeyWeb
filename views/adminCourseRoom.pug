@@ -12,10 +12,13 @@ block head
         data-semver="0.0.14"
         src="https://cdn.rawgit.com/Reactive-Extensions/rx.angular.js/v0.0.14/dist/rx.angular.js"
     )
-    //- script(type="text/javascript").
-    //-     $(document).ready(function(){
-    //-         document.getElementById("default").click();
-    //-     })
+    style.
+        .clickCard .md-button {
+            padding: 0 !important;
+        }
+        .clickCard md-card {
+            margin: 1px;
+        }
 block body
     include generalTemplate
     +angular-template("tableRoom")
@@ -23,136 +26,33 @@ block body
             .md-whiteframe-3dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
                 div(ng-cloak)
                     md-content
-                        md-tabs(md-dynamic-height='', md-border-bottom='')
-                            md-tab(label='Tue')
-                                md-content.md-padding
-                                    div(ng-controller="tue")
-                                        .md-display-1 Tuesday
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") 
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Thu')
-                                md-content.md-padding
-                                    div(ng-controller="thu")
-                                        .md-display-1 Thursday
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") 
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sat8')
-                                md-content.md-padding
-                                    div(ng-controller="sat8")
-                                        .md-display-1 Saturday 8:00 - 10:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sat10')
-                                md-content.md-padding
-                                    div(ng-controller="sat10")
-                                        .md-display-1 Saturday 10:00 - 12:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sat13')
-                                md-content.md-padding
-                                    div(ng-controller="sat13")
-                                        .md-display-1 Saturday 13:00 - 15:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sat15')
-                                md-content.md-padding
-                                    div(ng-controller="sat15")
-                                        .md-display-1 Saturday 15:00 - 17:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sun8')
-                                md-content.md-padding
-                                    div(ng-controller="sun8")
-                                        .md-display-1 Sunday 8:00 - 10:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sun10')
-                                md-content.md-padding
-                                    div(ng-controller="sun10")
-                                        .md-display-1 Sunday 10:00 - 12:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sun13')
-                                md-content.md-padding
-                                    div(ng-controller="sun13")
-                                        .md-display-1 Sunday 13:00 - 15:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-                            md-tab(label='Sun15')
-                                md-content.md-padding
-                                    div(ng-controller="sun15")
-                                        .md-display-1 Sunday 15:00 - 17:00
-                                            md-content.md-padding
-                                                md-card.md-title.md-padding(layout="row" layout-align="space-between center" ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room.courseID)")
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                                        span(ng-if="room.property=='expandable'") Room: Hybrid
-                                                    div {{ room.courseName }}
-                                                    div 
-                                                        span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                                        span(ng-if="room.property=='expandable'") {{ room.noStudent }}
+                        md-tabs(md-dynamic-height="", md-border-bottom="")
+                            +adminRoom("Tue", "tue", "Tuesday")
+                            +adminRoom("Thu", "thu", "Thursday")
+                            +adminRoom("Sat8", "sat8", "Saturday 8:00 - 10:00")
+                            +adminRoom("Sat10", "sat10", "Saturday 10:00 - 12:00")
+                            +adminRoom("Sat13", "sat13", "Saturday 13:00 - 15:00")
+                            +adminRoom("Sat15", "sat15", "Saturday 15:00 - 17:00")
+                            +adminRoom("Sun8", "sun8", "Sunday 8:00 - 10:00")
+                            +adminRoom("Sun10", "sun10", "Sunday 10:00 - 12:00")
+                            +adminRoom("Sun13", "sun13", "Sunday 13:00 - 15:00")
+                            +adminRoom("Sun15", "sun15", "Sunday 15:00 - 17:00")
+
         +angular-js
         script(src="js/adminRoom.js")
+
+mixin adminRoom(label, controller, display)
+    md-tab(label=label)
+        md-content.md-padding
+            div(ng-controller=controller)
+                .md-display-1= display
+                    md-content.md-padding
+                        md-list-item(ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room)")
+                            md-card.md-title.md-padding(flex="100" layout="row" layout-align="space-between center" )
+                                div
+                                    span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
+                                    span(ng-if="room.property=='expandable'") 
+                                div {{ room.courseName }}
+                                div
+                                    span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
+                                    span(ng-if="room.property=='expandable'") {{ room.noStudent }}

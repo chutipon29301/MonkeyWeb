@@ -107,15 +107,16 @@ let tableGenerator = ($scope, $http, time) => {
         }
     });
 
-    $scope.tableRowClick = (courseID) => {
-        console.log('Hello World');
-        if (courseID !== 'Hybrid') {
-            writeCookie('monkeyWebAdminAllcourseSelectedCourseID', courseID);
+    $scope.tableRowClick = (room) => {
+        if (room.courseID !== 'Hybrid') {
+            writeCookie('monkeyWebAdminAllcourseSelectedCourseID', room.courseID);
             self.location = '/adminCoursedescription';
         } else {
-            for (let i = 0; i < $scope.roomDayList.length; i++) {
-                if ($scope.roomDayList[i].property === 'expandable') {
-                    $scope.roomDayList[i].isHidden = !$scope.roomDayList[i].isHidden
+            if (room.property !== 'expandable') {
+                for (let i = 0; i < $scope.roomDayList.length; i++) {
+                    if ($scope.roomDayList[i].property === 'expandable') {
+                        $scope.roomDayList[i].isHidden = !$scope.roomDayList[i].isHidden
+                    }
                 }
             }
         }
