@@ -96,7 +96,7 @@ module.exports=function(app,db){
     addPage("login",{url:"/"});
     var options={middlewareOptions:{login:true,position:"student",studentStatus:{$in:["active","inactive"]}}};
         addPugPage("home",options);
-        addPugPage("absentForm",options);
+        // addPugPage("absentForm",options);
         addPugPage("studentDocument",options);
         options.middlewareOptions.registrationState={$ne:"unregistered"};
             addPugPage("studentProfile",options);
