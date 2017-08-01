@@ -16,8 +16,10 @@ function postComment() {
     let cookie = getCookieDict();
     let comm = $('#search-box .typeahead').typeahead("getActive");
     let x = $('#comment').val();
+    log(comm);
+    log(x);
     if (comm !== undefined) {
-        if (comm.length > 5) {
+        if (comm.length > 7) {
             $.post("post/addStudentComment", {
                 studentID: comm.slice(-6, -1),
                 tutorID: cookie.monkeyWebUser,
@@ -29,14 +31,22 @@ function postComment() {
     } else alert("Please Input Student Name");
 }
 function showComment() {
-    let now = new Date().getTime();
-    $.post("post/listStudentCommentDay", { day: now }, function (data, status) {
-        log(data.student);
-        for (let i = 0; i < data.student.length; i++) {
-            $("#commentList").append("<p><strong>" + data.student[i].studentID + "</strong></p>");
-            for (let j = 0; j < data.student[i].comment.length; j++) {
-                $("#commentList").append("<p>" + data.student[i].comment[j].message + "</p>");
-            }
+    $.post('post/listStudentCommentByIndex', { start: 0, limit: 30 }).then((cm) => {
+        log(cm)
+        for (let i = 0; i < cm.comment.length; i++) {
+            $.post('post/name', { userID: cm.comment[i].tutorID }).then((name) => {
+                $.post('post/name', { userID: cm.comment[i].studentID }, function (data, status) {
+                    let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
+                    if (cm.comment[i].priority > 0) {
+                        $('#commentList').append("<h4><span class='glyphicon glyphicon-pushpin'></span>" + name.nickname + "=>" +
+                            data.nickname + " (" + day + ")</h4>");
+                        $('#commentList').append("<p> " + cm.comment[i].message + "</p>");
+                    } else {
+                        $('#commentList').append("<h4>" + name.nickname + " => " + data.nickname + " (" + day + ")</h4>");
+                        $('#commentList').append("<p> " + cm.comment[i].message + "</p>");
+                    }
+                })
+            })
         }
-    });
+    })
 }
