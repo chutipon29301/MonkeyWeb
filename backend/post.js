@@ -15,9 +15,6 @@ module.exports=function(app,db){
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
 
-
-    userDB.updateMany({position:"student"},{$unset:{"student.balance":""}});
-
     var gradeBitToString=function(bit){
         var output="",p=false,s=false;
         for(var i=0;i<6;i++){
@@ -59,6 +56,10 @@ module.exports=function(app,db){
     };
     var prettify=function(str){
         return JSON.stringify(str,null,2);
+    };
+    var bool=function(str){
+        if(str=="false"||str=="0"||str=="")return false;
+        return true;
     };
     // function splitCourseName(name){
     //     if(typeof(name)=="string"){
@@ -1113,43 +1114,77 @@ module.exports=function(app,db){
     });
 
     // Assessment
-    //OK {studentID,tutorID,message} return {}
+    //OK {studentID,tutorID,message,priority,hasAttachment} return {}
     post("/post/addStudentComment",function(req,res){
+        var commentID=new ObjectID().toString();
         var studentID=parseInt(req.body.studentID);
         var tutorID=parseInt(req.body.tutorID);
         var message=req.body.message;
+        var priority=parseInt(req.body.priority);
+        if(req.body.priority===undefined)priority=0;
+        var hasAttachment=bool(req.body.hasAttachment);
+        if(req.body.hasAttachment===undefined)hasAttachment=false;
         findUser(res,studentID,{position:"student"},function(){
             findUser(res,tutorID,{position:["tutor","admin","dev"]},function(){
-                studentCommentDB.updateOne({_id:studentID},{
-                    $push:{
-                        comment:{from:tutorID,message:message,timestamp:moment().valueOf()}
-                    }
-                },{upsert:true},function(){
+                studentCommentDB.insertOne({
+                    _id:commentID,studentID:studentID,tutorID:tutorID,
+                    message:message,timestamp:moment().valueOf(),
+                    priority:priority,hasAttachment:hasAttachment
+                },function(){
                     res.send({});
                 });
             });
         });
     });
-    //OK {studentID,timestamp} return {}
+    //OK {commentID} return {}
     post("/post/removeStudentComment",function(req,res){
-        var studentID=parseInt(req.body.studentID);
-        var timestamp=parseInt(req.body.timestamp);
-        findUser(res,studentID,{position:"student"},function(){
-            studentCommentDB.updateOne({_id:studentID},{
-                $pull:{comment:{timestamp:timestamp}}
-            },function(){
-                res.send({});
-            });
+        var commentID=req.body.commentID;
+        studentCommentDB.deleteOne({_id:commentID},function(){
+            res.send({});
         });
     });
-    //OK {studentID} return {[comment]->from,message,timestamp}
-    post("/post/listStudentComment",function(req,res){
+    //OK {commentID,priority} return {}
+    post("/post/changeStudentCommentPriority",function(req,res){
+        var commentID=req.body.commentID;
+        var priority=parseInt(req.body.priority);
+        studentCommentDB.updateOne({_id:commentID},{
+            $set:{priority:priority}
+        },function(){
+            res.send({});
+        });
+    });
+    //OK {studentID,limit} return {[comment]->_id,studentID,tutorID,message,timestamp,priority,hasAttachment}
+    post("/post/listStudentCommentByStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
+        var limit=parseInt(req.body.limit);
         findUser(res,studentID,{position:"student"},function(){
-            studentCommentDB.findOne({_id:studentID},function(err,result){
-                if(result==null)res.send({comment:[]});
-                else res.send({comment:result.comment});
-            });
+            var cursor=studentCommentDB.find({studentID:studentID}).sort({priority:-1,timestamp:-1});
+            if(req.body.limit===undefined){
+                cursor.toArray(function(err,result){
+                    res.send({comment:result});
+                });
+            }
+            else{
+                cursor.limit(limit).toArray(function(err,result){
+                    res.send({comment:result});
+                });
+            }
+        });
+    });
+    //OK {start,end} return {[comment]->_id,studentID,tutorID,message,timestamp,priority,hasAttachment}
+    post("/post/listStudentCommentByTime",function(req,res){
+        var start=parseInt(req.body.start);
+        var end=parseInt(req.body.end);
+        studentCommentDB.find({timestamp:{$gte:start,$lte:end}}).sort({timestamp:-1}).toArray(function(err,result){
+            res.send({comment:result});
+        });
+    });
+    //OK {start,limit} return {[comment]->_id,studentID,tutorID,message,timestamp,priority,hasAttachment}
+    post("/post/listStudentCommentByIndex",function(req,res){
+        var start=parseInt(req.body.start);
+        var limit=parseInt(req.body.limit);
+        studentCommentDB.find().sort({priority:-1,timestamp:-1}).skip(start).limit(limit).toArray(function(err,result){
+            res.send({comment:result});
         });
     });
     //OK {day} return {[comment]->from,message,timestamp}
@@ -1234,6 +1269,11 @@ module.exports=function(app,db){
     });
     app.post("/debug/listCourseSuggestion",function(req,res){
         courseSuggestionDB.find().toArray(function(err,result){
+            res.send(result);
+        });
+    });
+    app.post("/debug/listStudentComment",function(req,res){
+        studentCommentDB.find().toArray(function(err,result){
             res.send(result);
         });
     });
