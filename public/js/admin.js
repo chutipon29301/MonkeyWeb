@@ -882,50 +882,54 @@ function generateCover(tableInfo, subj) {
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     $comment = $("#comment");
-    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
-        if (data.comment.length > 10) {
-            $comment.append("<a id='showAll' onClick='showAllComment()'>Click here for all comment</a>");
-            for (let i = data.comment.length - 1; i > data.comment.length - 11; i--) {
-                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
-                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
-                    $comment.append("<h4>" + info.nickname + " (" + day +
-                        ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
-                    $comment.append("<p>- " + data.comment[i].message + "</p>");
-                })
-            }
-        } else {
-            for (let i = data.comment.length - 1; i > -1; i--) {
-                $.post("post/name", { userID: data.comment[i].from }).then((info) => {
-                    let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
-                    $comment.append("<h4>" + info.nickname + " (" + day +
-                        ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
-                    $comment.append("<p>- " + data.comment[i].message + "</p>");
-                })
-            }
+    $.post('post/listStudentCommentByStudent', { studentID: ID, limit: 10 }).then((cm) => {
+        log(cm);
+        if (cm.comment.length > 10) {
+            $comment.append("<a id='showAll' onClick='showAllComment()'>Click here to see all comment</a>");
+        }
+        for (let i = 0; i < cm.comment.length; i++) {
+            $.post('post/name', { userID: cm.comment[i].tutorID }).then((name) => {
+                let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
+                if (cm.comment[i].priority > 0) {
+                    $comment.append("<h4><span class='glyphicon glyphicon-pushpin'></span>" + name.nickname + " (" + day + ") <span id='" + cm.comment[i]._id +
+                        "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p> " + cm.comment[i].message + "</p>");
+                } else {
+                    $comment.append("<h4>" + name.nickname + " (" + day + ") <span id='" + cm.comment[i]._id +
+                        "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p> " + cm.comment[i].message + "</p>");
+                }
+            })
         }
     })
 }
 function showAllComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    $comment = $("#comment");
     $("#showAll").toggle();
-    $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
+    $.post('post/listStudentCommentByStudent', { studentID: ID, limit: 10 }).then((cm) => {
         $("#comment").empty();
-        for (let i = data.comment.length - 1; i > -1; i--) {
-            $.post("post/name", { userID: data.comment[i].from }).then((info) => {
-                let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
-                $("#comment").append("<h4>" + info.nickname + " (" + day +
-                    ") <span id='" + data.comment[i].timestamp + "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
-                $("#comment").append("<p>- " + data.comment[i].message + "</p>");
+        for (let i = 0; i < cm.comment.length; i++) {
+            $.post('post/name', { userID: cm.comment[i].tutorID }).then((name) => {
+                let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
+                if (cm.comment[i].priority > 0) {
+                    $comment.append("<h4><span class='glyphicon glyphicon-pushpin'></span>" + name.nickname + " (" + day + ") <span id='" + cm.comment[i]._id +
+                        "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p> " + cm.comment[i].message + "</p>");
+                } else {
+                    $comment.append("<h4>" + name.nickname + " (" + day + ") <span id='" + cm.comment[i]._id +
+                        "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
+                    $comment.append("<p> " + cm.comment[i].message + "</p>");
+                }
             })
         }
     })
 }
 function deleteComment() {
-    let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
-    let time = $("#confirm").attr("timestamp");
-    $.post("post/removeStudentComment", { studentID: ID, timestamp: time }, function (data, status) {
+    let commentID = $("#confirm").attr("commentID");
+    $.post("post/removeStudentComment", { commentID: commentID }, function (data, status) {
         log("=============delete===============");
-        log("id:" + ID + "time:" + time);
+        log("commentID: " + commentID);
         location.reload();
     })
 }

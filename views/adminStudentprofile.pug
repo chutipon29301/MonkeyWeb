@@ -130,7 +130,7 @@ block body
                 $("#editModal").modal();
             }
             $(document).on('click','.glyphicon-trash',function(){
-                $('#commentRm #confirm').attr("timestamp",$(this).attr("id"));
+                $('#commentRm #confirm').attr("commentID",$(this).attr("id"));
                 $('#commentRm').modal();
             });
         //- Modal for editProfile
