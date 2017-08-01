@@ -51,17 +51,19 @@ html(lang="en")
                                     ul.dropdown-menu
                                         li: a(href="absentForm") ลา
                                         li: a(href="#") เพิ่ม
-                                li: a(href="studentDocument") Document
                             else
-                                li: a(href="/tutorCourseMaterial") CR Material
+                                if(webUser.position!="tutor")
+                                    li: a(href="/adminAllStudent") All Student
                                 li: a(href="/tutorCommentStudent") Comment Students
                                 if(webUser.position=="tutor")
                                     li: a(href="/adminAllCourse") My Course
                                 else
                                     li: a(href="/adminAllCourse") All Course
-                                    li: a(href="/adminAllStudent") All Student
-                                    li: a(href="/adminCourseRoom") Room
+                                li: a(href="/tutorCourseMaterial") CR Material
+                                if(webUser.position!="tutor")
                                     li: a(href="/adminCourseMaterial") CR Tracking
+                                    li: a(href="/adminCourseRoom") Room
+                            li: a(href="studentDocument") เอกสาร
                         ul.nav.navbar-nav.navbar-right
                             if(webUser.position=="student")
                                 li: a(href="/studentProfile")
@@ -72,7 +74,7 @@ html(lang="en")
                                     span.glyphicon.glyphicon-user
                                     = " "+webUser.firstname+" "+webUser.lastname
                             else
-                                li: a(href="/adminAllStudent")
+                                li: a(href="/tutorCommentStudent")
                                     span.glyphicon.glyphicon-user
                                     = " "+webUser.firstname+" "+webUser.lastname
                             li: a(href="/login")
