@@ -10,6 +10,7 @@ $(document).ready(function () {
             source: student,
         });
     });
+    showComment();
 });
 function postComment() {
     let cookie = getCookieDict();
@@ -28,20 +29,14 @@ function postComment() {
     } else alert("Please Input Student Name");
 }
 function showComment() {
-    let ID = $('#search-box .typeahead').typeahead("getActive");
-    if (ID !== undefined) {
-        if (ID.length > 5) {
-            ID = ID.slice(-6, -1);
-            $.post("post/listStudentComment", { studentID: ID }, function (data, status) {
-                $("#commentList").empty();
-                for (let i = data.comment.length - 1; i > -1; i--) {
-                    $.post("post/name", { userID: data.comment[i].from }).then((info) => {
-                        let day = moment(data.comment[i].timestamp, "x").format("DD MMM");
-                        $("#commentList").append("<h4>" + info.nickname + " (" + day + ")</h4>");
-                        $("#commentList").append("<p>- " + data.comment[i].message + "</p>");
-                    });
-                }
-            });
-        } else alert("Please Select Correct Name")
-    } else alert("Please Input Student Name");
+    let now = new Date().getTime();
+    $.post("post/listStudentCommentDay", { day: now }, function (data, status) {
+        log(data.student);
+        for (let i = 0; i < data.student.length; i++) {
+            $("#commentList").append("<p><strong>" + data.student[i].studentID + "</strong></p>");
+            for (let j = 0; j < data.student[i].comment.length; j++) {
+                $("#commentList").append("<p>" + data.student[i].comment[j].message + "</p>");
+            }
+        }
+    });
 }

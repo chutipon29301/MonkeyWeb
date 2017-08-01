@@ -1,0 +1,56 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Absent Form"
+    link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
+    script(src="js/bootstrap-datetimepicker.min.js")
+    script(src="js/student.min.js")
+    script(src="js/studentForm.js")
+block body
+    .jumbotron
+        .container
+            h2 แบบฟอร์มลา
+            p แบบฟอร์มสำหรับการลาเรียน Monkey
+    .container
+        h4#name
+            span.glyphicon.glyphicon-user
+        hr
+        .form-group
+            label วันที่ลา:
+            .input-group.date.datePicker#datetimepicker1.hidden-xs
+                input.form-control(type='text')
+                span.input-group-addon
+                    span.glyphicon.glyphicon-calendar
+            .col-xs-12.visible-xs
+                .datePicker#datetimepicker2
+                br
+        label วิชาที่ลา:
+        table.table.hidden-xs
+            thead
+                tr
+                    td.col-md-3
+                        button.btn.btn-info.col-md-12(type='button') -
+                    td.col-md-3
+                        button.btn.btn-info.col-md-12(type='button') -
+                    td.col-md-3
+                        button.btn.btn-info.col-md-12(type='button') -
+                    td.col-md-3
+                        button.btn.btn-info.col-md-12(type='button') -
+        table.table.visible-xs
+            thead
+                tr
+                    td.col-xs-6
+                        button.btn.btn-info.col-xs-12(type='button') -
+                    td
+                        button.btn.btn-info.col-xs-12(type='button') -
+                tr
+                    td.col-xs-6
+                        button.btn.btn-info.col-xs-12(type='button') -
+                    td
+                        button.btn.btn-info.col-xs-12(type='button') -
+        .form-group
+            label ผู้แจ้ง:
+            input.form-control#contact(type="text")
+        .form-group
+            label เหตุผล:
+            textarea.form-control#reason(rows='3')
+        button.btn.btn-primary.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9(onClick="submit()") SUBMIT

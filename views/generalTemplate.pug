@@ -43,3 +43,10 @@ mixin modal-loading(title)
                     h4.modal-title= title
                 .modal-body
                     .loader.center-block
+mixin angular-template(appName)
+    div(ng-app=appName ng-cloak)
+        block
+mixin angular-js()
+    script(src="/js/angular-aria.min.js")
+    script(src="/js/angular-messages.min.js")
+    script(src="/js/angular-material.min.js")
