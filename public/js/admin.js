@@ -900,11 +900,11 @@ function getName(cm, i) {
     $.post('post/name', { userID: cm.comment[i].tutorID }).then((name) => {
         let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
         if (cm.comment[i].priority > 0) {
-            $comment.append("<h4><span class='glyphicon glyphicon-pushpin' style='color:red'></span> " + name.nickname + " (" + day + ") <span id='" + cm.comment[i]._id +
+            $comment.append("<h4><span class='glyphicon glyphicon-pushpin' style='color:red'></span> " + name.nickname + " (" + day + ") <span id='" + cm.comment[i].commentID +
                 "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
             $comment.append("<p> " + cm.comment[i].message + "</p>");
         } else {
-            $comment.append("<h4>" + name.nickname + " (" + day + ") <span id='" + cm.comment[i]._id +
+            $comment.append("<h4>" + name.nickname + " (" + day + ") <span id='" + cm.comment[i].commentID +
                 "'class='glyphicon glyphicon-trash' style='color:red'></span></h4>");
             $comment.append("<p> " + cm.comment[i].message + "</p>");
         }

@@ -75,14 +75,14 @@ function getNameAdmin(cm, i) {
                 $('.dropdown:last-child').append("<h4 class='dropdown-toggle' data-toggle='dropdown'><span class='glyphicon glyphicon-pushpin' style='color:red'></span> " +
                     tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day +
                     ")</h4>");
-                $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='addPin(\"" + cm.comment[i]._id + "\")'>PIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i]._id + "\")'>REMOVE</a></li></ul>");
+                $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='addPin(\"" + cm.comment[i].commentID + "\")'>PIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i].commentID + "\")'>REMOVE</a></li></ul>");
                 $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
             } else {
                 $('#commentList').append("<div class='dropdown'></div>");
                 $('.dropdown:last-child').append("<h4 class='dropdown-toggle' data-toggle='dropdown'>" +
                     tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day +
                     ")</h4>");
-                $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='addPin(\"" + cm.comment[i]._id + "\")'>PIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i]._id + "\")'>REMOVE</a></li></ul>");
+                $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='addPin(\"" + cm.comment[i].commentID + "\")'>PIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i].commentID + "\")'>REMOVE</a></li></ul>");
                 $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
             }
             if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1);
