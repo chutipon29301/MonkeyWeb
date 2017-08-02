@@ -1157,52 +1157,46 @@ module.exports=function(app,db){
     post("/post/listStudentCommentByStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var limit=parseInt(req.body.limit);
+        var output=[];
         findUser(res,studentID,{position:"student"},function(){
             var cursor=studentCommentDB.find({studentID:studentID}).sort({priority:-1,timestamp:-1});
-            if(req.body.limit===undefined){
-                cursor.toArray(function(err,result){
-                    res.send({comment:result});
-                });
-            }
-            else{
-                cursor.limit(limit).toArray(function(err,result){
-                    res.send({comment:result});
-                });
-            }
+            if(req.body.limit!==undefined)cursor=cursor.limit(limit);
+            cursor.toArray(function(err,result){
+                for(var i=0;i<result.length;i++){
+                    output[i]={commentID:result[i]._id};
+                    delete result[i]._id;
+                    Object.assign(output[i],result[i]);
+                }
+                res.send({comment:output});
+            });
         });
     });
     //OK {start,end} return {[comment]->_id,studentID,tutorID,message,timestamp,priority,hasAttachment}
     post("/post/listStudentCommentByTime",function(req,res){
         var start=parseInt(req.body.start);
         var end=parseInt(req.body.end);
+        var output=[];
         studentCommentDB.find({timestamp:{$gte:start,$lte:end}}).sort({timestamp:-1}).toArray(function(err,result){
-            res.send({comment:result});
+            for(var i=0;i<result.length;i++){
+                output[i]={commentID:result[i]._id};
+                delete result[i]._id;
+                Object.assign(output[i],result[i]);
+            }
+            res.send({comment:output});
         });
     });
     //OK {start,limit} return {[comment]->_id,studentID,tutorID,message,timestamp,priority,hasAttachment}
     post("/post/listStudentCommentByIndex",function(req,res){
         var start=parseInt(req.body.start);
         var limit=parseInt(req.body.limit);
-        studentCommentDB.find().sort({priority:-1,timestamp:-1}).skip(start).limit(limit).toArray(function(err,result){
-            res.send({comment:result});
-        });
-    });
-    //OK {day} return {[comment]->from,message,timestamp}
-    post("/post/listStudentCommentDay",function(req,res){
-        var day=parseInt(req.body.day);
         var output=[];
-        studentCommentDB.find().toArray(function(err,result){
-            console.log(prettify(result));
+        studentCommentDB.find().sort({priority:-1,timestamp:-1}).skip(start).limit(limit).toArray(function(err,result){
             for(var i=0;i<result.length;i++){
-                var comment=[];
-                for(var j=0;j<result[i].comment.length;j++){
-                    if(moment(day).isSame(moment(result[i].comment[j].timestamp),"day")){
-                        comment.push(result[i].comment[j]);
-                    }
-                }
-                if(comment.length)output.push({studentID:result[i]._id,comment:comment});
+                output[i]={commentID:result[i]._id};
+                delete result[i]._id;
+                Object.assign(output[i],result[i]);
             }
-            res.send({student:output});
+            res.send({comment:output});
         });
     });
 
