@@ -13,13 +13,11 @@ $(document).ready(function () {
     let cookie = getCookieDict();
     let tutor = cookie.monkeyWebUser;
     let pos;
-    if (cookie.commIndex === undefined) {
-        writeCookie('commIndex', 0);
-    }
+    writeCookie('commIndex', 0);
     cookie = getCookieDict();
-    if (parseInt(cookie.commIndex) === 0) $(".previous").hide();
     $.post("post/position", { userID: tutor }).then((data) => {
         pos = data.position;
+        writeCookie('pos', pos);
         showComment(pos, parseInt(cookie.commIndex));
     })
     $("#postButton").click(function () {
@@ -41,8 +39,14 @@ $(document).ready(function () {
 
 function showComment(pos, commIndex) {
     $.post('post/listStudentCommentByIndex', { start: commIndex, limit: 10 }).then((cm) => {
+        $('#commentList').empty();
         (pos !== "tutor") ? getNameAdmin(cm, 0) : getName(cm, 0);
-        if (cm.comment.length < 10) $(".next").toggle();
+        if (cm.comment.length < 10) {
+            $(".next").hide();
+        } else $(".next").show();
+        if (parseInt(commIndex) === 0) {
+            $(".previous").hide();
+        } else $(".previous").show();
     })
 }
 // tutor showComment method
@@ -91,6 +95,7 @@ function getNameAdmin(cm, i) {
 }
 function commPosition(n) {
     let cookie = getCookieDict();
+    let commIndex;
     if (n > 0) {
         commIndex = parseInt(cookie.commIndex) + 10;
         writeCookie('commIndex', commIndex);
@@ -98,20 +103,27 @@ function commPosition(n) {
         commIndex = parseInt(cookie.commIndex) - 10;
         writeCookie('commIndex', commIndex);
     }
-    location.reload();
+    let pos = cookie.pos;
+    showComment(pos, commIndex);
 }
 function addPin(commID) {
+    let cookie = getCookieDict();
+    let pos = cookie.pos;
     $.post('post/changeStudentCommentPriority', { commentID: commID, priority: 1 }).then((data) => {
-        location.reload();
+        showComment(pos, parseInt(cookie.commIndex));
     })
 }
 function rmPin(commID) {
+    let cookie = getCookieDict();
+    let pos = cookie.pos;
     $.post('post/changeStudentCommentPriority', { commentID: commID, priority: 0 }).then((data) => {
-        location.reload();
+        showComment(pos, parseInt(cookie.commIndex));
     })
 }
 function rmComm(commID) {
+    let cookie = getCookieDict();
+    let pos = cookie.pos;
     $.post('post/removeStudentComment', { commentID: commID }).then((data) => {
-        location.reload();
+        showComment(pos, parseInt(cookie.commIndex));
     })
 }
