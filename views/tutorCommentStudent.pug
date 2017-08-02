@@ -3,6 +3,11 @@ block head
     -const pageTitle = "Comment Students"
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/tutorCommentStudent.min.js")
+    style.
+        #commentList p{
+            margin-bottom:20px;
+            white-space:pre-line;
+        }
 block body
     .container
         .page-header
@@ -15,7 +20,7 @@ block body
             .form-group
                 label(for="comment") Comment:
                 textarea.form-control#comment(rows="5")
-        button.btn.btn-default.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9(onClick="postComment()") SUBMIT
+        button#postButton.btn.btn-default.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9 SUBMIT
     .container
         hr
         h2(style="margin-bottom:30px") Recently comment
