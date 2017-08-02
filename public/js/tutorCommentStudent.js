@@ -13,15 +13,15 @@ $(document).ready(function () {
     let cookie = getCookieDict();
     let tutor = cookie.monkeyWebUser;
     let pos;
+    if (cookie.commIndex === undefined) {
+        writeCookie('commIndex', 0);
+    }
+    cookie = getCookieDict();
+    if (parseInt(cookie.commIndex) === 0) $(".previous").hide();
     $.post("post/position", { userID: tutor }).then((data) => {
         pos = data.position;
         showComment(pos, parseInt(cookie.commIndex));
     })
-    if (cookie.commIndex === undefined) {
-        writeCookie('commIndex', 0);
-    }
-    log(parseInt(cookie.commIndex));
-    if (parseInt(cookie.commIndex) === 0) $(".previous").toggle();
     $("#postButton").click(function () {
         let comm = $('#search-box .typeahead').typeahead("getActive");
         let x = $('#comment').val();
