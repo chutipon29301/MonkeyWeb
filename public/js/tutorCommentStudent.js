@@ -74,14 +74,14 @@ function getNameAdmin(cm, i) {
                 $('#commentList').append("<div class='dropdown'></div>");
                 $('.dropdown:last-child').append("<h4 class='dropdown-toggle' data-toggle='dropdown'><span class='glyphicon glyphicon-pushpin' style='color:red'></span> " +
                     tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day +
-                    ") <span class='glyphicon glyphicon-collapse-down'></span></h4>");
+                    ") <span class='glyphicon glyphicon-option-vertical'></span></h4>");
                 $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='addPin(\"" + cm.comment[i].commentID + "\")'>PIN</a></li><li><a onClick='rmPin(\"" + cm.comment[i].commentID + "\")'>UNPIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i].commentID + "\")'>REMOVE</a></li></ul>");
                 $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
             } else {
                 $('#commentList').append("<div class='dropdown'></div>");
                 $('.dropdown:last-child').append("<h4 class='dropdown-toggle' data-toggle='dropdown'>" +
                     tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day +
-                    ") <span class='glyphicon glyphicon-collapse-down'></span></h4>");
+                    ") <span class='glyphicon glyphicon-option-vertical'></span></h4>");
                 $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='addPin(\"" + cm.comment[i].commentID + "\")'>PIN</a></li><li><a onClick='rmPin(\"" + cm.comment[i].commentID + "\")'>UNPIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i].commentID + "\")'>REMOVE</a></li></ul>");
                 $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
             }
