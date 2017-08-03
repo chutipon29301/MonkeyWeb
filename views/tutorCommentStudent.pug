@@ -28,6 +28,11 @@ block body
         hr
         h2(style="margin-bottom:30px") Recently comment
         #commentList
-        ul.pager
-            li.previous: a(onClick="commPosition(0)") Previous
+        ul.pager(style='margin:0')
+            //- li.previous: a First
+            li.previous: a(onClick="commPosition(0)"): span.glyphicon.glyphicon-menu-left Previous
+            //- li.next: a Last
             li.next: a(onClick="commPosition(1)") Next
+                span.glyphicon.glyphicon-menu-right
+    div.text-center(style='margin:0')
+        ul.pagination(style='margin:0')
