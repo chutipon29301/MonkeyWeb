@@ -34,7 +34,7 @@ app.set("view engine","pug");
 //     res.redirect("https://"+req.hostname+req.url);
 // })).listen(80);
 // Uncomment code above and comment code below to automatically redirect to https
-app.listen(80);
+app.listen(8080);
 
 console.log(chalk.black.bgBlack("Black"));
 console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
@@ -51,6 +51,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     }
 
     var configDB=db.collection("config");
+    var studentAttendanceModifierDB=db.collection("studentAttendanceModifier");
     var studentCommentDB=db.collection("studentComment");
     var userDB=db.collection("user");
 
@@ -66,6 +67,9 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
     studentCommentDB.createIndex({timestamp:-1});
     studentCommentDB.createIndex({priority:-1,timestamp:-1});
+    studentAttendanceModifierDB.dropIndexes();
+    studentAttendanceModifierDB.createIndex({day:1,timestamp:1});
+    studentAttendanceModifierDB.createIndex({studentID:1,day:1});
     // setTimeout(function(){
     //     studentCommentDB.indexes(function(err,result){
     //         console.log("==== indexes");

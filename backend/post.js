@@ -11,6 +11,7 @@ module.exports=function(app,db){
     var fullHybridDB=db.collection("fullHybrid");
     // var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
+    var studentAttendanceModifierDB=db.collection("studentAttendanceModifier");
     var studentCommentDB=db.collection("studentComment");
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
@@ -1188,6 +1189,7 @@ module.exports=function(app,db){
     //OK {start,limit} return {[comment]->_id,studentID,tutorID,message,timestamp,priority,hasAttachment}
     post("/post/listStudentCommentByIndex",function(req,res){
         var start=parseInt(req.body.start);
+        if(start<0)start=0;
         var limit=parseInt(req.body.limit);
         var output=[];
         studentCommentDB.find().sort({priority:-1,timestamp:-1}).skip(start).limit(limit).toArray(function(err,result){
@@ -1197,6 +1199,178 @@ module.exports=function(app,db){
                 Object.assign(output[i],result[i]);
             }
             res.send({comment:output});
+        });
+    });
+
+    // Student Attendance
+    //OK {studentID,day,reason,sender} return {}
+    post("/post/addStudentAbsenceModifier",function(req,res){
+        var modifierID=new ObjectID().toString();
+        var studentID=parseInt(req.body.studentID);
+        var day=parseInt(req.body.day);
+        var reason=req.body.reason;
+        var sender=req.body.sender;
+        findUser(res,studentID,{position:"student"},function(){
+            studentAttendanceModifierDB.insertOne({
+                _id:modifierID,studentID:studentID,
+                day:day,type:"absence",reason:reason,subjectToAdd:"",
+                timestamp:moment().valueOf(),sender:sender
+            },function(){
+                res.send({});
+            });
+        });
+    });
+    //OK {studentID,day,subjectToAdd,sender} return {}
+    post("/post/addStudentPresenceModifier",function(req,res){
+        var modifierID=new ObjectID().toString();
+        var studentID=parseInt(req.body.studentID);
+        var day=parseInt(req.body.day);
+        var subjectToAdd=req.body.subjectToAdd;
+        var sender=req.body.sender;
+        findUser(res,studentID,{position:"student"},function(){
+            studentAttendanceModifierDB.insertOne({
+                _id:modifierID,studentID:studentID,
+                day:day,type:"presence",subjectToAdd:subjectToAdd,reason:"",
+                timestamp:moment().valueOf(),sender:sender
+            },function(){
+                res.send({});
+            });
+        });
+    });
+    //OK {modifierID} return {}
+    post("/post/removeStudentAttendanceModifier",function(req,res){
+        var modifierID=req.body.modifierID;
+        studentAttendanceModifierDB.deleteOne({_id:modifierID},function(){
+            res.send({});
+        });
+    });
+    //OK {day} return {[absence][presence]->modifierID,studentID,reason|subjectToAdd,timestamp,sender,subject(absence)}
+    post("/post/listStudentAttendanceModifierByDay",function(req,res){
+        var day=parseInt(req.body.day);
+        var absence=[],presence=[];
+        var momentDay=moment(day);
+        // TODO change 0/7 var generalizedDay=moment(0).day(momentDay.day()?momentDay.day():7).hour(momentDay.hour()).valueOf();
+        var generalizedDay=[
+            moment(0).day(momentDay.day()?momentDay.day():7).hour(momentDay.hour()).valueOf(),
+            moment(0).day(momentDay.day()).hour(momentDay.hour()).valueOf()
+        ];
+        studentAttendanceModifierDB.find({day:day}).sort({timestamp:1}).toArray(function(err,result){
+            for(var i=0;i<result.length;i++){
+                if(result[i].type=="absence"){
+                    absence.push({
+                        modifierID:result[i]._id,studentID:result[i].studentID,
+                        reason:result[i].reason,timestamp:result[i].timestamp,
+                        sender:result[i].sender
+                    });
+                }
+                else if(result[i].type=="presence"){
+                    presence.push({
+                        modifierID:result[i]._id,studentID:result[i].studentID,
+                        subjectToAdd:result[i].subjectToAdd,
+                        timestamp:result[i].timestamp,sender:result[i].sender
+                    });
+                }
+            }
+            callbackLoop(absence.length,function(i,continueLoop){
+                fullHybridDB.findOne({
+                    // TODO day:generalizedDay,"student.studentID":absence[i].studentID
+                    day:{$in:generalizedDay},"student.studentID":absence[i].studentID
+                },function(err,result){
+                    if(result){
+                        var index=result.student.findIndex(function(x){
+                            return x.studentID==absence[i].studentID;
+                        });
+                        absence[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                        continueLoop();
+                    }
+                    else{
+                        getCourseDB(function(courseDB){
+                            courseDB.findOne({
+                                // TODO day:generalizedDay,student:absence[i].studentID
+                                day:{$in:generalizedDay},student:absence[i].studentID
+                            },function(err,result){
+                                if(result){
+                                    absence[i].subject=result._id;
+                                    continueLoop();
+                                }
+                                else{
+                                    absence[i].subject="No timetable";
+                                    console.log(chalk.black.bgRed("[ERROR] No timetable"));
+                                    continueLoop();
+                                }
+                            });
+                        });
+                    }
+                });
+            },function(){
+                res.send({absence:absence,presence:presence});
+            });
+        });
+    });
+    //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subjectToAdd,timestamp,sender,subject}
+    post("/post/listStudentAttendanceModifierByStudent",function(req,res){
+        var studentID=parseInt(req.body.studentID);
+        var start=parseInt(req.body.start);
+        var output=[];
+        findUser(res,studentID,{position:"student"},function(){
+            studentAttendanceModifierDB.find({
+                studentID:studentID,day:{$gte:start}
+            }).sort({day:1}).toArray(function(err,result){
+                for(var i=0;i<result.length;i++){
+                    output.push({
+                        modifierID:result[i]._id,
+                        day:result[i].day,
+                        type:result[i].type,
+                        reason:result[i].reason,
+                        subjectToAdd:result[i].subjectToAdd,
+                        timestamp:result[i].timestamp,
+                        sender:result[i].sender,
+                    });
+                }
+                callbackLoop(result.length,function(i,continueLoop){
+                    if(result[i].type=="absence"){
+                        var momentDay=moment(result[i].day);
+                        // TODO var generalizedDay=moment(0).day(momentDay.day()?momentDay.day():7).hour(momentDay.hour()).valueOf();
+                        var generalizedDay=[
+                            moment(0).day(momentDay.day()?momentDay.day():7).hour(momentDay.hour()).valueOf(),
+                            moment(0).day(momentDay.day()).hour(momentDay.hour()).valueOf()
+                        ];
+                        fullHybridDB.findOne({
+                            // day:generalizedDay,"student.studentID":studentID
+                            day:{$in:generalizedDay},"student.studentID":studentID
+                        },function(err,result){
+                            if(result){
+                                var index=result.student.findIndex(function(x){
+                                    return x.studentID==studentID;
+                                });
+                                output[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                                continueLoop();
+                            }
+                            else{
+                                getCourseDB(function(courseDB){
+                                    courseDB.findOne({
+                                        // day:generalizedDay,student:studentID
+                                        day:{$in:generalizedDay},student:studentID
+                                    },function(err,result){
+                                        if(result){
+                                            output[i].subject=result._id;
+                                            continueLoop();
+                                        }
+                                        else{
+                                            output[i].subject="No timetable";
+                                            console.log(chalk.black.bgRed("[ERROR] No timetable"));
+                                            continueLoop();
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    }
+                    else continueLoop();
+                },function(){
+                    res.send({modifier:output});
+                });
+            });
         });
     });
 
@@ -1268,6 +1442,11 @@ module.exports=function(app,db){
     });
     app.post("/debug/listStudentComment",function(req,res){
         studentCommentDB.find().toArray(function(err,result){
+            res.send(result);
+        });
+    });
+    app.post("/debug/listStudentAttendanceModifier",function(req,res){
+        studentAttendanceModifierDB.find().toArray(function(err,result){
             res.send(result);
         });
     });

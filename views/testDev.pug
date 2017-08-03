@@ -303,6 +303,34 @@ block body
                         +form-group("start"): +input-number("start")(required)
                         +form-group("limit"): +input-number("limit")(required)
                         +submit("post/listStudentCommentByIndex")
+            +panel-list-group("Student Attendance")
+                +list-group-item
+                    +form-horizontal-title("post/addStudentAbsenceModifier")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("day"): +input-number("day")(required)
+                        +form-group("reason"): +input-text("reason")(required)
+                        +form-group("sender"): +input-text("sender")(required)
+                        +submit("post/addStudentAbsenceModifier")
+                +list-group-item
+                    +form-horizontal-title("post/addStudentPresenceModifier")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("day"): +input-number("day")(required)
+                        +form-group("subjectToAdd"): +input-text("subjectToAdd")(required)
+                        +form-group("sender"): +input-text("sender")(required)
+                        +submit("post/addStudentPresenceModifier")
+                +list-group-item
+                    +form-horizontal-title("post/removeStudentAttendanceModifier")
+                        +form-group("modifierID"): +input-text("modifierID")(required)
+                        +submit("post/removeStudentAttendanceModifier")
+                +list-group-item
+                    +form-horizontal-title("post/listStudentAttendanceModifierByDay")
+                        +form-group("day"): +input-number("day")(required)
+                        +submit("post/listStudentAttendanceModifierByDay")
+                +list-group-item
+                    +form-horizontal-title("post/listStudentAttendanceModifierByStudent")
+                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("start"): +input-number("start")(required)
+                        +submit("post/listStudentAttendanceModifierByStudent")
             +panel-list-group("Configuration")
                 +list-group-item
                     +form-horizontal-title("post/getConfig")
