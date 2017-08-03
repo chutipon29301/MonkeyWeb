@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    // for add student to search box
     var student = [];
     $.post("post/allStudent").then((data) => {
         for (let i = 0; i < data.student.length; i++) {
@@ -10,16 +11,7 @@ $(document).ready(function () {
             source: student,
         });
     });
-    let cookie = getCookieDict();
-    let tutor = cookie.monkeyWebUser;
-    let pos;
-    writeCookie('commIndex', 0);
-    cookie = getCookieDict();
-    $.post("post/position", { userID: tutor }).then((data) => {
-        pos = data.position;
-        writeCookie('pos', pos);
-        showComment(pos, parseInt(cookie.commIndex));
-    })
+    // for post comment
     $("#postButton").click(function () {
         let comm = $('#search-box .typeahead').typeahead("getActive");
         let x = $('#comment').val();
@@ -35,24 +27,50 @@ $(document).ready(function () {
             } else alert("Please Select Correct Name")
         } else alert("Please Input Student Name");
     });
+    // for show comment when load page
+    let cookie = getCookieDict();
+    let tutor = cookie.monkeyWebUser;
+    let pos;
+    writeCookie('commIndex', 0);
+    cookie = getCookieDict();
+    genPagination(1);
+    $.post("post/position", { userID: tutor }).then((data) => {
+        pos = data.position;
+        writeCookie('pos', pos);
+        showComment(pos, parseInt(cookie.commIndex));
+    })
 });
-
+// for show comment
 function showComment(pos, commIndex) {
-    $.post('post/listStudentCommentByIndex', { start: commIndex, limit: 10 }).then((cm) => {
+    writeCookie('commIndex', commIndex);
+    $.post('post/listStudentCommentByIndex', { start: commIndex, limit: 20 }).then((cm) => {
         $('#commentList').empty();
-        (pos !== "tutor") ? getNameAdmin(cm, 0) : getName(cm, 0);
-        if (cm.comment.length < 10) {
+        // hide next button on last page
+        if (cm.comment.length < 20) {
             $(".next").hide();
+        } else if (cm.comment.length === 20) {
+            $.post('post/listStudentCommentByIndex', { start: commIndex + 20, limit: 1 }).then((ckcm) => {
+                (ckcm.comment.length === 0) ? $(".next").hide() : $(".next").show();
+            })
         } else $(".next").show();
+        // hide previous button on 1st page
         if (parseInt(commIndex) === 0) {
             $(".previous").hide();
         } else $(".previous").show();
+        // chk error on pagination overflow
+        genPagination(commIndex / 20 + 1);
+        if (cm.comment.length === 0) {
+            showComment(pos, commIndex - 20);
+        }
+        (pos !== "tutor") ? getNameAdmin(cm, 0) : getName(cm, 0);
     })
 }
 // tutor showComment method
 function getName(cm, i) {
     log("======recur======:" + i);
+    // get tutor name
     $.post('post/name', { userID: cm.comment[i].tutorID }).then((tname) => {
+        // get student name
         $.post('post/name', { userID: cm.comment[i].studentID }).then((sname) => {
             let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
             if (cm.comment[i].priority > 0) {
@@ -71,7 +89,9 @@ function getName(cm, i) {
 // admin showComment method
 function getNameAdmin(cm, i) {
     log("======recur======:" + i);
+    //get tutor name
     $.post('post/name', { userID: cm.comment[i].tutorID }).then((tname) => {
+        // get student name
         $.post('post/name', { userID: cm.comment[i].studentID }).then((sname) => {
             let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
             if (cm.comment[i].priority > 0) {
@@ -93,19 +113,21 @@ function getNameAdmin(cm, i) {
         })
     })
 }
-function commPosition(n) {
+// for next and previous button
+function commPosition(type) {
     let cookie = getCookieDict();
     let commIndex;
-    if (n > 0) {
-        commIndex = parseInt(cookie.commIndex) + 10;
-        writeCookie('commIndex', commIndex);
+    if (type > 0) {
+        commIndex = parseInt(cookie.commIndex) + 20;
+        // writeCookie('commIndex', commIndex);
     } else {
-        commIndex = parseInt(cookie.commIndex) - 10;
-        writeCookie('commIndex', commIndex);
+        commIndex = parseInt(cookie.commIndex) - 20;
+        // writeCookie('commIndex', commIndex);
     }
     let pos = cookie.pos;
     showComment(pos, commIndex);
 }
+// for pin comment
 function addPin(commID) {
     let cookie = getCookieDict();
     let pos = cookie.pos;
@@ -113,6 +135,7 @@ function addPin(commID) {
         showComment(pos, parseInt(cookie.commIndex));
     })
 }
+// for unpin comment
 function rmPin(commID) {
     let cookie = getCookieDict();
     let pos = cookie.pos;
@@ -120,10 +143,27 @@ function rmPin(commID) {
         showComment(pos, parseInt(cookie.commIndex));
     })
 }
+// for remove comment
 function rmComm(commID) {
     let cookie = getCookieDict();
     let pos = cookie.pos;
     $.post('post/removeStudentComment', { commentID: commID }).then((data) => {
         showComment(pos, parseInt(cookie.commIndex));
     })
+}
+// for gen pagination
+function genPagination(start) {
+    $(".pagination").empty();
+    let cookie = getCookieDict();
+    let pos = cookie.pos;
+    if (start <= 3) {
+        for (let i = 1; i < 6; i++) {
+            $(".pagination").append("<li id='page" + i + "'><a onClick=\"showComment('" + pos + "'," + ((i - 1) * 20) + ")\">" + i + "</a></li>");
+        }
+    } else {
+        for (let i = start - 2; i < start + 3; i++) {
+            $(".pagination").append("<li id='page" + i + "'><a onClick=\"showComment('" + pos + "'," + ((i - 1) * 20) + ")\">" + i + "</a></li>");
+        }
+    }
+    $("#page" + start).addClass("active");
 }
