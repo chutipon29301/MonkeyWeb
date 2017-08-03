@@ -4,6 +4,11 @@ block head
     link(href="css/component.css", rel="stylesheet")
     script(src="js/admin.min.js")
     script(src="js/JsBarcode.code128.min.js" type="text/javascript")
+    style.
+        #comment p{
+            margin-bottom:20px;
+            white-space:pre-line;
+        }
 block body
     .container
         .col-md-6
@@ -130,7 +135,7 @@ block body
                 $("#editModal").modal();
             }
             $(document).on('click','.glyphicon-trash',function(){
-                $('#commentRm #confirm').attr("timestamp",$(this).attr("id"));
+                $('#commentRm #confirm').attr("commentID",$(this).attr("id"));
                 $('#commentRm').modal();
             });
         //- Modal for editProfile
