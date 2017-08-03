@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    // fix touch on iphone
+    $('body').on('touchstart.dropdown', '.dropdown-menu', function (e) {
+        e.stopPropagation();
+    });
     // for add student to search box
     var student = [];
     $.post("post/allStudent").then((data) => {
