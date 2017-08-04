@@ -10,11 +10,16 @@ var MongoClient=require('mongodb').MongoClient;
 var path=require("path");
 
 var app=express();
+// Change app.locals.isServer to true to run server's script
+app.locals.isServer=false;
+// Accept object notation in POST method
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
-app.use(multer({dest:"/tmp/"}).any());//Temp folder for uploading
-app.use(express.static(path.join(__dirname,"../public")));// Serve static files
-app.use(express.static(path.join(__dirname,"../../MonkeyWebData")));// Serve static files
+//Temp folder for uploading
+app.use(multer({dest:"/tmp/"}).any());
+// Serve static files
+app.use(express.static(path.join(__dirname,"../public")));
+app.use(express.static(path.join(__dirname,"../../MonkeyWebData")));
 app.use(function(req,res,next){
     // Allow access from other domain
     res.header("Access-Control-Allow-Origin","*");
@@ -25,15 +30,27 @@ app.use(function(req,res,next){
     res.header("Expires","0");
     next();
 });
+// Allow render from pug files
 app.set("views",path.join(__dirname,"../views"));
 app.set("view engine","pug");
 
-// var credentials = {key:fs.readFileSync('private.key'),cert:fs.readFileSync('certificate.crt')};
-// require("https").createServer(credentials,app).listen(443);
-// require("http").createServer(express().use(function(req,res){
-//     res.redirect("https://"+req.hostname+req.url);
-// })).listen(80);
-// Uncomment code above and comment code below to automatically redirect to https
+if(app.locals.isServer){
+    // Enable HTTPS
+    var credentials={
+        key:fs.readFileSync(path.join(__dirname,"../../MonkeyWebConfig/private.key")),
+        cert:fs.readFileSync(path.join(__dirname,"../../MonkeyWebConfig/certificate.crt"))
+    };
+    require("https").createServer(credentials,app).listen(443);
+    // Automatically redirect to https
+    require("http").createServer(express().use(function(req,res){
+        res.redirect("https://"+req.hostname+req.url);
+    })).listen(80);
+    app.locals.recipientToken=JSON.parse(
+        fs.readFileSync(path.join(
+            __dirname,"../../MonkeyWebConfig/recipientToken.json"
+        ))
+    );
+}
 app.listen(8080);
 
 console.log(chalk.black.bgBlack("Black"));
