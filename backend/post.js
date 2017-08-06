@@ -5,6 +5,7 @@ module.exports=function(app,db){
     var fs=require("fs-extra");
     var moment=require("moment");
     var ObjectID=require("mongodb").ObjectID;
+    var request=require("request");
 
     var configDB=db.collection("config");
     var courseSuggestionDB=db.collection("courseSuggestion");
@@ -161,6 +162,19 @@ module.exports=function(app,db){
             });
         }
         finish();
+    };
+    var lineNotify=function(recipient,message,callback){
+        if(app.locals.isServer){
+            if(app.locals.recipientToken[recipient]===undefined){
+                callback({err:"Recipient not found."});
+            }
+            else{
+                request.post("https://notify-api.line.me/api/notify",{
+                    auth:{bearer:app.locals.recipientToken[recipient]},
+                    form:{message:message}
+                },callback);
+            }
+        }
     };
 
     // All post will return {err} if error occurs
@@ -1449,5 +1463,14 @@ module.exports=function(app,db){
         studentAttendanceModifierDB.find().toArray(function(err,result){
             res.send(result);
         });
+    });
+    app.post("/debug/line",function(req,res){
+        if(app.locals.isServer){
+            lineNotify(req.body.recipient,req.body.message,function(err,x,body){
+                if(err)res.send(err);
+                else res.send(body);
+            });
+        }
+        else res.send({err:"Server mode disabled."});
     });
 }
