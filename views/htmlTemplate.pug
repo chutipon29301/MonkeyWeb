@@ -38,7 +38,7 @@ html(lang="en")
                     #navbar.collapse.navbar-collapse
                         ul.nav.navbar-nav
                             if(webUser.position=="student")
-                                li: a(href="/") ลงทะเบียน
+                                li: a(href="#" onClick="loadRegistrationPage()") ลงทะเบียน
                                 //- li.dropdown
                                 //-     a.dropdown-toggle(data-toggle="dropdown" href="#") Course
                                 //-         span.caret
@@ -54,7 +54,7 @@ html(lang="en")
                             else
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminAllStudent") All Student
-                                li: a(href="/tutorCommentStudent") Comment Students
+                                li: a(href="/tutorCommentStudent") Comments
                                 if(webUser.position=="tutor")
                                     li: a(href="/adminAllCourse") My Course
                                 else
@@ -63,6 +63,7 @@ html(lang="en")
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminCourseMaterial") CR Tracking
                                     li: a(href="/adminCourseRoom") Room
+                                    li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
                             li: a(href="studentDocument") เอกสาร
                         ul.nav.navbar-nav.navbar-right
                             if(webUser.position=="student")
