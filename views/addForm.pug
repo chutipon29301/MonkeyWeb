@@ -1,10 +1,10 @@
 extends htmlTemplate
 block head
-    -const pageTitle = "Absent Form"
+    -const pageTitle = "Add Form"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/bootstrap-datetimepicker.min.js")
     script(src="js/student.min.js")
-    script(src="js/studentAbsentForm.min.js")
+    script(src="js/studentAddForm.min.js")
     style.
         .btn1,.btn2,.btn3,.btn4{
             margin-bottom:3vh;
@@ -12,42 +12,44 @@ block head
 block body
     .jumbotron
         .container
-            h2 แบบฟอร์มลา
-            p แบบฟอร์มสำหรับการลาเรียน Monkey
+            h2 แบบฟอร์มเพิ่ม
+            p แบบฟอร์มสำหรับการเพิ่มเรียน FHB
     .container
         h4#name
             span.glyphicon.glyphicon-user
         hr
         .form-group
-            label วันที่ลา:
+            label วันที่เพิ่ม:
             .input-group.date.datePicker#datetimepicker1
                 input.form-control(type='text')
                 span.input-group-addon
                     i.glyphicon.glyphicon-calendar
             br
-        label วิชาที่ลา:
+        .form-group
+            label วิชา:
+            select.form-control#subj
+                option(value='FHBM') FHB:M
+                option(value='FHBP') FHB:P
+        label เวลาที่เพิ่ม:
         .row
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn1.disabled(type='button') -
+                button.btn.btn-default.col-xs-12.btn1(type='button') 8.00-10.00
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn2.disabled(type='button') -
+                button.btn.btn-default.col-xs-12.btn2(type='button') 10.00-12.00
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn3.disabled(type='button') -
+                button.btn.btn-default.col-xs-12.btn3(type='button') 13.00-15.00
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn4.disabled(type='button') -
+                button.btn.btn-default.col-xs-12.btn4(type='button') 15.00-17.00
         .form-group
             label ผู้แจ้ง:
             input.form-control#contact(type="text")
-        .form-group
-            label เหตุผล:
-            textarea.form-control#reason(rows='3')
-        button.btn.btn-default.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9#submit(type="button") ยืนยัน
+        button.btn.btn-info.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9#submit(type="button") ยืนยัน
         .modal.fade#confirmModal(role="dialog")
                 .modal-dialog
                     .modal-content
                         .modal-header
-                            h3 ลา
+                            h3 เพิ่ม
                         .modal-body
                         .modal-footer
-                            button#confirm.btn.btn-success(type="button" onClick="sendData()") ใช่
+                            button#confirm.btn.btn-success(type="button" onClick="sendData(0)") ใช่
                             button.btn.btn-danger(type="button" data-dismiss="modal") ไม่ใช่
