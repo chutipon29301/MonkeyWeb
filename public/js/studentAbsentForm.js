@@ -95,10 +95,10 @@ function updateBtn(table, timeLabel, timeData) {
 }
 function sendData() {
     let data = [];
+    let cookie = getCookieDict();
     for (let i = 0; i < 4; i++) {
         let btn = $(".btn" + (i + 1));
         if (btn.attr('class').indexOf('btn-primary') >= 0) {
-            let cookie = getCookieDict();
             let daytime = btn.attr('id');
             data.push(daytime);
         }
