@@ -307,7 +307,7 @@ block body
                 +list-group-item
                     +form-horizontal-title("post/addStudentAbsenceModifier")
                         +form-group("studentID"): +input-number("studentID")(required)
-                        +form-group("day"): +input-number("day")(required)
+                        +form-group("day"): +input-number("day").input-array(required)
                         +form-group("reason"): +input-text("reason")(required)
                         +form-group("sender"): +input-text("sender")(required)
                         +submit("post/addStudentAbsenceModifier")
