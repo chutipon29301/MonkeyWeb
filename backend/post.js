@@ -164,16 +164,22 @@ module.exports=function(app,db){
         finish();
     };
     var lineNotify=function(recipient,message,callback){
-        if(app.locals.isServer){
-            if(app.locals.recipientToken[recipient]===undefined){
-                callback({err:"Recipient not found."});
-            }
-            else{
-                request.post("https://notify-api.line.me/api/notify",{
-                    auth:{bearer:app.locals.recipientToken[recipient]},
-                    form:{message:message}
-                },callback);
-            }
+        if(callback===undefined)callback=function(){};
+        if(app.locals.recipientToken[recipient]===undefined){
+            callback({err:"Recipient not found."});
+        }
+        else{
+            request.post("https://notify-api.line.me/api/notify",{
+                auth:{bearer:app.locals.recipientToken[recipient]},
+                form:{message:message}
+            },function(err,res,body){
+                if(body.status==500){
+                    console.log(chalk.black.bgRed("LINE Notify failed"));
+                    console.log(chalk.black.bgRed(body.message));
+                    callback(err,res,body);
+                }
+                else callback(err,res,body);
+            });
         }
     };
 
@@ -1219,17 +1225,36 @@ module.exports=function(app,db){
     // Student Attendance
     //OK {studentID,day,reason,sender} return {}
     post("/post/addStudentAbsenceModifier",function(req,res){
-        var modifierID=new ObjectID().toString();
         var studentID=parseInt(req.body.studentID);
-        var day=parseInt(req.body.day);
+        var day=req.body.day;
+        for(var i=0;i<day.length;i++){
+            day[i]=parseInt(day[i]);
+        }
         var reason=req.body.reason;
         var sender=req.body.sender;
-        findUser(res,studentID,{position:"student"},function(){
-            studentAttendanceModifierDB.insertOne({
-                _id:modifierID,studentID:studentID,
-                day:day,type:"absence",reason:reason,subjectToAdd:"",
-                timestamp:moment().valueOf(),sender:sender
+        var timestamp=moment().valueOf();
+        findUser(res,studentID,{position:"student"},function(result){
+            callbackLoop(day.length,function(i,continueLoop){
+                studentAttendanceModifierDB.insertOne({
+                    _id:new ObjectID().toString(),studentID:studentID,
+                    day:day[i],type:"absence",reason:reason,subjectToAdd:"",
+                    timestamp:timestamp,sender:sender
+                },function(){
+                    continueLoop();
+                });
             },function(){
+                // var message="แจ้งเตือนการลาคอร์ส\n\n"+
+                //     "ชื่อ : "+result.firstname+" "+result.lastname+" ("+result.nickname+")\n"+
+                //     "วันที่ลา : "+moment(day[0]).locale("th").format("วันddddที่ D MMMM พ.ศ.")+(moment(day[0]).year()+543)+"\n"+
+                //     "คอร์สที่ลามีดังนี้ :\n";
+                // for(var i=0;i<day.length;i++){
+                //     message+="    "+moment(day[i]).format("ddd H-").toUpperCase()+moment(day[i]).add(2,"h").hour()+
+                //         // " "+courseName+"\n";
+                //         "\n";
+                // }
+                // message+="เนื่องจาก : "+reason+"\n";
+                // message+="ผู้แจ้งลา : "+sender+"\n";
+                // lineNotify("Chiang",message);
                 res.send({});
             });
         });
@@ -1430,6 +1455,11 @@ module.exports=function(app,db){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
+    post("/post/lineNotify",function(req,res){
+        lineNotify(req.body.recipient,req.body.message,function(err,x,body){
+            res.send({err:err,body:body});
+        });
+    });
 
     // Debug
     app.post("/debug/listUser",function(req,res){
@@ -1463,14 +1493,5 @@ module.exports=function(app,db){
         studentAttendanceModifierDB.find().toArray(function(err,result){
             res.send(result);
         });
-    });
-    app.post("/debug/line",function(req,res){
-        if(app.locals.isServer){
-            lineNotify(req.body.recipient,req.body.message,function(err,x,body){
-                if(err)res.send(err);
-                else res.send(body);
-            });
-        }
-        else res.send({err:"Server mode disabled."});
     });
 }

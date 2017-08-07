@@ -5,13 +5,11 @@ var chalk=require("chalk");
 var cookieParser=require('cookie-parser');
 var express=require("express");
 var fs=require("fs-extra");
+var MongoClient=require("mongodb").MongoClient;
 var multer=require("multer");
-var MongoClient=require('mongodb').MongoClient;
 var path=require("path");
 
 var app=express();
-// Change app.locals.isServer to true to run server's script
-app.locals.isServer=false;
 // Accept object notation in POST method
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
@@ -34,24 +32,32 @@ app.use(function(req,res,next){
 app.set("views",path.join(__dirname,"../views"));
 app.set("view engine","pug");
 
-if(app.locals.isServer){
-    // Enable HTTPS
+// Enable HTTPS
+var keyPath=path.join(__dirname,"../../MonkeyWebConfig/private.key");
+var certPath=path.join(__dirname,"../../MonkeyWebConfig/certificate.crt");
+if(fs.existsSync(keyPath)&&fs.existsSync(certPath)){
     var credentials={
-        key:fs.readFileSync(path.join(__dirname,"../../MonkeyWebConfig/private.key")),
-        cert:fs.readFileSync(path.join(__dirname,"../../MonkeyWebConfig/certificate.crt"))
+        key:fs.readFileSync(keyPath),
+        cert:fs.readFileSync(certPath)
     };
     require("https").createServer(credentials,app).listen(443);
     // Automatically redirect to https
     require("http").createServer(express().use(function(req,res){
         res.redirect("https://"+req.hostname+req.url);
     })).listen(80);
+}
+// Listen to port 8080
+app.listen(8080);
+// LINE Notify tokens
+var recipientTokenPath=path.join(
+    __dirname,"../../MonkeyWebConfig/recipientToken.json"
+);
+if(fs.existsSync(recipientTokenPath)){
     app.locals.recipientToken=JSON.parse(
-        fs.readFileSync(path.join(
-            __dirname,"../../MonkeyWebConfig/recipientToken.json"
-        ))
+        fs.readFileSync(recipientTokenPath)
     );
 }
-app.listen(8080);
+else app.locals.recipientToken={};
 
 console.log(chalk.black.bgBlack("Black"));
 console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
