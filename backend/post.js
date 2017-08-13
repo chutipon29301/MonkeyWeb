@@ -11,7 +11,7 @@ module.exports=function(app,db){
     var courseSuggestionDB=db.collection("courseSuggestion");
     var fullHybridDB=db.collection("fullHybrid");
     // var hybridSeatDB=db.collection("hybridSeat");
-    // var hybridSheetDB=db.collection("hybridSheet");
+    var hybridSheetDB=db.collection("hybridSheet");
     var studentAttendanceModifierDB=db.collection("studentAttendanceModifier");
     var studentCommentDB=db.collection("studentComment");
     var randomPasswordDB=db.collection("randomPassword");
@@ -1388,6 +1388,111 @@ module.exports=function(app,db){
         });
     });
 
+    /**
+     * Post method for import sheet db in format of csv
+     */
+    post("/post/importHybirdSheetFromCSVString", function (req, res) {
+        var csvString = req.body.text;
+        if (csvString === undefined) return res.status(400).send("Bad Request");
+        var sheetComponent = [];
+        var dbObject = [];
+        try {
+            csvString.split("\n").forEach(element => {
+                sheetComponent.push(element.split(","));
+            });
+        } catch (error) {
+            return res.status(400).send("Bad Request");
+        }
+
+        try {
+            for (let i = 0; i < sheetComponent.length; i++) {
+                var comp = sheetComponent[i];
+                dbObject.push({
+                    _id: comp[0] + comp[1] + "-" + comp[2] + comp[3] + comp[4] + comp[5] + comp[6] + "(REV" + comp[7] + "_" + comp[8] + ")",
+                    subject: comp[0],
+                    level: comp[1],
+                    set: comp[2],
+                    subset: comp[3],
+                    setnumber: comp[4],
+                    subscript: comp[5],
+                    subscriptNumber: comp[6],
+                    mainRev: comp[7],
+                    subRev: comp[8],
+                    tutor: [],
+                    description: "",
+                    sheetList: splitSheetComponent(comp[9]),
+                    import: moment().valueOf(),
+                    lastEdit: moment().valueOf()
+                });
+            }
+        } catch (error) {
+            return res.status(400).send("Bad Request");
+        }
+
+        try {
+            hybridSheetDB.insertMany(dbObject, function (err, r) {
+                if (err !== null) {
+                    switch (err.code) {
+                        case 11000:
+                            return res.status(501).send(err.message);
+                        default:
+                            return res.status(500).send("Internal Server Error");
+                    }
+                }
+                res.status(200).send("OK");
+            });
+        } catch (error) {
+            res.send(500).send("Internal Server Error");
+        }
+    });
+
+    /**
+     * Post method getting path name where file is existed
+     * req.body = {
+     *      fullname: "sheet full name", eg. "MJ-BB01"
+     *      checkExist: boolean (optional) defualt is true
+     * }
+     * res.body = {
+     *      "skillKeyPath" : "",
+     *      "hwKeyPath" : "",
+     *      "testKeyPath" : "",
+     *      "keyStudentPath" : ""
+     * }
+     */
+    post("/post/decodeWindowPath", function (req, res) {
+        if (req.body.fullname === undefined) return res.status(400).send("Bad Request");
+        var courseName = decodeCourseName(req.body.fullname);
+
+        // hybridSheetDB.find({
+        //     "subject" : "M"
+        // }).toArray(function(err, result){
+        //     // if(err) throw err;
+        //     console.log(result);
+        // });
+
+        hybridSheetDB.findOne({
+            "_id": req.body.fullname
+        }, function (err, result) {
+            if (err) return res.status(500).send("Internal server error");
+            console.log(result);
+            console.log(req.body.checkExist);
+            console.log(req.body.checkExist === undefined);
+            console.log(result === null);
+            if (result === null && (req.body.checkExist === false || req.body.checkExist === undefined)) {
+                decodePathResponse(res, courseName);
+            } else {
+                decodePathResponse(res, courseName);
+            }
+        });
+    });
+
+    post("/post/availableSheet", function (req, res) {
+        hybridSheetDB.findOne({
+            "_id": req.body.fullname
+        })
+        res.status(200).send("OK");
+    });
+
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
     post("/post/getConfig",function(req,res){
@@ -1473,4 +1578,189 @@ module.exports=function(app,db){
         }
         else res.send({err:"Server mode disabled."});
     });
+}
+
+/**
+ * courseName format: subject + level + "-" + set + subset + setNo + {subscript + subscriptNo} + "(REV" + mainRev + "_" + subRev
+ * e.g. MK-AB11r1(REV1_0)
+ * @param {String} courseName 
+ */
+function decodeCourseName(courseName) {
+    var courseNameComponent = {};
+    var subjectFullName = {
+        "M": "MATH",
+        "P": "PHYSICS",
+        "C": "CHEMISTRY"
+    }
+    courseNameComponent.fatalError = null;
+
+    var errorLog = (err) => {
+        console.log(err);
+        return courseNameComponent;
+    }
+
+    //locate index of "("
+    var indexOfBracket;
+    try {
+        indexOfBracket = courseName.indexOf("(");
+        if (indexOfBracket === -1) throw new Error(chalk.red("Cannot locate '(' in courseName"));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //locate index of "-"
+    var indexOfHyphen;
+    try {
+        indexOfHyphen = courseName.indexOf("-");
+        if (indexOfHyphen === -1) throw new Error(chalk.red("Cannot locate '-' in courseName"));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //locate index of "_"
+    var indexOfUnderscore;
+    try {
+        indexOfUnderscore = courseName.indexOf("_");
+        if (indexOfUnderscore === -1) throw new Error(chalk.red("Cannot locate '_' in courseName"));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //locate index of first integer
+    var indexOfFirstInt = -1;
+    try {
+        for (let i = 0; i < courseName.length; i++) {
+            if (Number.isInteger(parseInt(courseName.charAt(i)))) {
+                indexOfFirstInt = i;
+                break;
+            }
+        }
+        if (indexOfFirstInt === -1) throw new Error(chalk.red("Cannot locate number in courseName"));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //Get subject from courseName
+    try {
+        courseNameComponent.subject = courseName.charAt(0);
+        if (courseNameComponent.subject === undefined) throw new Error(chalk.red("Cannot get subject form courseName, index out of range"));
+        courseNameComponent.subjectFullName = subjectFullName[courseNameComponent.subject];
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //Get level from courseName
+    try {
+        courseNameComponent.level = courseName.charAt(1);
+        if (courseNameComponent.level === undefined) throw new Error(chalk.red("Cannot get level form courseName, index out of range"));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //Get set from courseName
+    try {
+        courseNameComponent.set = courseName.substring(indexOfHyphen + 1, indexOfFirstInt - 1);
+        if (courseNameComponent.set === undefined) throw new Error(chalk.red("Cannot get set form courseName, index out of range"));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //Get subset from courseName
+    try {
+        courseNameComponent.subset = courseName.charAt(indexOfFirstInt - 1);
+        if (courseNameComponent.subset === undefined) throw new Error(chalk.red("Cannot get subset from courseName, index out of range"));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //Get setNo from courseName
+    try {
+        courseNameComponent.setNo = parseInt(courseName.substring(indexOfFirstInt, indexOfFirstInt + 2));
+        if (courseName.substring(indexOfFirstInt, indexOfFirstInt + 1) === undefined) throw new Error(chalk.red('Cannot get setNo form courseName, index out of range'));
+        if (isNaN(courseNameComponent.setNo)) throw new Error(chalk.red('Invalid setNo, cannot parse setNo into int'));
+        courseNameComponent.setNo = String(courseNameComponent.setNo);
+        if (courseNameComponent.setNo.length === 1) {
+            courseNameComponent.setNo = "0" + courseNameComponent.setNo;
+        }
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //Get subscript from courseName
+    try {
+        courseNameComponent.subscript = courseName.charAt(indexOfFirstInt + 2);
+        if (courseNameComponent.subscript === undefined) throw new Error(chalk.red('Cannot get subscript from courseName, index out of range'));
+    } catch (error) {
+        courseNameComponent.subscript = '';
+    }
+
+    //Get subscriptNo from courseName
+    try {
+        courseNameComponent.subscriptNo = parseInt(courseName.substring(indexOfFirstInt + 3, indexOfFirstInt + 5));
+        if (courseName.substring(indexOfFirstInt + 3, indexOfFirstInt + 5) === undefined) throw new Error(chalk.red('Cannot subscriptNo from courseName, index out od range'));
+        if (isNaN(courseNameComponent.subscriptNo)) throw new Error(chalk.red('Invalid subscriptNo, cannot parse subscriptNo into int'));
+        courseNameComponent.subscriptNo = String(courseNameComponent.subscriptNo);
+        if (courseNameComponent.subscriptNo.length === 1) {
+            courseNameComponent.subscriptNo = "0" + courseNameComponent.subscriptNo;
+        }
+    } catch (error) {
+        courseNameComponent.subscriptNo = '';
+    }
+
+    //Get mainRev from courseName
+    try {
+        courseNameComponent.mainRev = parseInt(courseName.charAt(indexOfBracket + 4));
+        if (courseName.charAt(indexOfBracket + 4) === undefined) throw new Error(chalk.red('Cannot get mainRev form courseName, index out of range'));
+        if (isNaN(courseNameComponent.mainRev)) throw new Error(chalk.red('Invalid mainRev, cannot parse mainRev into int'));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    //Get subRev form courseName
+    try {
+        courseNameComponent.subRev = parseInt(courseName.charAt(indexOfUnderscore + 1));
+        if (courseName.charAt(indexOfUnderscore + 1) === undefined) throw new Error(chalk.red('Cannot get subRev from courseName, index out of range'));
+        if (isNaN(courseNameComponent.subRev)) throw new Error(chalk.red('Invalid subRev, cannot parse subRev into int'));
+    } catch (error) {
+        errorLog(error);
+    }
+
+    return courseNameComponent;
+}
+
+function decodePathResponse(res, courseName) {
+    res.status(200).send({
+        "skillKeyPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + "(REV" + courseName.mainRev + ")"
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + courseName.subscript + courseName.subscriptNo + "SKILLKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf",
+        "hwKeyPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + "(REV" + courseName.mainRev + ")"
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + courseName.subscript + courseName.subscriptNo + "HWKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf",
+        "testKeyPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + "(REV" + courseName.mainRev + ")"
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + courseName.subscript + courseName.subscriptNo + "TESTKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf",
+        "keyStudentPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
+        + courseName.subscript + courseName.subscriptNo + "HOTKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf"
+    });
+}
+
+function splitSheetComponent(bin) {
+    var pos = ["COVER", "VDO", "SKILL", "HW", "FULL", "TEST", "EXERCISE"];
+    var output = [];
+    for(i in pos){
+        if (bin[i] === "1") output.push(pos[i]);
+    }
+    return output;
 }
