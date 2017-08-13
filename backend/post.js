@@ -1447,9 +1447,55 @@ module.exports=function(app,db){
     });
 
     /**
+     * Post method for getting sheet infomation
+     * req.body = {
+     *      fullname: "cheet fullname", eg. "MJ-BB01(REV1_0)"
+     * }
+     */
+    post("/post/sheetInfo", function (req, res) {
+        hybridSheetDB.findOne({
+            "_id": req.body.fullname
+        }, function (err, result) {
+            if (err) return res.status(500).send("Internal Server Error");
+            if (result === null) return res.status(404).send("Not Found");
+            delete result["_id"];
+            res.status(200).send(result)
+        });
+    });
+
+    /**
+     * Post method for editing sheet infomation
+     * req.body = {
+     *      fullname: "cheet fullname", eg. "MJ-BB01(REV1_0)"
+     *      [, field; "value"]
+     * }
+     */
+    post("/post/editSheetInfo", function (req, res) {
+        var validKey = ["tutor", "description"];
+        var newValue = req.body;
+        var myQuery = {
+            "_id": newValue.fullname
+        }
+        delete newValue.fullname;
+
+        for (var key in newValue) {
+            if (validKey.indexOf(key) === -1) {
+                delete newValue[key];
+            }
+        }
+
+        newValue.lastEdit = moment().valueOf();
+
+        hybridSheetDB.updateOne(myQuery, { $set: newValue }, function (err, result) {
+            if (err) res.status(500).send("Internal Server Error");
+            res.status(200).send("OK");
+        });
+    });
+
+    /**
      * Post method getting path name where file is existed
      * req.body = {
-     *      fullname: "sheet full name", eg. "MJ-BB01"
+     *      fullname: "sheet fullname", eg. "MJ-BB01(REV1_0)"
      *      checkExist: boolean (optional) defualt is true
      * }
      * res.body = {
