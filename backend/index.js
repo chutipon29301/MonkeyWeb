@@ -2,7 +2,7 @@ console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
 var chalk=require("chalk");
-var cookieParser=require('cookie-parser');
+var cookieParser=require("cookie-parser");
 var express=require("express");
 var fs=require("fs-extra");
 var MongoClient=require("mongodb").MongoClient;
@@ -33,10 +33,12 @@ app.set("views",path.join(__dirname,"../views"));
 app.set("view engine","pug");
 
 // Enable HTTPS
+var caPath=path.join(__dirname,"../../MonkeyWebConfig/ca_bundle.crt");
 var keyPath=path.join(__dirname,"../../MonkeyWebConfig/private.key");
 var certPath=path.join(__dirname,"../../MonkeyWebConfig/certificate.crt");
-if(fs.existsSync(keyPath)&&fs.existsSync(certPath)){
+if(fs.existsSync(caPath)&&fs.existsSync(keyPath)&&fs.existsSync(certPath)){
     var credentials={
+        ca:fs.readFileSync(caPath),
         key:fs.readFileSync(keyPath),
         cert:fs.readFileSync(certPath)
     };
@@ -48,6 +50,7 @@ if(fs.existsSync(keyPath)&&fs.existsSync(certPath)){
 }
 // Listen to port 8080
 app.listen(8080);
+
 // LINE Notify tokens
 var recipientTokenPath=path.join(
     __dirname,"../../MonkeyWebConfig/recipientToken.json"
