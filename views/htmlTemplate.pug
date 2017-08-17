@@ -50,11 +50,11 @@ html(lang="en")
                                         span.caret
                                     ul.dropdown-menu
                                         li: a(href="absentForm") ลา
-                                        li: a(href="#") เพิ่ม
+                                        li: a(href="addForm") เพิ่ม
                             else
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminAllStudent") All Student
-                                li: a(href="/tutorCommentStudent") Comment Students
+                                li: a(href="/tutorCommentStudent") Comments
                                 if(webUser.position=="tutor")
                                     li: a(href="/adminAllCourse") My Course
                                 else
@@ -63,6 +63,7 @@ html(lang="en")
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminCourseMaterial") CR Tracking
                                     li: a(href="/adminCourseRoom") Room
+                                    li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
                             li: a(href="studentDocument") เอกสาร
                         ul.nav.navbar-nav.navbar-right
                             if(webUser.position=="student")

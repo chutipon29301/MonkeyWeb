@@ -1,6 +1,6 @@
 extends htmlTemplate
 block head
-    -const pageTitle = "Comment Students"
+    -const pageTitle = "Comments"
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/tutorCommentStudent.js")
     style.
@@ -14,8 +14,8 @@ block head
 block body
     .container
         .page-header
-            h2 Comment Students
-            p Add a comment for each student
+            h2 Comments
+            p Add comments on students.
         #search-box
             input.typeahead(type="text" placeholder="Name of Student")
         br
@@ -26,7 +26,7 @@ block body
         button#postButton.btn.btn-default.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9 SUBMIT
     .container
         hr
-        h2(style="margin-bottom:30px") Recently comment
+        h2(style="margin-bottom:30px") Recent comments
         #commentList
         ul.pager(style='margin:0')
             //- li.previous: a First

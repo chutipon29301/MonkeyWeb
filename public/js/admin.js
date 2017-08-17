@@ -647,6 +647,12 @@ function editStudent() {
     });
 }
 
+function scanStudentBarcode() {
+    let inputBox = document.getElementById("studentID")
+    writeCookie("monkeyWebAdminAllstudentSelectedUser", inputBox.value.substring(0, inputBox.value.length - 1));
+    self.location = "/adminStudentprofile";
+}
+
 // /**
 //  * Reset student
 //  */

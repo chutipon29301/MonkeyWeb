@@ -97,7 +97,8 @@ module.exports=function(app,db){
     addPugPage("studentDocument");
     var options={middlewareOptions:{login:true,position:"student",studentStatus:{$in:["active","inactive"]}}};
         addPugPage("home",options);
-        // addPugPage("absentForm",options);
+        addPugPage("absentForm",options);
+        addPugPage("addForm",options);
         options.middlewareOptions.registrationState={$ne:"unregistered"};
             addPugPage("studentProfile",options);
         options.middlewareOptions.registrationState="unregistered";
@@ -128,6 +129,7 @@ module.exports=function(app,db){
             });
         });
         options.middlewareOptions.position={$in:["admin","dev"]};
+        addPugPage("adminStudentAttendanceModifier",options);
         addPugPage("adminAllstudent",options);
         addPugPage("adminCourseRoom",options);
         addPugPage("adminCourseTable",options);
