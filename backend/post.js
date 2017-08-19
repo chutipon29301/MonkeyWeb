@@ -1524,7 +1524,7 @@ module.exports=function(app,db){
             console.log(req.body.checkExist);
             console.log(req.body.checkExist === undefined);
             console.log(result === null);
-            if (result === null && (req.body.checkExist === false || req.body.checkExist === undefined)) {
+            if (result !== null && (req.body.checkExist === true || req.body.checkExist === undefined)) {
                 decodePathResponse(res, courseName);
             } else {
                 decodePathResponse(res, courseName);
