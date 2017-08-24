@@ -272,12 +272,12 @@ block body
                         +submit("post/submitReceipt")
             +panel-list-group("Assessment")
                 +list-group-item
+                    .loader.center-block
                     +form-horizontal-title("post/addStudentComment")
                         +form-group("studentID"): +input-number("studentID")(required)
                         +form-group("tutorID"): +input-number("tutorID")(required)
                         +form-group("message"): +input-text("message")(required)
                         +form-group("priority"): +input-number("priority")
-                        +form-group("hasAttachment"): +input-checkbox-inline("hasAttachment",1,"hasAttachment")
                         +submit("post/addStudentComment")
                 +list-group-item
                     +form-horizontal-title("post/removeStudentComment")
@@ -303,6 +303,11 @@ block body
                         +form-group("start"): +input-number("start")(required)
                         +form-group("limit"): +input-number("limit")(required)
                         +submit("post/listStudentCommentByIndex")
+                +list-group-item
+                    +form-horizontal-title("post/clearStudentComment")
+                        +form-group("commentID"): +input-text("commentID")(required)
+                        +form-group("isCleared"): +input-checkbox-inline("isCleared",1,"isCleared")
+                        +submit("post/clearStudentComment")
             +panel-list-group("Student Attendance")
                 +list-group-item
                     +form-horizontal-title("post/addStudentAbsenceModifier")
@@ -353,6 +358,9 @@ block body
                         +form-group("studentSlideshowPath")
                             +input-text("studentSlideshowPath")(required)
                             span.help-block ex. D:/[PATH]/MonkeyWebData/studentSlideshow (+/1.png)
+                        +form-group("studentCommentPicturePath")
+                            +input-text("studentCommentPicturePath")(required)
+                            span.help-block ex. D:/[PATH]/MonkeyWebData/studentCommentPicture (+/CommentID.jpg)
                         +form-group("maxSeat (Hybrid)"): +input-number("maxSeat","Max Hybrid Seat").input-array(required)
                         +form-group("maxSeat (Room 1)"): +input-number("maxSeat","Max Room 1 Seat").input-array(required)
                         +form-group("maxSeat (Room 2)"): +input-number("maxSeat","Max Room 2 Seat").input-array(required)
