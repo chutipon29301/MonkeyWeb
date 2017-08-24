@@ -89,6 +89,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // userDB.deleteMany({position:"student"});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
 
+    db.renameCollection("CR60Q3","course");
     configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture"}});
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
