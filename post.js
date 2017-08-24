@@ -59,8 +59,9 @@ module.exports=function(app,db){
     var prettify=function(str){
         return JSON.stringify(str,null,2);
     };
+    // TODO Better true/false request
     var bool=function(str){
-        if(str=="false"||str=="0"||str=="")return false;
+        if(str=="false"||str=="0"||str==""||str===undefined||str===null)return false;
         return true;
     };
     // function splitCourseName(name){
@@ -1135,28 +1136,98 @@ module.exports=function(app,db){
     });
 
     // Assessment
-    //OK {studentID,tutorID,message,priority,hasAttachment} return {}
+    //OK {studentID,tutorID,message,priority,file} return {}
     post("/post/addStudentComment",function(req,res){
         var commentID=new ObjectID().toString();
+        console.log(req.files);
+        console.log("[pri]",req.body.priority);
+        console.log(commentID);
         var studentID=parseInt(req.body.studentID);
         var tutorID=parseInt(req.body.tutorID);
         var message=req.body.message;
         var priority=parseInt(req.body.priority);
         if(req.body.priority===undefined)priority=0;
-        var hasAttachment=bool(req.body.hasAttachment);
-        if(req.body.hasAttachment===undefined)hasAttachment=false;
         findUser(res,studentID,{position:"student"},function(){
             findUser(res,tutorID,{position:["tutor","admin","dev"]},function(){
-                studentCommentDB.insertOne({
-                    _id:commentID,studentID:studentID,tutorID:tutorID,
-                    message:message,timestamp:moment().valueOf(),
-                    priority:priority,hasAttachment:hasAttachment,
-                    isCleared:false
-                },function(){
-                    res.send({});
+                if(req.files===undefined){
+                    studentCommentDB.insertOne({
+                        _id:commentID,studentID:studentID,tutorID:tutorID,
+                        message:message,timestamp:moment().valueOf(),
+                        priority:priority,hasAttachment:false,
+                        isCleared:false
+                    },function(){
+                        res.send({});
+                    });
+                }
+                else{
+                    configDB.findOne({},function(err,config){
+                        var newPath=config.studentCommentPicturePath;
+                        fs.ensureDir(newPath,function(err){
+                            if(err)res.send({err:err,at:"ensureDir"});
+                            else{
+                                var file=req.files[0];
+                                var originalName=file.originalname;
+                                var originalType=originalName.slice(originalName.lastIndexOf("."));
+                                var oldPath=file.path;
+                                fs.readFile(oldPath,function(err,data){
+                                    if(err)res.send({err:err,at:"readFile"});
+                                    else fs.writeFile(newPath+commentID+originalType.toLowerCase(),data,function(err){
+                                        if(err)res.send({err:err,at:"writeFile"});
+                                        else{
+                                            studentCommentDB.insertOne({
+                                                _id:commentID,studentID:studentID,tutorID:tutorID,
+                                                message:message,timestamp:moment().valueOf(),
+                                                priority:priority,hasAttachment:true,
+                                                isCleared:false
+                                            },function(){
+                                                res.send({});
+                                            });
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+        });
+        /*
+        findUser(res,userID,{},function(result){
+            configDB.findOne({},function(err,config){
+                var newPath=config.profilePicturePath;
+                fs.ensureDir(newPath,function(err){
+                    if(err)res.send({err:err,at:"ensureDir"});
+                    else{
+                        var originalName=file.originalname;
+                        var originalType=originalName.slice(originalName.lastIndexOf("."));
+                        var oldPath=file.path;
+                        fs.readdir(newPath,function(err,files){
+                            callbackLoop(files.length,function(i,continueLoop){
+                                if(files[i].split(".",1)[0]==userID){
+                                    fs.remove(newPath+files[i],function(err){
+                                        if(err)errOutput.push({err:err,at:"remove#"+(i+1)});
+                                        continueLoop();
+                                    });
+                                }
+                                else continueLoop();
+                            },function(){
+                                if(errOutput.length)res.send({err:errOutput});
+                                else{
+                                    fs.readFile(oldPath,function(err,data){
+                                        if(err)res.send({err:err,at:"readFile"});
+                                        else fs.writeFile(newPath+userID+originalType.toLowerCase(),data,function(err){
+                                            if(err)res.send({err:err,at:"writeFile"});
+                                            else res.send({});
+                                        });
+                                    });
+                                }
+                            });
+                        });
+                    }
                 });
             });
         });
+        */
     });
     //OK {commentID} return {}
     post("/post/removeStudentComment",function(req,res){
@@ -1225,9 +1296,8 @@ module.exports=function(app,db){
     //OK {commentID,isCleared} return {}
     post("/post/clearStudentComment",function(req,res){
         var commentID=req.body.commentID;
-        // TODO Better true/false request
         var isCleared=bool(req.body.isCleared);
-        if(req.body.isCleared==undefined)isCleared=false;
+        if(req.body.isCleared===undefined)isCleared=false;
         studentCommentDB.updateOne({_id:commentID},{
             $set:{isCleared:isCleared}
         },function(){
@@ -1433,7 +1503,7 @@ module.exports=function(app,db){
             res.send(config);
         });
     });
-    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat} return {}
+    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,studentCommentPicturePath,[maxSeat]} return {}
     post("/post/editConfig",function(req,res){
         var dirPath=function(path){
             if(path.endsWith("/"))return path;
@@ -1453,6 +1523,7 @@ module.exports=function(app,db){
                 nextTutorID:parseInt(req.body.nextTutorID),
                 profilePicturePath:dirPath(req.body.profilePicturePath),
                 studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
+                studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath),
                 maxSeat:maxSeat
             }
         },function(){

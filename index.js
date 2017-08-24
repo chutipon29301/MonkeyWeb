@@ -89,6 +89,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // userDB.deleteMany({position:"student"});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
 
+    configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture"}});
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
@@ -130,11 +131,12 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateOne({_id:"config"},{
         $setOnInsert:{
             year:60,quarter:3,
-            courseMaterialPath:"courseMaterial",
-            receiptPath:"receipt",
+            courseMaterialPath:"courseMaterial/",
+            receiptPath:"receipt/",
             nextStudentID:17001,nextTutorID:99035,
-            profilePicturePath:"profilePicture",
-            studentSlideshowPath:"studentSlideshow",
+            profilePicturePath:"profilePicture/",
+            studentSlideshowPath:"studentSlideshow/",
+            studentCommentPicturePath:"studentCommentPicture/",
             maxSeat:[8+6+12+6+6+2,27,12,10,16,12]
         }
     },{upsert:true},function(err,result){
