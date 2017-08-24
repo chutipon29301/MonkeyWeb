@@ -16,18 +16,53 @@ $(document).ready(function () {
         });
     });
     // for post comment
+    $("#uploadButton").click(function () {
+        $("#uploadModal").modal();
+    });
     $("#postButton").click(function () {
         let comm = $('#search-box .typeahead').typeahead("getActive");
-        let x = $('#comment').val();
+        let ufile = $('#file-1');
+        let ext = ufile.val().split('.').pop().toLowerCase();
         if (comm !== undefined) {
             if (comm.length > 7) {
-                $.post("post/addStudentComment", {
-                    studentID: comm.slice(-6, -1),
-                    tutorID: tutor,
-                    message: $('#comment').val()
-                }, function (data, status) {
-                    location.reload();
-                });
+                let formData = new FormData();
+                formData.append("studentID", comm.slice(-6, -1));
+                formData.append("tutorID", tutor);
+                formData.append("message", $('#comment').val());
+                log(ext);
+                if (ext === "") {
+                    log("No Picture");
+                    $.ajax({
+                        url: 'post/addStudentComment',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            location.reload();
+                        }
+                    });
+                } else if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+                    alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+                } else {
+                    let files = ufile.get(0).files;
+                    if (files.length > 0) {
+                        for (let i = 0; i < files.length; i++) {
+                            let file = files[i];
+                            formData.append('attachment', file, file.name);
+                        }
+                        $.ajax({
+                            url: 'post/addStudentComment',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                location.reload();
+                            }
+                        });
+                    }
+                }
             } else alert("Please Select Correct Name")
         } else alert("Please Input Student Name");
     });
@@ -81,7 +116,27 @@ function getName(cm, i) {
                 tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day + ")</h4>";
             $('#commentList').append(str);
             $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
-            if (i < cm.comment.length - 1) getName(cm, i + 1);
+            $.post('post/getConfig').then((config) => {
+                let path = config.studentCommentPicturePath;
+                path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
+                $.get(path + ".jpg").done(function (result) {
+                    $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
+                    if (i < cm.comment.length - 1) getName(cm, i + 1);
+                }).fail(function () {
+                    $.get(path + ".jpeg").done(function (result) {
+                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+                        if (i < cm.comment.length - 1) getName(cm, i + 1);
+                    }).fail(function () {
+                        $.get(path + ".png").done(function (result) {
+                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                            if (i < cm.comment.length - 1) getName(cm, i + 1);
+                        }).fail(function () {
+                            if (i < cm.comment.length - 1) getName(cm, i + 1);
+                        });
+                    });
+                });
+
+            })
         })
     })
 }
@@ -102,7 +157,27 @@ function getNameAdmin(cm, i) {
             $('.dropdown:last-child').append(str);
             $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='clearComment(\"" + cm.comment[i].commentID + "\")'>CLEAR</a></li><li><a onClick='addPin(\"" + cm.comment[i].commentID + "\")'>PIN</a></li><li><a onClick='rmPin(\"" + cm.comment[i].commentID + "\")'>UNPIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i].commentID + "\")'>REMOVE</a></li></ul>");
             $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
-            if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1);
+            $.post('post/getConfig').then((config) => {
+                let path = config.studentCommentPicturePath;
+                path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
+                $.get(path + ".jpg").done(function (result) {
+                    $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
+                    if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
+                }).fail(function () {
+                    $.get(path + ".jpeg").done(function (result) {
+                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+                        if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
+                    }).fail(function () {
+                        $.get(path + ".png").done(function (result) {
+                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                            if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
+                        }).fail(function () {
+                            if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
+                        });
+                    });
+                });
+
+            })
         })
     })
 }
