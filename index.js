@@ -2,7 +2,7 @@ console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
 var chalk=require("chalk");
-var cookieParser=require('cookie-parser');
+var cookieParser=require("cookie-parser");
 var express=require("express");
 var fs=require("fs-extra");
 var MongoClient=require("mongodb").MongoClient;
@@ -16,8 +16,8 @@ app.use(cookieParser());
 //Temp folder for uploading
 app.use(multer({dest:"/tmp/"}).any());
 // Serve static files
-app.use(express.static(path.join(__dirname,"../public")));
-app.use(express.static(path.join(__dirname,"../../MonkeyWebData")));
+app.use(express.static(path.join(__dirname,"assets")));
+app.use(express.static(path.join(__dirname,"../MonkeyWebData")));
 app.use(function(req,res,next){
     // Allow access from other domain
     res.header("Access-Control-Allow-Origin","*");
@@ -29,14 +29,16 @@ app.use(function(req,res,next){
     next();
 });
 // Allow render from pug files
-app.set("views",path.join(__dirname,"../views"));
+app.set("views",path.join(__dirname,"old/views"));
 app.set("view engine","pug");
 
 // Enable HTTPS
-var keyPath=path.join(__dirname,"../../MonkeyWebConfig/private.key");
-var certPath=path.join(__dirname,"../../MonkeyWebConfig/certificate.crt");
-if(fs.existsSync(keyPath)&&fs.existsSync(certPath)){
+var caPath=path.join(__dirname,"../MonkeyWebConfig/ca_bundle.crt");
+var keyPath=path.join(__dirname,"../MonkeyWebConfig/private.key");
+var certPath=path.join(__dirname,"../MonkeyWebConfig/certificate.crt");
+if(fs.existsSync(caPath)&&fs.existsSync(keyPath)&&fs.existsSync(certPath)){
     var credentials={
+        ca:fs.readFileSync(caPath),
         key:fs.readFileSync(keyPath),
         cert:fs.readFileSync(certPath)
     };
@@ -48,9 +50,10 @@ if(fs.existsSync(keyPath)&&fs.existsSync(certPath)){
 }
 // Listen to port 8080
 app.listen(8080);
+
 // LINE Notify tokens
 var recipientTokenPath=path.join(
-    __dirname,"../../MonkeyWebConfig/recipientToken.json"
+    __dirname,"../MonkeyWebConfig/recipientToken.json"
 );
 if(fs.existsSync(recipientTokenPath)){
     app.locals.recipientToken=JSON.parse(
@@ -86,6 +89,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // userDB.deleteMany({position:"student"});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
 
+    studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
     studentCommentDB.createIndex({timestamp:-1});
