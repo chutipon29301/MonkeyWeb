@@ -99,9 +99,10 @@ module.exports=function(app,db){
     //     return output;
     // };
     var getCourseDB=function(callback){
-        configDB.findOne({},function(err,config){
-            callback(db.collection("CR"+config.year+"Q"+config.quarter));
-        });
+        callback(db.collection("course"));
+        // configDB.findOne({},function(err,config){
+        //     callback(db.collection("CR"+config.year+"Q"+config.quarter));
+        // });
     };
     var getCourseName=function(courseID,callback){
         getCourseDB(function(courseDB){

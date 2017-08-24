@@ -116,27 +116,29 @@ function getName(cm, i) {
                 tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day + ")</h4>";
             $('#commentList').append(str);
             $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
-            $.post('post/getConfig').then((config) => {
-                let path = config.studentCommentPicturePath;
-                path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
-                $.get(path + ".jpg").done(function (result) {
-                    $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
-                    if (i < cm.comment.length - 1) getName(cm, i + 1);
-                }).fail(function () {
-                    $.get(path + ".jpeg").done(function (result) {
-                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+            if(cm.comment[i].hasAttachment){
+                $.post('post/getConfig').then((config) => {
+                    let path = config.studentCommentPicturePath;
+                    path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
+                    $.get(path + ".jpg").done(function (result) {
+                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
                         if (i < cm.comment.length - 1) getName(cm, i + 1);
                     }).fail(function () {
-                        $.get(path + ".png").done(function (result) {
-                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                        $.get(path + ".jpeg").done(function (result) {
+                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
                             if (i < cm.comment.length - 1) getName(cm, i + 1);
                         }).fail(function () {
-                            if (i < cm.comment.length - 1) getName(cm, i + 1);
+                            $.get(path + ".png").done(function (result) {
+                                $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                                if (i < cm.comment.length - 1) getName(cm, i + 1);
+                            }).fail(function () {
+                                if (i < cm.comment.length - 1) getName(cm, i + 1);
+                            });
                         });
                     });
-                });
-
-            })
+                })
+            }
+            else if (i < cm.comment.length - 1) getName(cm, i + 1)
         })
     })
 }
@@ -157,27 +159,29 @@ function getNameAdmin(cm, i) {
             $('.dropdown:last-child').append(str);
             $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='clearComment(\"" + cm.comment[i].commentID + "\")'>CLEAR</a></li><li><a onClick='addPin(\"" + cm.comment[i].commentID + "\")'>PIN</a></li><li><a onClick='rmPin(\"" + cm.comment[i].commentID + "\")'>UNPIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i].commentID + "\")'>REMOVE</a></li></ul>");
             $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
-            $.post('post/getConfig').then((config) => {
-                let path = config.studentCommentPicturePath;
-                path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
-                $.get(path + ".jpg").done(function (result) {
-                    $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
-                    if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
-                }).fail(function () {
-                    $.get(path + ".jpeg").done(function (result) {
-                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+            if(cm.comment[i].hasAttachment){
+                $.post('post/getConfig').then((config) => {
+                    let path = config.studentCommentPicturePath;
+                    path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
+                    $.get(path + ".jpg").done(function (result) {
+                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
                         if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                     }).fail(function () {
-                        $.get(path + ".png").done(function (result) {
-                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                        $.get(path + ".jpeg").done(function (result) {
+                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
                             if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                         }).fail(function () {
-                            if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
+                            $.get(path + ".png").done(function (result) {
+                                $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                                if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
+                            }).fail(function () {
+                                if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
+                            });
                         });
                     });
-                });
-
-            })
+                })
+            }
+            else if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
         })
     })
 }

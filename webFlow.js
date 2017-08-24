@@ -4,7 +4,6 @@ module.exports=function(app,db){
     var moment=require("moment");
     var path=require("path");
 
-    var configDB=db.collection("config");
     var userDB=db.collection("user");
 
     var post=app.locals.post;
