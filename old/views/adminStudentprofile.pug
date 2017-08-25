@@ -9,6 +9,9 @@ block head
             margin-bottom:20px;
             white-space:pre-line;
         }
+        #comment ul{
+            margin-left:120px;
+        }
 block body
     .container
         .col-sm-6
@@ -104,7 +107,7 @@ block body
         canvas#appRej(style="border:1px solid black" width="560" height="380" hidden="true")
     .container
         hr
-        #comment
+        #comment.row.col-sm-12.col-xs-12
         script(src="js/FileSaver.min.js" type="text/javascript")
         script.
             $(document).ready(function () {
@@ -265,14 +268,3 @@ block body
                         button.btn.btn-primary(type="button" onClick="upReciept();") OK
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
         script(src="js/custom-file-input.js")
-        //- Modal for remove comment
-        .modal.fade#commentRm(role="dialog")
-            .modal-dialog
-                .modal-content
-                    .modal-header
-                        h4 Remove comment
-                    .modal-body
-                        h4 ต้องการลบคอมเม้นนี้?
-                    .modal-footer
-                        button#confirm.btn.btn-success(type="button" onClick="deleteComment()") ใช่
-                        button.btn.btn-danger(type="button" data-dismiss="modal") ไม่
