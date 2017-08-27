@@ -1,26 +1,26 @@
 extends htmlTemplate
 block head
     - var pageTitle = "All Course"
-    - if(webUser.position=="tutor")pageTitle="My Course"
+    - if(webUser.position==="tutor")pageTitle="My Course"
     script(src="js/admin.min.js")
     script.
         window.onload = getAllCourseContent();
 block body
     .container
-        .col-md-10
+        .col-sm-10
             h1 Course
-        div(class=webUser.position=="tutor"?"hidden":"" align="right")
+        .col-sm-2(class=webUser.position === "tutor" ? "hidden" : "" align="right")
             a(href="adminCourseTable") คัมภีร์เทวดา
-        div(class=webUser.position=="tutor"?"hidden":"")
-            .col-md-3
-                select.form-control.col-md-1#subject(onChange="getAllCourseContent()" style="margin-bottom:5px")
+        div(class=webUser.position === "tutor" ? "hidden" : "")
+            .col-sm-3
+                select.form-control.col-sm-1#subject(onChange="getAllCourseContent()" style="margin-bottom:5px")
                     option(value="all") All Subject
                     option(value="M") Math
                     option(value="PH") Physics
                     option(value="E") English
                     option(value="CH") Chemistry
-            .col-md-3
-                select.form-control.col-md-1#grade(onChange="getAllCourseContent()" style="margin-bottom:5px")
+            .col-sm-3
+                select.form-control.col-sm-1#grade(onChange="getAllCourseContent()" style="margin-bottom:5px")
                     option(value="all") All grade
                     option(value="1") P1
                     option(value="2") P2
@@ -34,9 +34,9 @@ block body
                     option(value="10") S4
                     option(value="11") S5
                     option(value="12") S6
-            .col-md-3
-                select.form-control.col-md-1#name(onChange="getAllCourseContent()" style="margin-bottom:5px")
-                    if(webUser.position=="tutor")
+            .col-sm-3
+                select.form-control.col-sm-1#name(onChange="getAllCourseContent()" style="margin-bottom:5px")
+                    if(webUser.position === "tutor")
                         option(value=webUser.userID)
                     else
                         option(value="all") All Tutor
@@ -55,8 +55,8 @@ block body
                         option(value="99008") Ten
                         option(value="99026") Third
                         option(value="99016") Ya
-            .col-md-3
-                select.form-control.col-md-1#time(onChange="getAllCourseContent()" style="margin-bottom:5px")
+            .col-sm-3
+                select.form-control.col-sm-1#time(onChange="getAllCourseContent()" style="margin-bottom:5px")
                     option(value="all") All Time
                     option(value="176400000") Sat 8
                     option(value="183600000") Sat 10
@@ -66,13 +66,13 @@ block body
                     option(value="270000000") Sun 10
                     option(value="280800000") Sun 13
                     option(value="288000000") Sun 15
-        .table-responsive.col-md-12
+        .table-responsive.col-sm-12
             table.table.table-hover(style="font-family:'Trirong',serif")
                 thead
                     tr
-                        th.col-md-2 No.
-                        th.col-md-3 CourseName
-                        th.col-md-2 Day
-                        th.col-md-3 Time
-                        th.col-md-2 Tutor
+                        th.col-sm-2 No.
+                        th.col-sm-3 CourseName
+                        th.col-sm-2 Day
+                        th.col-sm-3 Time
+                        th.col-sm-2 Tutor
                 tbody#allCourseTable

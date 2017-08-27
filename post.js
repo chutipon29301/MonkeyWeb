@@ -59,8 +59,9 @@ module.exports=function(app,db){
     var prettify=function(str){
         return JSON.stringify(str,null,2);
     };
+    // TODO Better true/false request
     var bool=function(str){
-        if(str=="false"||str=="0"||str=="")return false;
+        if(str=="false"||str=="0"||str==""||str===undefined||str===null)return false;
         return true;
     };
     // function splitCourseName(name){
@@ -98,9 +99,10 @@ module.exports=function(app,db){
     //     return output;
     // };
     var getCourseDB=function(callback){
-        configDB.findOne({},function(err,config){
-            callback(db.collection("CR"+config.year+"Q"+config.quarter));
-        });
+        callback(db.collection("course"));
+        // configDB.findOne({},function(err,config){
+        //     callback(db.collection("CR"+config.year+"Q"+config.quarter));
+        // });
     };
     var getCourseName=function(courseID,callback){
         getCourseDB(function(courseDB){
@@ -164,16 +166,22 @@ module.exports=function(app,db){
         finish();
     };
     var lineNotify=function(recipient,message,callback){
-        if(app.locals.isServer){
-            if(app.locals.recipientToken[recipient]===undefined){
-                callback({err:"Recipient not found."});
-            }
-            else{
-                request.post("https://notify-api.line.me/api/notify",{
-                    auth:{bearer:app.locals.recipientToken[recipient]},
-                    form:{message:message}
-                },callback);
-            }
+        if(callback===undefined)callback=function(){};
+        if(app.locals.recipientToken[recipient]===undefined){
+            callback({err:"Recipient not found."});
+        }
+        else{
+            request.post("https://notify-api.line.me/api/notify",{
+                auth:{bearer:app.locals.recipientToken[recipient]},
+                form:{message:message}
+            },function(err,res,body){
+                if(body.status==500){
+                    console.log(chalk.black.bgRed("LINE Notify failed"));
+                    console.log(chalk.black.bgRed(body.message));
+                    callback(err,res,body);
+                }
+                else callback(err,res,body);
+            });
         }
     };
 
@@ -1129,7 +1137,7 @@ module.exports=function(app,db){
     });
 
     // Assessment
-    //OK {studentID,tutorID,message,priority,hasAttachment} return {}
+    //OK {studentID,tutorID,message,priority,file} return {}
     post("/post/addStudentComment",function(req,res){
         var commentID=new ObjectID().toString();
         var studentID=parseInt(req.body.studentID);
@@ -1137,17 +1145,49 @@ module.exports=function(app,db){
         var message=req.body.message;
         var priority=parseInt(req.body.priority);
         if(req.body.priority===undefined)priority=0;
-        var hasAttachment=bool(req.body.hasAttachment);
-        if(req.body.hasAttachment===undefined)hasAttachment=false;
+        var file=req.files;
+        if(file!==undefined)file=file[0];
         findUser(res,studentID,{position:"student"},function(){
             findUser(res,tutorID,{position:["tutor","admin","dev"]},function(){
-                studentCommentDB.insertOne({
-                    _id:commentID,studentID:studentID,tutorID:tutorID,
-                    message:message,timestamp:moment().valueOf(),
-                    priority:priority,hasAttachment:hasAttachment
-                },function(){
-                    res.send({});
-                });
+                if(file===undefined){
+                    studentCommentDB.insertOne({
+                        _id:commentID,studentID:studentID,tutorID:tutorID,
+                        message:message,timestamp:moment().valueOf(),
+                        priority:priority,hasAttachment:false,
+                        isCleared:false
+                    },function(){
+                        res.send({});
+                    });
+                }
+                else{
+                    configDB.findOne({},function(err,config){
+                        var newPath=config.studentCommentPicturePath;
+                        fs.ensureDir(newPath,function(err){
+                            if(err)res.send({err:err,at:"ensureDir"});
+                            else{
+                                var originalName=file.originalname;
+                                var originalType=originalName.slice(originalName.lastIndexOf("."));
+                                var oldPath=file.path;
+                                fs.readFile(oldPath,function(err,data){
+                                    if(err)res.send({err:err,at:"readFile"});
+                                    else fs.writeFile(newPath+commentID+originalType.toLowerCase(),data,function(err){
+                                        if(err)res.send({err:err,at:"writeFile"});
+                                        else{
+                                            studentCommentDB.insertOne({
+                                                _id:commentID,studentID:studentID,tutorID:tutorID,
+                                                message:message,timestamp:moment().valueOf(),
+                                                priority:priority,hasAttachment:true,
+                                                isCleared:false
+                                            },function(){
+                                                res.send({});
+                                            });
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
             });
         });
     });
@@ -1215,21 +1255,51 @@ module.exports=function(app,db){
             res.send({comment:output});
         });
     });
+    //OK {commentID,isCleared} return {}
+    post("/post/clearStudentComment",function(req,res){
+        var commentID=req.body.commentID;
+        var isCleared=bool(req.body.isCleared);
+        if(req.body.isCleared===undefined)isCleared=false;
+        studentCommentDB.updateOne({_id:commentID},{
+            $set:{isCleared:isCleared}
+        },function(){
+            res.send({});
+        });
+    });
 
     // Student Attendance
     //OK {studentID,day,reason,sender} return {}
     post("/post/addStudentAbsenceModifier",function(req,res){
-        var modifierID=new ObjectID().toString();
         var studentID=parseInt(req.body.studentID);
-        var day=parseInt(req.body.day);
+        var day=req.body.day;
+        for(var i=0;i<day.length;i++){
+            day[i]=parseInt(day[i]);
+        }
         var reason=req.body.reason;
         var sender=req.body.sender;
-        findUser(res,studentID,{position:"student"},function(){
-            studentAttendanceModifierDB.insertOne({
-                _id:modifierID,studentID:studentID,
-                day:day,type:"absence",reason:reason,subjectToAdd:"",
-                timestamp:moment().valueOf(),sender:sender
+        var timestamp=moment().valueOf();
+        findUser(res,studentID,{position:"student"},function(result){
+            callbackLoop(day.length,function(i,continueLoop){
+                studentAttendanceModifierDB.insertOne({
+                    _id:new ObjectID().toString(),studentID:studentID,
+                    day:day[i],type:"absence",reason:reason,subjectToAdd:"",
+                    timestamp:timestamp,sender:sender
+                },function(){
+                    continueLoop();
+                });
             },function(){
+                // var message="แจ้งเตือนการลาคอร์ส\n\n"+
+                //     "ชื่อ : "+result.firstname+" "+result.lastname+" ("+result.nickname+")\n"+
+                //     "วันที่ลา : "+moment(day[0]).locale("th").format("วันddddที่ D MMMM พ.ศ.")+(moment(day[0]).year()+543)+"\n"+
+                //     "คอร์สที่ลามีดังนี้ :\n";
+                // for(var i=0;i<day.length;i++){
+                //     message+="    "+moment(day[i]).format("ddd H-").toUpperCase()+moment(day[i]).add(2,"h").hour()+
+                //         // " "+courseName+"\n";
+                //         "\n";
+                // }
+                // message+="เนื่องจาก : "+reason+"\n";
+                // message+="ผู้แจ้งลา : "+sender+"\n";
+                // lineNotify("Chiang",message);
                 res.send({});
             });
         });
@@ -1546,7 +1616,7 @@ module.exports=function(app,db){
             res.send(config);
         });
     });
-    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat} return {}
+    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,studentCommentPicturePath,[maxSeat]} return {}
     post("/post/editConfig",function(req,res){
         var dirPath=function(path){
             if(path.endsWith("/"))return path;
@@ -1566,6 +1636,7 @@ module.exports=function(app,db){
                 nextTutorID:parseInt(req.body.nextTutorID),
                 profilePicturePath:dirPath(req.body.profilePicturePath),
                 studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
+                studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath),
                 maxSeat:maxSeat
             }
         },function(){
@@ -1580,6 +1651,11 @@ module.exports=function(app,db){
     post("/post/addStudentGrade",function(req,res){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
+    });
+    post("/post/lineNotify",function(req,res){
+        lineNotify(req.body.recipient,req.body.message,function(err,x,body){
+            res.send({err:err,body:body});
+        });
     });
 
     // Debug
@@ -1614,15 +1690,6 @@ module.exports=function(app,db){
         studentAttendanceModifierDB.find().toArray(function(err,result){
             res.send(result);
         });
-    });
-    app.post("/debug/line",function(req,res){
-        if(app.locals.isServer){
-            lineNotify(req.body.recipient,req.body.message,function(err,x,body){
-                if(err)res.send(err);
-                else res.send(body);
-            });
-        }
-        else res.send({err:"Server mode disabled."});
     });
 }
 

@@ -2,24 +2,22 @@ console.log("[START] index.js");
 
 var bodyParser=require("body-parser");
 var chalk=require("chalk");
-var cookieParser=require('cookie-parser');
+var cookieParser=require("cookie-parser");
 var express=require("express");
 var fs=require("fs-extra");
+var MongoClient=require("mongodb").MongoClient;
 var multer=require("multer");
-var MongoClient=require('mongodb').MongoClient;
 var path=require("path");
 
 var app=express();
-// Change app.locals.isServer to true to run server's script
-app.locals.isServer=false;
 // Accept object notation in POST method
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 //Temp folder for uploading
 app.use(multer({dest:"/tmp/"}).any());
 // Serve static files
-app.use(express.static(path.join(__dirname,"../public")));
-app.use(express.static(path.join(__dirname,"../../MonkeyWebData")));
+app.use(express.static(path.join(__dirname,"assets")));
+app.use(express.static(path.join(__dirname,"../MonkeyWebData")));
 app.use(function(req,res,next){
     // Allow access from other domain
     res.header("Access-Control-Allow-Origin","*");
@@ -31,27 +29,38 @@ app.use(function(req,res,next){
     next();
 });
 // Allow render from pug files
-app.set("views",path.join(__dirname,"../views"));
+app.set("views",path.join(__dirname,"old/views"));
 app.set("view engine","pug");
 
-if(app.locals.isServer){
-    // Enable HTTPS
+// Enable HTTPS
+var caPath=path.join(__dirname,"../MonkeyWebConfig/ca_bundle.crt");
+var keyPath=path.join(__dirname,"../MonkeyWebConfig/private.key");
+var certPath=path.join(__dirname,"../MonkeyWebConfig/certificate.crt");
+if(fs.existsSync(caPath)&&fs.existsSync(keyPath)&&fs.existsSync(certPath)){
     var credentials={
-        key:fs.readFileSync(path.join(__dirname,"../../MonkeyWebConfig/private.key")),
-        cert:fs.readFileSync(path.join(__dirname,"../../MonkeyWebConfig/certificate.crt"))
+        ca:fs.readFileSync(caPath),
+        key:fs.readFileSync(keyPath),
+        cert:fs.readFileSync(certPath)
     };
     require("https").createServer(credentials,app).listen(443);
     // Automatically redirect to https
     require("http").createServer(express().use(function(req,res){
         res.redirect("https://"+req.hostname+req.url);
     })).listen(80);
+}
+// Listen to port 8080
+app.listen(8080);
+
+// LINE Notify tokens
+var recipientTokenPath=path.join(
+    __dirname,"../MonkeyWebConfig/recipientToken.json"
+);
+if(fs.existsSync(recipientTokenPath)){
     app.locals.recipientToken=JSON.parse(
-        fs.readFileSync(path.join(
-            __dirname,"../../MonkeyWebConfig/recipientToken.json"
-        ))
+        fs.readFileSync(recipientTokenPath)
     );
 }
-app.listen(8080);
+else app.locals.recipientToken={};
 
 console.log(chalk.black.bgBlack("Black"));
 console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
@@ -80,6 +89,9 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // userDB.deleteMany({position:"student"});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
 
+    db.renameCollection("CR60Q3","course");
+    configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture"}});
+    studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
     studentCommentDB.createIndex({timestamp:-1});
@@ -120,11 +132,12 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateOne({_id:"config"},{
         $setOnInsert:{
             year:60,quarter:3,
-            courseMaterialPath:"courseMaterial",
-            receiptPath:"receipt",
+            courseMaterialPath:"courseMaterial/",
+            receiptPath:"receipt/",
             nextStudentID:17001,nextTutorID:99035,
-            profilePicturePath:"profilePicture",
-            studentSlideshowPath:"studentSlideshow",
+            profilePicturePath:"profilePicture/",
+            studentSlideshowPath:"studentSlideshow/",
+            studentCommentPicturePath:"studentCommentPicture/",
             maxSeat:[8+6+12+6+6+2,27,12,10,16,12]
         }
     },{upsert:true},function(err,result){
