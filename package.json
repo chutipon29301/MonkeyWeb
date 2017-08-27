@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chiangsk135/MonkeyWeb.git"
+    "url": "https://github.com/monkey-monkey/MonkeyWeb.git"
   },
   "keywords": [
     "website"
@@ -17,9 +17,9 @@
   "author": "Siraphop Krongapiradee <chiang_sk135@hotmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/chiangsk135/MonkeyWeb/issues"
+    "url": "https://github.com/monkey-monkey/MonkeyWeb/issues"
   },
-  "homepage": "https://github.com/chiangsk135/MonkeyWeb#readme",
+  "homepage": "https://github.com/monkey-monkey/MonkeyWeb#readme",
   "dependencies": {
     "body-parser": "^1.17.1",
     "chalk": "^1.1.3",
