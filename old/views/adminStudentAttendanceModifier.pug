@@ -1,0 +1,17 @@
+extends htmlTemplate
+block head
+    - var pageTitle = "Student Attendance Modifier"
+    link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
+    script(src="js/admin.min.js")
+    script(src="js/bootstrap-datetimepicker.min.js")
+    script(src="js/adminStudentAttendanceModifier.min.js")
+    
+block body
+    .container
+        .form-group
+            .input-group.date.datePicker#datetimepicker1
+                input.form-control(type='text')
+                span.input-group-addon
+                    i.glyphicon.glyphicon-calendar
+        #absentTable
+        #presentTable

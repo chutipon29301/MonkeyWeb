@@ -1,0 +1,53 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Absent Form"
+    link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
+    script(src="js/bootstrap-datetimepicker.min.js")
+    script(src="js/student.min.js")
+    script(src="js/studentAbsentForm.min.js")
+    style.
+        .btn1,.btn2,.btn3,.btn4{
+            margin-bottom:3vh;
+        }
+block body
+    .jumbotron
+        .container
+            h2 แบบฟอร์มลา
+            p แบบฟอร์มสำหรับการลาเรียน Monkey
+    .container
+        h4#name
+            span.glyphicon.glyphicon-user
+        hr
+        .form-group
+            label วันที่ลา:
+            .input-group.date.datePicker#datetimepicker1
+                input.form-control(type='text')
+                span.input-group-addon
+                    i.glyphicon.glyphicon-calendar
+            br
+        label วิชาที่ลา:
+        .row
+            .col-xs-6.col-sm-3
+                button.btn.btn-default.col-xs-12.btn1.disabled(type='button') -
+            .col-xs-6.col-sm-3
+                button.btn.btn-default.col-xs-12.btn2.disabled(type='button') -
+            .col-xs-6.col-sm-3
+                button.btn.btn-default.col-xs-12.btn3.disabled(type='button') -
+            .col-xs-6.col-sm-3
+                button.btn.btn-default.col-xs-12.btn4.disabled(type='button') -
+        .form-group
+            label ผู้แจ้ง:
+            input.form-control#contact(type="text")
+        .form-group
+            label เหตุผล:
+            textarea.form-control#reason(rows='3')
+        button.btn.btn-default.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9#submit(type="button") ยืนยัน
+        .modal.fade#confirmModal(role="dialog")
+                .modal-dialog
+                    .modal-content
+                        .modal-header
+                            h3 ลา
+                        .modal-body
+                        .modal-footer
+                            button#confirm.btn.btn-success(type="button" onClick="sendData()") ใช่
+                            button.btn.btn-danger(type="button" data-dismiss="modal") ไม่ใช่
