@@ -77,6 +77,8 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     }
 
     var configDB=db.collection("config");
+    var courseDB=db.collection("course");
+    var courseSuggestionDB=db.collection("courseSuggestion");
     var quarterDB=db.collection("quarter");
     var studentAttendanceModifierDB=db.collection("studentAttendanceModifier");
     var studentCommentDB=db.collection("studentComment");
@@ -127,17 +129,35 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     //                     registrationState:result[i].student.registrationState
     //                 }},
     //                 $unset:{"student.registrationState":""}
-    //             })
+    //             });
     //         }
     //     });
     // });
     // TODO Migration2 year/quarter -> defaultQuarter
-    // configDB.updateOne({},{
+    // configDB.updateOne({defaultQuarter:{$exists:false}},{
     //     $unset:{year:"",quarter:""},
     //     $set:{defaultQuarter:{
     //         quarter:{year:2017,quarter:3},
     //     }}
     // });
+    // TODO Migration3 year/quarter in course and courseSuggestion
+    // courseDB.updateMany({year:{$exists:false},quarter:{$exists:false}},{
+    //     $set:{year:2017,quarter:3}
+    // });
+    // courseSuggestionDB.find({year:{$exists:false},quarter:{$exists:false}}).toArray(function(err,result){
+    //     courseSuggestionDB.deleteMany({year:{$exists:false},quarter:{$exists:false}},function(){
+    //         for(let i=0;i<result.length;i++){
+    //             courseSuggestionDB.insertOne({
+    //                 _id:"201703"+result[i].grade+result[i].level,
+    //                 grade:result[i].grade,
+    //                 level:result[i].level,
+    //                 courseID:result[i].courseID,
+    //                 year:2017,quarter:3
+    //             });
+    //         }
+    //     });
+    // });
+
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
