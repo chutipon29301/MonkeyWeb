@@ -111,7 +111,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture/"}});
     configDB.updateMany({maxSeat:{$exists:true}},{$unset:{maxSeat:""}});
     // userDB.updateMany({position:"student","student.registrationState":{$exists:true}},{$unset:{"student.registrationState":""}});
-    // TODO Migrating code here
+    // TODO Migration1 student.registrationState->student.quarter[].registrationState
     // quarterDB.updateOne({_id:"201703"},{
     //     $setOnInsert:{
     //         year:2017,quarter:3,name:"CR60Q3",
@@ -130,6 +130,13 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     //             })
     //         }
     //     });
+    // });
+    // TODO Migration2 year/quarter -> defaultQuarter
+    // configDB.updateOne({},{
+    //     $unset:{year:"",quarter:""},
+    //     $set:{defaultQuarter:{
+    //         quarter:{year:2017,quarter:3},
+    //     }}
     // });
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();

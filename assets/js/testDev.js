@@ -8,6 +8,14 @@ $(document).ready(function(){
                         $(this).val(data[prop][i]);
                     });
                 }
+                else if(prop==="defaultQuarter"){
+                    $("[action=\"post/editConfig\"] [name=\"defaultQuarterYear\"]").val(data.defaultQuarter.quarter.year);
+                    $("[action=\"post/editConfig\"] [name=\"defaultQuarterQuarter\"]").val(data.defaultQuarter.quarter.quarter);
+                    if(data.defaultQuarter.summer!==undefined){
+                        $("[action=\"post/editConfig\"] [name=\"defaultSummerYear\"]").val(data.defaultQuarter.summer.year);
+                        $("[action=\"post/editConfig\"] [name=\"defaultSummerQuarter\"]").val(data.defaultQuarter.summer.quarter);
+                    }
+                }
                 else $("[action=\"post/editConfig\"] [name=\""+prop+"\"]").val(data[prop]);
             }
         }

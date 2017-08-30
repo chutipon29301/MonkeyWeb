@@ -956,45 +956,47 @@ module.exports=function(app,db){
         var errOutput=[];
         findUser(res,studentID,{position:"student"},function(result){
             configDB.findOne({},function(err,config){
-                var newPath=config.receiptPath+"CR"+config.year+"Q"+config.quarter+"/";
-                fs.ensureDir(newPath,function(err){
-                    if(err)res.send({err:err,at:"ensureDir"});
-                    else{
-                        var originalName=file.originalname;
-                        var originalType=originalName.slice(originalName.lastIndexOf("."));
-                        var oldPath=file.path;
-                        fs.readdir(newPath,function(err,files){
-                            callbackLoop(files.length,function(i,continueLoop){
-                                if(files[i].split(".",1)[0]==studentID){
-                                    fs.remove(newPath+files[i],function(err){
-                                        if(err)errOutput.push({err:err,at:"remove#"+(i+1)});
-                                        continueLoop();
-                                    });
-                                }
-                                else continueLoop();
-                            },function(){
-                                if(errOutput.length)res.send({err:errOutput});
-                                else{
-                                    fs.readFile(oldPath,function(err,data){
-                                        if(err)res.send({err:err,at:"readFile"});
-                                        else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
-                                            if(err)res.send({err:err,at:"writeFile"});
-                                            else{
-                                                if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
-                                                    userDB.updateOne({_id:studentID},{
-                                                        $set:{"student.registrationState":"transferred"}
-                                                    },function(){
-                                                        res.send({});
-                                                    });
-                                                }
-                                                else res.send({});
-                                            }
+                getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+                    var newPath=config.receiptPath+quarter.name+"/";
+                    fs.ensureDir(newPath,function(err){
+                        if(err)res.send({err:err,at:"ensureDir"});
+                        else{
+                            var originalName=file.originalname;
+                            var originalType=originalName.slice(originalName.lastIndexOf("."));
+                            var oldPath=file.path;
+                            fs.readdir(newPath,function(err,files){
+                                callbackLoop(files.length,function(i,continueLoop){
+                                    if(files[i].split(".",1)[0]==studentID){
+                                        fs.remove(newPath+files[i],function(err){
+                                            if(err)errOutput.push({err:err,at:"remove#"+(i+1)});
+                                            continueLoop();
                                         });
-                                    });
-                                }
+                                    }
+                                    else continueLoop();
+                                },function(){
+                                    if(errOutput.length)res.send({err:errOutput});
+                                    else{
+                                        fs.readFile(oldPath,function(err,data){
+                                            if(err)res.send({err:err,at:"readFile"});
+                                            else fs.writeFile(newPath+studentID+originalType.toLowerCase(),data,function(err){
+                                                if(err)res.send({err:err,at:"writeFile"});
+                                                else{
+                                                    if(result.student.registrationState=="untransferred"||result.student.registrationState=="rejected"){
+                                                        userDB.updateOne({_id:studentID},{
+                                                            $set:{"student.registrationState":"transferred"}
+                                                        },function(){
+                                                            res.send({});
+                                                        });
+                                                    }
+                                                    else res.send({});
+                                                }
+                                            });
+                                        });
+                                    }
+                                });
                             });
-                        });
-                    }
+                        }
+                    });
                 });
             });
         });
@@ -1082,35 +1084,37 @@ module.exports=function(app,db){
                 if(result==null)res.send({err:"The requested course doesn't exist."});
                 else{
                     configDB.findOne({},function(err,config){
-                        var newPath=config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/";
-                        fs.emptyDir(newPath,function(err){
-                            if(err)res.send({err:err,at:"emptyDir"});
-                            else{
-                                callbackLoop(files.length,function(i,continueLoop){
-                                    var file=files[i];
-                                    var originalName=file.originalname;
-                                    var oldPath=file.path;
-                                    fs.readFile(oldPath,function(err,data){
-                                        if(err){
-                                            errOutput.push({err:err,at:"readFile#"+(i+1)});
-                                            continueLoop();
+                        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+                            var newPath=config.courseMaterialPath+quarter.name+"/"+courseID+"/"+numberOfSub+"/";
+                            fs.emptyDir(newPath,function(err){
+                                if(err)res.send({err:err,at:"emptyDir"});
+                                else{
+                                    callbackLoop(files.length,function(i,continueLoop){
+                                        var file=files[i];
+                                        var originalName=file.originalname;
+                                        var oldPath=file.path;
+                                        fs.readFile(oldPath,function(err,data){
+                                            if(err){
+                                                errOutput.push({err:err,at:"readFile#"+(i+1)});
+                                                continueLoop();
+                                            }
+                                            else fs.writeFile(newPath+originalName,data,function(err){
+                                                if(err)errOutput.push({err:err,at:"writeFile#"+(i+1)});
+                                                continueLoop();
+                                            });
+                                        });
+                                    },function(){
+                                        if(errOutput.length)res.send({err:errOutput});
+                                        else{
+                                            courseDB.updateOne({_id:courseID},{
+                                                $set:{["submission."+(numberOfSub-1)]:"pending"}
+                                            },function(){
+                                                res.send({});
+                                            });
                                         }
-                                        else fs.writeFile(newPath+originalName,data,function(err){
-                                            if(err)errOutput.push({err:err,at:"writeFile#"+(i+1)});
-                                            continueLoop();
-                                        });
                                     });
-                                },function(){
-                                    if(errOutput.length)res.send({err:errOutput});
-                                    else{
-                                        courseDB.updateOne({_id:courseID},{
-                                            $set:{["submission."+(numberOfSub-1)]:"pending"}
-                                        },function(){
-                                            res.send({});
-                                        });
-                                    }
-                                });
-                            }
+                                }
+                            });
                         });
                     });
                 }
@@ -1135,25 +1139,27 @@ module.exports=function(app,db){
                     }
                     else if(action=="reject"||action=="remove"){
                         configDB.findOne({},function(err,config){
-                            var newPath=config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"+courseID+"/"+numberOfSub+"/";
-                            fs.remove(newPath,function(err){
-                                if(err)res.send({err:err,at:"remove"});
-                                else{
-                                    if(action=="reject"){
-                                        courseDB.updateOne({_id:courseID},{
-                                            $set:{["submission."+(numberOfSub-1)]:"rejected"}
-                                        },function(){
-                                            res.send({});
-                                        });
+                            getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+                                var newPath=config.courseMaterialPath+quarter.name+"/"+courseID+"/"+numberOfSub+"/";
+                                fs.remove(newPath,function(err){
+                                    if(err)res.send({err:err,at:"remove"});
+                                    else{
+                                        if(action=="reject"){
+                                            courseDB.updateOne({_id:courseID},{
+                                                $set:{["submission."+(numberOfSub-1)]:"rejected"}
+                                            },function(){
+                                                res.send({});
+                                            });
+                                        }
+                                        else if(action=="remove"){
+                                            courseDB.updateOne({_id:courseID},{
+                                                $set:{["submission."+(numberOfSub-1)]:null}
+                                            },function(){
+                                                res.send({});
+                                            });
+                                        }
                                     }
-                                    else if(action=="remove"){
-                                        courseDB.updateOne({_id:courseID},{
-                                            $set:{["submission."+(numberOfSub-1)]:null}
-                                        },function(){
-                                            res.send({});
-                                        });
-                                    }
-                                }
+                                });
                             });
                         });
                     }
@@ -1523,16 +1529,27 @@ module.exports=function(app,db){
             res.send(config);
         });
     });
-    //OK {year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,studentCommentPicturePath,[maxSeat]} return {}
+    //OK {defaultQuarterYear,defaultQuarterQuarter,defaultSummerYear,defaultSummerQuarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,studentCommentPicturePath,[maxSeat]} return {}
     post("/post/editConfig",function(req,res){
+        var defaultQuarter={
+            quarter:{
+                year:parseInt(req.body.defaultQuarterYear),
+                quarter:parseInt(req.body.defaultQuarterQuarter)
+            }
+        };
+        if(req.body.defaultSummerYear!==undefined&&req.body.defaultSummerQuarter!==undefined){
+            defaultQuarter.summer={
+                year:parseInt(req.body.defaultSummerYear),
+                quarter:parseInt(req.body.defaultSummerQuarter)
+            }
+        }
         var dirPath=function(path){
             if(path.endsWith("/"))return path;
             return path+"/";
         };
         configDB.updateOne({},{
             $set:{
-                year:parseInt(req.body.year),
-                quarter:parseInt(req.body.quarter),
+                defaultQuarter:defaultQuarter,
                 courseMaterialPath:dirPath(req.body.courseMaterialPath),
                 receiptPath:dirPath(req.body.receiptPath),
                 nextStudentID:parseInt(req.body.nextStudentID),

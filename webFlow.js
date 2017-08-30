@@ -8,6 +8,61 @@ module.exports=function(app,db){
 
     var post=app.locals.post;
 
+    var configDB=db.collection("config");
+    var quarterDB=db.collection("quarter");
+    var getQuarter=function(year,quarter,callback){
+        if(year===undefined){
+            // TODO remove
+            if(quarter==="quarter"||quarter===undefined){
+                configDB.findOne({},function(err,config){
+                    quarterDB.findOne({year:config.year+2500-543,quarter:config.quarter},function(err,quarter){
+                        var output={quarterID:quarter._id};
+                        delete quarter._id;
+                        Object.assign(output,quarter);
+                        callback(null,output);
+                    });
+                });
+            }
+            else if(quarter==="summer"){
+                quarterDB.findOne({year:2017,quarter:11},function(err,quarter){
+                    var output={quarterID:quarter._id};
+                    delete quarter._id;
+                    Object.assign(output,quarter);
+                    callback(null,output);
+                });
+            }
+            else callback({err:"Year is not specified."});
+            // TODO add
+            // if(quarter===undefined)quarter="quarter";
+            // configDB.findOne({},function(err,config){
+            //     if(config.quarterID[quarter]===undefined)callback({err:"Year is not specified."});
+            //     else{
+            //         quarterDB.findOne({_id:config.quarterID[quarter]},function(err,quarter){
+            //             var output={quarterID:quarter._id};
+            //             delete quarter._id;
+            //             Object.assign(output,quarter);
+            //             callback(null,output);
+            //         });
+            //     }
+            // });
+        }
+        else{
+            if(isFinite(year)&&isFinite(quarter)){
+                year=parseInt(year);
+                quarter=parseInt(quarter);
+                quarterDB.findOne({year:year,quarter:quarter},function(err,quarter){
+                    if(quarter===null)callback({err:"Specified year and quarter are not found."});
+                    else{
+                        var output={quarterID:quarter._id};
+                        delete quarter._id;
+                        Object.assign(output,quarter);
+                        callback(null,output);
+                    }
+                });
+            }
+            else callback({err:"Year or quarter are not numbers."});
+        }
+    };
     var logPosition=function(cookie,callback){
         var userID=parseInt(cookie.monkeyWebUser);
         var password=cookie.monkeyWebPassword;
@@ -117,7 +172,10 @@ module.exports=function(app,db){
                 Object.assign(local,result);
                 post("post/getConfig",{},function(result){
                     Object.assign(local,{config:result});
-                    callback(local);
+                    getQuarter(undefined,undefined,function(err,result){
+                        Object.assign(local,{quarter:result});
+                        callback(local);
+                    });
                 });
             });
         });
@@ -133,7 +191,10 @@ module.exports=function(app,db){
                 Object.assign(local,result);
                 post("post/getConfig",{},function(result){
                     Object.assign(local,{config:result});
-                    callback(local);
+                    getQuarter(undefined,undefined,function(err,result){
+                        Object.assign(local,{quarter:result});
+                        callback(local);
+                    });
                 });
             });
         });
