@@ -144,9 +144,9 @@ module.exports=function(app,db){
             // TODO add
             // if(quarter===undefined)quarter="quarter";
             // configDB.findOne({},function(err,config){
-            //     if(config.current[quarter]===undefined)callback({err:"Year is not specified."});
+            //     if(config.quarterID[quarter]===undefined)callback({err:"Year is not specified."});
             //     else{
-            //         quarterDB.findOne({_id:config.current[quarter]},function(err,quarter){
+            //         quarterDB.findOne({_id:config.quarterID[quarter]},function(err,quarter){
             //             var output={quarterID:quarter._id};
             //             delete quarter._id;
             //             Object.assign(output,quarter);

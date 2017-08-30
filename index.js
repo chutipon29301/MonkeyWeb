@@ -111,13 +111,26 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture/"}});
     configDB.updateMany({maxSeat:{$exists:true}},{$unset:{maxSeat:""}});
     // userDB.updateMany({position:"student","student.registrationState":{$exists:true}},{$unset:{"student.registrationState":""}});
+    // TODO Migrating code here
     // quarterDB.updateOne({_id:"201703"},{
     //     $setOnInsert:{
     //         year:2017,quarter:3,name:"CR60Q3",
     //         maxSeat:[8+6+12+6+6+2,27,12,10,16,12],
     //         week:[]
     //     }
-    // },{upsert:true});
+    // },{upsert:true},function(){
+    //     userDB.find({position:"student","student.quarter":{$exists:false}}).toArray(function(err,result){
+    //         for(let i=0;i<result.length;i++){
+    //             userDB.updateOne({_id:result[i]._id},{
+    //                 $push:{"student.quarter":{
+    //                     year:2017,quarter:3,
+    //                     registrationState:result[i].student.registrationState
+    //                 }},
+    //                 $unset:{"student.registrationState":""}
+    //             })
+    //         }
+    //     });
+    // });
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
