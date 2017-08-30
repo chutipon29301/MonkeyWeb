@@ -114,49 +114,49 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateMany({maxSeat:{$exists:true}},{$unset:{maxSeat:""}});
     // userDB.updateMany({position:"student","student.registrationState":{$exists:true}},{$unset:{"student.registrationState":""}});
     // TODO Migration1 student.registrationState->student.quarter[].registrationState
-    // quarterDB.updateOne({_id:"201703"},{
-    //     $setOnInsert:{
-    //         year:2017,quarter:3,name:"CR60Q3",
-    //         maxSeat:[8+6+12+6+6+2,27,12,10,16,12],
-    //         week:[]
-    //     }
-    // },{upsert:true},function(){
-    //     userDB.find({position:"student","student.quarter":{$exists:false}}).toArray(function(err,result){
-    //         for(let i=0;i<result.length;i++){
-    //             userDB.updateOne({_id:result[i]._id},{
-    //                 $push:{"student.quarter":{
-    //                     year:2017,quarter:3,
-    //                     registrationState:result[i].student.registrationState
-    //                 }},
-    //                 $unset:{"student.registrationState":""}
-    //             });
-    //         }
-    //     });
-    // });
+    quarterDB.updateOne({_id:"201703"},{
+        $setOnInsert:{
+            year:2017,quarter:3,name:"CR60Q3",
+            maxSeat:[8+6+12+6+6+2,27,12,10,16,12],
+            week:[]
+        }
+    },{upsert:true},function(){
+        userDB.find({position:"student","student.quarter":{$exists:false}}).toArray(function(err,result){
+            for(let i=0;i<result.length;i++){
+                userDB.updateOne({_id:result[i]._id},{
+                    $push:{"student.quarter":{
+                        year:2017,quarter:3,
+                        registrationState:result[i].student.registrationState
+                    }},
+                    $unset:{"student.registrationState":""}
+                });
+            }
+        });
+    });
     // TODO Migration2 year/quarter -> defaultQuarter
-    // configDB.updateOne({defaultQuarter:{$exists:false}},{
-    //     $unset:{year:"",quarter:""},
-    //     $set:{defaultQuarter:{
-    //         quarter:{year:2017,quarter:3},
-    //     }}
-    // });
+    configDB.updateOne({defaultQuarter:{$exists:false}},{
+        $unset:{year:"",quarter:""},
+        $set:{defaultQuarter:{
+            quarter:{year:2017,quarter:3},
+        }}
+    });
     // TODO Migration3 year/quarter in course and courseSuggestion
-    // courseDB.updateMany({year:{$exists:false},quarter:{$exists:false}},{
-    //     $set:{year:2017,quarter:3}
-    // });
-    // courseSuggestionDB.find({year:{$exists:false},quarter:{$exists:false}}).toArray(function(err,result){
-    //     courseSuggestionDB.deleteMany({year:{$exists:false},quarter:{$exists:false}},function(){
-    //         for(let i=0;i<result.length;i++){
-    //             courseSuggestionDB.insertOne({
-    //                 _id:"201703"+result[i].grade+result[i].level,
-    //                 grade:result[i].grade,
-    //                 level:result[i].level,
-    //                 courseID:result[i].courseID,
-    //                 year:2017,quarter:3
-    //             });
-    //         }
-    //     });
-    // });
+    courseDB.updateMany({year:{$exists:false},quarter:{$exists:false}},{
+        $set:{year:2017,quarter:3}
+    });
+    courseSuggestionDB.find({year:{$exists:false},quarter:{$exists:false}}).toArray(function(err,result){
+        courseSuggestionDB.deleteMany({year:{$exists:false},quarter:{$exists:false}},function(){
+            for(let i=0;i<result.length;i++){
+                courseSuggestionDB.insertOne({
+                    _id:"201703"+result[i].grade+result[i].level,
+                    grade:result[i].grade,
+                    level:result[i].level,
+                    courseID:result[i].courseID,
+                    year:2017,quarter:3
+                });
+            }
+        });
+    });
 
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
