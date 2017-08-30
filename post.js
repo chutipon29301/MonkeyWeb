@@ -12,6 +12,7 @@ module.exports=function(app,db){
     var fullHybridDB=db.collection("fullHybrid");
     // var hybridSeatDB=db.collection("hybridSeat");
     // var hybridSheetDB=db.collection("hybridSheet");
+    var quarterDB=db.collection("quarter");
     var studentAttendanceModifierDB=db.collection("studentAttendanceModifier");
     var studentCommentDB=db.collection("studentComment");
     var randomPasswordDB=db.collection("randomPassword");
@@ -55,6 +56,10 @@ module.exports=function(app,db){
             output|=(1<<(array[i]-1));
         }
         return output;
+    };
+    var digit=function(x,digit){
+        var output=x.toString();
+        return "0".repeat(Math.max(digit-output.length,0))+output;
     };
     var prettify=function(str){
         return JSON.stringify(str,null,2);
@@ -113,6 +118,59 @@ module.exports=function(app,db){
                 callback(subject+gradeBitToString(grade)+level);
             });
         });
+    };
+    var getQuarter=function(year,quarter,callback){
+        if(year===undefined){
+            // TODO remove
+            if(quarter==="quarter"||quarter===undefined){
+                configDB.findOne({},function(err,config){
+                    quarterDB.findOne({year:config.year+2500-543,quarter:config.quarter},function(err,quarter){
+                        var output={quarterID:quarter._id};
+                        delete quarter._id;
+                        Object.assign(output,quarter);
+                        callback(null,output);
+                    });
+                });
+            }
+            else if(quarter==="summer"){
+                quarterDB.findOne({year:2017,quarter:11},function(err,quarter){
+                    var output={quarterID:quarter._id};
+                    delete quarter._id;
+                    Object.assign(output,quarter);
+                    callback(null,output);
+                });
+            }
+            else callback({err:"Year is not specified."});
+            // TODO add
+            // if(quarter===undefined)quarter="quarter";
+            // configDB.findOne({},function(err,config){
+            //     if(config.current[quarter]===undefined)callback({err:"Year is not specified."});
+            //     else{
+            //         quarterDB.findOne({_id:config.current[quarter]},function(err,quarter){
+            //             var output={quarterID:quarter._id};
+            //             delete quarter._id;
+            //             Object.assign(output,quarter);
+            //             callback(null,output);
+            //         });
+            //     }
+            // });
+        }
+        else{
+            if(isFinite(year)&&isFinite(quarter)){
+                year=parseInt(year);
+                quarter=parseInt(quarter);
+                quarterDB.findOne({year:year,quarter:quarter},function(err,quarter){
+                    if(quarter===null)callback({err:"Specified year and quarter are not found."});
+                    else{
+                        var output={quarterID:quarter._id};
+                        delete quarter._id;
+                        Object.assign(output,quarter);
+                        callback(null,output);
+                    }
+                });
+            }
+            else callback({err:"Year or quarter are not numbers."});
+        }
     };
 
     var logPosition=function(cookie,callback){
@@ -844,11 +902,11 @@ module.exports=function(app,db){
     });
 
     // Room Management
-    //OK {day} return {[course],[unassignedCourse],[courseHybrid],[fullHybrid],maxHybridSeat}
+    //OK Q{day} return {[course],[unassignedCourse],[courseHybrid],[fullHybrid],maxHybridSeat}
     post("/post/roomInfo",function(req,res){
         var day=parseInt(req.body.day);
         var output={course:[],unassignedCourse:[],courseHybrid:[],fullHybrid:[]};
-        configDB.findOne({},function(err,config){
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
             getCourseDB(function(courseDB){
                 courseDB.find({day:day}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,course){
                     for(var i=0;i<course.length;i++){
@@ -859,7 +917,7 @@ module.exports=function(app,db){
                             if(course[i].room>=0){
                                 output.course[course[i].room]={
                                     courseID:course[i]._id,
-                                    maxSeat:config.maxSeat[course[i].room]
+                                    maxSeat:quarter.maxSeat[course[i].room]
                                 };
                             }
                             else output.unassignedCourse.push(course[i]._id);
@@ -881,7 +939,7 @@ module.exports=function(app,db){
                                 }
                                 output.fullHybrid[index].studentID.push(fullHybrid.student[i].studentID);
                             }
-                            output.maxHybridSeat=config.maxSeat[0];
+                            output.maxHybridSeat=quarter.maxSeat[0];
                             res.send(output);
                         }
                     });
@@ -1471,10 +1529,6 @@ module.exports=function(app,db){
             if(path.endsWith("/"))return path;
             return path+"/";
         };
-        var maxSeat=[];
-        for(var i=0;i<req.body.maxSeat.length;i++){
-            maxSeat.push(parseInt(req.body.maxSeat[i]));
-        }
         configDB.updateOne({},{
             $set:{
                 year:parseInt(req.body.year),
@@ -1485,8 +1539,7 @@ module.exports=function(app,db){
                 nextTutorID:parseInt(req.body.nextTutorID),
                 profilePicturePath:dirPath(req.body.profilePicturePath),
                 studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
-                studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath),
-                maxSeat:maxSeat
+                studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath)
             }
         },function(){
             configDB.findOne({},function(err,config){
@@ -1500,6 +1553,32 @@ module.exports=function(app,db){
     post("/post/addStudentGrade",function(req,res){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
+    });
+    // TODO {year,quarter,name,maxSeat,week}
+    post("/post/addQuarter",function(req,res){
+        var year=parseInt(req.body.year);
+        var quarter=parseInt(req.body.quarter);
+        var name=req.body.name;
+        var maxSeat=[8+6+12+6+6+2,27,12,10,16,12];
+        var week=[];
+        // var maxSeat=[]; TODO
+        // for(var i=0;i<req.body.maxSeat.length;i++){
+        //     maxSeat.push(parseInt(req.body.maxSeat[i]));
+        // }
+        quarterDB.insertOne({
+            _id:year+digit(quarter,2),
+            year:year,quarter:quarter,name:name,
+            maxSeat:maxSeat,week:week
+        },function(){
+            userDB.updateMany({position:"student"},{
+                $push:{quarter:{
+                    year:year,quarter:quarter,
+                    registrationState:"unregistered"
+                }}
+            },function(){
+                res.send({});
+            })
+        });
     });
     post("/post/lineNotify",function(req,res){
         lineNotify(req.body.recipient,req.body.message,function(err,x,body){

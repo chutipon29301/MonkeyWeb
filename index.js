@@ -77,9 +77,27 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     }
 
     var configDB=db.collection("config");
+    var quarterDB=db.collection("quarter");
     var studentAttendanceModifierDB=db.collection("studentAttendanceModifier");
     var studentCommentDB=db.collection("studentComment");
     var userDB=db.collection("user");
+
+    // db.dropCollection("test");
+    // var testDB=db.collection("test");
+    // testDB.insertMany([{fname:"3un",lname:"Last",student:{state:[{q:3,val:"unregistered"}]}},
+    //     {fname:"3fin",lname:"Last",student:{state:[{q:3,val:"finished"}]}},
+    //     {fname:"4un",lname:"Last",student:{state:[{q:4,val:"unregistered"}]}},
+    //     {fname:"3fin4un",lname:"Last",student:{state:[{q:3,val:"finished"},{q:4,val:"unregistered"}]}},
+    // ],function(){
+    //     testDB.updateMany({},{$pull:{"student.state":{val:"unregistered",q:4}}},function(err,result){
+    //         testDB.find().toArray(function(err,result){
+    //             console.log(JSON.stringify(result,null,2));
+    //         });
+    //     });
+    //     // testDB.find({"student.state.q":4}).toArray(function(err,result){
+    //     //     console.log(chalk.bgBlue(JSON.stringify(result,null,2)));
+    //     // });
+    // });
 
     // db.dropDatabase();
     // db.dropCollection("studentComment");
@@ -90,7 +108,16 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
 
     db.renameCollection("CR60Q3","course");
-    configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture"}});
+    configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture/"}});
+    configDB.updateMany({maxSeat:{$exists:true}},{$unset:{maxSeat:""}});
+    // userDB.updateMany({position:"student","student.registrationState":{$exists:true}},{$unset:{"student.registrationState":""}});
+    // quarterDB.updateOne({_id:"201703"},{
+    //     $setOnInsert:{
+    //         year:2017,quarter:3,name:"CR60Q3",
+    //         maxSeat:[8+6+12+6+6+2,27,12,10,16,12],
+    //         week:[]
+    //     }
+    // },{upsert:true});
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
@@ -137,8 +164,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
             nextStudentID:17001,nextTutorID:99035,
             profilePicturePath:"profilePicture/",
             studentSlideshowPath:"studentSlideshow/",
-            studentCommentPicturePath:"studentCommentPicture/",
-            maxSeat:[8+6+12+6+6+2,27,12,10,16,12]
+            studentCommentPicturePath:"studentCommentPicture/"
         }
     },{upsert:true},function(err,result){
         if(result.upsertedCount){
