@@ -123,21 +123,21 @@ module.exports=function(app,db){
         if(year===undefined){
             if(quarter===undefined)quarter="quarter";
             configDB.findOne({},function(err,config){
-                if(config.defaultQuarter[quarter]===undefined)callback({err:"Year is not specified."});
-                else{
+                if(config.defaultQuarter[quarter]){
                     quarterDB.findOne({
                         year:config.defaultQuarter[quarter].year,
                         quarter:config.defaultQuarter[quarter].quarter
                     },function(err,quarter){
-                        if(quarter===null)callback({err:"Configuration error occurs."});
-                        else{
+                        if(quarter){
                             var output={quarterID:quarter._id};
                             delete quarter._id;
                             Object.assign(output,quarter);
                             callback(null,output);
                         }
+                        else callback({err:"Configuration error occurs."});
                     });
                 }
+                else callback({err:"Year is not specified."});
             });
         }
         else{
@@ -146,13 +146,13 @@ module.exports=function(app,db){
                     year:parseInt(year),
                     quarter:parseInt(quarter)
                 },function(err,quarter){
-                    if(quarter===null)callback({err:"Specified year and quarter are not found."});
-                    else{
+                    if(quarter){
                         var output={quarterID:quarter._id};
                         delete quarter._id;
                         Object.assign(output,quarter);
                         callback(null,output);
                     }
+                    else callback({err:"Specified year and quarter are not found."});
                 });
             }
             else callback({err:"Year or quarter are not numbers."});
@@ -398,23 +398,45 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID} return {registrationState}
+    //OK Q{studentID} return {registrationState}
     post("/post/registrationState",function(req,res){
         var studentID=parseInt(req.body.studentID);
-        findUser(res,studentID,{position:"student"},function(result){
-            res.send({registrationState:result.student.registrationState});
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                findUser(res,studentID,{position:"student"},function(result){
+                    var index=result.student.quarter.findIndex(function(x){
+                        return x.year===quarter.year&&x.quarter===quarter.quarter;
+                    });
+                    if(index===-1)res.send({err:"Specified quarter information was not found in student."});// TODO return "unregistered"?
+                    else res.send({registrationState:result.student.quarter[index].registrationState});
+                });
+            }
         });
     });
-    //OK {studentID,registrationState} return {}
+    //OK Q{studentID,registrationState} return {}
     post("/post/changeRegistrationState",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var registrationState=req.body.registrationState;
-        findUser(res,studentID,{position:"student"},function(result){
-            userDB.updateOne({_id:studentID},{
-                $set:{"student.registrationState":registrationState}
-            },function(){
-                res.send({});
-            });
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                findUser(res,studentID,{position:"student"},function(result){
+                    var index=result.student.quarter.findIndex(function(x){
+                        return x.year===quarter.year&&x.quarter===quarter.quarter;
+                    });
+                    if(index===-1){// TODO create new element
+                        res.send({err:"Specified quarter information was not found in student."});
+                    }
+                    else{
+                        userDB.updateOne({_id:studentID},{
+                            $set:{["student.quarter."+index+".registrationState"]:registrationState}
+                        },function(){
+                            res.send({});
+                        });
+                    }
+                });
+            }
         });
     });
 

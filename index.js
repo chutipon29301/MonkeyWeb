@@ -112,7 +112,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     db.renameCollection("CR60Q3","course");
     configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture/"}});
     configDB.updateMany({maxSeat:{$exists:true}},{$unset:{maxSeat:""}});
-    // userDB.updateMany({position:"student","student.registrationState":{$exists:true}},{$unset:{"student.registrationState":""}});
     // TODO Migration1 student.registrationState->student.quarter[].registrationState
     quarterDB.updateOne({_id:"201703"},{
         $setOnInsert:{

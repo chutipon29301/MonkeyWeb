@@ -6,6 +6,9 @@ block head
 block body
     include generalTemplate
     include inputTemplate
+    mixin optionalQuarter
+        +form-group("year"): +input-number("year")
+        +form-group("quarter"): +input-text("quarter")
     mixin form-horizontal-title(name)
         +form-horizontal(name)
             +form-title(name)
@@ -78,10 +81,12 @@ block body
                         +submit("post/studentProfile")
                 +list-group-item
                     +form-horizontal-title("post/registrationState")
+                        +optionalQuarter
                         +form-group("studentID"): +input-number("studentID")(required)
                         +submit("post/registrationState")
                 +list-group-item
                     +form-horizontal-title("post/changeRegistrationState")
+                        +optionalQuarter
                         +form-group("studentID"): +input-number("studentID")(required)
                         +form-group("registrationState"): +select-registration-state()(required)
                         +submit("post/changeRegistrationState")
@@ -263,8 +268,7 @@ block body
             +panel-list-group("Room Management")
                 +list-group-item
                     +form-horizontal-title("post/roomInfo")
-                        +form-group("year"): +input-number("year")
-                        +form-group("quarter"): +input-number("quarter")
+                        +optionalQuarter
                         +form-group("day"): +select-course-day()(required)
                         +submit("post/roomInfo")
             +panel-list-group("File Uploading")
