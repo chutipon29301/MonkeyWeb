@@ -906,47 +906,56 @@ function showAllComment() {
 function getName(cm, i) {
     $.post('post/name', { userID: cm.comment[i].tutorID }).then((name) => {
         let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
-        $("#comment").append("<div class='dropdown'></div>");
-        let str = "<h4 class='dropdown-toggle' data-toggle='dropdown'><span style='color:green' class='glyphicon glyphicon-ok" + (cm.comment[i].isCleared ? "" : " hidden") +
-            "'></span><span style='color:red' class='glyphicon glyphicon-pushpin" + (cm.comment[i].priority > 0 ? "" : " hidden") + "'></span> " +
-            name.nickname + " (" + day + ") <span class='glyphicon glyphicon-option-vertical'></span></h4>";
-        $('.dropdown:last-child').append(str);
-        $('.dropdown:last-child').append("<ul class='dropdown-menu'><li><a onClick='clearComment(\"" + cm.comment[i].commentID +
-            "\")'>CLEAR</a></li><li><a onClick='addPin(\"" + cm.comment[i].commentID + "\")'>PIN</a></li><li><a onClick='rmPin(\"" +
-            cm.comment[i].commentID + "\")'>UNPIN</a></li><li><a onClick='rmComm(\"" + cm.comment[i].commentID + "\")'>REMOVE</a></li></ul>");
+        let str = "<h4>"
+            + "<span class='glyphicon glyphicon-pushpin'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "onClick='pin(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].priority > 0 ? 0 : 1) + ");'></span>"
+            + "<span class='glyphicon glyphicon-ok'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "onClick='clearComm(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].isCleared ? 0 : 1) + ");'></span>"
+            + name.nickname + " (" + day + ") "
+            + "<span class='glyphicon glyphicon-trash' style='color:red' onClick='rmComm(\"" + cm.comment[i].commentID + "\");'></span>"
+            + "</h4>"
+        $("#comment").append(str);
         $("#comment").append("<p> " + cm.comment[i].message + "</p>");
-        if (i < cm.comment.length - 1) getName(cm, i + 1);
+        if (cm.comment[i].hasAttachment) {
+            $.post('post/getConfig').then((config) => {
+                let path = config.studentCommentPicturePath;
+                path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
+                $.get(path + ".jpg").done(function (result) {
+                    $("#comment").append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
+                    if (i < cm.comment.length - 1) getName(cm, i + 1)
+                }).fail(function () {
+                    $.get(path + ".jpeg").done(function (result) {
+                        $("#comment").append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+                        if (i < cm.comment.length - 1) getName(cm, i + 1)
+                    }).fail(function () {
+                        $.get(path + ".png").done(function (result) {
+                            $("#comment").append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                            if (i < cm.comment.length - 1) getName(cm, i + 1)
+                        }).fail(function () {
+                            if (i < cm.comment.length - 1) getName(cm, i + 1)
+                        });
+                    });
+                });
+            })
+        }
+        else if (i < cm.comment.length - 1) getName(cm, i + 1)
     })
 }
-// for clear comment
-function clearComment(commID) {
-    let cookie = getCookieDict();
-    let pos = cookie.pos;
-    $.post('post/clearStudentComment', { commentID: commID, isCleared: true }).then((data) => {
-        showComment(pos, parseInt(cookie.commIndex));
+// for clear/unclear comment
+function clearComm(commID, val) {
+    $.post('post/clearStudentComment', { commentID: commID, isCleared: val }).then((data) => {
+        showComment();
     })
 }
-// for pin comment
-function addPin(commID) {
-    let cookie = getCookieDict();
-    let pos = cookie.pos;
-    $.post('post/changeStudentCommentPriority', { commentID: commID, priority: 1 }).then((data) => {
-        showComment(pos, parseInt(cookie.commIndex));
-    })
-}
-// for unpin comment
-function rmPin(commID) {
-    let cookie = getCookieDict();
-    let pos = cookie.pos;
-    $.post('post/changeStudentCommentPriority', { commentID: commID, priority: 0 }).then((data) => {
-        showComment(pos, parseInt(cookie.commIndex));
+// for pin/unpin comment
+function pin(commID, val) {
+    $.post('post/changeStudentCommentPriority', { commentID: commID, priority: val }).then((data) => {
+        showComment();
     })
 }
 // for remove comment
 function rmComm(commID) {
-    let cookie = getCookieDict();
-    let pos = cookie.pos;
-    $.post('post/removeStudentComment', { commentID: commID }).then((data) => {
-        showComment(pos, parseInt(cookie.commIndex));
-    })
+    if (confirm("ต้องการลบ comment นี้") === true) {
+        $.post('post/removeStudentComment', { commentID: commID }).then((data) => {
+            showComment();
+        })
+    }
 }
