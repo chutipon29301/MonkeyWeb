@@ -226,6 +226,7 @@ block body
                 +list-group-item
                     .loader.center-block
                     +form-horizontal-title("post/addCourseSuggestion")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +form-group("level"): +input-text("level")(required)
                         //-TODO array
@@ -234,6 +235,7 @@ block body
                 +list-group-item
                     .loader.center-block
                     +form-horizontal-title("post/removeCourseSuggestion")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +form-group("level"): +input-text("level")(required)
                         //-TODO array
@@ -242,6 +244,7 @@ block body
                 +list-group-item
                     .loader.center-block
                     +form-horizontal-title("post/addCourse")
+                        +optionalQuarter
                         +form-group("grade"): +select-course-subject()(required)
                         +form-group("grade"): +input-grade-checkbox().input-array.input-int
                         +form-group("level"): +input-text("level")(required)

@@ -806,8 +806,7 @@ module.exports=function(app,db){
             if(err)res.send(err);
             else{
                 courseSuggestionDB.find({grade:grade,year:quarter.year,quarter:quarter.quarter}).sort({level:1}).toArray(function(err,result){
-                    if(result==null)res.send({course:output});
-                    else{
+                    if(result){
                         for(var i=0;i<result.length;i++){
                             output[i]={
                                 level:result[i].level,
@@ -816,34 +815,57 @@ module.exports=function(app,db){
                         }
                         res.send({course:output});
                     }
+                    else res.send({course:output});
                 });
             }
         });
     });
-    //OK {grade,level,[courseID]} return {}
+    //OK Q{grade,level,[courseID]} return {}
     post("/post/addCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
         var level=req.body.level;
         var courseID=req.body.courseID;
-        courseSuggestionDB.updateOne({grade:grade,level:level},{
-            $setOnInsert:{_id:grade+level},
-            $addToSet:{courseID:{$each:courseID}}
-        },{upsert:true},function(){
-            res.send({});
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                var year=quarter.year;
+                var quarter=quarter.quarter;
+                courseSuggestionDB.updateOne({grade:grade,level:level,quarter:quarter,year:year},{
+                    $setOnInsert:{_id:year+digit(quarter,2)+grade+level},
+                    $addToSet:{courseID:{$each:courseID}}
+                },{upsert:true},function(){
+                    res.send({});
+                });
+            }
         });
     });
-    //OK {grade,level,[courseID]} return {}
+    //OK Q{grade,level,[courseID]} return {}
     post("/post/removeCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
         var level=req.body.level;
         var courseID=req.body.courseID;
-        courseSuggestionDB.updateOne({grade:grade,level:level},{
-            $pull:{courseID:{$in:courseID}}
-        },function(){
-            res.send({});
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                var year=quarter.year;
+                var quarter=quarter.quarter;
+                var query={grade:grade,level:level,quarter:quarter,year:year};
+                courseSuggestionDB.updateOne(query,{
+                    $pull:{courseID:{$in:courseID}}
+                },function(){
+                    courseSuggestionDB.findOne(query,function(err,result){
+                        if(result.courseID.length===0){
+                            courseSuggestionDB.deleteOne(query,function(err,result){
+                                res.send({});
+                            });
+                        }
+                        else res.send({});
+                    });
+                });
+            }
         });
     });
-    //OK {subject,[grade],level,day,[tutor],description,room} return {}
+    //OK Q{subject,[grade],level,day,[tutor],description,room} return {}
     post("/post/addCourse",function(req,res){
         var courseID=new ObjectID().toString();
         var subject=req.body.subject;
@@ -860,16 +882,22 @@ module.exports=function(app,db){
         }
         var description=req.body.description;
         var room=parseInt(req.body.room);
-        getCourseDB(function(courseDB){
-            courseDB.insertOne({
-                _id:courseID,
-                subject:subject,grade:grade,level:level,
-                day:day,tutor:tutor,
-                student:[],submission:[],
-                description:description,room:room
-            },function(err,result){
-                res.send(result.ops);//TODO ret {}
-            });
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                getCourseDB(function(courseDB){
+                    courseDB.insertOne({
+                        _id:courseID,
+                        subject:subject,grade:grade,level:level,
+                        day:day,tutor:tutor,
+                        student:[],submission:[],
+                        description:description,room:room,
+                        year:quarter.year,quarter:quarter.quarter
+                    },function(err,result){
+                        res.send(result.ops);//TODO ret {}
+                    });
+                });
+            }
         });
     });
     //OK {courseID} return {}
