@@ -8,6 +8,47 @@ module.exports=function(app,db){
 
     var post=app.locals.post;
 
+    var configDB=db.collection("config");
+    var quarterDB=db.collection("quarter");
+    var getQuarter=function(year,quarter,callback){
+        if(year===undefined){
+            if(quarter===undefined)quarter="quarter";
+            configDB.findOne({},function(err,config){
+                if(config.defaultQuarter[quarter]===undefined)callback({err:"Year is not specified."});
+                else{
+                    quarterDB.findOne({
+                        year:config.defaultQuarter[quarter].year,
+                        quarter:config.defaultQuarter[quarter].quarter
+                    },function(err,quarter){
+                        if(quarter===null)callback({err:"Configuration error occurs."});
+                        else{
+                            var output={quarterID:quarter._id};
+                            delete quarter._id;
+                            Object.assign(output,quarter);
+                            callback(null,output);
+                        }
+                    });
+                }
+            });
+        }
+        else{
+            if(isFinite(year)&&isFinite(quarter)){
+                quarterDB.findOne({
+                    year:parseInt(year),
+                    quarter:parseInt(quarter)
+                },function(err,quarter){
+                    if(quarter===null)callback({err:"Specified year and quarter are not found."});
+                    else{
+                        var output={quarterID:quarter._id};
+                        delete quarter._id;
+                        Object.assign(output,quarter);
+                        callback(null,output);
+                    }
+                });
+            }
+            else callback({err:"Year or quarter are not numbers."});
+        }
+    };
     var logPosition=function(cookie,callback){
         var userID=parseInt(cookie.monkeyWebUser);
         var password=cookie.monkeyWebPassword;
@@ -117,7 +158,10 @@ module.exports=function(app,db){
                 Object.assign(local,result);
                 post("post/getConfig",{},function(result){
                     Object.assign(local,{config:result});
-                    callback(local);
+                    getQuarter(undefined,undefined,function(err,result){
+                        Object.assign(local,{quarter:result});
+                        callback(local);
+                    });
                 });
             });
         });
@@ -133,7 +177,10 @@ module.exports=function(app,db){
                 Object.assign(local,result);
                 post("post/getConfig",{},function(result){
                     Object.assign(local,{config:result});
-                    callback(local);
+                    getQuarter(undefined,undefined,function(err,result){
+                        Object.assign(local,{quarter:result});
+                        callback(local);
+                    });
                 });
             });
         });
