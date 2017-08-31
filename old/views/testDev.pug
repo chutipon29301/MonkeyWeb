@@ -207,9 +207,11 @@ block body
             +panel-list-group("Course")
                 +list-group-item
                     +form-horizontal-title("post/allCourse")
+                        +optionalQuarter
                         +submit("post/allCourse")
                 +list-group-item
                     +form-horizontal-title("post/gradeCourse")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +submit("post/gradeCourse")
                 +list-group-item
@@ -218,6 +220,7 @@ block body
                         +submit("post/courseInfo")
                 +list-group-item
                     +form-horizontal-title("post/listCourseSuggestion")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +submit("post/listCourseSuggestion")
                 +list-group-item

@@ -722,53 +722,63 @@ module.exports=function(app,db){
     });
 
     // Course
-    //OK {} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName,[tutorNicknameEn]}]}
+    //OK Q{} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName,[tutorNicknameEn]}]}
     post("/post/allCourse",function(req,res){
         var output=[];
-        getCourseDB(function(courseDB){
-            courseDB.find().sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
-                callbackLoop(result.length,function(i,continueLoop){
-                    getCourseName(result[i]._id,function(courseName){
-                        output[i]={courseID:result[i]._id};
-                        output[i]=Object.assign(output[i],result[i]);
-                        delete output[i]._id;
-                        output[i].grade=gradeBitToArray(output[i].grade);
-                        delete output[i].submission;
-                        output[i].courseName=courseName;
-                        output[i].tutorNicknameEn=[];
-                        callbackLoop(result[i].tutor.length,function(j,continueLoop){
-                            userDB.findOne({_id:result[i].tutor[j]},function(err,tutor){
-                                output[i].tutorNicknameEn[j]=tutor.nicknameEn;
-                                continueLoop();
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                getCourseDB(function(courseDB){
+                    courseDB.find({year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
+                        callbackLoop(result.length,function(i,continueLoop){
+                            getCourseName(result[i]._id,function(courseName){
+                                output[i]={courseID:result[i]._id};
+                                output[i]=Object.assign(output[i],result[i]);
+                                delete output[i]._id;
+                                output[i].grade=gradeBitToArray(output[i].grade);
+                                delete output[i].submission;
+                                output[i].courseName=courseName;
+                                output[i].tutorNicknameEn=[];
+                                callbackLoop(result[i].tutor.length,function(j,continueLoop){
+                                    userDB.findOne({_id:result[i].tutor[j]},function(err,tutor){
+                                        output[i].tutorNicknameEn[j]=tutor.nicknameEn;
+                                        continueLoop();
+                                    });
+                                },function(){
+                                    continueLoop();
+                                });
                             });
                         },function(){
-                            continueLoop();
+                            res.send({course:output});
                         });
                     });
-                },function(){
-                    res.send({course:output});
                 });
-            });
+            }
         });
     });
-    //OK {grade(1-13)} return {course:[{courseID,courseName,day,[tutor]}]}
+    //OK Q{grade(1-13)} return {course:[{courseID,courseName,day,[tutor]}]}
     post("/post/gradeCourse",function(req,res){
         var grade=parseInt(req.body.grade);
         var output=[];
-        getCourseDB(function(courseDB){
-            courseDB.find({grade:{$bitsAllSet:[grade-1]}}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
-                callbackLoop(result.length,function(i,continueLoop){
-                    getCourseName(result[i]._id,function(courseName){
-                        output.push({
-                            courseID:result[i]._id,courseName:courseName,
-                            day:result[i].day,tutor:result[i].tutor
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                getCourseDB(function(courseDB){
+                    courseDB.find({grade:{$bitsAllSet:[grade-1]},year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
+                        callbackLoop(result.length,function(i,continueLoop){
+                            getCourseName(result[i]._id,function(courseName){
+                                output.push({
+                                    courseID:result[i]._id,courseName:courseName,
+                                    day:result[i].day,tutor:result[i].tutor
+                                });
+                                continueLoop();
+                            });
+                        },function(){
+                            res.send({course:output});
                         });
-                        continueLoop();
                     });
-                },function(){
-                    res.send({course:output});
                 });
-            });
+            }
         });
     });
     //OK {courseID} return {courseName,day,[tutor],[student]}
@@ -788,20 +798,25 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {grade} return {[course]}
+    //OK Q{grade} return {[course]}
     post("/post/listCourseSuggestion",function(req,res){
         var grade=parseInt(req.body.grade);
         var output=[];
-        courseSuggestionDB.find({grade:grade}).sort({level:1}).toArray(function(err,result){
-            if(result==null)res.send({course:output});
+        getQuarter(req.body.year,req.body.quarter,function(err,quarter){
+            if(err)res.send(err);
             else{
-                for(var i=0;i<result.length;i++){
-                    output[i]={
-                        level:result[i].level,
-                        courseID:result[i].courseID
-                    };
-                }
-                res.send({course:output});
+                courseSuggestionDB.find({grade:grade,year:quarter.year,quarter:quarter.quarter}).sort({level:1}).toArray(function(err,result){
+                    if(result==null)res.send({course:output});
+                    else{
+                        for(var i=0;i<result.length;i++){
+                            output[i]={
+                                level:result[i].level,
+                                courseID:result[i].courseID
+                            };
+                        }
+                        res.send({course:output});
+                    }
+                });
             }
         });
     });
