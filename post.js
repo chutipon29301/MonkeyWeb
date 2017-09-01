@@ -336,7 +336,7 @@ module.exports=function(app,db){
     });
 
     // Student Information
-    //OK {} return {student:[{studentID,firstname,lastname,nickname,grade,registrationState,status,inCourse,inHybrid}]}
+    //OK {} return {student:[{studentID,firstname,lastname,nickname,grade,quarter,status,inCourse,inHybrid}]}
     post("/post/allStudent",function(req,res){
         var output=[];
         userDB.find({position:"student"}).sort({_id:1}).toArray(function(err,result){
@@ -350,7 +350,7 @@ module.exports=function(app,db){
                                 lastname:result[i].lastname,
                                 nickname:result[i].nickname,
                                 grade:result[i].student.grade,
-                                registrationState:result[i].student.registrationState,
+                                quarter:result[i].student.quarter,
                                 status:result[i].student.status,
                                 inCourse:course!=null,
                                 inHybrid:hybrid!=null
@@ -548,19 +548,28 @@ module.exports=function(app,db){
         var grade=parseInt(req.body.grade);
         var phoneParent=req.body.phoneParent;
         configDB.findOne({},function(err,config){
-            userDB.insertOne({
-                _id:config.nextStudentID,password:password,position:"student",
-                firstname:firstname,lastname:lastname,nickname:nickname,
-                firstnameEn:firstnameEn,lastnameEn:lastnameEn,nicknameEn:nicknameEn,
-                email:email,phone:phone,
-                student:{
-                    grade:grade,registrationState:"unregistered",
-                    skillDay:[],phoneParent:phoneParent,status:"active"
+            getQuarter(undefined,undefined,function(err,quarter){
+                if(err)res.send(err);
+                else{
+                    userDB.insertOne({
+                        _id:config.nextStudentID,password:password,position:"student",
+                        firstname:firstname,lastname:lastname,nickname:nickname,
+                        firstnameEn:firstnameEn,lastnameEn:lastnameEn,nicknameEn:nicknameEn,
+                        email:email,phone:phone,
+                        student:{
+                            grade:grade,skillDay:[],
+                            phoneParent:phoneParent,status:"active",
+                            quarter:[{
+                                year:quarter.year,quarter:quarter.quarter,
+                                registrationState:"unregistered"
+                            }]
+                        }
+                    },function(err,result){
+                        configDB.updateOne({},{$inc:{nextStudentID:1}});
+                        // res.send({}); TODO
+                        res.send(result.ops);
+                    });
                 }
-            },function(err,result){
-                configDB.updateOne({},{$inc:{nextStudentID:1}});
-                // res.send({}); TODO
-                res.send(result.ops);
             });
         });
     });
@@ -599,14 +608,7 @@ module.exports=function(app,db){
         addField("phoneParent",{out:"student.phoneParent"});
         findUser(res,studentID,{position:"student"},function(result){
             userDB.updateOne({_id:studentID},{$set:input},function(){
-                if(result.student.registrationState=="unregistered"){
-                    userDB.updateOne({_id:studentID},{
-                        $set:{"student.registrationState":"untransferred"}
-                    },function(){
-                        res.send({});
-                    });
-                }
-                else res.send({});
+                res.send({});
             });
         });
     });
@@ -672,30 +674,76 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID} return {}
+    // Old OK {studentID} return {}
+    // post("/post/addBlankStudent",function(req,res){
+    //     var studentID=req.body.studentID.split(" ");
+    //     for(var i=0;i<studentID.length;i++){
+    //         studentID[i]=parseInt(studentID[i]);
+    //         var password="";
+    //         password+=Math.floor(Math.random()*10);
+    //         password+=Math.floor(Math.random()*10);
+    //         password+=Math.floor(Math.random()*10);
+    //         password+=Math.floor(Math.random()*10);
+    //         getQuarter(undefined,undefined,function(err,quarter){
+    //             userDB.insertOne({
+    //                 _id:studentID[i],password:CryptoJS.SHA3(password).toString(),
+    //                 position:"student",
+    //                 firstname:"",lastname:"",nickname:"",
+    //                 firstnameEn:"",lastnameEn:"",nicknameEn:"",
+    //                 email:"",phone:"",
+    //                 student:{
+    //                     grade:0,skillDay:[],phoneParent:"",status:"active",
+    //                     quarter:[{
+    //                         year:quarter.year,quarter:quarter.quarter,
+    //                         registrationState:"unregistered"
+    //                     }]
+    //                 }
+    //             });
+    //             randomPasswordDB.insertOne({_id:studentID[i],password:password});
+    //         });
+    //     }
+    //     res.send({});
+    // });
+    //OK {number} return {}
     post("/post/addBlankStudent",function(req,res){
-        var studentID=req.body.studentID.split(" ");
-        for(var i=0;i<studentID.length;i++){
-            studentID[i]=parseInt(studentID[i]);
-            var password="";
-            password+=Math.floor(Math.random()*10);
-            password+=Math.floor(Math.random()*10);
-            password+=Math.floor(Math.random()*10);
-            password+=Math.floor(Math.random()*10);
-            userDB.insertOne({
-                _id:studentID[i],password:CryptoJS.SHA3(password).toString(),
-                position:"student",
-                firstname:"",lastname:"",nickname:"",
-                firstnameEn:"",lastnameEn:"",nicknameEn:"",
-                email:"",phone:"",
-                student:{
-                    grade:0,registrationState:"unregistered",
-                    skillDay:[],phoneParent:"",status:"active"
-                }
+        var number=parseInt(req.body.number);
+        var output=[];
+        configDB.findOne({},function(err,config){
+            configDB.updateOne({},{$inc:{nextStudentID:number}},function(){
+                var nextStudentID=config.nextStudentID;
+                getQuarter(undefined,undefined,function(err,quarter){
+                    callbackLoop(number,function(i,continueLoop){
+                        var studentID=nextStudentID+i;
+                        var password="";
+                        password+=Math.floor(Math.random()*10);
+                        password+=Math.floor(Math.random()*10);
+                        password+=Math.floor(Math.random()*10);
+                        password+=Math.floor(Math.random()*10);
+                        output[i]={studentID:studentID,password:password};
+                        userDB.insertOne({
+                            _id:studentID,password:CryptoJS.SHA3(password).toString(),
+                            position:"student",
+                            firstname:"",lastname:"",nickname:"",
+                            firstnameEn:"",lastnameEn:"",nicknameEn:"",
+                            email:"",phone:"",
+                            student:{
+                                grade:0,skillDay:[],phoneParent:"",status:"inactive",
+                                quarter:[{
+                                    year:quarter.year,quarter:quarter.quarter,
+                                    registrationState:"unregistered"
+                                }]
+                            }
+                        },function(){
+                            randomPasswordDB.insertOne({_id:studentID,password:password},function(){
+                                continueLoop();
+                            });
+                        });
+                    },function(){
+                        res.send({student:output});
+                    });
+                });
             });
-            randomPasswordDB.insertOne({_id:studentID[i],password:password});
-        }
-        res.send({});
+        });
     });
     //OK {} return {[student]}
     post("/post/listRandomStudent",function(req,res){
@@ -1629,7 +1677,7 @@ module.exports=function(app,db){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
-    // TODO {year,quarter,name,maxSeat,week}
+    //OK {year,quarter,name,maxSeat,week}
     post("/post/addQuarter",function(req,res){
         var year=parseInt(req.body.year);
         var quarter=parseInt(req.body.quarter);
@@ -1645,7 +1693,7 @@ module.exports=function(app,db){
             year:year,quarter:quarter,name:name,
             maxSeat:maxSeat,week:week
         },function(){
-            userDB.updateMany({position:"student"},{
+            userDB.updateMany({position:"student","student.status":{$in:["active","inactive"]}},{
                 $push:{quarter:{
                     year:year,quarter:quarter,
                     registrationState:"unregistered"
