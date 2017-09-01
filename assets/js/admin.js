@@ -752,7 +752,6 @@ function barcode(tableInfo) {
     });
 }
 
-
 function acceptReject(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     let cfCanvas = document.getElementById('appRej');
