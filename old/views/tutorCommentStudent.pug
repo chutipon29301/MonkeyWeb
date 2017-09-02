@@ -9,9 +9,6 @@ block head
             margin-bottom:20px;
             white-space:pre-line;
         }
-        #commentList ul{
-            margin-left:120px;
-        }
 block body
     .container
         .page-header
@@ -31,11 +28,12 @@ block body
         h2(style="margin-bottom:30px") Recent comments
         #commentList.row.col-sm-12.col-xs-12
         ul.pager(style='margin:0')
-            //- li.previous: a First
-            li.previous: a(onClick="commPosition(0)"): span.glyphicon.glyphicon-menu-left Previous
-            //- li.next: a Last
+            li.previous: a(onClick="commFirst()"): span.glyphicon.glyphicon-fast-backward   First
+            li.previous: a(onClick="commPosition(0)"): span.glyphicon.glyphicon-step-backward Previous
+            li.next: a(onClick="commLast()") Last 
+                span.glyphicon.glyphicon-fast-forward
             li.next: a(onClick="commPosition(1)") Next
-                span.glyphicon.glyphicon-menu-right
+                span.glyphicon.glyphicon-step-forward
     div.text-center(style='margin:0')
         ul.pagination(style='margin:0')
     //- Modal for uploadPic
