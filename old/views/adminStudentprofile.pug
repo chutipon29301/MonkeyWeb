@@ -37,7 +37,7 @@ block body
                         h4#parentPhone &nbsp;
             .col-sm-6(align="right")
                 .row
-                    img#imgTrans.img-responsive.col-sm-12(src="images/noImage.svg")
+                    img#imgTrans.img-responsive(src="images/noImage.svg")
                 .row
                     .col-sm-12.text-right
                         br
@@ -116,9 +116,12 @@ block body
                 .btn-group
                     button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
                     button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+        hr
         .row
             br
             .col-sm-4
+                h1 Summer
+                h4 STAGE: SummerStage
                 button.btn.btn-default#summer(onClick="downloadCanvas(this.id);") Download Summer Table
                 .table-responsive
                     br
@@ -133,6 +136,18 @@ block body
                             tr
                                 th.text-center 13-15
                                 td: button.btn.btn-default.col-sm-12 Add Course
+                .row
+                    .col-sm-12.text-left
+                        .btn-group
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+            .col-sm-8(align="right")
+                img.img-responsive(src="images/noImage.svg")
+                .col-sm-12.text-right
+                        br
+                        .btn-group
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
         img#mathImg(src="#" hidden="true")
         img#phyImg(src="#" hidden="true")
         canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170" hidden="true")

@@ -228,6 +228,14 @@ function getStudentProfile() {
     /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
+
+    getConfig().then((data) => {
+        log("[getStudentProfile()] : post/getConfig => ");
+        log(data);
+        let label = "CR" + data.year + "Q" + data.quarter;
+        document.getElementById("qLabel").innerHTML = label;
+    });
+
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     studentProfile(studentID).then((data) => {
         log("[getStudentProfile()] : post/studentProfile => ");

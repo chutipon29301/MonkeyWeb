@@ -73,6 +73,9 @@ const registrationState = (studentID) => $.post("post/registrationState", {
     studentID: studentID
 });
 
+//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
+const getConfig = ()=> $.post("post/getConfig", {});
+
 /**
  * Use to log text to console
  * @param text text to be log in console
