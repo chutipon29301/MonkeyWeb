@@ -1,67 +1,76 @@
 extends htmlTemplate
 block head
     -const pageTitle = "All Student"
-    script(src="js/admin.min.js")
+    script(src="js/adminAllstudent.min.js")
+    script(src="js/bootstrap3-typeahead.min.js")
     script.
         window.onload = getAllStudentContent();
 block body
     .container
-        .col-sm-2
-            h1 Student
-        .col-sm-8#formHead
-            .form-group.col-sm-3
-                label Filter:
-                select.form-control.col-sm-1#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
-                    option(value="active") Active
-                    option(value="inactive") Inactive
-                    option(value="dropped") Drop
-                    option(value="terminated") Terminate
-                    option(value="all") All
-            .form-group.col-sm-3
-                label &nbsp;
-                select.form-control.col-sm-1#stage(onChange="getAllStudentContent()" style="margin-bottom: 5px")
-                    option(value="all") All Stage
-                    option(value="finished") Finished
-                    option(value="registered") Registered
-                    option(value="rejected") Rejected
-                    option(value="pending") Pending
-                    option(value="transferred") Transferred
-                    option(value="untransferred") Untransferred
-                    option(value="unregistered") Unregistered
-            .form-group.col-sm-3
-                label &nbsp;
-                select.form-control.col-sm-1#grade(onChange="getAllStudentContent()" style="margin-bottom: 5px")
-                    option(value="all") All Grade
-                    option(value="1") P1
-                    option(value="2") P2
-                    option(value="3") P3
-                    option(value="4") P4
-                    option(value="5") P5
-                    option(value="6") P6
-                    option(value="7") S1
-                    option(value="8") S2
-                    option(value="9") S3
-                    option(value="10") S4
-                    option(value="11") S5
-                    option(value="12") S6
-            .form-group.col-sm-3
-                label &nbsp;
-                select.form-control.col-sm-1#course(onChange="getAllStudentContent()" style="margin-bottom: 5px")
-                    option(value="all" ) CR &amp; FHB
-                    option(value="cr") CR
-                    option(value="hb") FHB
-        form.form-group.col-sm-2(onsubmit="scanStudentBarcode(); return false;")
-            label Scan Barcode:
-            input.form-control(type="text" id="studentID" autofocus)
-        .table-responsive.col-sm-12
-            table.table.table-hover(style="font-family:'Trirong',serif;")
-                thead
-                    tr
-                        th.col-sm-1 No.
-                        th.col-sm-2 ID
-                        th.col-sm-2 Nickname
-                        th.col-sm-2 Name
-                        th.col-sm-2 Surname
-                        th.col-sm-1 CR
-                        th.col-sm-1 HB
-                tbody#allStudentTable
+        .row
+            .col-sm-12
+                h1 Student
+        .row
+            .col-sm-8#formHead
+                .row
+                    .form-group.col-sm-3
+                        label Filter:
+                        select.form-control#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                            option(value="active") Active
+                            option(value="inactive") Inactive
+                            option(value="dropped") Drop
+                            option(value="terminated") Terminate
+                            option(value="all") All
+                    .form-group.col-sm-3
+                        label &nbsp;
+                        select.form-control#stage(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                            option(value="all") All Stage
+                            option(value="finished") Finished
+                            option(value="registered") Registered
+                            option(value="rejected") Rejected
+                            option(value="pending") Pending
+                            option(value="transferred") Transferred
+                            option(value="untransferred") Untransferred
+                            option(value="unregistered") Unregistered
+                    .form-group.col-sm-3
+                        label &nbsp;
+                        select.form-control#grade(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                            option(value="all") All Grade
+                            option(value="1") P1
+                            option(value="2") P2
+                            option(value="3") P3
+                            option(value="4") P4
+                            option(value="5") P5
+                            option(value="6") P6
+                            option(value="7") S1
+                            option(value="8") S2
+                            option(value="9") S3
+                            option(value="10") S4
+                            option(value="11") S5
+                            option(value="12") S6
+                    .form-group.col-sm-3
+                        label &nbsp;
+                        select.form-control#course(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                            option(value="all" ) CR &amp; FHB
+                            option(value="cr") CR
+                            option(value="hb") FHB
+            #search-box.col-sm-2
+                .form-group
+                    label Input Name:
+                    input.typeahead(type="text" placeholder="Name of Student" style="margin-top:4.5px")
+            form.form-group.col-sm-2(onsubmit="scanStudentBarcode(); return false;")
+                label Scan Barcode:
+                input.form-control(type="text" id="studentID" autofocus)
+        .row
+            .table-responsive.col-sm-12
+                table.table.table-hover(style="font-family:'Trirong',serif;")
+                    thead
+                        tr
+                            th.col-sm-1 No.
+                            th.col-sm-2 ID
+                            th.col-sm-2 Nickname
+                            th.col-sm-2 Name
+                            th.col-sm-2 Surname
+                            th.col-sm-1 CR
+                            th.col-sm-1 HB
+                    tbody#allStudentTable

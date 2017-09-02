@@ -2,102 +2,152 @@ extends htmlTemplate
 block head
     -const pageTitle = "Admin Student Profile"
     link(href="css/component.css", rel="stylesheet")
-    script(src="js/admin.min.js")
+    script(src="js/adminStudentProfile.js")
     script(src="js/JsBarcode.code128.min.js" type="text/javascript")
     style.
         #comment p{
             margin-bottom:20px;
             white-space:pre-line;
         }
-        #comment ul{
-            margin-left:120px;
-        }
 block body
     .container
-        .col-sm-6
-            img#profilePic(src="images/noImage.svg" style="max-height:180px;width:auto")
-            h2#studentName &nbsp;
-            h2#studentNameEng &nbsp;
-            h3#studentLevel &nbsp;
-            h4#studentID &nbsp;
-            h4#studentState &nbsp;
-            h4#studentStatus &nbsp;
-            h4#email &nbsp;
-            h4#phone &nbsp;
-            h4#parentPhone &nbsp;
-            button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
-            button.btn.btn-default#phy(onClick="downloadCanvas(this.id);") Download Physics Table
+        .row
+            .col-sm-12
+                button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
+                    span.caret
+                ul.dropdown-menu
+                    li: a Q1
+                    li: a Q2
+                    li: a Q3
+        .row
+            .col-sm-6
+                br
+                .row
+                    img#profilePic.img-responsive.col-sm-6(src="images/noImage.svg")
+                .row
+                    .col-sm-12
+                        h2#studentName &nbsp;
+                        h2#studentNameEng &nbsp;
+                        h3#studentLevel &nbsp;
+                        h4#studentID &nbsp;
+                        h4#studentState &nbsp;
+                        h4#studentStatus &nbsp;
+                        h4#email &nbsp;
+                        h4#phone &nbsp;
+                        h4#parentPhone &nbsp;
+            .col-sm-6(align="right")
+                .row
+                    img#imgTrans.img-responsive(src="images/noImage.svg")
+                .row
+                    .col-sm-12.text-right
+                        br
+                        .btn-group
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
+        .row
+            .col-sm-6.text-left
+                button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
+                button.btn.btn-default#phy(onClick="downloadCanvas(this.id);") Download Physics Table
+            .col-sm-6.text-right
+                button.btn.btn-info(type="button" onClick="editProfile()") EDIT
+        .row
             br
+            .table-responsive.col-sm-12
+                table.table.table-bordered#courseTable
+                    thead
+                        tr
+                            th.col-sm-2
+                            th.col-sm-2 TUE
+                            th.col-sm-2 THU
+                            th.col-sm-2 SAT
+                            th.col-sm-2 SUN
+                        tr
+                            th 8:00-10:00
+                            td
+                                button.btn.btn-disable.col-sm-12#-169200000(type="button") &nbsp;
+                            td
+                                button.btn.btn-disable.col-sm-12#3600000(type="button") &nbsp;
+                            td
+                                button.btn.btn-default.col-sm-12#176400000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                            td
+                                button.btn.btn-default.col-sm-12#-342000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        tr
+                            th 10:00-12:00
+                            td
+                                button.btn.btn-disable.col-sm-12#-162000000(type="button") &nbsp;
+                            td
+                                button.btn.btn-disable.col-sm-12#10800000(type="button") &nbsp;
+                            td
+                                button.btn.btn-default.col-sm-12#183600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                            td
+                                button.btn.btn-default.col-sm-12#-334800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        tr
+                            th 13:00-15:00
+                            td
+                                button.btn.btn-disable.col-sm-12#-151200000(type="button") &nbsp;
+                            td
+                                button.btn.btn-disable.col-sm-12#21600000(type="button") &nbsp;
+                            td
+                                button.btn.btn-default.col-sm-12#194400000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                            td
+                                button.btn.btn-default.col-sm-12#-324000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        tr
+                            th 15:00-17:00
+                            td
+                                button.btn.btn-disable.col-sm-12#-144000000(type="button") &nbsp;
+                            td
+                                button.btn.btn-disable.col-sm-12#28800000(type="button") &nbsp;
+                            td
+                                button.btn.btn-default.col-sm-12#201600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                            td
+                                button.btn.btn-default.col-sm-12#-316800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        tr
+                            th 17:00-19:00
+                            td
+                                button.btn.btn-default.col-sm-12#-136800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                            td
+                                button.btn.btn-default.col-sm-12#36000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                            td
+                                button.btn.btn-disable.col-sm-12#208800000(type="button") &nbsp;
+                            td
+                                button.btn.btn-disable.col-sm-12#-309600000(type="button") &nbsp;
+        .row
+            .col-sm-12.text-right
+                .btn-group
+                    button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
+                    button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+        hr
+        .row
             br
-        .col-sm-6(align="right")
-            img#imgTrans(src="images/noImage.svg" style="max-width:inherit;width:auto;max-height:240px;")
-        .table-responsive.col-sm-12
-            table.table.table-bordered#courseTable
-                thead
-                    tr
-                        th.col-sm-2
-                        th.col-sm-2 TUE
-                        th.col-sm-2 THU
-                        th.col-sm-2 SAT
-                        th.col-sm-2 SUN
-                    tr
-                        th 8:00-10:00
-                        td
-                            button.btn.btn-disable.col-sm-12#-169200000(type="button") &nbsp;
-                        td
-                            button.btn.btn-disable.col-sm-12#3600000(type="button") &nbsp;
-                        td
-                            button.btn.btn-default.col-sm-12#176400000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                        td
-                            button.btn.btn-default.col-sm-12#-342000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                    tr
-                        th 10:00-12:00
-                        td
-                            button.btn.btn-disable.col-sm-12#-162000000(type="button") &nbsp;
-                        td
-                            button.btn.btn-disable.col-sm-12#10800000(type="button") &nbsp;
-                        td
-                            button.btn.btn-default.col-sm-12#183600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                        td
-                            button.btn.btn-default.col-sm-12#-334800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                    tr
-                        th 13:00-15:00
-                        td
-                            button.btn.btn-disable.col-sm-12#-151200000(type="button") &nbsp;
-                        td
-                            button.btn.btn-disable.col-sm-12#21600000(type="button") &nbsp;
-                        td
-                            button.btn.btn-default.col-sm-12#194400000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                        td
-                            button.btn.btn-default.col-sm-12#-324000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                    tr
-                        th 15:00-17:00
-                        td
-                            button.btn.btn-disable.col-sm-12#-144000000(type="button") &nbsp;
-                        td
-                            button.btn.btn-disable.col-sm-12#28800000(type="button") &nbsp;
-                        td
-                            button.btn.btn-default.col-sm-12#201600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                        td
-                            button.btn.btn-default.col-sm-12#-316800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                    tr
-                        th 17:00-19:00
-                        td
-                            button.btn.btn-default.col-sm-12#-136800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                        td
-                            button.btn.btn-default.col-sm-12#36000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
-                        td
-                            button.btn.btn-disable.col-sm-12#208800000(type="button") &nbsp;
-                        td
-                            button.btn.btn-disable.col-sm-12#-309600000(type="button") &nbsp;
-        .col-sm-1
-            button.btn.btn-info(type="button" onClick="editProfile()") EDIT
-        .col-sm-11(align="right")
-            .btn-group
-                button.btn.btn-primary(type="button" onClick="setRegistrationState('registered');") APPROVE
-                button.btn.btn-warning(type="button" onClick="setRegistrationState('pending');") PENDING
-                button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") REJECTED
-                button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") FINISHED
+            .col-sm-4
+                h1 Summer
+                h4 STAGE: SummerStage
+                button.btn.btn-default#summer(onClick="downloadCanvas(this.id);") Download Summer Table
+                .table-responsive
+                    br
+                    table.table.table-bordered#courseTable
+                        thead
+                            tr
+                                th.text-center 8-10
+                                td: button.btn.btn-default.col-sm-12 Add Course
+                            tr
+                                th.text-center 10-12
+                                td: button.btn.btn-default.col-sm-12 Add Course
+                            tr
+                                th.text-center 13-15
+                                td: button.btn.btn-default.col-sm-12 Add Course
+                .row
+                    .col-sm-12.text-left
+                        .btn-group
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+            .col-sm-8(align="right")
+                img.img-responsive(src="images/noImage.svg")
+                .col-sm-12.text-right
+                        br
+                        .btn-group
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
         img#mathImg(src="#" hidden="true")
         img#phyImg(src="#" hidden="true")
         canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170" hidden="true")
@@ -260,7 +310,7 @@ block body
                                 style="opacity: 0;height: 0;"
                                 data-multiple-caption="{count} files selected"
                             )
-                            label(for="file-1")
+                            label(for="file-2")
                                 svg(xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17")
                                     path(d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z")
                                 span เลือกรูป
