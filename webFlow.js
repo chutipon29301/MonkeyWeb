@@ -102,6 +102,7 @@ module.exports=function(app,db){
             addPage("registrationSkill2",options);
             addPage("submit",options);
         options.middlewareOptions.registrationState={$in:["untransferred","rejected"]};
+            addPage("registrationSummer",options);
             addPage("registrationReceipt",options);
         delete options.middlewareOptions.registrationState;
     delete options.middlewareOptions.studentStatus;
