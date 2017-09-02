@@ -3,6 +3,7 @@
  * @param date int day 0 - 6
  * @returns {string} name of day
  */
+var studentForSearch = [];
 const getDateName = (date) => {
     let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     return dateName[date];
@@ -42,6 +43,27 @@ function getAllStudentContent() {
         } else {
             log("[getAllStudentContent()] : post/allStudent => ");
             log(data);
+            // for typeahead predict
+            for (let i = 0; i < data.student.length; i++) {
+                studentForSearch.push({
+                    name: data.student[i].nickname + " " + data.student[i].firstname,
+                    id: data.student[i].studentID,
+                })
+            }
+            log(studentForSearch);
+            $('.typeahead').typeahead({
+                source: studentForSearch,
+                autoSelect: true
+            });
+            $('.typeahead').change(function () {
+                let current = $('.typeahead').typeahead("getActive");
+                if (current) {
+                    log(current)
+                    writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
+                    self.location = "/adminStudentprofile";
+                }
+            })
+            // for generate table data
             generateStudentHtmlTable(filterData(data.student));
         }
     })
@@ -737,7 +759,6 @@ function barcode(tableInfo) {
         displayValue: false
     });
 }
-
 
 function acceptReject(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
