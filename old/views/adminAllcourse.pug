@@ -2,7 +2,7 @@ extends htmlTemplate
 block head
     - var pageTitle = "All Course"
     - if(webUser.position==="tutor")pageTitle="My Course"
-    script(src="js/admin.min.js")
+    script(src="js/adminAllCourse.min.js")
     script.
         window.onload = getAllCourseContent();
 block body
