@@ -166,7 +166,7 @@ module.exports=function(app,db){
             options.middlewareOptions.quarter={registrationState:"untransferred"};
                 addPage("registrationReceipt",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"unregistered"};
-                // Summer registration page
+                addPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
                 // Summer receipt page
             delete options.middlewareOptions.quarter;

@@ -4,11 +4,12 @@
   "description": "Monkey website",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chiangsk135/MonkeyWeb.git"
+    "url": "https://github.com/monkey-monkey/MonkeyWeb.git"
   },
   "keywords": [
     "website"
@@ -16,9 +17,9 @@
   "author": "Siraphop Krongapiradee <chiang_sk135@hotmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/chiangsk135/MonkeyWeb/issues"
+    "url": "https://github.com/monkey-monkey/MonkeyWeb/issues"
   },
-  "homepage": "https://github.com/chiangsk135/MonkeyWeb#readme",
+  "homepage": "https://github.com/monkey-monkey/MonkeyWeb#readme",
   "dependencies": {
     "body-parser": "^1.17.1",
     "chalk": "^1.1.3",
@@ -30,6 +31,8 @@
     "mongodb": "^2.2.30",
     "multer": "^1.3.0",
     "opn": "^5.0.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "pug": "^2.0.0-rc.3",
     "request": "^2.81.0"
   }
