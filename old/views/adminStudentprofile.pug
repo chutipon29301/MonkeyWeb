@@ -20,13 +20,16 @@ block body
             h2#studentNameEng &nbsp;
             h3#studentLevel &nbsp;
             h4#studentID &nbsp;
-            h4#studentState &nbsp;
             h4#studentStatus &nbsp;
             h4#email &nbsp;
             h4#phone &nbsp;
             h4#parentPhone &nbsp;
             button.btn.btn-info(type="button" onClick="editProfile()") EDIT
-            h1#qLabel Quater: &nbsp;
+    .container
+        hr
+        .col-sm-6
+            h1#qLabel &nbsp;
+            h4#studentState &nbsp;
         .col-sm-6(align="right")
             img#imgTrans(src="images/noImage.svg" style="max-width:inherit;width:auto;max-height:240px;")
         .table-responsive.col-sm-12
@@ -106,8 +109,11 @@ block body
         canvas#appRej(style="border:1px solid black" width="560" height="380" hidden="true")
     .container
         hr
-        .col-sm-12
+        .col-sm-6
             h1 Summer
+            h4 STAGE: SummerStage
+        .col-sm-6(align="right")
+            img(src="images/noImage.svg" style="max-width:inherit;width:auto;max-height:240px;")
         .table-responsive.col-sm-12
             table.table.table-bordered
                 thread
@@ -117,13 +123,13 @@ block body
                         th.col-sm-3 10:00-12:00
                         th.col-sm-3 13:00-15:00
                     tr
+                        th Course
                         td 
-                        td 
-                            button.btn.btn-primary.col-sm-12(type="button") &nbsp;
+                            button.btn.btn-default.col-sm-12(type="button") Add Course
                         td
-                            button.btn.btn-primary.col-sm-12(type="button") &nbsp;
+                            button.btn.btn-default.col-sm-12(type="button") Add Course
                         td
-                            button.btn.btn-primary.col-sm-12(type="button") &nbsp;
+                            button.btn.btn-default.col-sm-12(type="button") Add Course
         .col-sm-6
             button.btn.btn-default(onClick="") Download Table
         .col-sm-6(align="right")
