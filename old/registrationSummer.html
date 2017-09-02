@@ -14,11 +14,18 @@
 		background-color: white!important;
 		border-color: #EFEFEF!important;
 	}
+	.hov{
+		color: grey!important;
+	}
+	.hov:hover{
+		color: black!important;
+	}
+	
 </style>
 </head>
 <body>
 <div class="container-fluid" style="padding: 0px!important">
-<nav class="navbar navbar-light bg-light"> <a class="navbar-brand" href="#">Monkey</a> </nav>
+<nav class="navbar navbar-light bg-light"> <a class="navbar-brand hov" href="/home">Monkey</a><a class="navbar-brand hov" href="/">Logout</a> </nav>
 </div>
 <div class="container">
   <br>
@@ -69,6 +76,7 @@
   <br>
   <div class="row">
   <div class="col" align="right">
+  <h2 style="color:red;" id="total">จำนวนเงิน : 0 บาท</h2>
   <button type="button" class="btn btn-outline-primary" onClick="this.blur();confirm();" data-toggle="modal" data-target="#confirmModal">Confirm</button>
   </div>
   </div>

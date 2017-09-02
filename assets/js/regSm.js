@@ -10,6 +10,10 @@ $(document).ready(function(){
 		}
 		addCourse(data.course,cookie.monkeyWebUser)
 	})
+	$('.btn').click(function(){
+		let allsel = $('.btn-success')
+		$('#total').html('จำนวนเงิน : '+(feepersbj*allsel.length)+' บาท')
+	})
 })
 function addCourse(allcourse,id){
 	$.post("https://www.monkey-monkey.com/post/studentProfile",{studentID:parseInt(id)},function(data){
