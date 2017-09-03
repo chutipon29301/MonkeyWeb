@@ -91,14 +91,20 @@ function studentLogin(studentID) {
         if (data.err) {
             log("[studentLogin()] : post/registrationState => " + data.err);
         } else {
-            log("[studentLogin()] : post/registrationState => ");
-            log(data);
-            //noinspection SpellCheckingInspection
-            if (data.registrationState === "untransferred" || data.registrationState === "rejected") {
-                self.location = "/registrationReceipt";
-            } else {
-                self.location = "/home";
-            }
+            $.post("https://www.monkey-monkey.com/post/studentProfile",{studentID:studentID},function(studentProf){
+                if(studentProf.status == "inactive"){
+                    self.location = "/registrationName"
+                }else{
+                    log("[studentLogin()] : post/registrationState => ");
+                    log(data);
+                        //noinspection SpellCheckingInspection
+                    if (data.registrationState === "untransferred" || data.registrationState === "rejected") {
+                        self.location = "/registrationReceipt";
+                    } else {
+                        self.location = "/home";
+                    }
+                }
+            })
         }
     });
 }
