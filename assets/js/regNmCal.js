@@ -54,6 +54,19 @@ function next() {
         if (parentNum.length !== 10 || studentNum.length !== 10 || isNotAllNumber(parentNum) || isNotAllNumber(studentNum)) {
                 alert("เบอร์โทรศัพท์ต้องมี 10 ตัวและประกอบด้วยตัวเลข 0-9 เท่านั้น")
             } else if (name !== '' && nname !== '' && sname !== '' && grade !== '0' && nameE !== '' && nnameE !== '' && snameE !== '' && email !== '' && parentNum !== '' && studentNum !== '') {
+                $.post("https://www.monkey-monkey.com/post/editStudent",{
+                    studentID:parseInt(cookie.monkeyWebUser),                },function(){
+                    firstname:name,
+                    lastname:sname,
+                    nickname:nname,
+                    firstnameEn:nameE,
+                    nicknameEn:nnameE,
+                    lastnameEn:snameE,
+                    email:email,
+                    phone:studentNum,
+                    grade:parseInt(grade),
+                    phoneParent:parentNum
+                })
                 writeCookie('name', JSON.stringify({
                     nname: encodeURIComponent(nname),
                     name: encodeURIComponent(name),
