@@ -55,7 +55,7 @@ function next() {
                 alert("เบอร์โทรศัพท์ต้องมี 10 ตัวและประกอบด้วยตัวเลข 0-9 เท่านั้น")
             } else if (name !== '' && nname !== '' && sname !== '' && grade !== '0' && nameE !== '' && nnameE !== '' && snameE !== '' && email !== '' && parentNum !== '' && studentNum !== '') {
                 $.post("https://www.monkey-monkey.com/post/editStudent",{
-                    studentID:parseInt(cookie.monkeyWebUser),                },function(){
+                    studentID:parseInt(cookie.monkeyWebUser),
                     firstname:name,
                     lastname:sname,
                     nickname:nname,
@@ -66,6 +66,21 @@ function next() {
                     phone:studentNum,
                     grade:parseInt(grade),
                     phoneParent:parentNum
+                },function(data){
+                    if(data.err) {
+                        alert("edit profile error")
+                        throw data.err;
+                    }
+                    $.post("post/changeStatus", {
+                        userID: parseInt(cookie.monkeyWebUser),
+                        status: "active"
+                    },function(data){
+                        if(data.err) {
+                            alert("change status error (inactive -> active)")
+                            throw data.err;
+                        }
+                        self.location = 'home'
+                    })
                 })
                 writeCookie('name', JSON.stringify({
                     nname: encodeURIComponent(nname),

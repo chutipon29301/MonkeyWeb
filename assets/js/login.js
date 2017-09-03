@@ -91,7 +91,7 @@ function studentLogin(studentID) {
         if (data.err) {
             log("[studentLogin()] : post/registrationState => " + data.err);
         } else {
-            $.post("https://www.monkey-monkey.com/post/studentProfile",{studentID:studentID},function(studentProf){
+            $.post("post/studentProfile",{studentID:studentID},function(studentProf){
                 if(studentProf.status == "inactive"){
                     self.location = "/registrationName"
                 }else{

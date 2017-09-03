@@ -116,7 +116,7 @@
     </form>
   </div>
   <div class="container col-md-10 col-md-offset-1" align="right">
-    <button id="next" class="btn btn-default" onClick="this.blur(); next();">Next</button>
+    <button id="next" class="btn btn-default" onClick="this.blur();" data-toggle="modal" data-target="#myModal">Next</button>
   </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
@@ -127,5 +127,24 @@
     </div>
   </div>
 </div>
+
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>This is a large modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 <!-- InstanceEnd --></html>
