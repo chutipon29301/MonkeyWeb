@@ -10,6 +10,11 @@ block head
             white-space:pre-line;
         }
 block body
+    //- element for generate table
+    img#mathImg(src="#" hidden="true")
+    img#phyImg(src="#" hidden="true")
+    canvas#mathBarcode(hidden="true")
+    canvas#phyBarcode(hidden="true")
     .container
         .row
             .col-sm-12
@@ -37,7 +42,7 @@ block body
                         h4#parentPhone &nbsp;
             .col-sm-6(align="right")
                 .row
-                    img#imgTrans.img-responsive(src="images/noImage.svg")
+                    img#imgTrans.img-responsive.col-sm-12(src="images/noImage.svg")
                 .row
                     .col-sm-12.text-right
                         br
@@ -46,10 +51,18 @@ block body
                             button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
         .row
             .col-sm-6.text-left
-                button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
-                button.btn.btn-default#phy(onClick="downloadCanvas(this.id);") Download Physics Table
+                //- button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
+                button.btn.btn-default#math(data-toggle='collapse' data-target='#mathDiv') Download Math Table 
+                    span.caret
+                //- button.btn.btn-default#phy(onClick="downloadCanvas(this.id);") Download Physics Table
+                button.btn.btn-default#phy(data-toggle='collapse' data-target='#phyDiv') Download Physics Table 
+                    span.caret
             .col-sm-6.text-right
                 button.btn.btn-info(type="button" onClick="editProfile()") EDIT
+            .collapse#mathDiv
+                canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170")
+            .collapse#phyDiv
+                canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170")
         .row
             br
             .table-responsive.col-sm-12
@@ -118,42 +131,41 @@ block body
                     button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
         hr
         .row
-            br
             .col-sm-4
-                h1 Summer
-                h4 STAGE: SummerStage
-                button.btn.btn-default#summer(onClick="downloadCanvas(this.id);") Download Summer Table
-                .table-responsive
-                    br
-                    table.table.table-bordered#courseTable
-                        thead
-                            tr
-                                th.text-center 8-10
-                                td: button.btn.btn-default.col-sm-12 Add Course
-                            tr
-                                th.text-center 10-12
-                                td: button.btn.btn-default.col-sm-12 Add Course
-                            tr
-                                th.text-center 13-15
-                                td: button.btn.btn-default.col-sm-12 Add Course
+                .row
+                    .col-sm-12
+                        h1 Summer
+                        h4 STAGE: SummerStage
+                        button.btn.btn-default#summer(onClick="downloadCanvas(this.id);") Download Summer Table
+                .row
+                    .table-responsive.col-sm-12
+                        br
+                        table.table.table-bordered#courseTable
+                            thead
+                                tr
+                                    th.text-center 8-10
+                                    td: button.btn.btn-default.col-sm-12 Add Course
+                                tr
+                                    th.text-center 10-12
+                                    td: button.btn.btn-default.col-sm-12 Add Course
+                                tr
+                                    th.text-center 13-15
+                                    td: button.btn.btn-default.col-sm-12 Add Course
                 .row
                     .col-sm-12.text-left
                         .btn-group
                             button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
                             button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
             .col-sm-8(align="right")
-                img.img-responsive(src="images/noImage.svg")
-                .col-sm-12.text-right
+                .row
+                    .col-sm-12
+                        img.img-responsive(src="images/noImage.svg")
+                .row
+                    .col-sm-12.text-right
                         br
                         .btn-group
                             button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
                             button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
-        img#mathImg(src="#" hidden="true")
-        img#phyImg(src="#" hidden="true")
-        canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170" hidden="true")
-        canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170" hidden="true")
-        canvas#mathBarcode(hidden="true")
-        canvas#phyBarcode(hidden="true")
         canvas#appRej(style="border:1px solid black" width="560" height="380" hidden="true")
     .container
         hr
