@@ -20,6 +20,7 @@ function getAllStudentContent() {
         } else {
             log("[getAllStudentContent()] : post/allStudent => ");
             log(data);
+            
             // for typeahead predict
             for (let i = 0; i < data.student.length; i++) {
                 studentForSearch.push({
@@ -39,7 +40,8 @@ function getAllStudentContent() {
                     writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
                     self.location = "/adminStudentprofile";
                 }
-            })
+            });
+
             // for generate table data
             generateStudentHtmlTable(filterData(data.student));
         }
