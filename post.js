@@ -410,7 +410,7 @@ module.exports=function(app,db){
                     var index=result.student.quarter.findIndex(function(x){
                         return x.year===quarter.year&&x.quarter===quarter.quarter;
                     });
-                    if(index===-1)res.send({err:"Specified quarter information was not found in student."});// TODO return "unregistered"?
+                    if(index===-1)res.send({registrationState:"unregistered"});
                     else res.send({registrationState:result.student.quarter[index].registrationState});
                 });
             }
@@ -423,12 +423,20 @@ module.exports=function(app,db){
         getQuarter(req.body.year,req.body.quarter,function(err,quarter){
             if(err)res.send(err);
             else{
+                var year=quarter.year;
+                var quarter=quarter.quarter;
                 findUser(res,studentID,{position:"student"},function(result){
                     var index=result.student.quarter.findIndex(function(x){
-                        return x.year===quarter.year&&x.quarter===quarter.quarter;
+                        return x.year===year&&x.quarter===quarter;
                     });
-                    if(index===-1){// TODO create new element
-                        res.send({err:"Specified quarter information was not found in student."});
+                    if(index===-1){
+                        userDB.updateOne({_id:studentID},{
+                            $push:{"student.quarter":{
+                                year:year,quarter:quarter,registrationState:registrationState
+                            }}
+                        },function(){
+                            res.send({});
+                        });
                     }
                     else{
                         userDB.updateOne({_id:studentID},{
@@ -1845,7 +1853,7 @@ module.exports=function(app,db){
             maxSeat:maxSeat,week:week
         },function(){
             userDB.updateMany({position:"student","student.status":{$in:["active","inactive"]}},{
-                $push:{quarter:{
+                $push:{"student.quarter":{
                     year:year,quarter:quarter,
                     registrationState:"unregistered"
                 }}
@@ -1890,6 +1898,11 @@ module.exports=function(app,db){
     });
     app.post("/debug/listStudentAttendanceModifier",function(req,res){
         studentAttendanceModifierDB.find().toArray(function(err,result){
+            res.send(result);
+        });
+    });
+    app.post("/debug/listQuarter",function(req,res){
+        quarterDB.find().toArray(function(err,result){
             res.send(result);
         });
     });
