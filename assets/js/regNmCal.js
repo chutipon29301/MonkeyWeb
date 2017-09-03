@@ -1,5 +1,6 @@
+var cookie;
 $(document).ready(function () {
-    let cookie = getCookieDict();
+    cookie = getCookieDict();
     if (cookie.name !== undefined && cookie.nameE !== undefined) {
         cookie.name = JSON.parse(cookie.name);
         cookie.nameE = JSON.parse(cookie.nameE);
@@ -52,52 +53,38 @@ function next() {
     } else {
         let grade = $('#grade').val();
         if (parentNum.length !== 10 || studentNum.length !== 10 || isNotAllNumber(parentNum) || isNotAllNumber(studentNum)) {
-                alert("เบอร์โทรศัพท์ต้องมี 10 ตัวและประกอบด้วยตัวเลข 0-9 เท่านั้น")
-            } else if (name !== '' && nname !== '' && sname !== '' && grade !== '0' && nameE !== '' && nnameE !== '' && snameE !== '' && email !== '' && parentNum !== '' && studentNum !== '') {
-                $.post("https://www.monkey-monkey.com/post/editStudent",{
-                    studentID:parseInt(cookie.monkeyWebUser),
-                    firstname:name,
-                    lastname:sname,
-                    nickname:nname,
-                    firstnameEn:nameE,
-                    nicknameEn:nnameE,
-                    lastnameEn:snameE,
-                    email:email,
-                    phone:studentNum,
-                    grade:parseInt(grade),
-                    phoneParent:parentNum
+            alert("เบอร์โทรศัพท์ต้องมี 10 ตัวและประกอบด้วยตัวเลข 0-9 เท่านั้น")
+        } else if (name !== '' && nname !== '' && sname !== '' && grade !== '0' && nameE !== '' && nnameE !== '' && snameE !== '' && email !== '' && parentNum !== '' && studentNum !== '') {
+            $.post("/post/editStudent",{
+                studentID:parseInt(cookie.monkeyWebUser),
+                firstname:name,
+                lastname:sname,
+                nickname:nname,
+                firstnameEn:nameE,
+                nicknameEn:nnameE,
+                lastnameEn:snameE,
+                email:email,
+                phone:studentNum,
+                grade:parseInt(grade),
+                phoneParent:parentNum
+            },function(data){
+                if(data.err) {
+                    alert("edit profile error")
+                    throw data.err;
+                }
+                $.post("post/changeStatus", {
+                    userID: parseInt(cookie.monkeyWebUser),
+                    status: "active"
                 },function(data){
                     if(data.err) {
-                        alert("edit profile error")
+                        alert("change status error (inactive -> active)")
                         throw data.err;
                     }
-                    $.post("post/changeStatus", {
-                        userID: parseInt(cookie.monkeyWebUser),
-                        status: "active"
-                    },function(data){
-                        if(data.err) {
-                            alert("change status error (inactive -> active)")
-                            throw data.err;
-                        }
-                        self.location = 'home'
-                    })
+                    self.location = '/home'
                 })
-                writeCookie('name', JSON.stringify({
-                    nname: encodeURIComponent(nname),
-                    name: encodeURIComponent(name),
-                    sname: encodeURIComponent(sname)
-                }));
-                writeCookie('nameE', JSON.stringify({
-                    nname: nnameE,
-                    name: nameE,
-                    sname: snameE
-                }));
-                writeCookie('email', email);
-                writeCookie('grade', grade);
-                writeCookie('tel', JSON.stringify({parent: parentNum, student: studentNum}));
-                self.location = "registrationCourse"
-            } else {
-                alert("กรุณาเลือกชั้นเรียน")
-            }
+            })
+        } else {
+            alert("กรุณาเลือกชั้นเรียน")
+        }
     }
 }

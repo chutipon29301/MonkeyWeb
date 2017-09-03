@@ -95,12 +95,15 @@ function sendData(){
 				}
 			}
 		}
+		console.log(allsend)
 		$.post('/post/addStudentCourse',{studentID:cookie.monkeyWebUser , courseID : allsend} , function(data){
+			console.log('eiei')
+			console.log(data)
 			if(data.err) {
 				alert('การเชื่อมต่อมีปัญหา โปรดลองใหม่อีกครั้ง'); 
 				throw err;
 			}
-			this.location = 'registrationReceipt'
+			self.location = 'registrationReceipt'
 		})
 	}
 }
