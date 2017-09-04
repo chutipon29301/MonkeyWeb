@@ -26,6 +26,8 @@ const getLetterGrade = (grade) => {
  * Generate element for studentProfile page
  */
 function getStudentProfile() {
+    putQuarter();
+
     let cookie = getCookieDict();
     /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
@@ -34,8 +36,8 @@ function getStudentProfile() {
     getConfig().then((data) => {
         log("[getStudentProfile()] : post/getConfig => ");
         log(data);
-        let label = "CR" + data.year + "Q" + data.quarter;
-        document.getElementById("qLabel").innerHTML = label;
+        // let label = "CR" + data.year + "Q" + data.quarter;
+        // document.getElementById("qLabel").innerHTML = label;
     });
 
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
@@ -452,6 +454,12 @@ function editStudent() {
             location.reload();
         });
     });
+}
+
+
+function putQuarter(){
+    let selectedQuarterList = document.getElementById("quarterSelect");
+    log(selectedQuarterList);
 }
 
 //for show receipt pic on page
