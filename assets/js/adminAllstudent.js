@@ -9,18 +9,32 @@ const getDateName = (date) => {
     return dateName[date];
 };
 
+function quarterChange() {
+    var quarter = document.getElementById("quarter");
+    writeCookie("monkeyWebSelectedQuarter", quarter.value);
+    getAllStudentContent();
+}
+
+function registrationStateChange() {
+    var stage = document.getElementById("stage");
+    writeCookie("monkeyWebSelectedStage", stage.value);
+    getAllStudentContent();
+}
+
+
 /**
  * Get data for generating table by calling function generateStudentHtmlTable
  */
 function getAllStudentContent() {
     "use strict";
+    loadSelectedMenu();
     allStudent().then((data) => {
         if (data.err) {
             log("[getAllStudentContent()] : post/allStudent => " + data.err);
         } else {
             log("[getAllStudentContent()] : post/allStudent => ");
             log(data);
-            
+
             // for typeahead predict
             for (let i = 0; i < data.student.length; i++) {
                 studentForSearch.push({
@@ -48,21 +62,107 @@ function getAllStudentContent() {
     })
 }
 
+function loadSelectedMenu() {
+    var stage = document.getElementById("stage");
+    var cookie = getCookieDict();
+    var stageList = [{
+        value: "all",
+        text: "All Stage"
+    }, {
+        value: "unregistered",
+        text: "Unregistered"
+    }, {
+        value: "untransfered",
+        text: "Untransfered"
+    }, {
+        value: "transferred",
+        text: "Transferred"
+    }, {
+        value: "approved",
+        text: "Approved"
+    }, {
+        value: "rejected",
+        text: "Rejected"
+    }, {
+        value: "pending",
+        text: "Pending"
+    }, {
+        value: "registered",
+        text: "Registered"
+    }, {
+        value: "finished",
+        text: "Finished"
+    }];
+
+    stage.innerHTML = "";
+    for (let i = 0; i < stageList.length; i++) {
+        stage.innerHTML += "<option value = '" + stageList[i].value + "'>" + stageList[i].text + "</option>";
+    }
+
+    if (cookie.monkeyWebSelectedStage === undefined) {
+        stage.value = "all";
+    } else {
+        stage.value = cookie.monkeyWebSelectedStage;
+    }
+
+    var quarter = document.getElementById("quarter");
+    var quarterList = [{
+        value: "2017-3",
+        text: "CR60Q3"
+    }, {
+        value: "2017-12",
+        text: "CR60OCT"
+    }, {
+        value: "2017-4",
+        text: "CR60Q4"
+    }]
+    quarter.innerHTML = "";
+    for (let i = 0; i < quarterList.length; i++) {
+        quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
+    }
+
+    getConfig().then(data => {
+        if (cookie.monkeyWebSelectedQuarter === undefined) {
+            quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+        } else {
+            quarter.value = cookie.monkeyWebSelectedQuarter;
+        }
+    })
+
+}
+
+
 /**
  * Filter data from selected option
  * @param data array of student info
  * @returns {*} array of student to display in table
  */
 function filterData(data) {
+    let quarter = document.getElementById("quarter");
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     let course = document.getElementById("course");
+
+    data = data.filter(data => {
+        let registrationState = true;
+        for (let i = 0; i < data.quarter.length; i++) {
+            if (stage.options[stage.selectedIndex].value !== "all") {
+                registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
+            }
+            let selectedQuarter = quarter.options[quarter.selectedIndex].value;
+            if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
+                data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
+                registrationState)
+                return true;
+        }
+        return false;
+    });
     if (status.options[status.selectedIndex].value !== "all") {
-        data = data.filter(data => data.status === status.options[status.selectedIndex].value);
-    }
-    if (stage.options[stage.selectedIndex].value !== "all") {
-        data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value);
+        data = data.filter(data => {
+            return data.status === status.options[status.selectedIndex].value
+        }
+        );
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
         data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));

@@ -1,15 +1,16 @@
 extends htmlTemplate
 block head
     -const pageTitle = "All Student"
-    script(src="js/adminAllstudent.min.js")
+    script(src="js/adminAllstudent.js")
     script(src="js/bootstrap3-typeahead.min.js")
-    script.
-        window.onload = getAllStudentContent();
+
 block body
     .container
         .row
-            .col-sm-12
+            .col-sm-2
                 h1 Student
+            .col-sm-2
+                select.form-control#quarter(style="margin-top: 25px" onChange="quarterChange()")
         .row
             .col-sm-8#formHead
                 .row
@@ -23,15 +24,7 @@ block body
                             option(value="all") All
                     .form-group.col-sm-3
                         label &nbsp;
-                        select.form-control#stage(onChange="getAllStudentContent()" style="margin-bottom: 5px")
-                            //- option(value="all") All Stage
-                            //- option(value="finished") Finished
-                            //- option(value="registered") Registered
-                            //- option(value="rejected") Rejected
-                            //- option(value="pending") Pending
-                            //- option(value="transferred") Transferred
-                            //- option(value="untransferred") Untransferred
-                            //- option(value="unregistered") Unregistered
+                        select.form-control#stage(onChange="registrationStateChange()" style="margin-bottom: 5px")
                     .form-group.col-sm-3
                         label &nbsp;
                         select.form-control#grade(onChange="getAllStudentContent()" style="margin-bottom: 5px")
@@ -74,3 +67,5 @@ block body
                             th.col-sm-1 CR
                             th.col-sm-1 HB
                     tbody#allStudentTable
+    script.
+        window.onload = getAllStudentContent();
