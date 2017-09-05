@@ -2,23 +2,26 @@ extends htmlTemplate
 block head
     -const pageTitle = "Admin Student Profile"
     link(href="css/component.css", rel="stylesheet")
-    script(src="js/adminStudentProfile.js")
     script(src="js/JsBarcode.code128.min.js" type="text/javascript")
+    script(src="js/adminStudentProfile.js")
     style.
         #comment p{
             margin-bottom:20px;
             white-space:pre-line;
         }
 block body
+    //- element for generate table
+    img#mathImg(src="#" hidden="true")
+    img#phyImg(src="#" hidden="true")
+    img#summerImg(src="images/summer.png" hidden="true")
+    canvas#mathBarcode(hidden="true")
+    canvas#phyBarcode(hidden="true")
     .container
         .row
             .col-sm-12
                 button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
                     span.caret
-                ul.dropdown-menu
-                    li: a Q1
-                    li: a Q2
-                    li: a Q3
+                ul#quarterSelect.dropdown-menu
         .row
             .col-sm-6
                 br
@@ -37,7 +40,7 @@ block body
                         h4#parentPhone &nbsp;
             .col-sm-6(align="right")
                 .row
-                    img#imgTrans.img-responsive(src="images/noImage.svg")
+                    img#imgTrans.img-responsive.col-sm-12(src="images/noImage.svg")
                 .row
                     .col-sm-12.text-right
                         br
@@ -46,10 +49,18 @@ block body
                             button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
         .row
             .col-sm-6.text-left
-                button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
-                button.btn.btn-default#phy(onClick="downloadCanvas(this.id);") Download Physics Table
+                //- button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
+                button.btn.btn-default#math(data-toggle='collapse' data-target='#mathDiv') Download Math Table 
+                    span.caret
+                //- button.btn.btn-default#phy(onClick="downloadCanvas(this.id);") Download Physics Table
+                button.btn.btn-default#phy(data-toggle='collapse' data-target='#phyDiv') Download Physics Table 
+                    span.caret
             .col-sm-6.text-right
                 button.btn.btn-info(type="button" onClick="editProfile()") EDIT
+            .collapse#mathDiv
+                canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170")
+            .collapse#phyDiv
+                canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170")
         .row
             br
             .table-responsive.col-sm-12
@@ -118,42 +129,44 @@ block body
                     button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
         hr
         .row
-            br
             .col-sm-4
-                h1 Summer
-                h4 STAGE: SummerStage
-                button.btn.btn-default#summer(onClick="downloadCanvas(this.id);") Download Summer Table
-                .table-responsive
-                    br
-                    table.table.table-bordered#courseTable
-                        thead
-                            tr
-                                th.text-center 8-10
-                                td: button.btn.btn-default.col-sm-12 Add Course
-                            tr
-                                th.text-center 10-12
-                                td: button.btn.btn-default.col-sm-12 Add Course
-                            tr
-                                th.text-center 13-15
-                                td: button.btn.btn-default.col-sm-12 Add Course
+                .row
+                    .col-sm-12
+                        h1 Summer
+                        h4 STAGE: SummerStage
+                        button.btn.btn-default#summer(data-toggle='collapse' data-target='#summerDiv') Download Summer Table 
+                            span.caret
+                    .collapse#summerDiv
+                        canvas#summerCanvas(style="border:1px solid black" width="621" height="440")
+                .row
+                    .table-responsive.col-sm-12
+                        br
+                        table.table.table-bordered#courseTable
+                            thead
+                                tr
+                                    th.text-center 8-10
+                                    td: button.btn.btn-default.col-sm-12 Add Course
+                                tr
+                                    th.text-center 10-12
+                                    td: button.btn.btn-default.col-sm-12 Add Course
+                                tr
+                                    th.text-center 13-15
+                                    td: button.btn.btn-default.col-sm-12 Add Course
                 .row
                     .col-sm-12.text-left
                         .btn-group
                             button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
                             button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
             .col-sm-8(align="right")
-                img.img-responsive(src="images/noImage.svg")
-                .col-sm-12.text-right
+                .row
+                    .col-sm-12
+                        img.img-responsive(src="images/noImage.svg")
+                .row
+                    .col-sm-12.text-right
                         br
                         .btn-group
                             button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
                             button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
-        img#mathImg(src="#" hidden="true")
-        img#phyImg(src="#" hidden="true")
-        canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170" hidden="true")
-        canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170" hidden="true")
-        canvas#mathBarcode(hidden="true")
-        canvas#phyBarcode(hidden="true")
         canvas#appRej(style="border:1px solid black" width="560" height="380" hidden="true")
     .container
         hr
@@ -187,10 +200,7 @@ block body
             function editProfile() {
                 $("#editModal").modal();
             }
-            $(document).on('click','.glyphicon-trash',function(){
-                $('#commentRm #confirm').attr("commentID",$(this).attr("id"));
-                $('#commentRm').modal();
-            });
+
         //- Modal for editProfile
         .modal.fade#editModal(role="dialog")
             .modal-dialog

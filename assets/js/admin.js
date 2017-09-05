@@ -441,7 +441,6 @@ function setRegistrationState(registrationState) {
  */
 function getCourseDescription() {
     let cookie = getCookieDict();
-    /** @namespace cookie.monkeyWebAdminAllcourseSelectedCourseID */
     let courseID = cookie.monkeyWebAdminAllcourseSelectedCourseID;
     courseInfo(courseID).then((data) => {
         if (data.err) {

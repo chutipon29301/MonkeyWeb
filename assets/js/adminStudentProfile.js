@@ -26,6 +26,8 @@ const getLetterGrade = (grade) => {
  * Generate element for studentProfile page
  */
 function getStudentProfile() {
+    putQuarter();
+
     let cookie = getCookieDict();
     /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
@@ -34,8 +36,8 @@ function getStudentProfile() {
     getConfig().then((data) => {
         log("[getStudentProfile()] : post/getConfig => ");
         log(data);
-        let label = "CR" + data.year + "Q" + data.quarter;
-        document.getElementById("qLabel").innerHTML = label;
+        // let label = "CR" + data.year + "Q" + data.quarter;
+        // document.getElementById("qLabel").innerHTML = label;
     });
 
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
@@ -215,7 +217,7 @@ function generateImageData() {
                     $('#math').prop("disabled", false);
                     generateCover(tableInfo, "math");
                 }
-
+                generateSummerCover();
             });
         });
     });
@@ -454,6 +456,12 @@ function editStudent() {
     });
 }
 
+
+function putQuarter(){
+    let selectedQuarterList = document.getElementById("quarterSelect");
+    log(selectedQuarterList);
+}
+
 //for show receipt pic on page
 function showReceipt() {
     let picId = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
@@ -650,6 +658,14 @@ function generateCover(tableInfo, subj) {
             }
         }
     }
+}
+function generateSummerCover() {
+    let canvasID = 'summerCanvas';
+    let canvas = document.getElementById(canvasID);
+    let ctx = canvas.getContext('2d');
+    //add Table BG
+    let img = document.getElementById('summerImg');
+    ctx.drawImage(img, 0, 0, 621, 440);
 }
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);

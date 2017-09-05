@@ -7,63 +7,65 @@ $(document).ready(function () {
     if (cookie.regisCourse !== undefined) {
         deleteCookie("regisCourse")
     }
-    if (typeof(cookie.name) !== 'string') {
-        self.location = "registrationName"
-    }
-    cookie.name = JSON.parse(cookie.name);
-    $('#nname').html(decodeURIComponent(cookie.name.nname));
-    $('#name').html(decodeURIComponent(cookie.name.name));
-    $('#sname').html(decodeURIComponent(cookie.name.sname));
     let $grade = $('#grade');
-    $grade.val(cookie.grade);
-    const grade = parseInt($grade.val());
-    if (grade >= 10) {
-        $('#info2,#info4').hide()
-    }
-    genTable();
-    //noinspection ES6ModulesDependencies,JSUnresolvedFunction
-    $.post("post/listCourseSuggestion", {grade: grade}, function (suggestCR) {
-        allSuggest = suggestCR;
-        for (let i = 0; i < allSuggest.course.length; i++) {
-            const lv = allSuggest.course[i].level;
-            $('#level').append('<option value="' + lv + '">' + lv + '</option>');
+    var grade;
+    $.post('/post/studentID',{studentID:parseInt(cookie.monkeyWebUser)},(data)=>{
+        if(data.err){
+            alert('Cannot get student profile from server')
+            throw data.err;
         }
-    });
-    //noinspection JSValidateTypes
-    document.getElementById('show_price').innerHTML = 0;
-    availableCourse = {
-        sat81: false,
-        sat82: false,
-        sat101: false,
-        sat102: false,
-        sat131: false,
-        sat132: false,
-        sat151: false,
-        sat152: false,
-        sun81: false,
-        sun82: false,
-        sun101: false,
-        sun102: false,
-        sun131: false,
-        sun132: false,
-        sun151: false,
-        sun152: false
-    };
-    if (grade !== 0) {
-        //add SAT for high school student
+        $('#nname').html(data.nickname);
+        $('#name').html(data.firstname);
+        $('#sname').html(data.lastname);
+        $grade.val(data.grade);
+        grade = parseInt($grade.val());
         if (grade >= 10) {
+            $('#info2,#info4').hide()
+        }
+            genTable();
+        //noinspection ES6ModulesDependencies,JSUnresolvedFunction
+        $.post("post/listCourseSuggestion", {grade: grade}, function (suggestCR) {
+            allSuggest = suggestCR;
+            for (let i = 0; i < allSuggest.course.length; i++) {
+                const lv = allSuggest.course[i].level;
+                $('#level').append('<option value="' + lv + '">' + lv + '</option>');
+            }
+        });
+        //noinspection JSValidateTypes
+        document.getElementById('show_price').innerHTML = 0;
+        availableCourse = {
+            sat81: false,
+            sat82: false,
+            sat101: false,
+            sat102: false,
+            sat131: false,
+            sat132: false,
+            sat151: false,
+            sat152: false,
+            sun81: false,
+            sun82: false,
+            sun101: false,
+            sun102: false,
+            sun131: false,
+            sun132: false,
+            sun151: false,
+            sun152: false
+        };
+        if (grade !== 0) {
+            //add SAT for high school student
+            if (grade >= 10) {
+                //noinspection ES6ModulesDependencies,JSUnresolvedFunction
+                $.post("post/gradeCourse", {grade: 13}, function (arrayCourse) {
+                    updateAvaiCr(arrayCourse)
+                });
+            }
             //noinspection ES6ModulesDependencies,JSUnresolvedFunction
-            $.post("post/gradeCourse", {grade: 13}, function (arrayCourse) {
-                updateAvaiCr(arrayCourse)
+            $.post("post/gradeCourse", {grade: grade}, function (arrayCourse) {
+                updateAvaiCr(arrayCourse);
+                updateTable(availableCourse);
             });
         }
-        //noinspection ES6ModulesDependencies,JSUnresolvedFunction
-        $.post("post/gradeCourse", {grade: grade}, function (arrayCourse) {
-            updateAvaiCr(arrayCourse);
-            updateTable(availableCourse);
-        });
-    }
-
+    })
     $('#level').change(function () {
         if ($('#level').val() === '0') {
             $('.suggest').removeClass('suggest')

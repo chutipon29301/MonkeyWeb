@@ -24,7 +24,7 @@ html(lang="en")
     body
         block header
         if(!hideNavbar)
-            nav.navbar.navbar-default(style=removeNavbarBottomMargin?"margin-bottom:0px;":"")
+            nav.navbar.navbar-default.navbar-fixed-top(style=removeNavbarBottomMargin?"margin-bottom:0px;":"")
                 .container-fluid
                     .navbar-header
                         button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#navbar")
@@ -38,7 +38,13 @@ html(lang="en")
                     #navbar.collapse.navbar-collapse
                         ul.nav.navbar-nav
                             if(webUser.position=="student")
-                                li: a(href="#" onclick="loadRegistrationPage();") ลงทะเบียน
+                                li.dropdown
+                                    a.dropdown-toggle(data-toggle="dropdown" href="#") ลงทะเบียน 
+                                        span.caret
+                                    ul.dropdown-menu
+                                        li: a(href="/registrationCourse") คอร์ส
+                                        li: a(href="/registrationSummer") ซัมเมอร์
+                                //- li: a(href="#" onclick="loadRegistrationPage();") ลงทะเบียน
                                 //- li.dropdown
                                 //-     a.dropdown-toggle(data-toggle="dropdown" href="#") Course
                                 //-         span.caret
@@ -81,6 +87,7 @@ html(lang="en")
                             li: a(href="/login")
                                 span.glyphicon.glyphicon-log-out
                                 |  Logout
+            div(style="margin-top:70px")
         block body
         block footer
         if(!hideFooter)

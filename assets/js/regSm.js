@@ -3,7 +3,7 @@ var cookie
 const feepersbj = 9000
 $(document).ready(function(){
 	cookie = getCookieDict()
-	$.post("https://monkey-monkey.com/post/allCourse",{year:2017,quarter:12},function(data){
+	$.post("/post/allCourse",{year:2017,quarter:12},function(data){
 		if(data.err){
 			alert("Cannot get course data from server")
 			throw data.err
@@ -16,7 +16,7 @@ $(document).ready(function(){
 	})
 })
 function addCourse(allcourse,id){
-	$.post("https://www.monkey-monkey.com/post/studentProfile",{studentID:parseInt(id)},function(data){
+	$.post("/post/studentProfile",{studentID:parseInt(id)},function(data){
 		if(data.err){
 			alert("Cannot get student profile from server")
 			throw data.err
@@ -95,12 +95,15 @@ function sendData(){
 				}
 			}
 		}
-		$.post('www.monkey-monkey.com/post/addStudentCourse',{studentID:cookie.monkeyWebUser , courseID : allsend} , function(data){
+		console.log(allsend)
+		$.post('/post/addStudentCourse',{studentID:cookie.monkeyWebUser , courseID : allsend} , function(data){
+			console.log('eiei')
+			console.log(data)
 			if(data.err) {
 				alert('การเชื่อมต่อมีปัญหา โปรดลองใหม่อีกครั้ง'); 
 				throw err;
 			}
-			this.location = 'registrationReceipt'
+			self.location = 'summerReceipt'
 		})
 	}
 }
