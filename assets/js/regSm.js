@@ -104,9 +104,15 @@ function sendData(){
 			console.log(data)
 			if(data.err) {
 				alert('การเชื่อมต่อมีปัญหา โปรดลองใหม่อีกครั้ง'); 
-				throw err;
+				throw data.err;
 			}
-			self.location = 'summerReceipt'
+			$.post('/post/changeRegistrationState',{id:parseInt(cookie.monkeyWebUser),registrationState:'untransferred'},function(data2){
+				if(data2.err){
+					alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin')
+          throw data2.err;
+				}
+				self.location = 'summerReceipt'
+			})
 		})
 	}
 }
