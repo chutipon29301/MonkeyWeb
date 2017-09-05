@@ -8,6 +8,7 @@ $(document).ready(function(){
 			alert("Cannot get course data from server")
 			throw data.err
 		}
+		log(data.course)
 		addCourse(data.course,cookie.monkeyWebUser)
 	})
 	$('.btn').click(function(){
@@ -21,12 +22,14 @@ function addCourse(allcourse,id){
 			alert("Cannot get student profile from server")
 			throw data.err
 		}
+		log(data);
 		$('#name').val(data.firstname+' ('+data.nickname+') '+data.lastname)
 		$('#grade').val((data.grade>6)?'ม. '+(data.grade-6):'ป. '+data.grade)
 		for(let i in allcourse){
 			if(checkgrade(allcourse[i],data.grade)){
 				cr.push(allcourse[i])
 				let coursetime = new Date(allcourse[i].day)
+				log(coursetime.getHours())
 				let btn = document.getElementsByName(coursetime.getHours())
 				for(let j = 0 ; j < btn.length ; j++){
 					if(btn[j].innerHTML == '&nbsp;'){
@@ -69,15 +72,15 @@ function getCookieDict() {
 function btntoggle(ele){
 	if(!$(ele).hasClass('disabled')){
 		if(ele.className.includes('btn-success')){
-			$(ele).addClass('btn-light')
+			$(ele).addClass('btn-default')
 			$(ele).removeClass('btn-success')
 		}else{
 			let allele = $('[name='+ele.name+']')
 			for(let i = 0 ; i<2 ; i++){
 				$(allele[i]).removeClass('btn-success')
-				$(allele[i]).addClass('btn-light')
+				$(allele[i]).addClass('btn-default')
 			}
-			$(ele).removeClass('btn-light')
+			$(ele).removeClass('btn-default')
 			$(ele).addClass('btn-success')
 		}
 	}
@@ -121,7 +124,7 @@ function confirm(){
 			sbjtxt += $(allsel[i]).html()+'<br>'
 		}
 		$(sbj).html(sbjtxt)
-		$('#fee').val((''+(feepersbj*allsel.length)).slice(0,(''+(feepersbj*allsel.length)).length-3)+",000 บาท")
+		$('#fee').html((''+(feepersbj*allsel.length)).slice(0,(''+(feepersbj*allsel.length)).length-3)+",000 บาท")
 	}else{
 		$('#confirm').hide()
 		$('#noSel').show()
