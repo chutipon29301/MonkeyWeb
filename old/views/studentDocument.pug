@@ -4,6 +4,11 @@ block head
     script(src="js/student.min.js")
 block body
     .container
-        h2: kbd Instruction
-        img.img-rounded.col-sm-6.col-xs-12(src="images/blue1.jpg")
-        img.img-rounded.col-sm-6.col-xs-12(src="images/blue2.jpg")
+        .row
+            .col-sm-12
+                h2: kbd Instruction
+        .row
+            .col-sm-6
+                img.img-rounded.img-responsive(src="images/blue1.jpg")
+            .col-sm-6
+                img.img-rounded.img-responsive(src="images/blue2.jpg")

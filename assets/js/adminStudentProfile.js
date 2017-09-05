@@ -217,7 +217,7 @@ function generateImageData() {
                     $('#math').prop("disabled", false);
                     generateCover(tableInfo, "math");
                 }
-
+                generateSummerCover();
             });
         });
     });
@@ -658,6 +658,14 @@ function generateCover(tableInfo, subj) {
             }
         }
     }
+}
+function generateSummerCover() {
+    let canvasID = 'summerCanvas';
+    let canvas = document.getElementById(canvasID);
+    let ctx = canvas.getContext('2d');
+    //add Table BG
+    let img = document.getElementById('summerImg');
+    ctx.drawImage(img, 0, 0, 621, 440);
 }
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);

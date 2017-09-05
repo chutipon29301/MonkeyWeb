@@ -103,7 +103,7 @@ function sendData(){
 				alert('การเชื่อมต่อมีปัญหา โปรดลองใหม่อีกครั้ง'); 
 				throw err;
 			}
-			self.location = 'registrationReceipt'
+			self.location = 'summerReceipt'
 		})
 	}
 }
