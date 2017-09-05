@@ -122,13 +122,21 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     },{upsert:true},function(){
         userDB.find({position:"student","student.quarter":{$exists:false}}).toArray(function(err,result){
             for(let i=0;i<result.length;i++){
-                userDB.updateOne({_id:result[i]._id},{
-                    $push:{"student.quarter":{
-                        year:2017,quarter:3,
-                        registrationState:result[i].student.registrationState
-                    }},
-                    $unset:{"student.registrationState":""}
-                });
+                if(result[i].student.registrationState==="unregistered"){
+                    userDB.updateOne({_id:result[i]._id},{
+                        $set:{"student.quarter":[]},
+                        $unset:{"student.registrationState":""}
+                    });
+                }
+                else{
+                    userDB.updateOne({_id:result[i]._id},{
+                        $push:{"student.quarter":{
+                            year:2017,quarter:3,
+                            registrationState:result[i].student.registrationState
+                        }},
+                        $unset:{"student.registrationState":""}
+                    });
+                }
             }
         });
     });

@@ -76,26 +76,56 @@ module.exports=function(app,db){
         if(qFilter){
             qYear=options.quarter.year;
             qQuarter=options.quarter.quarter;
-            registrationState=options.quarter.registrationState;
-            // if(registrationState==="unregistered")
+            if(Array.isArray(options.quarter.registrationState)){
+                registrationState=options.quarter.registrationState;
+            }
+            else registrationState=[options.quarter.registrationState];
         }
         if(options.studentStatus)query["student.status"]=options.studentStatus;
         if(options.tutorStatus)query["tutor.status"]=options.tutorStatus;
         return function(req,res,next){
-            if(options.login)query["_id"]=parseInt(req.cookies.monkeyWebUser),query["password"]=req.cookies.monkeyWebPassword;
+            if(options.login){
+                query["_id"]=parseInt(req.cookies.monkeyWebUser);
+                query["password"]=req.cookies.monkeyWebPassword;
+            }
             getQuarter(qYear,qQuarter,function(err,quarter){
                 if(err)return404(req,res);
                 else{
-                    if(qFilter)query["student.quarter"]={$elemMatch:{
-                        year:quarter.year,quarter:quarter.quarter,
-                        registrationState:registrationState
-                    }};
-                    // console.log("====================");
-                    // console.log(JSON.stringify(query,null,2));
-                    // console.log("====================");
+                    if(qFilter){
+                        query["student.quarter"]={$elemMatch:{
+                            year:quarter.year,quarter:quarter.quarter
+                        }};
+                    }
                     userDB.findOne(query,function(err,result){
-                        if(result==null)return404(req,res);
-                        else next();
+                        if(qFilter){
+                            if(result){
+                                var x=result.student.quarter;
+                                var foundYear=false,matchState=false;
+                                for(var i=0;i<x.length;i++){
+                                    if(x[i].year===quarter.year&&x[i].quarter===quarter.quarter){
+                                        foundYear=true;
+                                        if(registrationState.includes(x[i].registrationState))matchState=true;
+                                        break;
+                                    }
+                                }
+                                if(foundYear){
+                                    if(matchState)next();
+                                    else return404(req,res);
+                                }
+                                else{
+                                    if(registrationState.includes("unregistered"))next();
+                                    else return404(req,res);
+                                }
+                            }
+                            else{
+                                if(registrationState.includes("unregistered"))next();
+                                else return404(req,res);
+                            }
+                        }
+                        else{
+                            if(result)next();
+                            else return404(req,res);
+                        }
                     });
                 }
             });
@@ -157,7 +187,7 @@ module.exports=function(app,db){
             options.middlewareOptions.quarter={registrationState:"finished"};
                 addPugPage("absentForm",options);
                 addPugPage("addForm",options);
-            options.middlewareOptions.quarter={registrationState:"unregistered"};
+            options.middlewareOptions.quarter={registrationState:["unregistered","pending"]};
                 addPage("registrationCourse",options);
                 addPage("registrationHybrid",options);
                 addPage("registrationSkill",options);
@@ -165,7 +195,7 @@ module.exports=function(app,db){
                 addPage("submit",options);
             options.middlewareOptions.quarter={registrationState:"untransferred"};
                 addPage("registrationReceipt",options);
-            options.middlewareOptions.quarter={quarter:"summer",registrationState:"unregistered"};
+            options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","pending"]};
                 addPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
                 addPugPage("summerReceipt",options);
