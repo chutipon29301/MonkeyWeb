@@ -196,7 +196,7 @@ module.exports=function(app,db){
             options.middlewareOptions.quarter={registrationState:"untransferred"};
                 addPage("registrationReceipt",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","pending"]};
-                addPage("registrationSummer",options);
+                addPugPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
                 addPugPage("summerReceipt",options);
             delete options.middlewareOptions.quarter;
