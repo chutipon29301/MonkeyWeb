@@ -430,20 +430,34 @@ module.exports=function(app,db){
                         return x.year===year&&x.quarter===quarter;
                     });
                     if(index===-1){
-                        userDB.updateOne({_id:studentID},{
-                            $push:{"student.quarter":{
-                                year:year,quarter:quarter,registrationState:registrationState
-                            }}
-                        },function(){
-                            res.send({});
-                        });
+                        if(registrationState==="unregistered")res.send({});
+                        else{
+                            userDB.updateOne({_id:studentID},{
+                                $push:{"student.quarter":{
+                                    year:year,quarter:quarter,registrationState:registrationState
+                                }}
+                            },function(){
+                                res.send({});
+                            });
+                        }
                     }
                     else{
-                        userDB.updateOne({_id:studentID},{
-                            $set:{["student.quarter."+index+".registrationState"]:registrationState}
-                        },function(){
-                            res.send({});
-                        });
+                        if(registrationState==="unregistered"){
+                            userDB.updateOne({_id:studentID},{
+                                $pull:{"student.quarter":{
+                                    year:year,quarter:quarter
+                                }}
+                            },function(){
+                                res.send({});
+                            });
+                        }
+                        else{
+                            userDB.updateOne({_id:studentID},{
+                                $set:{["student.quarter."+index+".registrationState"]:registrationState}
+                            },function(){
+                                res.send({});
+                            });
+                        }
                     }
                 });
             }
@@ -567,10 +581,7 @@ module.exports=function(app,db){
                         student:{
                             grade:grade,skillDay:[],
                             phoneParent:phoneParent,status:"active",
-                            quarter:[{
-                                year:quarter.year,quarter:quarter.quarter,
-                                registrationState:"unregistered"
-                            }]
+                            quarter:[]
                         }
                     },function(err,result){
                         configDB.updateOne({},{$inc:{nextStudentID:1}});
@@ -682,36 +693,6 @@ module.exports=function(app,db){
             });
         });
     });
-    // Old OK {studentID} return {}
-    // post("/post/addBlankStudent",function(req,res){
-    //     var studentID=req.body.studentID.split(" ");
-    //     for(var i=0;i<studentID.length;i++){
-    //         studentID[i]=parseInt(studentID[i]);
-    //         var password="";
-    //         password+=Math.floor(Math.random()*10);
-    //         password+=Math.floor(Math.random()*10);
-    //         password+=Math.floor(Math.random()*10);
-    //         password+=Math.floor(Math.random()*10);
-    //         getQuarter(undefined,undefined,function(err,quarter){
-    //             userDB.insertOne({
-    //                 _id:studentID[i],password:CryptoJS.SHA3(password).toString(),
-    //                 position:"student",
-    //                 firstname:"",lastname:"",nickname:"",
-    //                 firstnameEn:"",lastnameEn:"",nicknameEn:"",
-    //                 email:"",phone:"",
-    //                 student:{
-    //                     grade:0,skillDay:[],phoneParent:"",status:"active",
-    //                     quarter:[{
-    //                         year:quarter.year,quarter:quarter.quarter,
-    //                         registrationState:"unregistered"
-    //                     }]
-    //                 }
-    //             });
-    //             randomPasswordDB.insertOne({_id:studentID[i],password:password});
-    //         });
-    //     }
-    //     res.send({});
-    // });
     //OK {number} return {}
     post("/post/addBlankStudent",function(req,res){
         var number=parseInt(req.body.number);
@@ -736,10 +717,7 @@ module.exports=function(app,db){
                             email:"",phone:"",
                             student:{
                                 grade:0,skillDay:[],phoneParent:"",status:"inactive",
-                                quarter:[{
-                                    year:quarter.year,quarter:quarter.quarter,
-                                    registrationState:"unregistered"
-                                }]
+                                quarter:[]
                             }
                         },function(){
                             randomPasswordDB.insertOne({_id:studentID,password:password},function(){
@@ -1852,14 +1830,7 @@ module.exports=function(app,db){
             year:year,quarter:quarter,name:name,
             maxSeat:maxSeat,week:week
         },function(){
-            userDB.updateMany({position:"student","student.status":{$in:["active","inactive"]}},{
-                $push:{"student.quarter":{
-                    year:year,quarter:quarter,
-                    registrationState:"unregistered"
-                }}
-            },function(){
-                res.send({});
-            })
+            res.send({});
         });
     });
     post("/post/lineNotify",function(req,res){
@@ -1911,7 +1882,7 @@ module.exports=function(app,db){
 /**
  * courseName format: subject + level + "-" + set + subset + setNo + {subscript + subscriptNo} + "(REV" + mainRev + "_" + subRev
  * e.g. MK-AB11r1(REV1_0)
- * @param {String} courseName 
+ * @param {String} courseName
  */
 function decodeCourseName(courseName) {
     var courseNameComponent = {};
