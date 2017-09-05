@@ -93,7 +93,8 @@ function sendData(){
 	if(allsel.length>0){
 		for(let i = 0 ; i < allsel.length ; i++){
 			for(let j in cr){
-				if(cr[j].courseName == allsel[i].innerHTML.split(' ')[0]){
+				let time = new Date(cr[j].day)
+				if(cr[j].courseName == allsel[i].innerHTML.split(' ')[0] && parseInt(time.getHours()) == parseInt(allsend[i].name)){
 					allsend.push(cr[j].courseID)
 				}
 			}
