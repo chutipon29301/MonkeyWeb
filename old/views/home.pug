@@ -6,11 +6,12 @@ block head
     script(src="js/home.min.js")
 block body
     .container-fluid
-        div(align="center")
-            h3 คู่มือการลงทะเบียน
-        br
-        #slideShow
-            .galleria
-        br
+        .row
+            .col-sm-12.text-center
+                h3 คู่มือการลงทะเบียน
+                br
+        .row
+            #slideShow.col-sm-12
+                .galleria
         script.
             writeCookie("slideType","pclassic")
