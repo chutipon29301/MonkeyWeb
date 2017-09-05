@@ -103,7 +103,12 @@ function sendData(){
 				alert('การเชื่อมต่อมีปัญหา โปรดลองใหม่อีกครั้ง'); 
 				throw err;
 			}
-			self.location = 'registrationReceipt'
+			$.post('/post/changeRegistrationState',{id:parseInt(cookie.monkeyWebUser),registrationState:'untransferred'},function(data2){
+				if(data2.err){
+					alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin')
+				}
+				self.location = 'registrationReceipt'	
+			})
 		})
 	}
 }
