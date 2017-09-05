@@ -96,9 +96,6 @@ module.exports=function(app,db){
                             year:quarter.year,quarter:quarter.quarter
                         }};
                     }
-                    console.log("====================");
-                    console.log(JSON.stringify(query,null,2));
-                    console.log("====================");
                     userDB.findOne(query,function(err,result){
                         if(qFilter){
                             if(result){
