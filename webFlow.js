@@ -8,6 +8,47 @@ module.exports=function(app,db){
 
     var post=app.locals.post;
 
+    var configDB=db.collection("config");
+    var quarterDB=db.collection("quarter");
+    var getQuarter=function(year,quarter,callback){
+        if(year===undefined){
+            if(quarter===undefined)quarter="quarter";
+            configDB.findOne({},function(err,config){
+                if(config.defaultQuarter[quarter]){
+                    quarterDB.findOne({
+                        year:config.defaultQuarter[quarter].year,
+                        quarter:config.defaultQuarter[quarter].quarter
+                    },function(err,quarter){
+                        if(quarter){
+                            var output={quarterID:quarter._id};
+                            delete quarter._id;
+                            Object.assign(output,quarter);
+                            callback(null,output);
+                        }
+                        else callback({err:"Configuration error occurs."});
+                    });
+                }
+                else callback({err:"Year is not specified."});
+            });
+        }
+        else{
+            if(isFinite(year)&&isFinite(quarter)){
+                quarterDB.findOne({
+                    year:parseInt(year),
+                    quarter:parseInt(quarter)
+                },function(err,quarter){
+                    if(quarter){
+                        var output={quarterID:quarter._id};
+                        delete quarter._id;
+                        Object.assign(output,quarter);
+                        callback(null,output);
+                    }
+                    else callback({err:"Specified year and quarter are not found."});
+                });
+            }
+            else callback({err:"Year or quarter are not numbers."});
+        }
+    };
     var logPosition=function(cookie,callback){
         var userID=parseInt(cookie.monkeyWebUser);
         var password=cookie.monkeyWebPassword;
@@ -30,14 +71,63 @@ module.exports=function(app,db){
         }
         var query={};
         if(options.position)query["position"]=options.position;
-        if(options.registrationState)query["student.registrationState"]=options.registrationState;
+        var qFilter=options.quarter!==undefined;
+        var qYear,qQuarter,registrationState;
+        if(qFilter){
+            qYear=options.quarter.year;
+            qQuarter=options.quarter.quarter;
+            if(Array.isArray(options.quarter.registrationState)){
+                registrationState=options.quarter.registrationState;
+            }
+            else registrationState=[options.quarter.registrationState];
+        }
         if(options.studentStatus)query["student.status"]=options.studentStatus;
         if(options.tutorStatus)query["tutor.status"]=options.tutorStatus;
         return function(req,res,next){
-            if(options.login)query["_id"]=parseInt(req.cookies.monkeyWebUser),query["password"]=req.cookies.monkeyWebPassword;
-            userDB.findOne(query,function(err,result){
-                if(result==null)return404(req,res);
-                else next();
+            if(options.login){
+                query["_id"]=parseInt(req.cookies.monkeyWebUser);
+                query["password"]=req.cookies.monkeyWebPassword;
+            }
+            getQuarter(qYear,qQuarter,function(err,quarter){
+                if(err)return404(req,res);
+                else{
+                    if(qFilter){
+                        query["student.quarter"]={$elemMatch:{
+                            year:quarter.year,quarter:quarter.quarter
+                        }};
+                    }
+                    userDB.findOne(query,function(err,result){
+                        if(qFilter){
+                            if(result){
+                                var x=result.student.quarter;
+                                var foundYear=false,matchState=false;
+                                for(var i=0;i<x.length;i++){
+                                    if(x[i].year===quarter.year&&x[i].quarter===quarter.quarter){
+                                        foundYear=true;
+                                        if(registrationState.includes(x[i].registrationState))matchState=true;
+                                        break;
+                                    }
+                                }
+                                if(foundYear){
+                                    if(matchState)next();
+                                    else return404(req,res);
+                                }
+                                else{
+                                    if(registrationState.includes("unregistered"))next();
+                                    else return404(req,res);
+                                }
+                            }
+                            else{
+                                if(registrationState.includes("unregistered"))next();
+                                else return404(req,res);
+                            }
+                        }
+                        else{
+                            if(result)next();
+                            else return404(req,res);
+                        }
+                    });
+                }
             });
         };
     };
@@ -88,24 +178,29 @@ module.exports=function(app,db){
     addPage("login");
     addPage("login",{url:"/"});
     addPugPage("studentDocument");
-    var options={middlewareOptions:{login:true,position:"student",studentStatus:{$in:["active","inactive"]}}};
-        addPugPage("home",options);
-        addPugPage("absentForm",options);
-        addPugPage("addForm",options);
-        options.middlewareOptions.registrationState={$ne:"unregistered"};
+    var options={middlewareOptions:{login:true,position:"student"}};
+        options.middlewareOptions.studentStatus="inactive";
+            addPugPage("registrationName",options);
+        options.middlewareOptions.studentStatus="active";
+            addPugPage("home",options);
             addPugPage("studentProfile",options);
-        options.middlewareOptions.registrationState="unregistered";
-            addPage("registrationName",options);
-            addPage("registrationCourse",options);
-            addPage("registrationHybrid",options);
-            addPage("registrationSkill",options);
-            addPage("registrationSkill2",options);
-            addPage("submit",options);
-        options.middlewareOptions.registrationState={$in:["untransferred","rejected"]};
-            addPage("registrationSummer",options);
-            addPage("registrationReceipt",options);
-        delete options.middlewareOptions.registrationState;
-    delete options.middlewareOptions.studentStatus;
+            options.middlewareOptions.quarter={registrationState:"finished"};
+                addPugPage("absentForm",options);
+                addPugPage("addForm",options);
+            options.middlewareOptions.quarter={registrationState:["unregistered","pending"]};
+                addPage("registrationCourse",options);
+                addPage("registrationHybrid",options);
+                addPage("registrationSkill",options);
+                addPage("registrationSkill2",options);
+                addPage("submit",options);
+            options.middlewareOptions.quarter={registrationState:"untransferred"};
+                addPage("registrationReceipt",options);
+            options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","pending"]};
+                addPugPage("registrationSummer",options);
+            options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
+                addPugPage("summerReceipt",options);
+            delete options.middlewareOptions.quarter;
+        delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
         addPugPage("adminHome",options);
         addPugPage("adminAllcourse",options);
@@ -118,7 +213,10 @@ module.exports=function(app,db){
                 Object.assign(local,result);
                 post("post/getConfig",{},function(result){
                     Object.assign(local,{config:result});
-                    callback(local);
+                    getQuarter(undefined,undefined,function(err,result){
+                        Object.assign(local,{quarter:result});
+                        callback(local);
+                    });
                 });
             });
         });
@@ -134,7 +232,10 @@ module.exports=function(app,db){
                 Object.assign(local,result);
                 post("post/getConfig",{},function(result){
                     Object.assign(local,{config:result});
-                    callback(local);
+                    getQuarter(undefined,undefined,function(err,result){
+                        Object.assign(local,{quarter:result});
+                        callback(local);
+                    });
                 });
             });
         });
