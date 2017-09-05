@@ -107,7 +107,7 @@ function sendData(){
 				if(data2.err){
 					alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin')
 				}
-				self.location = 'registrationReceipt'	
+				self.location = 'registrationReceipt'
 			})
 		})
 	}
