@@ -154,9 +154,11 @@ function filterData(data) {
             if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
                 data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
                 registrationState)
-                return true;
+                // return (stage.options[stage.selectedIndex].value === "unregistered") ? false : true;
+                return true
         }
-        return false;
+        // return (stage.options[stage.selectedIndex].value === "unregistered") ? true : false;
+        return false
     });
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => {
