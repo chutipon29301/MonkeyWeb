@@ -18,23 +18,28 @@ $(document).ready(function () {
     });
     //noinspection JSUnresolvedVariable
     studentProfile(parseInt(cookie.monkeyWebUser)).then((data) => {
+        log(data);
         let temp;
         let time;
-        let status = $('#status');
-        switch (data.registrationState) {
-            case 'untransferred':
-                status.html('รอใบโอน');
-                break;
-            case 'transferred':
-                status.html('โอนเงินแล้ว');
-                break;
-            case 'pending':
-                status.html('อยู่ระหว่างพิจารณา');
-                break;
-            case 'registered':
-                status.html('ลงทะเบียนเสร็จสมบูรณ์');
-                break;
-        }
+        let status = $('#statusCr');
+        status.html(data.quarter[0].registrationState);
+        if (data.quarter[1] !== undefined) {
+            $("#statusSm").html(data.quarter[1].registrationState);
+        } else $("#statusSm").html("unregistered");
+        // switch (data.quarter[0].registrationState) {
+        //     case 'untransferred':
+        //         status.html('รอใบโอน');
+        //         break;
+        //     case 'transferred':
+        //         status.html('โอนเงินแล้ว');
+        //         break;
+        //     case 'pending':
+        //         status.html('อยู่ระหว่างพิจารณา');
+        //         break;
+        //     case 'registered':
+        //         status.html('ลงทะเบียนเสร็จสมบูรณ์');
+        //         break;
+        // }
         $('#name').html(data.nickname + ' ' + data.firstname + ' ' + data.lastname);
         $('#nameE').html(data.nicknameEn + ' ' + data.firstnameEn + ' ' + data.lastnameEn);
         $('#studentTel').html(data.phone);
@@ -109,7 +114,7 @@ $(document).ready(function () {
         }
     });
     // const sDate = new Date("July 1, 2017 0:00:00");
-    const sDate = moment("07-01-2017","MM-DD-YYYY")
+    const sDate = moment("07-01-2017", "MM-DD-YYYY")
     document.getElementById("startCr").innerHTML = sDate.format("DD MMM YYYY");
     let nDate = new Date().getTime();
     let diff = Math.round((nDate - sDate) / 604800000);
@@ -117,7 +122,7 @@ $(document).ready(function () {
         document.getElementById("nowCr").innerHTML = "ยังไม่เริ่ม CR60Q3";
     } else document.getElementById("nowCr").innerHTML = "ครั้งที่ " + diff + "/14";
     // const eDate = new Date("October 1, 2017 23:59:59");
-    const eDate = moment("10-01-2017","MM-DD-YYYY");
+    const eDate = moment("10-01-2017", "MM-DD-YYYY");
     document.getElementById("endCr").innerHTML = eDate.format("DD MMM YYYY");
 });
 
