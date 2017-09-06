@@ -1,42 +1,26 @@
 // const studentProf = (studentID) => $.post("post/studentProfile", {
 //     studentID: studentID
 // });
-
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const courseInf = (courseID) => $.post("post/courseInfo", {
     courseID: courseID
 });
 $(document).ready(function () {
-    genTable();
-    let cookie = getCookieDict();
-    //noinspection JSUnresolvedVariable
-    $('#id').html(cookie.monkeyWebUser);
-    //noinspection JSUnresolvedVariable
-    showProfilePic(cookie.monkeyWebUser);
+    // funntion for upload profilePic
     $('.profilePic').click(function () {
         $('#profileModal').modal();
     });
-    //noinspection JSUnresolvedVariable
+    let cookie = getCookieDict();
+    $('#id').html(cookie.monkeyWebUser);
+    showProfilePic(cookie.monkeyWebUser);
+    genTable();
     studentProfile(parseInt(cookie.monkeyWebUser)).then((data) => {
         let temp;
         let time;
-        let status = $('#status');
-        switch (data.registrationState) {
-            case 'untransferred':
-                status.html('รอใบโอน');
-                break;
-            case 'transferred':
-                status.html('โอนเงินแล้ว');
-                break;
-            case 'pending':
-                status.html('อยู่ระหว่างพิจารณา');
-                break;
-            case 'registered':
-                status.html('ลงทะเบียนเสร็จสมบูรณ์');
-                break;
-        }
-        $('#name').html(data.nickname + ' ' + data.firstname + ' ' + data.lastname);
-        $('#nameE').html(data.nicknameEn + ' ' + data.firstnameEn + ' ' + data.lastnameEn);
+        let status = $('#statusCr');
+        status.html(data.quarter[0].registrationState);
+        (data.quarter[1] !== undefined) ? $("#statusSm").html(data.quarter[1].registrationState) : $("#statusSm").html("unregistered");
+        $('#name').html(data.firstname + ' (' + data.nickname + ') ' + data.lastname);
+        $('#nameE').html(data.firstnameEn + ' (' + data.nicknameEn + ') ' + data.lastnameEn);
         $('#studentTel').html(data.phone);
         $('#parentTel').html(data.phoneParent);
         $('#email').html(data.email);
@@ -100,6 +84,7 @@ $(document).ready(function () {
         for (let i in data.courseID) {
             //noinspection JSUnfilteredForInLoop
             courseInf(data.courseID[i]).then((cr) => {
+                log(cr)
                 let course = document.getElementsByClassName('btn-' + (numtoDay((new Date(parseInt(cr.day))).getDay())) + ' ' + (new Date(parseInt(cr.day))).getHours() + '.1');
                 for (let j = 0; j < course.length; j++) {
                     course[j].className = course[j].className + ' cr';
@@ -109,7 +94,7 @@ $(document).ready(function () {
         }
     });
     // const sDate = new Date("July 1, 2017 0:00:00");
-    const sDate = moment("07-01-2017","MM-DD-YYYY")
+    const sDate = moment("07-01-2017", "MM-DD-YYYY")
     document.getElementById("startCr").innerHTML = sDate.format("DD MMM YYYY");
     let nDate = new Date().getTime();
     let diff = Math.round((nDate - sDate) / 604800000);
@@ -117,7 +102,7 @@ $(document).ready(function () {
         document.getElementById("nowCr").innerHTML = "ยังไม่เริ่ม CR60Q3";
     } else document.getElementById("nowCr").innerHTML = "ครั้งที่ " + diff + "/14";
     // const eDate = new Date("October 1, 2017 23:59:59");
-    const eDate = moment("10-01-2017","MM-DD-YYYY");
+    const eDate = moment("10-01-2017", "MM-DD-YYYY");
     document.getElementById("endCr").innerHTML = eDate.format("DD MMM YYYY");
 });
 
@@ -136,23 +121,17 @@ function showProfilePic(id) {
     //noinspection ES6ModulesDependencies
     $.post("post/getConfig").then((config) => {
         //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpg', function (data, status) {
-            if (status === 'success') {
-                $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpg');
-            }
-        });
-        //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpeg', function (data, status) {
-            if (status === 'success') {
+        $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpg', function (data) {
+            $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpg');
+        }).fail(function (data) {
+            $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpeg', function (data) {
                 $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.jpeg');
-            }
-        });
-        //noinspection ES6ModulesDependencies
-        $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.png', function (data, status) {
-            if (status === 'success') {
-                $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.png');
-            }
-        });
+            }).fail(function (data) {
+                $.get(config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.png', function (data) {
+                    $('.profilePic').attr("src", config.profilePicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + id + '.png');
+                });
+            })
+        })
     });
 }
 function upPic() {

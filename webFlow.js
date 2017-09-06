@@ -176,7 +176,7 @@ module.exports=function(app,db){
     };
 
     addPage("login");
-    addPage("login",{url:"/"});
+    addPage("maintenance",{url:"/"});
     addPugPage("studentDocument");
     var options={middlewareOptions:{login:true,position:"student"}};
         options.middlewareOptions.studentStatus="inactive";
