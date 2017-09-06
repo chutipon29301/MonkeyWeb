@@ -24,7 +24,13 @@ function upPic(ID) {
             processData: false,
             contentType: false,
             success: function (data) {
-                self.location = 'studentProfile'
+                $.post("post/changeRegistrationState", { studentID: ID, registrationState: "transferred", quarter: summer }, function (data2) {
+                    if (data2.err) {
+                        alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin');
+                        throw data2.err
+                    }
+                    self.location = 'studentProfile'
+                })
             }
         });
     }
