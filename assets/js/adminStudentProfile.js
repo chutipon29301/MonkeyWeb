@@ -458,7 +458,33 @@ function editStudent() {
 
 
 function putQuarter(){
-    let selectedQuarterList = document.getElementById("quarterSelect");
+
+    var quarter = document.getElementById("quarter");
+    var quarterList = [{
+        value: "2017-3",
+        text: "CR60Q3"
+    }, {
+        value: "2017-12",
+        text: "CR60OCT"
+    }, {
+        value: "2017-4",
+        text: "CR60Q4"
+    }]
+    quarter.innerHTML = "";
+    for (let i = 0; i < quarterList.length; i++) {
+        quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
+    }
+
+
+    getConfig().then(data => {
+        if (cookie.monkeyWebSelectedQuarter === undefined) {
+            quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+        } else {
+            quarter.value = cookie.monkeyWebSelectedQuarter;
+        }
+    });
+
+
     log(selectedQuarterList);
 }
 

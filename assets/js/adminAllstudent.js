@@ -127,7 +127,7 @@ function loadSelectedMenu() {
         } else {
             quarter.value = cookie.monkeyWebSelectedQuarter;
         }
-    })
+    });
 
 }
 

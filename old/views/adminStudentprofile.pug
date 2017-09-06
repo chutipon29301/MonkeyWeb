@@ -18,7 +18,9 @@ block body
     canvas#phyBarcode(hidden="true")
     .container
         .row
-            .col-sm-12
+            .col-sm-2
+                select.form-control#quarter(style="margin-top: 25px" onChange="")
+            .col-sm-10
                 button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
                     span.caret
                 ul#quarterSelect.dropdown-menu
