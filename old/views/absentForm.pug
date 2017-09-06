@@ -4,7 +4,7 @@ block head
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/bootstrap-datetimepicker.min.js")
     script(src="js/student.min.js")
-    script(src="js/studentAbsentForm.min.js")
+    script(src="js/studentAbsentForm.js")
     style.
         .btn1,.btn2,.btn3,.btn4{
             margin-bottom:3vh;
@@ -15,8 +15,28 @@ block body
             h2 แบบฟอร์มลา
             p แบบฟอร์มสำหรับการลาเรียน Monkey
     .container
-        h4#name
-            span.glyphicon.glyphicon-user
+        .row
+            .col-sm-12
+                h4#name: span.glyphicon.glyphicon-user
+                p(style="color:red") เลือกวันที่ต้องการลาจากปฏิธินด้านล่างแล้วกดยืนยัน
+                br
+        .table-responsive
+            table.table.table-bordered
+                thead
+                    tr
+                        th.text-center#prevMonth: span.glyphicon.glyphicon-chevron-left
+                        th#monthTable.text-center(colspan="5") Month
+                        th.text-center#nextMonth: span.glyphicon.glyphicon-chevron-right
+                    tr
+                        th.danger.text-center SUN
+                        th.text-center MON
+                        th.text-center TUE
+                        th.text-center WED
+                        th.text-center THU
+                        th.text-center FRI
+                        th.info.text-center SAT
+                tbody#tableBody
+    .container
         hr
         .form-group
             label วันที่ลา:
