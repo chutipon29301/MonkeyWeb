@@ -94,7 +94,7 @@ function sendData() {
 		for (let i = 0; i < allsel.length; i++) {
 			for (let j in cr) {
 				let time = new Date(cr[j].day)
-				if (cr[j].courseName == allsel[i].innerHTML.split(' ')[0] && parseInt(time.getHours()) == parseInt(allsend[i].name)) {
+				if (cr[j].courseName == allsel[i].innerHTML.split(' ')[0] && parseInt(time.getHours()) == parseInt(allsel[i].name)) {
 					allsend.push(cr[j].courseID)
 				}
 			}
@@ -107,7 +107,7 @@ function sendData() {
 				alert('การเชื่อมต่อมีปัญหา โปรดลองใหม่อีกครั้ง');
 				throw data.err;
 			}
-			$.post('/post/changeRegistrationState', { id: parseInt(cookie.monkeyWebUser), registrationState: 'untransferred', quarter: "summer" }, function (data2) {
+			$.post('/post/changeRegistrationState', { studentID: parseInt(cookie.monkeyWebUser), registrationState: 'untransferred', quarter: "summer" }, function (data2) {
 				if (data2.err) {
 					alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin')
 					throw data2.err;
