@@ -485,6 +485,24 @@ function showReceipt() {
                 $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png');
             }
         });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png');
+            }
+        });
     });
 }
 
