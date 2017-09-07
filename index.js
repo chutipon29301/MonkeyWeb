@@ -144,7 +144,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     configDB.updateOne({defaultQuarter:{$exists:false}},{
         $unset:{year:"",quarter:""},
         $set:{defaultQuarter:{
-            quarter:{year:2017,quarter:3},
+            quarter:{year:2017,quarter:3}
         }}
     });
     // TODO Migration3 year/quarter in course and courseSuggestion
@@ -205,13 +205,13 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
 
     configDB.updateOne({_id:"config"},{
         $setOnInsert:{
-            year:60,quarter:3,
             courseMaterialPath:"courseMaterial/",
             receiptPath:"receipt/",
             nextStudentID:17001,nextTutorID:99035,
             profilePicturePath:"profilePicture/",
             studentSlideshowPath:"studentSlideshow/",
-            studentCommentPicturePath:"studentCommentPicture/"
+            studentCommentPicturePath:"studentCommentPicture/",
+            defaultQuarter:{year:60,quarter:3}
         }
     },{upsert:true},function(err,result){
         if(result.upsertedCount){

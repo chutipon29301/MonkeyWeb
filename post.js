@@ -817,7 +817,7 @@ module.exports=function(app,db){
             }
         });
     });
-    //OK {courseID} return {courseName,day,[tutor],[student]}
+    //OK {courseID} return {courseName,day,[tutor],[student],year,quarter}
     post("/post/courseInfo",function(req,res){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
@@ -827,7 +827,8 @@ module.exports=function(app,db){
                     getCourseName(courseID,function(courseName){
                         res.send({
                             courseName:courseName,day:result.day,
-                            tutor:result.tutor,student:result.student
+                            tutor:result.tutor,student:result.student,
+                            year:result.year,quarter:result.quarter
                         });
                     });
                 }
