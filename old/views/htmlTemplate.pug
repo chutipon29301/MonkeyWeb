@@ -42,8 +42,14 @@ html(lang="en")
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") ลงทะเบียน 
                                         span.caret
                                     ul.dropdown-menu
-                                        li: a(href="/registrationCourse") คอร์ส
+                                        //- li: a(href="/registrationCourse") คอร์ส
                                         li: a(href="/registrationSummer") ซัมเมอร์
+                                li.dropdown
+                                    a.dropdown-toggle(data-toggle="dropdown" href="#") อัปโหลดใบโอน 
+                                        span.caret
+                                    ul.dropdown-menu
+                                        //- li: a(href="/registrationCourse") คอร์ส
+                                        li: a(href="/summerReceipt") ซัมเมอร์
                                 //- li: a(href="#" onclick="loadRegistrationPage();") ลงทะเบียน
                                 //- li.dropdown
                                 //-     a.dropdown-toggle(data-toggle="dropdown" href="#") Course
@@ -52,11 +58,11 @@ html(lang="en")
                                 //-         li.disabled: a(href="#") ลา
                                 //-         li.disabled: a(href="#") ชดเชย
                                 //- li.dropdown
-                                //-     a.dropdown-toggle(data-toggle="dropdown" href="#") แบบฟอร์ม
-                                //-         span.caret
-                                //-     ul.dropdown-menu
-                                //-         li: a(href="absentForm") ลา
-                                //-         li: a(href="addForm") เพิ่ม
+                                    a.dropdown-toggle(data-toggle="dropdown" href="#") แบบฟอร์ม
+                                        span.caret
+                                    ul.dropdown-menu
+                                        li: a(href="absentForm") ลา
+                                        //- li: a(href="addForm") เพิ่ม
                             else
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminAllStudent") All Student

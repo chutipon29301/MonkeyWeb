@@ -1,0 +1,68 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Registration Name"
+    script(src="js/regSm.min.js")
+block body
+    .container
+        form.form-horizontal
+            .form-group
+                label.control-label.col-sm-1 ชื่อ :
+                .col-sm-11: input#name.form-control(type="text" readonly)
+            .form-group
+                label.control-label.col-sm-1 ชั้น :
+                .col-sm-11: input#grade.form-control(type="text" readonly)
+        .row
+            .col-xs-12.text-center.visible-xs
+                p(style="color:red") สำหรับคอร์สซัมเมอร์จะเรียนทุกวัน
+                p(style="color:red") จันทร์ - ศุกร์ ตั้งแต่วันที่ 9 ถึง 27 ตุลาคม 60
+            .col-sm-12.text-center.hidden-xs
+                p(style="color:red") สำหรับคอร์สซัมเมอร์จะเรียนทุกวัน จันทร์ - ศุกร์ ตั้งแต่วันที่ 9 ถึง 27 ตุลาคม 60
+        .table-responsive
+            table.table.table-bordered
+                thead
+                    tr
+                        th.text-center เวลา
+                        th.text-center วิชา
+                tbody
+                    tr
+                        td.col-xs-6.text-center 8.00-10.00 น.
+                        td.col-xs-6
+                            button.btn.btn-default.col-xs-12.col-sm-6(name="8" onClick="btntoggle(this);this.blur();") &nbsp;
+                            button.btn.btn-default.col-xs-12.col-sm-6(name="8" onClick="btntoggle(this);this.blur();") &nbsp;
+                    tr
+                        td.col-xs-6.text-center 10.00-12.00 น.
+                        td.col-xs-6
+                            button.btn.btn-default.col-xs-12.col-sm-6(name="10" onClick="btntoggle(this);this.blur();") &nbsp;
+                            button.btn.btn-default.col-xs-12.col-sm-6(name="10" onClick="btntoggle(this);this.blur();") &nbsp;
+                    tr
+                        td.col-xs-6.text-center 13.00-15.00 น.
+                        td.col-xs-6
+                            button.btn.btn-default.col-xs-12.col-sm-6(name="13" onClick="btntoggle(this);this.blur();") &nbsp;
+                            button.btn.btn-default.col-xs-12.col-sm-6(name="13" onClick="btntoggle(this);this.blur();") &nbsp;
+        .row
+            .col-xs-12.text-right: h3#total(style="color:red;") จำนวนเงิน : 0 บาท
+        .row
+            .col-xs-12.text-right
+                br
+                button.btn.btn-primary(type="button" onClick="this.blur();confirm();" data-toggle="modal" data-target="#confirmModal") ยืนยัน 
+                    span.glyphicon.glyphicon-chevron-right
+        //- Modal for confirm
+        #confirmModal.modal.fade(role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button" data-dismiss="modal") &times;
+                        h3 ยืนยันการลงทะเบียน
+                    .modal-body
+                        #haveSel
+                            .row
+                                p.col-sm-2.col-xs-4: strong รายชื่อวิชา :
+                                p.col-sm-10.col-xs-8#sbj &nbsp;
+                            .row
+                                p.col-sm-2.col-xs-4: strong จำนวนเงิน :
+                                p.col-sm-10.col-xs-8#fee &nbsp;
+                        #noSel.text-center
+                            p(style="color:red"): strong กรุณาเลือกวิชาที่ต้องการลงทะเบียน
+                    .modal-footer
+                        button#confirm.btn.btn-primary(type="button" onClick="sendData()") ยืนยัน
+                        button.btn.btn-danger(type="button" data-dismiss="modal") ยกเลิก

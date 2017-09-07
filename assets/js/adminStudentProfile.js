@@ -49,7 +49,13 @@ function getStudentProfile() {
         document.getElementById("studentLevel").innerHTML = "Grade: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
-        document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
+        if(data.quarter.length>1){
+            document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;
+            document.getElementById("studentStateSm").innerHTML = "STAGE SM: " + data.quarter[1].registrationState;
+        }else{
+            document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;
+            document.getElementById("studentStateSm").innerHTML = "STAGE SM: unregistered";
+        }
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
         //add student data to modal
         document.getElementById("thNName").value = data.nickname;
@@ -483,6 +489,24 @@ function showReceipt() {
         $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png', function (data, status) {
             if (status === 'success') {
                 $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png');
             }
         });
     });
