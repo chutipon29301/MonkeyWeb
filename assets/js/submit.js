@@ -5,17 +5,20 @@ $(document).ready(function () {
     var cookie = getCookieDict();
     cookie.regisCourse = JSON.parse(cookie.regisCourse);
     cookie.regisHybrid = JSON.parse(cookie.regisHybrid);
-    cookie.name = JSON.parse(cookie.name);
-    cookie.nameE = JSON.parse(cookie.nameE);
-    cookie.tel = JSON.parse(cookie.tel);
-    console.log(cookie)
-    $('#name').html(decodeURIComponent(cookie.name['nname']) + ' ' + decodeURIComponent(cookie.name['name']) + ' ' + decodeURIComponent(cookie.name['sname']));
-    $('#nameE').html(decodeURIComponent(cookie.nameE['nname']) + ' ' + decodeURIComponent(cookie.nameE['name']) + ' ' + decodeURIComponent(cookie.nameE['sname']));
-    $('#parentTel').html(cookie.tel.parent + '(ผู้ปกครอง)');
-    $('#studentTel').html(cookie.tel.student + '(นักเรียน)');
-    $('#email').html(cookie.email);
+    $.post('/post/studentID',{studentID:parseInt(cookie.monkeyWebUser)},(data)=>{
+        if(data.err){
+            alert('Cannot get student profile from server')
+            throw data.err;
+        }
+        $('#name').html( data.nickname+ ' ' + data.firstname + ' ' + data.lastname);
+        $('#nameE').html(data.nicknameEn + ' ' + data.firstnameEn + ' ' + data.lastnameEn);
+        $('#parentTel').html(data.phoneParent + '(ผู้ปกครอง)');
+        $('#studentTel').html(data.phone + '(นักเรียน)');
+        $('#email').html(data.email);
+        $('#grade').html(gradetoText(data.grade));
+    })
     $('#crFee').html(cookie.courseFee.slice(0, cookie.courseFee.length - 3) + ',' + cookie.courseFee.slice(cookie.courseFee.length - 3, cookie.courseFee.length) + ' บาท');
-    $('#grade').html(gradetoText(cookie.grade));
+    
     var crPrint = '';
     for (let i in cookie.regisCourse) {
         if (cookie.regisCourse[i] !== false) {
@@ -220,97 +223,74 @@ function submit() {
     var cookie = getCookieDict();
     cookie.regisCourse = JSON.parse(cookie.regisCourse);
     cookie.regisHybrid = JSON.parse(cookie.regisHybrid);
-    cookie.name = JSON.parse(cookie.name);
-    cookie.nameE = JSON.parse(cookie.nameE);
-    cookie.tel = JSON.parse(cookie.tel);
-    $.post("post/editStudent", {
+    var coursetoThrow = [];
+    for (let i in cookie.regisCourse) {
+        if (cookie.regisCourse[i] !== false) {
+            if (cookie.regisCourse[i].select === true) {
+                coursetoThrow.push(cookie.regisCourse[i].courseID)
+            }
+        }
+    }
+    $.post("post/addStudentCourse", {
         studentID: parseInt(cookie.monkeyWebUser),
-        firstname: decodeURIComponent(cookie.name.name),
-        lastname: decodeURIComponent(cookie.name.sname),
-        nickname: decodeURIComponent(cookie.name.nname),
-        firstnameEn: decodeURIComponent(cookie.nameE.name),
-        lastnameEn: decodeURIComponent(cookie.nameE.sname),
-        nicknameEn: decodeURIComponent(cookie.nameE.nname),
-        email: cookie.email,
-        phone: cookie.tel.student,
-        grade: parseInt(cookie.grade),
-        phoneParent: cookie.tel.parent
-    }, function (output1) {
-        if (output1.err) {
+        courseID: coursetoThrow
+    }, function (output2) {
+        if (output2.err) {
             alert('Something went wrong! please try again')
         }
         else {
-            var coursetoThrow = [];
-            for (let i in cookie.regisCourse) {
-                if (cookie.regisCourse[i] !== false) {
-                    if (cookie.regisCourse[i].select === true) {
-                        coursetoThrow.push(cookie.regisCourse[i].courseID)
-                    }
+            for (let i in cookie.regisHybrid) {
+                if (cookie.regisHybrid[i] !== false) {
+                    $.post("post/addHybridDay", {
+                        studentID: parseInt(cookie.monkeyWebUser),
+                        subject: cookie.regisHybrid[i].subject,
+                        day: cookie.regisHybrid[i].day
+                    }, function (output3) {
+                        if (output3.err) {
+                            alert("Something went wrong! please try again")
+                        }
+                    })
                 }
             }
-            $.post("post/addStudentCourse", {
-                studentID: parseInt(cookie.monkeyWebUser),
-                courseID: coursetoThrow
-            }, function (output2) {
-                if (output2.err) {
-                    alert('Something went wrong! please try again')
-                }
-                else {
-                    for (let i in cookie.regisHybrid) {
-                        if (cookie.regisHybrid[i] !== false) {
-                            $.post("post/addHybridDay", {
-                                studentID: parseInt(cookie.monkeyWebUser),
-                                subject: cookie.regisHybrid[i].subject,
-                                day: cookie.regisHybrid[i].day
-                            }, function (output3) {
-                                if (output3.err) {
-                                    alert("Something went wrong! please try again")
-                                }
-                            })
-                        }
+            if ($('#skilltime').val() !== '0') {
+                $.post("post/addSkillDay", {
+                    studentID: parseInt(cookie.monkeyWebUser),
+                    subject: 'M',
+                    day: moment(0).day(daytoNum($('#skillday').val())).hour(Math.floor(parseInt($('#skilltime').val()) / 10)).minute((parseInt($('#skilltime').val()) % 10) * 6).valueOf()
+                }, function (output4) {
+                    if (output4.err) {
+                        alert("Something went wrong! please try again")
                     }
-                    if ($('#skilltime').val() !== '0') {
-                        $.post("post/addSkillDay", {
-                            studentID: parseInt(cookie.monkeyWebUser),
-                            subject: 'M',
-                            day: moment(0).day(daytoNum($('#skillday').val())).hour(Math.floor(parseInt($('#skilltime').val()) / 10)).minute((parseInt($('#skilltime').val()) % 10) * 6).valueOf()
-                        }, function (output4) {
-                            if (output4.err) {
-                                alert("Something went wrong! please try again")
-                            }
-                        })
+                })
+            }
+            if ($('#skilltimeEng').val() !== '0') {
+                $.post("post/addSkillDay", {
+                    studentID: parseInt(cookie.monkeyWebUser),
+                    subject: 'E',
+                    day: moment(0).day(daytoNum($('#skilldayEng').val())).hour(Math.floor(parseInt($('#skilltimeEng').val()) / 10)).minute((parseInt($('#skilltimeEng').val()) % 10) * 6).valueOf()
+                }, function (output4) {
+                    if (output4.err) {
+                        alert("Something went wrong! please try again")
                     }
-                    if ($('#skilltimeEng').val() !== '0') {
-                        $.post("post/addSkillDay", {
-                            studentID: parseInt(cookie.monkeyWebUser),
-                            subject: 'E',
-                            day: moment(0).day(daytoNum($('#skilldayEng').val())).hour(Math.floor(parseInt($('#skilltimeEng').val()) / 10)).minute((parseInt($('#skilltimeEng').val()) % 10) * 6).valueOf()
-                        }, function (output4) {
-                            if (output4.err) {
-                                alert("Something went wrong! please try again")
-                            }
-                        })
+                })
+            }
+            let changeStatus = (userID, status) => $.post("post/changeStatus", {
+                userID: userID,
+                status: status
+            });
+            //noinspection JSUnresolvedVariable
+            changeStatus(parseInt(cookie.monkeyWebUser), status).then(() => {
+                alert('ลงทะเบียนเสร็จสิ้น');
+                $.post("post/changeStatus", {
+                    userID: parseInt(cookie.monkeyWebUser),
+                    status: "active"
+                }).then((data) => {
+                    if (data.err) {
+                    } else {
+                        self.location = 'registrationReceipt'
                     }
-                    let changeStatus = (userID, status) => $.post("post/changeStatus", {
-                        userID: userID,
-                        status: status
-                    });
-                    //noinspection JSUnresolvedVariable
-                    changeStatus(parseInt(cookie.monkeyWebUser), status).then(() => {
-                        alert('ลงทะเบียนเสร็จสิ้น');
-                        $.post("post/changeStatus", {
-                            userID: parseInt(cookie.monkeyWebUser),
-                            status: "active"
-                        }).then((data) => {
-                            if (data.err) {
-                            } else {
-                                self.location = 'registrationReceipt'
-                            }
-                        });
-                    });
-
-                }
-            })
+                });
+            });
         }
-    });
+    })
 }
