@@ -24,3 +24,12 @@ mixin cell(status)
     else if(status=="pending")
         td.popup.c-blue&attributes(attributes)
             span.glyphicon.glyphicon-hourglass
+mixin quarter-selector(page,quarterName)
+    .dropdown
+        button.btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+            = "Quarter : "+quarterName+" "
+            span.caret
+        ul.dropdown-menu
+            li: a(href="/"+page+"?year=2017&quarter=3") CR60Q3
+            li: a(href="/"+page+"?year=2017&quarter=12") CR60OCT
+            li: a(href="/"+page+"?year=2017&quarter=4") CR60Q4
