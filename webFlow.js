@@ -248,7 +248,7 @@ module.exports=function(app,db){
     addPage("testadmin",{middlewareOptions:{login:true,position:"dev"}});
     addPugPage("testDev",{middlewareOptions:{login:true,position:"dev"}},function(callback){
         var local={moment:moment};
-        post("post/allCourse",{},function(result){
+        post("post/allCourse",{quarter:"all"},function(result){
             Object.assign(local,result);
             callback(local);
         });
