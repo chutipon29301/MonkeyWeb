@@ -26,6 +26,10 @@ block body
         +select(name)&attributes(attributes)
             - for(var i in course)
                 +option(course[i].courseID,course[i].courseName+" : "+course[i].tutorNicknameEn+" ("+moment(course[i].day).format("dddHH")+")")
+    mixin select-tutor(name)
+        +select(name).input-int&attributes(attributes)
+            - for(var i in tutor)
+                +option(tutor[i]._id,"#"+tutor[i]._id+" : "+tutor[i].firstnameEn+" ("+tutor[i].nicknameEn+") "+tutor[i].lastnameEn)
     mixin input-grade-checkbox
         +input-checkbox-inline("grade",1,"P1")&attributes(attributes)
         +input-checkbox-inline("grade",2,"P2")&attributes(attributes)
@@ -178,11 +182,11 @@ block body
                         +submit("post/addTutor")
                 +list-group-item
                     +form-horizontal-title("post/removeTutor")
-                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +submit("post/removeTutor")
                 +list-group-item
                     +form-horizontal-title("post/editTutor")
-                        +form-group("tutorID"): +input-number("tutorID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +form-group("password"): +input-password("password")
                         +form-group("firstname"): +input-text("firstname")
                         +form-group("lastname"): +input-text("lastname")
@@ -202,7 +206,7 @@ block body
                         +submit("post/listRandomStudent")
                 +list-group-item
                     +form-horizontal-title("post/changePosition")
-                        +form-group("tutorID"): +input-number("tutorID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +form-group("position"): +select-position()(required)
                         +submit("post/changePosition")
             +panel-list-group("Course")
@@ -251,7 +255,7 @@ block body
                         +form-group("level"): +input-text("level")(required)
                         +form-group("day"): +select-course-day()(required)
                         //-TODO array
-                        +form-group("tutor"): +input-number("tutor").input-array(required)
+                        +form-group("tutor"): +select-tutor("tutor").input-array(required)
                         +form-group("description"): +input-text("description")(required)
                         +form-group("room"): +select-room("room")(required)
                         +submit("post/addCourse")
@@ -268,7 +272,7 @@ block body
                         +form-group("level"): +input-text("level")
                         +form-group("day"): +select-course-day()
                         //-TODO array
-                        +form-group("tutor"): +input-number("tutor").input-array
+                        +form-group("tutor"): +select-tutor("tutor").input-array
                         +form-group("description"): +input-text("description")
                         +form-group("room"): +select-room("room")
                         +submit("post/editCourse")
@@ -288,7 +292,7 @@ block body
                     .loader.center-block
                     +form-horizontal-title("post/addStudentComment")
                         +form-group("studentID"): +input-number("studentID")(required)
-                        +form-group("tutorID"): +input-number("tutorID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +form-group("message"): +input-text("message")(required)
                         +form-group("priority"): +input-number("priority")
                         +submit("post/addStudentComment")

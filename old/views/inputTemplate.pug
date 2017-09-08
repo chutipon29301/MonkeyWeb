@@ -67,7 +67,7 @@ mixin select-registration-state
         +option("pending")
         +option("finished")
 mixin select-number-of-sub
-    +select("numberOfSub","Select number of submission")&attributes(attributes)
+    +select("numberOfSub","Select number of submission").input-int&attributes(attributes)
         - for(i=1;i<=14;i++)
             +option(i)
 mixin select-skill-subject
@@ -107,7 +107,7 @@ mixin select-hybrid-day
         +option-day(7,13,0,2)
         +option-day(7,15,0,2)
 mixin select-grade
-    +select("grade")&attributes(attributes)
+    +select("grade").input-int&attributes(attributes)
         +option(1,"Primary 1")
         +option(2,"Primary 2")
         +option(3,"Primary 3")
@@ -158,7 +158,8 @@ mixin select-course-day
         +option-day(7,13,0,2)
         +option-day(7,15,0,2)
 mixin select-room
-    +select("room")&attributes(attributes)
+    +select("room").input-int&attributes(attributes)
+        +option(-1,"Unassigned")
         +option(0,"Hybrid")
         +option(1,"Room 1")
         +option(2,"Room 2")
