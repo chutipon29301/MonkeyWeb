@@ -199,6 +199,7 @@ module.exports=function(app,db){
                 addPugPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
                 addPugPage("summerReceipt",options);
+                addPugPage("summerAbsentForm",options);
             delete options.middlewareOptions.quarter;
         delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
