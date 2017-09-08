@@ -1,8 +1,7 @@
 $(document).ready(function () {
     // show datepicker
     $('#datetimepicker1').datetimepicker({
-        format: 'DD/MM/YYYY H:00',
-        daysOfWeekDisabled: [1, 3, 5]
+        format: 'DD/MM/YYYY H:00'
     });
     // add event when pick date
     $('#datetimepicker1').on("dp.change", function (e) {
@@ -12,6 +11,7 @@ $(document).ready(function () {
 });
 function genTable() {
     let date = $('.datePicker').data('DateTimePicker').date();
+    log(date.valueOf());
     $.post('post/listStudentAttendanceModifierByDay', { day: date.valueOf() }).then((data) => {
         $('#absentTable').empty();
         $('#presentTable').empty();
@@ -90,32 +90,32 @@ function genPresentTable(data, i) {
         })
     }
 }
-function chkEmergency(moment) {
-    let pickDate = $('.datePicker').data('DateTimePicker').date();
-    if (pickDate.day() === 2 || pickDate.day() === 4) {
-        if (moment.year() <= pickDate.year()) {
-            if (moment.month() <= pickDate.month()) {
-                if (moment.date() < pickDate.date()) {
-                    return false
-                }
-            }
-        }
-    } else if (pickDate.day() === 6) {
-        if (moment.year() <= pickDate.year()) {
-            if (moment.month() <= pickDate.month()) {
-                if (moment.date() < pickDate.date()) {
-                    return false
-                }
-            }
-        }
-    } else if (pickDate.day() === 0) {
-        if (moment.year() <= pickDate.year()) {
-            if (moment.month() <= pickDate.month()) {
-                if (moment.date() < pickDate.date() - 1) {
-                    return false
-                }
-            }
-        }
-    }
-    return true
-}
+// function chkEmergency(moment) {
+//     let pickDate = $('.datePicker').data('DateTimePicker').date();
+//     if (pickDate.day() === 2 || pickDate.day() === 4) {
+//         if (moment.year() <= pickDate.year()) {
+//             if (moment.month() <= pickDate.month()) {
+//                 if (moment.date() < pickDate.date()) {
+//                     return false
+//                 }
+//             }
+//         }
+//     } else if (pickDate.day() === 6) {
+//         if (moment.year() <= pickDate.year()) {
+//             if (moment.month() <= pickDate.month()) {
+//                 if (moment.date() < pickDate.date()) {
+//                     return false
+//                 }
+//             }
+//         }
+//     } else if (pickDate.day() === 0) {
+//         if (moment.year() <= pickDate.year()) {
+//             if (moment.month() <= pickDate.month()) {
+//                 if (moment.date() < pickDate.date() - 1) {
+//                     return false
+//                 }
+//             }
+//         }
+//     }
+//     return true
+// }
