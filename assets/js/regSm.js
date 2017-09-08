@@ -10,11 +10,11 @@ $(document).ready(function () {
 			throw data.err
 		}
 		addCourse(data.course, cookie.monkeyWebUser)
-		for (let i = 0; i < data.course.length; i++) {
-			if (data.course[i].description !== null) {
-				$("#crDescription").append("<p>- " + data.course[i].courseName + " คือคอร์ส" + data.course[i].description + "</p>")
-			}
-		}
+		// for (let i = 0; i < data.course.length; i++) {
+		// 	if (data.course[i].description !== null) {
+		// 		$("#crDescription").append("<p>- " + data.course[i].courseName + " คือคอร์ส" + data.course[i].description + "</p>")
+		// 	}
+		// }
 	})
 	$('.btn').click(function () {
 		let allsel = $('.btn-success')
@@ -60,6 +60,9 @@ function addCourse(allcourse, id) {
 		$('#grade').val((data.grade > 6) ? 'ม. ' + (data.grade - 6) : 'ป. ' + data.grade)
 		for (let i in allcourse) {
 			if (checkgrade(allcourse[i], data.grade)) {
+				if (allcourse[i].description !== null) {
+					$("#crDescription").append("<p>- " + allcourse[i].courseName + " คือคอร์ส" + allcourse[i].description + "</p>")
+				}
 				cr.push(allcourse[i])
 				let coursetime = new Date(allcourse[i].day)
 				log(coursetime.getHours())
