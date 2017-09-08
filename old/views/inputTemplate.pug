@@ -61,9 +61,10 @@ mixin select-registration-state
         +option("unregistered")
         +option("untransferred")
         +option("transferred")
-        +option("pending")
         +option("rejected")
+        +option("approved")
         +option("registered")
+        +option("pending")
         +option("finished")
 mixin select-number-of-sub
     +select("numberOfSub","Select number of submission")&attributes(attributes)
@@ -92,7 +93,7 @@ mixin select-skill-time
 mixin select-hybrid-subject
     +select("subject")&attributes(attributes)
         +option("M","Math")
-        +option("PH","Physics")
+        +option("P","Physics")
 mixin select-hybrid-day
     +select("day")&attributes(attributes)
         +option-day(2,17,0,2)
@@ -126,10 +127,11 @@ mixin select-position
         +option("dev")
 mixin select-course-subject
     +select("subject")&attributes(attributes)
-        +option("CH","Chemistry")
+        +option("C","Chemistry")
         +option("E","English")
         +option("M","Math")
-        +option("PH","Physics")
+        +option("P","Physics")
+        +option("Sci","Science")
 mixin select-course-day
     +select("day")&attributes(attributes)
         +option-day(1,8,0,2)
