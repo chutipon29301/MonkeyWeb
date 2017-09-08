@@ -3,7 +3,7 @@ block head
     -const pageTitle = "Admin Student Profile"
     link(href="css/component.css", rel="stylesheet")
     script(src="js/JsBarcode.code128.min.js" type="text/javascript")
-    script(src="js/adminStudentProfile.min.js")
+    script(src="js/adminStudentProfile.js")
     style.
         #comment p{
             margin-bottom:20px;
@@ -18,10 +18,13 @@ block body
     canvas#phyBarcode(hidden="true")
     .container
         .row
-            .col-sm-12
-                button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
-                    span.caret
-                ul#quarterSelect.dropdown-menu
+            .col-sm-2
+                select.form-control#quarter(style="margin-top: 25px" onChange="")
+            .col-sm-10
+                //- button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
+                //-     span.caret
+                //- ul#quarterSelect.dropdown-menu
+                //-     li Hello World
         .row
             .col-sm-6
                 br
@@ -134,7 +137,6 @@ block body
                 .row
                     .col-sm-12
                         h1 Summer
-                        h4 STAGE: SummerStage
                         button.btn.btn-default#summer(data-toggle='collapse' data-target='#summerDiv') Download Summer Table 
                             span.caret
                     .collapse#summerDiv
