@@ -761,11 +761,18 @@ module.exports=function(app,db){
     //OK Q{} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName,[tutorNicknameEn]}]}
     post("/post/allCourse",function(req,res){
         var output=[];
+        var all=false;
+        if(req.body.year===undefined&&req.body.quarter==="all"){
+            all=true;
+            req.body.quarter=undefined;
+        }
         getQuarter(req.body.year,req.body.quarter,function(err,quarter){
             if(err)res.send(err);
             else{
                 getCourseDB(function(courseDB){
-                    courseDB.find({year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
+                    var query={year:quarter.year,quarter:quarter.quarter};
+                    if(all)query={};
+                    courseDB.find(query).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
                         callbackLoop(result.length,function(i,continueLoop){
                             getCourseName(result[i]._id,function(courseName){
                                 output[i]={courseID:result[i]._id};
@@ -1781,33 +1788,38 @@ module.exports=function(app,db){
                 quarter:parseInt(req.body.defaultQuarterQuarter)
             }
         };
-        if(req.body.defaultSummerYear!==undefined&&req.body.defaultSummerQuarter!==undefined){
-            defaultQuarter.summer={
-                year:parseInt(req.body.defaultSummerYear),
-                quarter:parseInt(req.body.defaultSummerQuarter)
+        getQuarter(defaultQuarter.quarter.year,defaultQuarter.quarter.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                if(req.body.defaultSummerYear!==undefined&&req.body.defaultSummerQuarter!==undefined){
+                    defaultQuarter.summer={
+                        year:parseInt(req.body.defaultSummerYear),
+                        quarter:parseInt(req.body.defaultSummerQuarter)
+                    }
+                }
+                var dirPath=function(path){
+                    if(path.endsWith("/"))return path;
+                    return path+"/";
+                };
+                configDB.updateOne({},{
+                    $set:{
+                        defaultQuarter:defaultQuarter,
+                        courseMaterialPath:dirPath(req.body.courseMaterialPath),
+                        receiptPath:dirPath(req.body.receiptPath),
+                        nextStudentID:parseInt(req.body.nextStudentID),
+                        nextTutorID:parseInt(req.body.nextTutorID),
+                        profilePicturePath:dirPath(req.body.profilePicturePath),
+                        studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
+                        studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath)
+                    }
+                },function(){
+                    configDB.findOne({},function(err,config){
+                        console.log("[SHOW] config");
+                        console.log(config);
+                        res.send({});
+                    });
+                });
             }
-        }
-        var dirPath=function(path){
-            if(path.endsWith("/"))return path;
-            return path+"/";
-        };
-        configDB.updateOne({},{
-            $set:{
-                defaultQuarter:defaultQuarter,
-                courseMaterialPath:dirPath(req.body.courseMaterialPath),
-                receiptPath:dirPath(req.body.receiptPath),
-                nextStudentID:parseInt(req.body.nextStudentID),
-                nextTutorID:parseInt(req.body.nextTutorID),
-                profilePicturePath:dirPath(req.body.profilePicturePath),
-                studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
-                studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath)
-            }
-        },function(){
-            configDB.findOne({},function(err,config){
-                console.log("[SHOW] config");
-                console.log(config);
-                res.send({});
-            });
         });
     });
     //OK {toAdd} return {}
@@ -1815,13 +1827,14 @@ module.exports=function(app,db){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
-    //OK {year,quarter,name,maxSeat,week}
+    //OK {year,quarter,name,maxSeat,week,status}
     post("/post/addQuarter",function(req,res){
         var year=parseInt(req.body.year);
         var quarter=parseInt(req.body.quarter);
         var name=req.body.name;
         var maxSeat=[8+6+12+6+6+2,27,12,10,16,12];
         var week=[];
+        var name=req.body.status;
         // var maxSeat=[]; TODO
         // for(var i=0;i<req.body.maxSeat.length;i++){
         //     maxSeat.push(parseInt(req.body.maxSeat[i]));
@@ -1829,7 +1842,7 @@ module.exports=function(app,db){
         quarterDB.insertOne({
             _id:year+digit(quarter,2),
             year:year,quarter:quarter,name:name,
-            maxSeat:maxSeat,week:week
+            maxSeat:maxSeat,week:week,status:status
         },function(){
             res.send({});
         });
