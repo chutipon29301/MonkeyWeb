@@ -2,15 +2,18 @@ extends htmlTemplate
 block head
     - var pageTitle = "All Course"
     - if(webUser.position==="tutor")pageTitle="My Course"
-    script(src="js/adminAllCourse.min.js")
+    script(src="js/adminAllCourse.js")
     script.
         window.onload = getAllCourseContent();
 block body
     .container
-        .col-sm-10
-            h1 Course
-        .col-sm-2(class=webUser.position === "tutor" ? "hidden" : "" align="right")
-            a(href="adminCourseTable") คัมภีร์เทวดา
+        div.container
+            .col-sm-2
+                h1 Course
+            .col-sm-2
+                select.form-control#quarter(style="margin-top: 25px" onChange="quarterChange()")
+            .col-sm-8(class=webUser.position === "tutor" ? "hidden" : "" align="right")
+                a(href="adminCourseTable") คัมภีร์เทวดา
         div(class=webUser.position === "tutor" ? "hidden" : "")
             .col-sm-3
                 select.form-control.col-sm-1#subject(onChange="getAllCourseContent()" style="margin-bottom:5px")
