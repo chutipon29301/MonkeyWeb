@@ -1,5 +1,5 @@
 var cr = []
-var csSuggest = []
+var crSuggest = []
 var cookie
 const feepersbj = 9000
 $(document).ready(function () {
@@ -9,7 +9,6 @@ $(document).ready(function () {
 			alert("Cannot get course data from server")
 			throw data.err
 		}
-		log(data.course)
 		addCourse(data.course, cookie.monkeyWebUser)
 		for (let i = 0; i < data.course.length; i++) {
 			if (data.course[i].description !== null) {
@@ -29,11 +28,13 @@ $(document).ready(function () {
 				for (let j = 0; j < crSuggest[i].courseID.length; j++) {
 					for (let k = 0; k < allbtn.length; k++) {
 						if (crSuggest[i].courseID[j] === allbtn[k].id) {
-							allbtn[k].addClass("btn-grow")
-						} else {
-							allbtn[k].removeClass("btn-grow")
-						}
+							$(allbtn[k]).addClass("btn-grow")
+						} else $(allbtn[k]).removeClass("btn-grow")
 					}
+				}
+			} else {
+				for (let k = 0; k < allbtn.length; k++) {
+					$(allbtn[k]).removeClass("btn-grow")
 				}
 			}
 		}
@@ -45,7 +46,6 @@ function addCourse(allcourse, id) {
 			alert("Cannot get student profile from server")
 			throw data.err
 		}
-		log(data);
 		$.post("post/listCourseSuggestion", { grade: data.grade, quarter: "summer" }, function (crSugg) {
 			if (crSugg.course.length === 0) {
 				$("#group-form").hide();
