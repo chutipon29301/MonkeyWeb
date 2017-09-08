@@ -45,6 +45,7 @@ block body
             +panel("List Course")#listCourse
             +panel("List Full Hybrid")#listFullHybrid
             +panel("List Course Suggestion")#listCourseSuggestion
+            +panel("List Quarter")#listQuarter
     #message.container
     .container
         .panel-group
@@ -245,7 +246,7 @@ block body
                     .loader.center-block
                     +form-horizontal-title("post/addCourse")
                         +optionalQuarter
-                        +form-group("grade"): +select-course-subject()(required)
+                        +form-group("subject"): +select-course-subject()(required)
                         +form-group("grade"): +input-grade-checkbox().input-array.input-int
                         +form-group("level"): +input-text("level")(required)
                         +form-group("day"): +select-course-day()(required)

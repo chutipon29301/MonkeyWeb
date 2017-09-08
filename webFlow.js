@@ -149,7 +149,7 @@ module.exports=function(app,db){
                             res.status(200).render(page,local);
                         });
                     });
-                });
+                },req,res);
             });
         });
     };
@@ -207,17 +207,20 @@ module.exports=function(app,db){
         addPugPage("adminCoursedescription",options);
         addPugPage("tutorCommentStudent",options);
         addPugPage("tutorEditProfile",options);
-        addPugPage("tutorCourseMaterial",options,function(callback){
+        addPugPage("tutorCourseMaterial",options,function(callback,req,res){
             var local={moment:moment};
-            post("post/allCourseMaterial",{},function(result){
-                Object.assign(local,result);
-                post("post/getConfig",{},function(result){
-                    Object.assign(local,{config:result});
-                    getQuarter(undefined,undefined,function(err,result){
-                        Object.assign(local,{quarter:result});
-                        callback(local);
+            getQuarter(req.query.year,req.query.quarter,function(err,quarter){
+                if(err)res.send(err);
+                else{
+                    Object.assign(local,{quarter:quarter});
+                    post("post/allCourseMaterial",{year:quarter.year,quarter:quarter.quarter},function(result){
+                        Object.assign(local,result);
+                        post("post/getConfig",{},function(result){
+                            Object.assign(local,{config:result});
+                            callback(local);
+                        });
                     });
-                });
+                }
             });
         });
         options.middlewareOptions.position={$in:["admin","dev"]};
@@ -226,23 +229,26 @@ module.exports=function(app,db){
         addPugPage("adminCourseRoom",options);
         addPugPage("adminCourseTable",options);
         addPugPage("adminStudentprofile",options);
-        addPugPage("adminCourseMaterial",options,function(callback){
+        addPugPage("adminCourseMaterial",options,function(callback,req,res){
             var local={moment:moment};
-            post("post/allCourseMaterial",{},function(result){
-                Object.assign(local,result);
-                post("post/getConfig",{},function(result){
-                    Object.assign(local,{config:result});
-                    getQuarter(undefined,undefined,function(err,result){
-                        Object.assign(local,{quarter:result});
-                        callback(local);
+            getQuarter(req.query.year,req.query.quarter,function(err,quarter){
+                if(err)res.send(err);
+                else{
+                    Object.assign(local,{quarter:quarter});
+                    post("post/allCourseMaterial",{year:quarter.year,quarter:quarter.quarter},function(result){
+                        Object.assign(local,result);
+                        post("post/getConfig",{},function(result){
+                            Object.assign(local,{config:result});
+                            callback(local);
+                        });
                     });
-                });
+                }
             });
         });
     addPage("testadmin",{middlewareOptions:{login:true,position:"dev"}});
     addPugPage("testDev",{middlewareOptions:{login:true,position:"dev"}},function(callback){
         var local={moment:moment};
-        post("post/allCourse",{},function(result){
+        post("post/allCourse",{quarter:"all"},function(result){
             Object.assign(local,result);
             callback(local);
         });

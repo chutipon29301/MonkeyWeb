@@ -142,4 +142,10 @@ var refresh=function(){
             $("#listCourseSuggestion").append(JSON.stringify(data[i],null,2)+"<br>");
         }
     });
+    $("#listQuarter").empty();
+    $.post("debug/listQuarter",function(data,status){
+        for(var i=0;i<data.length;i++){
+            $("#listQuarter").append(JSON.stringify(data[i],null,2)+"<br>");
+        }
+    });
 };

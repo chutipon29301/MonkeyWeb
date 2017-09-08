@@ -84,23 +84,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     var studentCommentDB=db.collection("studentComment");
     var userDB=db.collection("user");
 
-    // db.dropCollection("test");
-    // var testDB=db.collection("test");
-    // testDB.insertMany([{fname:"3un",lname:"Last",student:{state:[{q:3,val:"unregistered"}]}},
-    //     {fname:"3fin",lname:"Last",student:{state:[{q:3,val:"finished"}]}},
-    //     {fname:"4un",lname:"Last",student:{state:[{q:4,val:"unregistered"}]}},
-    //     {fname:"3fin4un",lname:"Last",student:{state:[{q:3,val:"finished"},{q:4,val:"unregistered"}]}},
-    // ],function(){
-    //     testDB.updateMany({},{$pull:{"student.state":{val:"unregistered",q:4}}},function(err,result){
-    //         testDB.find().toArray(function(err,result){
-    //             console.log(JSON.stringify(result,null,2));
-    //         });
-    //     });
-    //     // testDB.find({"student.state.q":4}).toArray(function(err,result){
-    //     //     console.log(chalk.bgBlue(JSON.stringify(result,null,2)));
-    //     // });
-    // });
-
     // db.dropDatabase();
     // db.dropCollection("studentComment");
     // db.renameCollection("hybridSeat","fullHybrid");
@@ -108,62 +91,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // userDB.updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     // userDB.deleteMany({position:"student"});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
-
-    db.renameCollection("CR60Q3","course");
-    configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture/"}});
-    configDB.updateMany({maxSeat:{$exists:true}},{$unset:{maxSeat:""}});
-    // TODO Migration1 student.registrationState->student.quarter[].registrationState
-    quarterDB.updateOne({_id:"201703"},{
-        $setOnInsert:{
-            year:2017,quarter:3,name:"CR60Q3",
-            maxSeat:[8+6+12+6+6+2,27,12,10,16,12],
-            week:[]
-        }
-    },{upsert:true},function(){
-        userDB.find({position:"student","student.quarter":{$exists:false}}).toArray(function(err,result){
-            for(let i=0;i<result.length;i++){
-                if(result[i].student.registrationState==="unregistered"){
-                    userDB.updateOne({_id:result[i]._id},{
-                        $set:{"student.quarter":[]},
-                        $unset:{"student.registrationState":""}
-                    });
-                }
-                else{
-                    userDB.updateOne({_id:result[i]._id},{
-                        $push:{"student.quarter":{
-                            year:2017,quarter:3,
-                            registrationState:result[i].student.registrationState
-                        }},
-                        $unset:{"student.registrationState":""}
-                    });
-                }
-            }
-        });
-    });
-    // TODO Migration2 year/quarter -> defaultQuarter
-    configDB.updateOne({defaultQuarter:{$exists:false}},{
-        $unset:{year:"",quarter:""},
-        $set:{defaultQuarter:{
-            quarter:{year:2017,quarter:3},
-        }}
-    });
-    // TODO Migration3 year/quarter in course and courseSuggestion
-    courseDB.updateMany({year:{$exists:false},quarter:{$exists:false}},{
-        $set:{year:2017,quarter:3}
-    });
-    courseSuggestionDB.find({year:{$exists:false},quarter:{$exists:false}}).toArray(function(err,result){
-        courseSuggestionDB.deleteMany({year:{$exists:false},quarter:{$exists:false}},function(){
-            for(let i=0;i<result.length;i++){
-                courseSuggestionDB.insertOne({
-                    _id:"201703"+result[i].grade+result[i].level,
-                    grade:result[i].grade,
-                    level:result[i].level,
-                    courseID:result[i].courseID,
-                    year:2017,quarter:3
-                });
-            }
-        });
-    });
+    quarterDB.updateMany({status:{$exists:false}},{$set:{status:"active"}});
 
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
@@ -179,8 +107,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     //         console.log(result);
     //     });
     // },1000);
-
-    userDB.updateMany({position:"student"},{$unset:{"student.balance":""}});
 
     db.collection("user").updateOne({_id:99033},{
         $set:{
@@ -205,33 +131,41 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
 
     configDB.updateOne({_id:"config"},{
         $setOnInsert:{
-            year:60,quarter:3,
             courseMaterialPath:"courseMaterial/",
             receiptPath:"receipt/",
             nextStudentID:17001,nextTutorID:99035,
             profilePicturePath:"profilePicture/",
             studentSlideshowPath:"studentSlideshow/",
-            studentCommentPicturePath:"studentCommentPicture/"
+            studentCommentPicturePath:"studentCommentPicture/",
+            defaultQuarter:{year:60,quarter:3}
         }
     },{upsert:true},function(err,result){
         if(result.upsertedCount){
-            require("opn")("http://127.0.0.1/login");
+            require("opn")("http://127.0.0.1:8080/login");
             console.log(chalk.black.bgRed("[WARNING] Please update configurations"));
         }
-        configDB.findOne({},function(err,config){
-            console.log(config);
-            app.locals.post=function(method,input,callback){
-                app.locals.postFunction[method]({
-                    body:input
-                },{
-                    send:function(output){
-                        callback(output);
-                    }
-                });
-            };
-            app.locals.postFunction={};
-            require("./post.js")(app,db);
-            require("./webFlow.js")(app,db);
+        quarterDB.updateOne({_id:"201703"},{
+            $set:{year:2017,quarter:3},
+            $setOnInsert:{
+                name:"CR60Q3",maxSeat:[8+6+12+6+6+2,27,12,10,16,12],
+                week:[],status:"active"
+            }
+        },{upsert:true},function(err,result){
+            configDB.findOne({},function(err,config){
+                console.log(config);
+                app.locals.post=function(method,input,callback){
+                    app.locals.postFunction[method]({
+                        body:input
+                    },{
+                        send:function(output){
+                            callback(output);
+                        }
+                    });
+                };
+                app.locals.postFunction={};
+                require("./post.js")(app,db);
+                require("./webFlow.js")(app,db);
+            });
         });
     });
 });

@@ -1,4 +1,5 @@
 var cr = []
+var csSuggest = []
 var cookie
 const feepersbj = 9000
 $(document).ready(function () {
@@ -10,10 +11,32 @@ $(document).ready(function () {
 		}
 		log(data.course)
 		addCourse(data.course, cookie.monkeyWebUser)
+		for (let i = 0; i < data.course.length; i++) {
+			if (data.course[i].description !== null) {
+				$("#crDescription").append("<p>- " + data.course[i].courseName + " คือคอร์ส" + data.course[i].description + "</p>")
+			}
+		}
 	})
 	$('.btn').click(function () {
 		let allsel = $('.btn-success')
 		$('#total').html('จำนวนเงิน : ' + (feepersbj * allsel.length) + ' บาท')
+	})
+	$("#group").change(function () {
+		let allbtn = document.getElementsByClassName('btn');
+		let val = $("#group").val();
+		for (let i = 0; i < crSuggest.length; i++) {
+			if (crSuggest[i].level === val) {
+				for (let j = 0; j < crSuggest[i].courseID.length; j++) {
+					for (let k = 0; k < allbtn.length; k++) {
+						if (crSuggest[i].courseID[j] === allbtn[k].id) {
+							allbtn[k].addClass("btn-grow")
+						} else {
+							allbtn[k].removeClass("btn-grow")
+						}
+					}
+				}
+			}
+		}
 	})
 })
 function addCourse(allcourse, id) {
@@ -23,6 +46,16 @@ function addCourse(allcourse, id) {
 			throw data.err
 		}
 		log(data);
+		$.post("post/listCourseSuggestion", { grade: data.grade, quarter: "summer" }, function (crSugg) {
+			if (crSugg.course.length === 0) {
+				$("#group-form").hide();
+			} else {
+				for (let i = 0; i < crSugg.course.length; i++) {
+					crSuggest.push(crSugg.course[i]);
+					$("#group").append("<option value='" + crSugg.course[i].level + "'>" + crSugg.course[i].level + "</option>");
+				}
+			}
+		})
 		$('#name').val(data.firstname + ' (' + data.nickname + ') ' + data.lastname)
 		$('#grade').val((data.grade > 6) ? 'ม. ' + (data.grade - 6) : 'ป. ' + data.grade)
 		for (let i in allcourse) {
@@ -34,6 +67,7 @@ function addCourse(allcourse, id) {
 				for (let j = 0; j < btn.length; j++) {
 					if (btn[j].innerHTML == '&nbsp;') {
 						btn[j].innerHTML = allcourse[i].courseName + ' (' + allcourse[i].tutorNicknameEn[0] + ')'
+						btn[j].id = allcourse[i].courseID
 						break
 					}
 				}
