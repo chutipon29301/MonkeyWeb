@@ -24,11 +24,21 @@ function getAllCourseContent() {
     });
 }
 
+/**
+ * Filter data for showing in all course table
+ * @param {*} data tobe filtered
+ */
 function filterCourseData(data) {
     let subject = document.getElementById("subject");
     let grade = document.getElementById("grade");
     let name = document.getElementById("name");
     let time = document.getElementById("time");
+    let quarter = document.getElementById("quarter").value;
+
+    data = data.filter(data => {
+        return (data.year === parseInt(quarter.substring(0, quarter.indexOf("-")))) && (data.quarter === parseInt(quarter.substring(quarter.indexOf("-") + 1)));
+    });
+
     if (subject.options[subject.selectedIndex].value !== "all") {
         data = data.filter(data => data.subject === subject.options[subject.selectedIndex].value);
     }
@@ -49,6 +59,7 @@ function filterCourseData(data) {
  * @param course information to fill in table
  */
 function generateCourseHtmlTable(course) {
+    loadSelectedMenu();
     let table = document.getElementById("allCourseTable");
     table.innerHTML = "";
     for (let i = 0; i < course.length; i++) {
@@ -73,4 +84,37 @@ function generateCourseHtmlTable(course) {
         };
         row.onclick = clickHandler(row);
     }
+}
+
+function loadSelectedMenu() {
+    var cookie = getCookieDict();
+    var quarter = document.getElementById("quarter");
+    var quarterList = [{
+        value: "2017-3",
+        text: "CR60Q3"
+    }, {
+        value: "2017-12",
+        text: "CR60OCT"
+    }, {
+        value: "2017-4",
+        text: "CR60Q4"
+    }]
+    quarter.innerHTML = "";
+    for (let i = 0; i < quarterList.length; i++) {
+        quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
+    }
+
+    getConfig().then(data => {
+        if (cookie.monkeyWebSelectedQuarter === undefined) {
+            quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+        } else {
+            quarter.value = cookie.monkeyWebSelectedQuarter;
+        }
+    });
+}
+
+function quarterChange() {
+    var quarter = document.getElementById("quarter");
+    writeCookie("monkeyWebSelectedQuarter", quarter.value);
+    getAllCourseContent();
 }
