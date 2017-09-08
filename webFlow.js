@@ -250,7 +250,10 @@ module.exports=function(app,db){
         var local={moment:moment};
         post("post/allCourse",{quarter:"all"},function(result){
             Object.assign(local,result);
-            callback(local);
+            userDB.find({position:{$ne:"student"}}).sort({_id:1}).toArray(function(err,result){
+                Object.assign(local,{tutor:result});
+                callback(local);
+            });
         });
     });
     // addPage("firstConfig",{backendDir:true});
