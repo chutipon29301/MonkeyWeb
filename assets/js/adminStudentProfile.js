@@ -32,13 +32,14 @@ function getStudentProfile() {
     /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
+    let selectedValue = cookie.monkeyWebSelectedQuarter
 
-    getConfig().then((data) => {
-        log("[getStudentProfile()] : post/getConfig => ");
-        log(data);
-        // let label = "CR" + data.year + "Q" + data.quarter;
-        // document.getElementById("qLabel").innerHTML = label;
-    });
+    // getConfig().then((data) => {
+    //     log("[getStudentProfile()] : post/getConfig => ");
+    //     log(data);
+    //     // let label = "CR" + data.year + "Q" + data.quarter;
+    //     // document.getElementById("qLabel").innerHTML = label;
+    // });
 
     //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     studentProfile(studentID).then((data) => {
@@ -49,6 +50,19 @@ function getStudentProfile() {
         document.getElementById("studentLevel").innerHTML = "Grade: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
+
+        let quarterData = data.quarter.filter((list) => {
+            log(list);
+            log(selectedValue);
+            log(parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))));
+            log(parseInt(selectedValue.slice(selectedValue.indexOf("-"))));
+            log(parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1)));
+            return list.year === parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))) && list.quarter === parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1));
+        });
+
+        log("234871084359732089572038459720348572304857348095723849750283457230489572034895789")
+        log(quarterData);
+
         if(data.quarter.length>1){
             document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;
             document.getElementById("studentStateSm").innerHTML = "STAGE SM: " + data.quarter[1].registrationState;
@@ -464,7 +478,6 @@ function editStudent() {
 
 
 function putQuarter(){
-
     var quarter = document.getElementById("quarter");
     var quarterList = [{
         value: "2017-3",
@@ -489,9 +502,6 @@ function putQuarter(){
             quarter.value = cookie.monkeyWebSelectedQuarter;
         }
     });
-
-
-    log(selectedQuarterList);
 }
 
 //for show receipt pic on page
