@@ -146,7 +146,7 @@ function sendData() {
 					alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin')
 					throw data2.err;
 				}
-				self.location = 'summerReceipt'
+				self.location = 'summerAbsentForm'
 			})
 		})
 	}

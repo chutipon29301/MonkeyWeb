@@ -1,0 +1,190 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Summer Absent Form"
+    script(src="js/summerAbsentForm.min.js")
+block body
+    .container
+        .row: .col-xs-12: h3(style="color:red") หากไม่ต้องการลาสามารถกดยืนยันได้ทันที
+        .row: .col-xs-12
+            h3 แบบฟอร์มลาซัมเมอร์ล่วงหน้า
+            p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่ต้องการลา
+        form.form-horizontal
+            .form-group
+                label.control-label.col-sm-1 ผู้แจ้ง :
+                .col-sm-11: input#sender.form-control(type="text")
+        .table-responsive
+            table.table.table-bordered
+                tbody
+                    tr
+                        th.text-center Mon 9
+                        th.text-center Tue 10
+                        th.text-center Wed 11
+                        th.text-center Thu 12
+                        th.text-center Fri 13
+                    tr
+                        td
+                            button#a09-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a09-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a09-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a10-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a10-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a10-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a11-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a11-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a11-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a12-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a12-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a12-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a13-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a13-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a13-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                    tr
+                        th.text-center Mon 16
+                        th.text-center Tue 17
+                        th.text-center Wed 18
+                        th.text-center Thu 19
+                        th.text-center Fri 20
+                    tr
+                        td
+                            button#a16-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a16-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a16-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a17-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a17-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a17-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a18-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a18-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a18-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a19-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a19-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a19-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a20-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a20-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a20-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                    tr
+                        th.text-center Mon 23
+                        th.text-center Tue 24
+                        th.text-center Wed 25
+                        th.text-center Thu 26
+                        th.text-center Fri 27
+                    tr
+                        td
+                            button#a23-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a23-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a23-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a24-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a24-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a24-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a25-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a25-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a25-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a26-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a26-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a26-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+                        td
+                            button#a27-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+                            button#a27-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+                            button#a27-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //- hr
+        //- .row: .col-xs-12
+        //-     h3 แบบฟอร์มชดเชยซัมเมอร์ล่วงหน้า
+        //-     p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่สะดวกมาชดเชย
+        //-     p(style="color:red") *แต่ทาง รร จะจัดชดเชยให้ตามสมควร
+        //- .table-responsive
+        //-     table.table.table-bordered
+        //-         tbody
+        //-             tr
+        //-                 th.text-center Mon 9
+        //-                 th.text-center Tue 10
+        //-                 th.text-center Wed 11
+        //-                 th.text-center Thu 12
+        //-                 th.text-center Fri 13
+        //-             tr
+        //-                 td
+        //-                     button#p09-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p09-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p09-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p10-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p10-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p10-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p11-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p11-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p11-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p12-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p12-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p12-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p13-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p13-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p13-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-             tr
+        //-                 th.text-center Mon 16
+        //-                 th.text-center Tue 17
+        //-                 th.text-center Wed 18
+        //-                 th.text-center Thu 19
+        //-                 th.text-center Fri 20
+        //-             tr
+        //-                 td
+        //-                     button#p16-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p16-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p16-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p17-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p17-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p17-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p18-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p18-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p18-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p19-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p19-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p19-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p20-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p20-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p20-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-             tr
+        //-                 th.text-center Mon 23
+        //-                 th.text-center Tue 24
+        //-                 th.text-center Wed 25
+        //-                 th.text-center Thu 26
+        //-                 th.text-center Fri 27
+        //-             tr
+        //-                 td
+        //-                     button#p23-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p23-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p23-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p24-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p24-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p24-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p25-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p25-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p25-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p26-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p26-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p26-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        //-                 td
+        //-                     button#p27-08.btn.btn-default.col-sm-4.col-xs-12(type="button") 8
+        //-                     button#p27-10.btn.btn-default.col-sm-4.col-xs-12(type="button") 10
+        //-                     button#p27-12.btn.btn-default.col-sm-4.col-xs-12(type="button") 12
+        .row
+            .col-xs-12.text-right
+                button#submit.btn.btn-success ยืนยัน
