@@ -48,6 +48,7 @@ $(document).ready(function () {
         let day = [];
         if ($(".btn-danger").length > 0) {
             if ($("#sender").val().length > 0) {
+                log($(".btn-danger").length)
                 for (let i = 0; i < $(".btn-danger").length; i++) {
                     let temp = moment().hour($(".btn-danger")[i].id.slice(4, 6)).minute(0).date($(".btn-danger")[i].id.slice(1, 3)).month(9);
                     day.push(temp.valueOf());
