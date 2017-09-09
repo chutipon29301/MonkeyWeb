@@ -69,26 +69,9 @@ module.exports=function(app,db){
         if(str=="false"||str=="0"||str==""||str===undefined||str===null)return false;
         return true;
     };
-    // function splitCourseName(name){
-    //     if(typeof(name)=="string"){
-    //         if(name.slice(0,3).toLowerCase()=="sat"){
-    //             return {subject:name.slice(3),grade:"SAT",level:""}
-    //         }
-    //         var subject,grade,level;
-    //         var firstdigit=name.indexOf(name.match(/\d/));
-    //         subject=name.slice(0,firstdigit-1).toUpperCase();
-    //         if(/[0-9]/.test(name[name.length-1])){
-    //             grade=name.slice(firstdigit-1,name.length).toUpperCase();
-    //             level="";
-    //         }
-    //         else{
-    //             grade=name.slice(firstdigit-1,name.length-1).toUpperCase();
-    //             level=name[name.length-1].toLowerCase();
-    //         }
-    //         return {subject:subject,grade:grade,level:level};
-    //     }
-    //     else return {subject:"Wrong input",grade:"Wrong input",level:"Wrong input"};
-    // };
+    var generalizedDay=function(time,option){
+        // TODO
+    };
     // var gradeStringToBit=function(grade){
     //     var output=0;
     //     if(grade[0]=="P"){
@@ -1432,7 +1415,7 @@ module.exports=function(app,db){
     });
 
     // Student Attendance
-    //OK {studentID,day,reason,sender} return {}
+    //OK {studentID,[day],reason,sender} return {}
     post("/post/addStudentAbsenceModifier",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=req.body.day;
@@ -1827,14 +1810,14 @@ module.exports=function(app,db){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
-    //OK {year,quarter,name,maxSeat,week,status}
+    //OK {year,quarter,name,maxSeat,week,status} return {}
     post("/post/addQuarter",function(req,res){
         var year=parseInt(req.body.year);
         var quarter=parseInt(req.body.quarter);
         var name=req.body.name;
         var maxSeat=[8+6+12+6+6+2,27,12,10,16,12];
         var week=[];
-        var name=req.body.status;
+        var status=req.body.status;
         // var maxSeat=[]; TODO
         // for(var i=0;i<req.body.maxSeat.length;i++){
         //     maxSeat.push(parseInt(req.body.maxSeat[i]));
@@ -1845,6 +1828,18 @@ module.exports=function(app,db){
             maxSeat:maxSeat,week:week,status:status
         },function(){
             res.send({});
+        });
+    });
+    //OK {status} return {[quarter]}
+    post("/post/listQuarter",function(req,res){
+        var status=req.body.status;
+        var query={status:status};
+        if(status==="all")query={};
+        quarterDB.find(query).toArray(function(err,result){
+            for(var i=0;i<result.length;i++){
+                delete result[i]._id;
+            }
+            res.send({quarter:result});
         });
     });
     post("/post/lineNotify",function(req,res){
