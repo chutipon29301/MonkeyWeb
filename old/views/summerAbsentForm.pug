@@ -21,17 +21,17 @@ block body
             +butt(day,type)
     mixin butt(day,type)
         if(day<10)
-            button.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-08") 8
-            button.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-10") 10
-            button.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-13") 13
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-08") 8
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-10") 10
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-13") 13
         else
-            button.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-08") 8
-            button.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-10") 10
-            button.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-13") 13
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-08") 8
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-10") 10
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-13") 13
     .container
         .row: .col-xs-12: h3(style="color:red") หากไม่ต้องการลาสามารถกดยืนยันได้ทันที
         .row: .col-xs-12
-            h3 แบบฟอร์มลาซัมเมอร์ล่วงหน้า
+            h3 แบบฟอร์มลา CR60OCT ล่วงหน้า
             p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่ต้องการลา
         form.form-horizontal
             .form-group
