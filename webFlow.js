@@ -217,7 +217,10 @@ module.exports=function(app,db){
                         Object.assign(local,result);
                         post("post/getConfig",{},function(result){
                             Object.assign(local,{config:result});
-                            callback(local);
+                            post("post/listQuarter",{status:"protected"},function(result){
+                                Object.assign(local,{protectedQuarter:result.quarter});
+                                callback(local);
+                            });
                         });
                     });
                 }
@@ -239,7 +242,10 @@ module.exports=function(app,db){
                         Object.assign(local,result);
                         post("post/getConfig",{},function(result){
                             Object.assign(local,{config:result});
-                            callback(local);
+                            post("post/listQuarter",{status:"protected"},function(result){
+                                Object.assign(local,{protectedQuarter:result.quarter});
+                                callback(local);
+                            });
                         });
                     });
                 }

@@ -1833,9 +1833,11 @@ module.exports=function(app,db){
     //OK {status} return {[quarter]}
     post("/post/listQuarter",function(req,res){
         var status=req.body.status;
-        var query={status:status};
-        if(status==="all")query={};
-        quarterDB.find(query).toArray(function(err,result){
+        var query=[];
+        if(status==="public")query=["public"];
+        else if(status==="protected")query=["public","protected"];
+        else if(status==="private")query=["public","protected","private"];
+        quarterDB.find({status:{$in:query}}).toArray(function(err,result){
             for(var i=0;i<result.length;i++){
                 delete result[i]._id;
             }
