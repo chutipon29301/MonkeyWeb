@@ -1,16 +1,5 @@
 var studentForSearch = [];
 
-var quarterList = [{
-    value: "2017-3",
-    text: "CR60Q3"
-}, {
-    value: "2017-12",
-    text: "CR60OCT"
-}, {
-    value: "2017-4",
-    text: "CR60Q4"
-}];
-
 /**
  * Get short name of day
  * @param date int day 0 - 6
@@ -145,6 +134,8 @@ function filterData(data) {
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     let course = document.getElementById("course");
+
+    
 
     data = data.filter(data => {
         let registrationState = true;

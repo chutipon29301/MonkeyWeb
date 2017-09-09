@@ -76,7 +76,11 @@ const registrationState = (studentID) => $.post("post/registrationState", {
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const getConfig = ()=> $.post("post/getConfig", {});
+const getConfig = () => $.post("post/getConfig", {});
+
+const listQuarter = (status) => $.post("post/listQuarter", {
+    status: status
+});
 
 /**
  * Use to log text to console
