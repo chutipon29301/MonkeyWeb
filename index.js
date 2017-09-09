@@ -94,6 +94,10 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     quarterDB.updateMany({status:{$exists:false}},{$set:{status:"active"}},function(){
         quarterDB.updateMany({status:"active"},{$set:{status:"public"}});
     });
+    courseDB.updateMany({subject:"Ph"},{$set:{subject:"P"}});
+    courseDB.updateMany({subject:"PH"},{$set:{subject:"P"}});
+    courseDB.updateMany({subject:"Ch"},{$set:{subject:"C"}});
+    courseDB.updateMany({subject:"SCI"},{$set:{subject:"Sci"}});
 
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
