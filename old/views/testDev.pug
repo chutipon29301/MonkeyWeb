@@ -397,4 +397,9 @@ block body
                         +form-group("year"): +input-number("year")(required)
                         +form-group("quarter"): +input-number("quarter")(required)
                         +form-group("name"): +input-text("name")(required)
+                        //- Room & Week
                         +submit("post/addQuarter")
+                +list-group-item
+                    +form-horizontal-title("post/listQuarter")
+                        +form-group("status"): +input-text("status")(required)
+                        +submit("post/listQuarter")
