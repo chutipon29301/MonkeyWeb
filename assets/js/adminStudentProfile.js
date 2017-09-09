@@ -51,17 +51,18 @@ function getStudentProfile() {
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
 
-        let quarterData = data.quarter.filter((list) => {
-            log(list);
-            log(selectedValue);
-            log(parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))));
-            log(parseInt(selectedValue.slice(selectedValue.indexOf("-"))));
-            log(parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1)));
-            return list.year === parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))) && list.quarter === parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1));
-        });
+        // let quarterData = data.quarter.filter((list) => {
+        //     log('Hello WOrld')
+        //     log(list);
+        //     log(selectedValue);
+        //     log(parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))));
+        //     log(parseInt(selectedValue.slice(selectedValue.indexOf("-"))));
+        //     log(parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1)));
+        //     return list.year === parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))) && list.quarter === parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1));
+        // });
 
-        log("234871084359732089572038459720348572304857348095723849750283457230489572034895789")
-        log(quarterData);
+        // log("234871084359732089572038459720348572304857348095723849750283457230489572034895789")
+        // log(quarterData);
 
         if(data.quarter.length>1){
             document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;

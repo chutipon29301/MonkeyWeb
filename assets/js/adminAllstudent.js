@@ -1,9 +1,21 @@
+var studentForSearch = [];
+
+var quarterList = [{
+    value: "2017-3",
+    text: "CR60Q3"
+}, {
+    value: "2017-12",
+    text: "CR60OCT"
+}, {
+    value: "2017-4",
+    text: "CR60Q4"
+}];
+
 /**
  * Get short name of day
  * @param date int day 0 - 6
  * @returns {string} name of day
  */
-var studentForSearch = [];
 const getDateName = (date) => {
     let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     return dateName[date];
@@ -106,16 +118,6 @@ function loadSelectedMenu() {
     }
 
     var quarter = document.getElementById("quarter");
-    var quarterList = [{
-        value: "2017-3",
-        text: "CR60Q3"
-    }, {
-        value: "2017-12",
-        text: "CR60OCT"
-    }, {
-        value: "2017-4",
-        text: "CR60Q4"
-    }]
     quarter.innerHTML = "";
     for (let i = 0; i < quarterList.length; i++) {
         quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
@@ -146,19 +148,31 @@ function filterData(data) {
 
     data = data.filter(data => {
         let registrationState = true;
-        for (let i = 0; i < data.quarter.length; i++) {
-            if (stage.options[stage.selectedIndex].value !== "all") {
-                registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
+        // for (let i = 0; i < data.quarter.length; i++) {
+        //     if (stage.options[stage.selectedIndex].value !== "all") {
+        //         registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
+        //     }
+        //     let selectedQuarter = quarter.options[quarter.selectedIndex].value;
+        //     if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
+        //         data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
+        //         registrationState)
+        //         return true
+        // }
+        // return false
+        for (let i = 0; i < quarterList.lastIndexOf; i++) {
+            for (let j = 0; j < data.quarter.length; j++) {
+                if (stage.options[stage.selectedIndex].value !== "all") {
+                    registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
+                }
+                let selectedQuarter = quarter.options[quarter.selectedIndex].value;
+                if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
+                    data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
+                    registrationState)
+                    return true
             }
-            let selectedQuarter = quarter.options[quarter.selectedIndex].value;
-            if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
-                data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
-                registrationState)
-                // return (stage.options[stage.selectedIndex].value === "unregistered") ? false : true;
-                return true
+            return true;
         }
-        // return (stage.options[stage.selectedIndex].value === "unregistered") ? true : false;
-        return false
+        return false;
     });
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => {
