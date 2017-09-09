@@ -2,7 +2,9 @@
 const allStudent = () => $.post("post/allStudent", {});
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const allCourse = () => $.post("/post/allCourse", {});
+const allCourse = () => $.post("/post/allCourse", {
+    quarter: "all"
+});
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const studentProfile = (studentID) => $.post("post/studentProfile", {
