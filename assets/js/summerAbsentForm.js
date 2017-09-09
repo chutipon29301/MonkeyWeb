@@ -19,7 +19,10 @@ function postAbsent(index) {
     if (index < $(".btn-danger").length) {
         var cookie = getCookieDict();
         var ID = cookie.monkeyWebUser;
-        var time = moment().hour($(".btn-danger")[i].id.slice(4, 6)).date($(".btn-danger")[index].id.slice(1, 3)).month(9)
+        var time = moment().hour($(".btn-danger")[index].id.slice(4, 6)).date($(".btn-danger")[index].id.slice(1, 3)).month(9)
+        // log(time.format("HH:mm DD-MM-YYYY"))
+        // log(time.valueOf())
+        // postAbsent(index + 1)
         $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "-", sender: $("#sender").val(), day: time.valueOf() }).then((data) => {
             postAbsent(index + 1)
         })
