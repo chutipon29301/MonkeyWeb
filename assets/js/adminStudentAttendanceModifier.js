@@ -77,7 +77,7 @@ function genPresentTable(data, i) {
     if (i < data.presence.length) {
         let ID = data.presence[i].studentID;
         let time = moment(data.presence[i].timestamp);
-        let subject = data.presence[i].subjectToAdd.slice(0, 3) + ": " + data.presence[i].subjectToAdd.slice(3, 4);
+        let subject = data.presence[i].subject.slice(0, 3) + ": " + data.presence[i].subject.slice(3, 4);
         $("#present").append("<tr></tr>");
         $("#present tr:last-child").append("<td>" + ID + "</td>");
         $.post('post/name', { userID: ID }).then((dt) => {
