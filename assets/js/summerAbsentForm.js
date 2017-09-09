@@ -11,22 +11,19 @@ $(document).ready(function () {
         }
     });
     $("#submit").click(function () {
-        if ($(".btn-danger").length > 0) postAbsent(0);
-        else self.location = 'summerReceipt';
-    })
-});
-function postAbsent(index) {
-    if (index < $(".btn-danger").length) {
         var cookie = getCookieDict();
         var ID = cookie.monkeyWebUser;
-        var time = moment().hour($(".btn-danger")[index].id.slice(4, 6)).date($(".btn-danger")[index].id.slice(1, 3)).month(9)
-        // log(time.format("HH:mm DD-MM-YYYY"))
-        // log(time.valueOf())
-        // postAbsent(index + 1)
-        $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "-", sender: $("#sender").val(), day: time.valueOf() }).then((data) => {
-            postAbsent(index + 1)
-        })
-    } else {
-        self.location = 'summerReceipt'
-    }
-}
+        let day = [];
+        if ($(".btn-danger").length > 0) {
+            if ($("#sender").val().length > 0) {
+                for (let i = 0; i < $(".btn-danger").length; i++) {
+                    let temp = moment().hour($(".btn-danger")[i].id.slice(4, 6)).minute(0).date($(".btn-danger")[i].id.slice(1, 3)).month(9);
+                    day.push(temp.valueOf());
+                }
+                $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "-", sender: $("#sender").val(), day: day }).then((data) => {
+                    self.location = 'summerReceipt';
+                })
+            }else alert("กรุณาใส่ชื่อผู้ส่ง");
+        } else self.location = 'summerReceipt';
+    })
+});
