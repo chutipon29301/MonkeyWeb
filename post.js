@@ -70,7 +70,7 @@ module.exports=function(app,db){
         return true;
     };
     var generalizedDay=function(time,option){
-        // TODO
+        var ret=moment(0);
     };
     // var gradeStringToBit=function(grade){
     //     var output=0;
@@ -1429,7 +1429,7 @@ module.exports=function(app,db){
             callbackLoop(day.length,function(i,continueLoop){
                 studentAttendanceModifierDB.insertOne({
                     _id:new ObjectID().toString(),studentID:studentID,
-                    day:day[i],type:"absence",reason:reason,subjectToAdd:"",
+                    day:day[i],type:"absence",reason:reason,subject:"",
                     timestamp:timestamp,sender:sender
                 },function(){
                     continueLoop();
@@ -1451,17 +1451,17 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID,day,subjectToAdd,sender} return {}
+    //OK {studentID,day,subject,sender} return {}
     post("/post/addStudentPresenceModifier",function(req,res){
         var modifierID=new ObjectID().toString();
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
-        var subjectToAdd=req.body.subjectToAdd;
+        var subject=req.body.subject;
         var sender=req.body.sender;
         findUser(res,studentID,{position:"student"},function(){
             studentAttendanceModifierDB.insertOne({
                 _id:modifierID,studentID:studentID,
-                day:day,type:"presence",subjectToAdd:subjectToAdd,reason:"",
+                day:day,type:"presence",subject:subject,reason:"",
                 timestamp:moment().valueOf(),sender:sender
             },function(){
                 res.send({});
@@ -1475,7 +1475,7 @@ module.exports=function(app,db){
             res.send({});
         });
     });
-    //OK {day} return {[absence][presence]->modifierID,studentID,reason|subjectToAdd,timestamp,sender,subject(absence)}
+    //OK {day} return {[absence][presence]->modifierID,studentID,reason|subject,timestamp,sender,absentSubject(absence)}
     post("/post/listStudentAttendanceModifierByDay",function(req,res){
         var day=parseInt(req.body.day);
         var absence=[],presence=[];
@@ -1497,7 +1497,7 @@ module.exports=function(app,db){
                 else if(result[i].type=="presence"){
                     presence.push({
                         modifierID:result[i]._id,studentID:result[i].studentID,
-                        subjectToAdd:result[i].subjectToAdd,
+                        subject:result[i].subject,
                         timestamp:result[i].timestamp,sender:result[i].sender
                     });
                 }
@@ -1511,7 +1511,7 @@ module.exports=function(app,db){
                         var index=result.student.findIndex(function(x){
                             return x.studentID==absence[i].studentID;
                         });
-                        absence[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                        absence[i].absentSubject="FHB"+result.student[index].subject[0];//TODO remove [0]
                         continueLoop();
                     }
                     else{
@@ -1521,11 +1521,11 @@ module.exports=function(app,db){
                                 day:{$in:generalizedDay},student:absence[i].studentID
                             },function(err,result){
                                 if(result){
-                                    absence[i].subject=result._id;
+                                    absence[i].absentSubject=result._id;
                                     continueLoop();
                                 }
                                 else{
-                                    absence[i].subject="No timetable";
+                                    absence[i].absentSubject="No timetable";
                                     console.log(chalk.black.bgRed("[ERROR] No timetable"));
                                     continueLoop();
                                 }
@@ -1538,7 +1538,7 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subjectToAdd,timestamp,sender,subject}
+    //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subject,timestamp,sender,absentSubject}
     post("/post/listStudentAttendanceModifierByStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var start=parseInt(req.body.start);
@@ -1553,7 +1553,7 @@ module.exports=function(app,db){
                         day:result[i].day,
                         type:result[i].type,
                         reason:result[i].reason,
-                        subjectToAdd:result[i].subjectToAdd,
+                        subject:result[i].subject,
                         timestamp:result[i].timestamp,
                         sender:result[i].sender,
                     });
@@ -1574,7 +1574,7 @@ module.exports=function(app,db){
                                 var index=result.student.findIndex(function(x){
                                     return x.studentID==studentID;
                                 });
-                                output[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                                output[i].absentSubject="FHB"+result.student[index].subject[0];//TODO remove [0]
                                 continueLoop();
                             }
                             else{
@@ -1584,11 +1584,11 @@ module.exports=function(app,db){
                                         day:{$in:generalizedDay},student:studentID
                                     },function(err,result){
                                         if(result){
-                                            output[i].subject=result._id;
+                                            output[i].absentSubject=result._id;
                                             continueLoop();
                                         }
                                         else{
-                                            output[i].subject="No timetable";
+                                            output[i].absentSubject="No timetable";
                                             console.log(chalk.black.bgRed("[ERROR] No timetable"));
                                             continueLoop();
                                         }
