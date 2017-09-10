@@ -27,61 +27,62 @@ function registrationStateChange() {
  * Get data for generating table by calling function generateStudentHtmlTable
  */
 function getAllStudentContent() {
-    "use strict";
-    loadSelectedMenu();
-    studentForSearch = [];
-    allStudent().then((data) => {
-        if (data.err) {
-            log("[getAllStudentContent()] : post/allStudent => " + data.err);
-        } else {
-            log("[getAllStudentContent()] : post/allStudent => ");
-            log(data);
+    getConfig().then(config => {
+        loadSelectedMenu(config);
+        studentForSearch = [];
+        allStudent().then((data) => {
+            if (data.err) {
+                log("[getAllStudentContent()] : post/allStudent => " + data.err);
+            } else {
+                log("[getAllStudentContent()] : post/allStudent => ");
+                log(data);
 
-            // for typeahead predict
-            for (let i = 0; i < data.student.length; i++) {
-                studentForSearch.push({
-                    name: data.student[i].nickname + " " + data.student[i].firstname,
-                    id: data.student[i].studentID,
-                })
-            }
-            $('.typeahead').typeahead({
-                source: studentForSearch,
-                autoSelect: true
-            });
-            $('.typeahead').change(function () {
-                let current = $('.typeahead').typeahead("getActive");
-                if (current) {
-                    writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
-                    self.location = "/adminStudentprofile";
+                // for typeahead predict
+                for (let i = 0; i < data.student.length; i++) {
+                    studentForSearch.push({
+                        name: data.student[i].nickname + " " + data.student[i].firstname,
+                        id: data.student[i].studentID,
+                    })
                 }
-            });
-
-            // for generate table data
-            position(getCookieDict().monkeyWebUser).then(quarterData => {
-                var quaterStatus = "public";
-                switch (quarterData.position) {
-                    case "tutor":
-                    case "admin":
-                        quaterStatus = "protected";
-                        break;
-                    case "dev":
-                        quaterStatus = "private";
-                        break;
-                }
-                listQuarter(quaterStatus).then(quarterList => {
-                    generateStudentHtmlTable(filterData(data.student, quarterList));
+                $('.typeahead').typeahead({
+                    source: studentForSearch,
+                    autoSelect: true
                 });
-            });
-        }
-    })
+                $('.typeahead').change(function () {
+                    let current = $('.typeahead').typeahead("getActive");
+                    if (current) {
+                        writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
+                        self.location = "/adminStudentprofile";
+                    }
+                });
+
+                // for generate table data
+                position(getCookieDict().monkeyWebUser).then(quarterData => {
+                    var quaterStatus = "public";
+                    switch (quarterData.position) {
+                        case "tutor":
+                        case "admin":
+                            quaterStatus = "protected";
+                            break;
+                        case "dev":
+                            quaterStatus = "private";
+                            break;
+                    }
+                    listQuarter(quaterStatus).then(quarterList => {
+                        generateStudentHtmlTable(filterData(data.student, quarterList, config));
+                    });
+                });
+            }
+        })
+    });
 }
 
-function loadSelectedMenu() {
+function loadSelectedMenu(config) {
     var stage = document.getElementById("stage");
     var cookie = getCookieDict();
     var stageList = [{
         value: "all",
-        text: "All Stage"
+        text: "No filter"
     }, {
         value: "unregistered",
         text: "Unregistered"
@@ -100,9 +101,6 @@ function loadSelectedMenu() {
     }, {
         value: "pending",
         text: "Pending"
-    }, {
-        value: "registered",
-        text: "Registered"
     }, {
         value: "finished",
         text: "Finished"
@@ -136,13 +134,13 @@ function loadSelectedMenu() {
             for (let i = 0; i < data.quarter.length; i++) {
                 quarter.innerHTML += "<option value = '" + data.quarter[i].year + "-" + data.quarter[i].quarter + "'>" + data.quarter[i].name + "</option>";
             }
-            getConfig().then(data => {
-                if (cookie.monkeyWebSelectedQuarter === undefined) {
-                    quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
-                } else {
-                    quarter.value = cookie.monkeyWebSelectedQuarter;
-                }
-            });
+            if (cookie.monkeyWebSelectedQuarter === undefined) {
+                quarter.value = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
+            } else {
+                quarter.value = cookie.monkeyWebSelectedQuarter;
+            }
+            // getConfig().then(data => {
+            // });
         })
     });
 }
@@ -153,13 +151,17 @@ function loadSelectedMenu() {
  * @param data array of student info
  * @returns {*} array of student to display in table
  */
-function filterData(data, quarterList) {
+function filterData(data, quarterList, config) {
     let quarter = document.getElementById("quarter");
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     let course = document.getElementById("course");
     var cookie = getCookieDict();
+
+    if (cookie.monkeyWebSelectedQuarter === undefined) {
+        cookie.monkeyWebSelectedQuarter = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
+    }
 
     let selectedYear = parseInt(cookie.monkeyWebSelectedQuarter.substring(0, cookie.monkeyWebSelectedQuarter.indexOf("-")));
     let selectedQuarter = parseInt(cookie.monkeyWebSelectedQuarter.substring(cookie.monkeyWebSelectedQuarter.indexOf("-") + 1));
