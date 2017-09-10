@@ -12,7 +12,7 @@ const getDateName = (date) => {
 
 function quarterChange() {
     var quarter = document.getElementById("quarter");
-    writeCookie("monkeyWebSelectedQuarter", quarter.value);
+    writeCookie("monkeyWebSelectedQuarter", quarter.options[quarter.selectedIndex].value);
     getAllStudentContent();
 }
 
@@ -29,6 +29,7 @@ function registrationStateChange() {
 function getAllStudentContent() {
     "use strict";
     loadSelectedMenu();
+    studentForSearch = [];
     allStudent().then((data) => {
         if (data.err) {
             log("[getAllStudentContent()] : post/allStudent => " + data.err);
@@ -43,7 +44,6 @@ function getAllStudentContent() {
                     id: data.student[i].studentID,
                 })
             }
-            log(studentForSearch);
             $('.typeahead').typeahead({
                 source: studentForSearch,
                 autoSelect: true
@@ -51,14 +51,27 @@ function getAllStudentContent() {
             $('.typeahead').change(function () {
                 let current = $('.typeahead').typeahead("getActive");
                 if (current) {
-                    log(current)
                     writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
                     self.location = "/adminStudentprofile";
                 }
             });
 
             // for generate table data
-            generateStudentHtmlTable(filterData(data.student));
+            position(getCookieDict().monkeyWebUser).then(quarterData => {
+                var quaterStatus = "public";
+                switch (quarterData.position) {
+                    case "tutor":
+                    case "admin":
+                        quaterStatus = "protected";
+                        break;
+                    case "dev":
+                        quaterStatus = "private";
+                        break;
+                }
+                listQuarter(quaterStatus).then(quarterList => {
+                    generateStudentHtmlTable(filterData(data.student, quarterList));
+                });
+            });
         }
     })
 }
@@ -108,18 +121,30 @@ function loadSelectedMenu() {
 
     var quarter = document.getElementById("quarter");
     quarter.innerHTML = "";
-    for (let i = 0; i < quarterList.length; i++) {
-        quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
-    }
-
-    getConfig().then(data => {
-        if (cookie.monkeyWebSelectedQuarter === undefined) {
-            quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
-        } else {
-            quarter.value = cookie.monkeyWebSelectedQuarter;
+    let quaterStatus = "";
+    position(cookie.monkeyWebUser).then(data => {
+        switch (data.position) {
+            case "tutor":
+            case "admin":
+                quaterStatus = "protected"
+                break;
+            case "dev":
+                quaterStatus = "private"
+                break;
         }
+        listQuarter(quaterStatus).then(data => {
+            for (let i = 0; i < data.quarter.length; i++) {
+                quarter.innerHTML += "<option value = '" + data.quarter[i].year + "-" + data.quarter[i].quarter + "'>" + data.quarter[i].name + "</option>";
+            }
+            getConfig().then(data => {
+                if (cookie.monkeyWebSelectedQuarter === undefined) {
+                    quarter.value = data.quarter[i].year + "-" + data.quarter[i].quarter;
+                } else {
+                    quarter.value = cookie.monkeyWebSelectedQuarter;
+                }
+            });
+        })
     });
-
 }
 
 
@@ -128,17 +153,32 @@ function loadSelectedMenu() {
  * @param data array of student info
  * @returns {*} array of student to display in table
  */
-function filterData(data) {
+function filterData(data, quarterList) {
     let quarter = document.getElementById("quarter");
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     let course = document.getElementById("course");
+    var cookie = getCookieDict();
 
-    
+    log(data);
 
     data = data.filter(data => {
-        let registrationState = true;
+        // if (quarterList.length === 0) return true;
+        // for (let i = 0; i < quarterList.length; i++) {
+        //     let registrationState = true;
+        //     if (stage.options[stage.selectedIndex].value !== "all") {
+        //         registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
+        //     }
+        //     let selectedQuarter = cookie.monkeyWebSelectedQuarter;
+        //     if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
+        //         data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
+        //         registrationState) {
+        //         return true
+        //     }
+        // }
+        // return true;
+        // let registrationState = true;
         // for (let i = 0; i < data.quarter.length; i++) {
         //     if (stage.options[stage.selectedIndex].value !== "all") {
         //         registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
@@ -149,21 +189,21 @@ function filterData(data) {
         //         registrationState)
         //         return true
         // }
-        // return false
-        for (let i = 0; i < quarterList.lastIndexOf; i++) {
-            for (let j = 0; j < data.quarter.length; j++) {
-                if (stage.options[stage.selectedIndex].value !== "all") {
-                    registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
-                }
-                let selectedQuarter = quarter.options[quarter.selectedIndex].value;
-                if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
-                    data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
-                    registrationState)
-                    return true
-            }
-            return true;
-        }
-        return false;
+        // for (let i = 0; i < quarterList.lastIndexOf; i++) {
+        //     for (let j = 0; j < data.quarter.length; j++) {
+        //         if (stage.options[stage.selectedIndex].value !== "all") {
+        //             registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
+        //         }
+        //         let selectedQuarter = quarter.options[quarter.selectedIndex].value;
+        //         if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
+        //             data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
+        //             registrationState)
+        //             return true
+        //     }
+        //     return true;
+        // }
+        // return false;
+        // return true
     });
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => {
