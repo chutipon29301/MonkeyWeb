@@ -243,7 +243,7 @@ function loadSummerRegistrationPage() {
                     break;
                 case "transferred":
                 case "approved":
-                case "rejected":
+                case "pending":
                 case "finished":
                     log("[loadSummerRegistrationPage()] : redirection to studentProfile");
                     self.location = "/studentProfile";

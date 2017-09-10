@@ -187,7 +187,7 @@ module.exports=function(app,db){
             options.middlewareOptions.quarter={registrationState:"finished"};
                 addPugPage("absentForm",options);
                 addPugPage("addForm",options);
-            options.middlewareOptions.quarter={registrationState:["unregistered","pending"]};
+            options.middlewareOptions.quarter={registrationState:["unregistered","rejected"]};
                 addPage("registrationCourse",options);
                 addPage("registrationHybrid",options);
                 addPage("registrationSkill",options);
@@ -195,7 +195,7 @@ module.exports=function(app,db){
                 addPage("submit",options);
             options.middlewareOptions.quarter={registrationState:"untransferred"};
                 addPage("registrationReceipt",options);
-            options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","pending"]};
+            options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","rejected"]};
                 addPugPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
                 addPugPage("summerReceipt",options);
