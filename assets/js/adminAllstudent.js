@@ -138,7 +138,7 @@ function loadSelectedMenu() {
             }
             getConfig().then(data => {
                 if (cookie.monkeyWebSelectedQuarter === undefined) {
-                    quarter.value = data.quarter[i].year + "-" + data.quarter[i].quarter;
+                    quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
                 } else {
                     quarter.value = cookie.monkeyWebSelectedQuarter;
                 }
@@ -161,9 +161,13 @@ function filterData(data, quarterList) {
     let course = document.getElementById("course");
     var cookie = getCookieDict();
 
-    log(data);
-
     data = data.filter(data => {
+        // log(cookie);
+        // log(cookie.monkeyWebSelectedQuarter);
+        var isUnregisted = true;
+        for (let i = 0; i < data.quarter.length; i++) {
+            // log(data.quarter[i]);
+        }
         // if (quarterList.length === 0) return true;
         // for (let i = 0; i < quarterList.length; i++) {
         //     let registrationState = true;
