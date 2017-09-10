@@ -3,7 +3,7 @@ block head
     -const pageTitle = "Upload Summer Receipt"
     link(href="css/component.css", rel="stylesheet")
     script(src="js/student.min.js")
-    script(src="js/summerReceiptUpload.min.js")
+    script(src="js/summerReceiptUpload.js")
 block body
     .container
         .row
@@ -16,6 +16,8 @@ block body
             .col-sm-6.col-xs-12
                 .row
                     .col-sm-12.col-xs-12
+                        p.money.visible-xs(style="color:red"): strong ชำระเงินจำนวน xxxxx บาท
+                        p.money.hide-xs(style="font-size:2em;color:red") ชำระเงินจำนวน xxxxx บาท
                         p.visible-xs: strong โดยสามารถชำระที่เคาน์เตอร์ธนาคาร, ATM, อินเตอร์เน็ตหรือมือถือเข้ามาที่เลข บช. ของธนาคารไทยพาณิชย์ตามรูปด้านบน ได้จากทุกธนาคาร พร้อมทั้งอัปโหลดรูปใบโอนที่ปุ่มด้านล่าง
                         p.hide-xs(style="font-size:2em") โดยสามารถชำระที่เคาน์เตอร์ธนาคาร, ATM, อินเตอร์เน็ตหรือมือถือเข้ามาที่เลข บช. ของธนาคารไทยพาณิชย์ตามรูปทางซ้าย ได้จากทุกธนาคาร พร้อมทั้งอัปโหลดรูปใบโอนที่ปุ่มด้านล่าง
                         br
