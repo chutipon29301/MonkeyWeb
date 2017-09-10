@@ -62,9 +62,9 @@ block body
             .col-sm-6.text-right
                 button.btn.btn-info(type="button" onClick="editProfile()") EDIT
             .collapse#mathDiv
-                canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170")
+                canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170" onClick="downloadCanvas('math');")
             .collapse#phyDiv
-                canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170")
+                canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170" onClick="downloadCanvas('phy');")
         .row
             br
             .table-responsive.col-sm-12
@@ -143,7 +143,7 @@ block body
                         select.form-control#summerQuarter(style="margin-top: 25px" onChange="quarterChange()")
                     .col-sm-6
                     .collapse#summerDiv
-                        canvas#summerCanvas(style="border:1px solid black" width="621" height="440")
+                        canvas#summerCanvas(style="border:1px solid black" width="621" height="440" onClick="downloadCanvas('summer');")
                 .row
                     .table-responsive.col-sm-8
                         br
@@ -199,7 +199,21 @@ block body
                 let dlImg = canvas.toDataURL();
                 let aref = document.createElement('a');
                 aref.href = dlImg;
-                aref.download = sID + ((subj === "math") ? "1" : "2") + '.png';
+                var text = ""
+                switch(subj){
+                    case "math":
+                        text=sID+"1.png"
+                        break;
+                    case "phy":
+                        text=sID+"2.png"
+                        break;
+                    case "summer":
+                        text=sID+"oct.png"
+                        break;
+                    default:
+                        break;
+                }
+                aref.download = text;
                 document.body.appendChild(aref);
                 aref.click();
             }

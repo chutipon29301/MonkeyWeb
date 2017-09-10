@@ -3,6 +3,7 @@ $(document).ready(function () {
     let cookies = getCookieDict();
     let ID = cookies.monkeyWebUser;
     $.post('post/studentProfile', { studentID: ID }).then((profile) => {
+        log(profile.courseID.length)
         crInSumm(0, profile.courseID)
     });
     $("#submit").click(function () {
@@ -14,8 +15,8 @@ function crInSumm(index, cr) {
         $.post("post/courseInfo", { courseID: cr[index] }).then((data) => {
             if (data.quarter === 12) {
                 crNum += 1;
-                crInSumm(index + 1, cr)
             }
+            crInSumm(index + 1, cr)
         })
     } else {
         $(".money").html("ชำระเงินจำนวน " + (crNum * 9000) + " บาท");
