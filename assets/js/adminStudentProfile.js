@@ -41,16 +41,26 @@ function getStudentProfile() {
         document.getElementById("studentLevel").innerHTML = "Grade: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
-
-
-        if (data.quarter.length > 1) {
-            document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;
-            document.getElementById("studentStateSm").innerHTML = "STAGE SM: " + data.quarter[1].registrationState;
-        } else {
-            document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;
-            document.getElementById("studentStateSm").innerHTML = "STAGE SM: unregistered";
+        var summerStage, courseStage;
+        for (let i = 0; i < data.quarter.length; i++) {
+            log(data.quarter[i]);
+            if (data.quarter[i].year === parseInt(cookie.courseQuarter.substring(0, cookie.courseQuarter.indexOf("-"))) &&
+                data.quarter[i].quarter === parseInt(cookie.courseQuarter.substring(cookie.courseQuarter.indexOf("-") + 1))) {
+                courseStage = data.quarter[i].registrationState;
+            }
+            if (data.quarter[i].year === parseInt(cookie.summerQuarter.substring(0, cookie.summerQuarter.indexOf("-"))) &&
+                data.quarter[i].quarter === parseInt(cookie.summerQuarter.substring(cookie.summerQuarter.indexOf("-") + 1))) {
+                summerStage = data.quarter[i].registrationState;
+            }
+        }
+        if (courseStage !== undefined) {
+            document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + courseStage;
+        }
+        if (summerStage !== undefined) {
+            document.getElementById("studentStateSm").innerHTML = "STAGE SM: " + summerStage;
         }
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
+
         //add student data to modal
         document.getElementById("thNName").value = data.nickname;
         document.getElementById("thName").value = data.firstname;
@@ -226,15 +236,44 @@ function generateImageData() {
  * Change registration state of user
  * @param registrationState change registration stage of user
  */
-function setRegistrationState(registrationState) {
+function setRegistrationState(registrationState, quarter) {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
-    changeRegistrationState(studentID, registrationState).then((data) => {
+    var quarterObject;
+    switch (quarter) {
+        case "quarter":
+            var selectedQuarter = document.getElementById("courseQuarter");
+            var selectedYear = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(0, selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-")));
+            var selectedQuarter = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-") + 1));
+            // quarterObject = {
+            //     "year": selectedYear,
+            //     "quarter": selectedQuarter
+            // }
+            quarterObject = {
+                year: 2017,
+                quarter: 3
+            }
+            break;
+        case "summer":
+            var selectedQuarter = document.getElementById("summerQuarter");
+            var selectedYear = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(0, selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-")));
+            var selectedQuarter = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-") + 1));
+            quarterObject = {
+                "year": selectedYear,
+                "quarter": selectedQuarter
+            }
+            break;
+        default:
+            break;
+    }
+    log(quarterObject);
+    changeRegistrationState(studentID, registrationState, quarterObject).then((data) => {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            if (registrationState === "registered" || registrationState === "pending") acceptReject(registrationState);
+            if (registrationState === "finished" || registrationState === "pending") acceptReject(registrationState);
             log("[setRegistrationState()] : post/changeRegistrationState => Success");
         }
+        location.reload();
     });
 }
 
@@ -459,30 +498,59 @@ function editStudent() {
 
 
 function putQuarter() {
-    var quarter = document.getElementById("quarter");
-    var quarterList = [{
-        value: "2017-3",
-        text: "CR60Q3"
-    }, {
-        value: "2017-12",
-        text: "CR60OCT"
-    }, {
-        value: "2017-4",
-        text: "CR60Q4"
-    }]
-    quarter.innerHTML = "";
-    for (let i = 0; i < quarterList.length; i++) {
-        quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
-    }
+    var courseQuarter = document.getElementById("courseQuarter");
+    var summerQuarter = document.getElementById("summerQuarter");
+    let cookie = getCookieDict();
 
-
-    getConfig().then(data => {
-        if (cookie.monkeyWebSelectedQuarter === undefined) {
-            quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
-        } else {
-            quarter.value = cookie.monkeyWebSelectedQuarter;
+    position(cookie.monkeyWebUser).then(quarterData => {
+        var quaterStatus = "public";
+        switch (quarterData.position) {
+            case "tutor":
+            case "admin":
+                quaterStatus = "protected";
+                break;
+            case "dev":
+                quaterStatus = "private";
+                break;
         }
+        listQuarter(quaterStatus).then(quarterList => {
+            courseQuarter.innerHTML = "";
+            summerQuarter.innerHTML = "";
+            for (let i = 0; i < quarterList.quarter.length; i++) {
+                let appendText = "<option value = '" + quarterList.quarter[i].year + "-" + quarterList.quarter[i].quarter + "'>" + quarterList.quarter[i].name + "</option>";
+                if (quarterList.quarter[i].quarter < 10) {
+                    courseQuarter.innerHTML += appendText;
+                } else {
+                    summerQuarter.innerHTML += appendText;
+                }
+            }
+            getConfig().then(data => {
+                if (cookie.monkeyWebSelectedQuarter === undefined) {
+                    courseQuarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+                    summerQuarter.value = data.defaultQuarter.summer.year + "-" + data.defaultQuarter.summer.quarter;
+                    writeCookie("courseQuarter", data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter);
+                    writeCookie("summerQuarter", data.defaultQuarter.summer.year + "-" + data.defaultQuarter.summer.quarter)
+                } else {
+                    let selectedQuarter = cookie.monkeyWebSelectedQuarter;
+                    if (parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) < 10) {
+                        courseQuarter.value = cookie.monkeyWebSelectedQuarter;
+                        summerQuarter.value = data.defaultQuarter.summer.year + "-" + data.defaultQuarter.summer.quarter;
+                        writeCookie("courseQuarter", cookie.monkeyWebSelectedQuarter);
+                        writeCookie("summerQuarter", summerQuarter.value);
+                    } else {
+                        courseQuarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+                        summerQuarter.value = cookie.monkeyWebSelectedQuarter;
+                        writeCookie("courseQuarter", data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter);
+                        writeCookie("summerQuarter", cookie.monkeyWebSelectedQuarter);
+                    }
+                }
+            });
+        });
     });
+}
+
+function quarterChange() {
+    log("Hello");
 }
 
 //for show receipt pic on page

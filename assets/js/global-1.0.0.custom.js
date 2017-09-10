@@ -27,10 +27,22 @@ const position = (userID) => $.post("/post/position", {
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const changeRegistrationState = (studentID, registrationState) => $.post("post/changeRegistrationState", {
-    studentID: studentID,
-    registrationState: registrationState
-});
+const changeRegistrationState = (studentID, registrationState, quarter) => {
+    if (quarter === undefined) {
+        return $.post("post/changeRegistrationState", {
+            studentID: studentID,
+            registrationState: registrationState,
+            quarter: quarter
+        });
+    } else {
+        return $.post("post/changeRegistrationState", {
+            studentID: studentID,
+            registrationState: registrationState,
+            year: quarter.year,
+            quarter: quarter.quarter
+        });
+    }
+}
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const addSkillDay = (studentID, day) => $.post("post/addSkillDay", {
