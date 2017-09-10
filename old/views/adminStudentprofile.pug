@@ -19,7 +19,7 @@ block body
     .container
         .row
             .col-sm-2
-                select.form-control#quarter(style="margin-top: 25px" onChange="")
+                select.form-control#courseQuarter(style="margin-top: 25px" onChange="quarterChange()")
             .col-sm-10
                 //- button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
                 //-     span.caret
@@ -49,8 +49,8 @@ block body
                     .col-sm-12.text-right
                         br
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished','quarter');") Finished
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending','quarter');") Pending
         .row
             .col-sm-6.text-left
                 //- button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
@@ -129,16 +129,19 @@ block body
         .row
             .col-sm-12.text-right
                 .btn-group
-                    button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
-                    button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+                    button.btn.btn-success(type="button" onClick="setRegistrationState('approved', 'quarter');") Approve Table
+                    button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected', 'quarter');") Reject Table
         hr
         .row
             .col-sm-6
                 .row
-                    .col-sm-12
+                    .col-sm-3
                         h1 Summer
                         button.btn.btn-default#summer(data-toggle='collapse' data-target='#summerDiv') Download Summer Table 
                             span.caret
+                    .col-sm-3
+                        select.form-control#summerQuarter(style="margin-top: 25px" onChange="quarterChange()")
+                    .col-sm-6
                     .collapse#summerDiv
                         canvas#summerCanvas(style="border:1px solid black" width="621" height="440")
                 .row
@@ -158,8 +161,8 @@ block body
                 .row
                     .col-sm-12.text-left
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('approved','summer');") Approve Table
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected', 'summer');") Reject Table
             .col-sm-6(align="right")
                 .row
                     .col-sm-12
@@ -168,8 +171,8 @@ block body
                     .col-sm-12.text-right
                         br
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished','summer');") Finished
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending','summer');") Pending
         canvas#appRej(style="border:1px solid black" width="560" height="380" hidden="true")
     .container
         hr
