@@ -131,7 +131,7 @@ function sendData(i) {
         if (btn.attr('class').indexOf('btn-success') >= 0) {
             let cookie = getCookieDict();
             let daytime = btn.attr('id');
-            $.post('post/addStudentPresenceModifier', { studentID: cookie.monkeyWebUser, day: daytime, subjectToAdd: $('#subj').val(), sender: $('#contact').val() }).then((data) => {
+            $.post('post/addStudentPresenceModifier', { studentID: cookie.monkeyWebUser, day: daytime, subject: $('#subj').val(), sender: $('#contact').val() }).then((data) => {
                 sendData(i + 1);
             })
         } else sendData(i + 1);
