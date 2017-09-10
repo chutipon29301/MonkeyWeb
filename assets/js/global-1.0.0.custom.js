@@ -85,11 +85,11 @@ const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const registrationState = (studentID, quarter) => {
     if (quarter === undefined) {
-        $.post("post/registrationState", {
+        return $.post("post/registrationState", {
             studentID: studentID
         });
     } else {
-        $.post("post/registrationState", {
+        return $.post("post/registrationState", {
             studentID: studentID,
             quarter: quarter
         });
@@ -228,7 +228,8 @@ function loadRegistrationPage() {
  */
 function loadSummerRegistrationPage() {
     let cookie = getCookieDict();
-    registrationState(cookie.monkeyWebUser, "summer").then((data) => {
+    registrationState(cookie.monkeyWebUser, "summer").then(data => {
+        log(data);
         if (data.err) {
             log("[loadSummerRegistrationPage()] : post/registrationState => " + data.err);
         } else {
