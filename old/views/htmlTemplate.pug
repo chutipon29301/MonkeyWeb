@@ -71,9 +71,14 @@ html(lang="en")
                                     li: a(href="/adminAllCourse") My Course
                                 else
                                     li: a(href="/adminAllCourse") All Course
-                                li: a(href="/tutorCourseMaterial") CR Material
+                                li.dropdown
+                                    a.dropdown-toggle(data-toggle="dropdown" href="#") CR 
+                                        span.caret
+                                    ul.dropdown-menu
+                                        li: a(href="/tutorCourseMaterial") CR Material
+                                        if(webUser.position!="tutor")
+                                            li: a(href="/adminCourseMaterial") CR Tracking
                                 if(webUser.position!="tutor")
-                                    li: a(href="/adminCourseMaterial") CR Tracking
                                     li: a(href="/adminCourseRoom") Room
                                     li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
                             li: a(href="studentDocument") เอกสาร
@@ -81,15 +86,18 @@ html(lang="en")
                             if(webUser.position=="student")
                                 li: a(href="/studentProfile")
                                     span.glyphicon.glyphicon-user
-                                    = " "+webUser.firstname+" "+webUser.lastname
+                                    //- = " "+webUser.firstname+" "+webUser.lastname
+                                    = " "+webUser.firstname
                             else if(webUser.position=="dev")
                                 li: a(href="/testDev")
                                     span.glyphicon.glyphicon-user
-                                    = " "+webUser.firstname+" "+webUser.lastname
+                                    //- = " "+webUser.firstname+" "+webUser.lastname
+                                    = " "+webUser.firstname
                             else
                                 li: a(href="/tutorEditProfile")
                                     span.glyphicon.glyphicon-user
-                                    = " "+webUser.firstname+" "+webUser.lastname
+                                    //- = " "+webUser.firstname+" "+webUser.lastname
+                                    = " "+webUser.firstname
                             li: a(href="/login")
                                 span.glyphicon.glyphicon-log-out
                                 |  Logout
