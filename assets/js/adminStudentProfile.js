@@ -58,6 +58,17 @@ function getStudentProfile() {
         }
         if (summerStage !== undefined) {
             document.getElementById("studentStateSm").innerHTML = "STAGE SM: " + summerStage;
+            log(summerStage);
+            switch (summerStage) {
+                case "approved":
+                    document.getElementById("approveSummerBtn").className += " disabled";
+                    break;
+                case "rejected":
+                    document.getElementById("rejectSummerBtn").className += " disabled";
+                    break;
+                default:
+                    break;
+            }
         }
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
 
