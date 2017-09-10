@@ -161,8 +161,8 @@ block body
                 .row
                     .col-sm-12.text-left
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('approved','summer');") Approve Table
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected', 'summer');") Reject Table
+                            button.btn.btn-success#approveSummerBtn(type="button" onClick="setRegistrationState('approved','summer');") Approve Table
+                            button.btn.btn-danger#rejectSummerBtn(type="button" onClick="setRegistrationState('rejected', 'summer');") Reject Table
             .col-sm-6(align="right")
                 .row
                     .col-sm-12
