@@ -142,8 +142,6 @@ function loadSelectedMenu(config) {
             } else {
                 quarter.value = cookie.monkeyWebSelectedQuarter;
             }
-            // getConfig().then(data => {
-            // });
         })
     });
 }
