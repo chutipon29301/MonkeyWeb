@@ -13,14 +13,28 @@ const getDateName = (date) => {
  * Generate element for adminAllcourse page
  */
 function getAllCourseContent() {
+    var cookie = getCookieDict();
     allCourse().then((data) => {
         if (data.err) {
             log("[getAllCourseContent()] : post/allCourse => " + data.err);
         } else {
             log("[getAllCourseContent()] : post/allCourse => ");
             log(data);
-            loadSelectedMenu();
-            generateCourseHtmlTable(filterCourseData(data.course));
+            position(cookie.monkeyWebUser).then(position => {
+                switch (position.position) {
+                    case "tutor":
+                    case "admin":
+                        quaterStatus = "protected"
+                        break;
+                    case "dev":
+                        quaterStatus = "private"
+                        break;
+                }
+                listQuarter(quaterStatus).then(quarterList => {
+                    loadSelectedMenu(quarterList);
+                    generateCourseHtmlTable(filterCourseData(data.course));
+                });
+            });
         }
     });
 }
@@ -34,10 +48,15 @@ function filterCourseData(data) {
     let grade = document.getElementById("grade");
     let name = document.getElementById("name");
     let time = document.getElementById("time");
-    let quarter = document.getElementById("quarter").value;
+    let quarter = document.getElementById("quarter");
+    let cookie = getCookieDict();
 
     data = data.filter(data => {
-        return (data.year === parseInt(quarter.substring(0, quarter.indexOf("-")))) && (data.quarter === parseInt(quarter.substring(quarter.indexOf("-") + 1)));
+        let selectedYear = parseInt(cookie.monkeyWebSelectedQuarter.substring(0, cookie.monkeyWebSelectedQuarter.indexOf("-")));
+        let selectedQuarter = parseInt(cookie.monkeyWebSelectedQuarter.substring(cookie.monkeyWebSelectedQuarter.indexOf("-") + 1));
+        log(selectedYear);
+        log(selectedQuarter)
+        return (data.year === selectedYear && data.quarter === selectedQuarter);
     });
 
     if (subject.options[subject.selectedIndex].value !== "all") {
@@ -86,24 +105,13 @@ function generateCourseHtmlTable(course) {
     }
 }
 
-function loadSelectedMenu() {   
+function loadSelectedMenu(quarterList) {
     var cookie = getCookieDict();
     var quarter = document.getElementById("quarter");
-    var quarterList = [{
-        value: "2017-3",
-        text: "CR60Q3"
-    }, {
-        value: "2017-12",
-        text: "CR60OCT"
-    }, {
-        value: "2017-4",
-        text: "CR60Q4"
-    }]
     quarter.innerHTML = "";
-    for (let i = 0; i < quarterList.length; i++) {
-        quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
+    for (let i = 0; i < quarterList.quarter.length; i++) {
+        quarter.innerHTML += "<option value = '" + quarterList.quarter[i].year + "-" + quarterList.quarter[i].quarter + "'>" + quarterList.quarter[i].name + "</option>";
     }
-
     getConfig().then(data => {
         if (cookie.monkeyWebSelectedQuarter === undefined) {
             quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
