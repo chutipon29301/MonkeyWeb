@@ -47,13 +47,13 @@ block body
                             option(value="all" ) CR &amp; FHB
                             option(value="cr") CR
                             option(value="hb") FHB
+            form.form-group.col-sm-2(onsubmit="scanStudentBarcode(); return false;")
+                label Barcode:
+                input.form-control(type="text" id="studentID" autofocus)
             #search-box.col-sm-2
                 .form-group
                     label Input Name:
                     input.typeahead(type="text" placeholder="Name of Student" style="margin-top:4.5px")
-            form.form-group.col-sm-2(onsubmit="scanStudentBarcode(); return false;")
-                label Scan Barcode:
-                input.form-control(type="text" id="studentID" autofocus)
         .row
             .table-responsive.col-sm-12
                 table.table.table-hover(style="font-family:'Trirong',serif;")
