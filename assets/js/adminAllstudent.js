@@ -1,9 +1,10 @@
+var studentForSearch = [];
+
 /**
  * Get short name of day
  * @param date int day 0 - 6
  * @returns {string} name of day
  */
-var studentForSearch = [];
 const getDateName = (date) => {
     let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     return dateName[date];
@@ -11,7 +12,7 @@ const getDateName = (date) => {
 
 function quarterChange() {
     var quarter = document.getElementById("quarter");
-    writeCookie("monkeyWebSelectedQuarter", quarter.value);
+    writeCookie("monkeyWebSelectedQuarter", quarter.options[quarter.selectedIndex].value);
     getAllStudentContent();
 }
 
@@ -28,6 +29,7 @@ function registrationStateChange() {
 function getAllStudentContent() {
     "use strict";
     loadSelectedMenu();
+    studentForSearch = [];
     allStudent().then((data) => {
         if (data.err) {
             log("[getAllStudentContent()] : post/allStudent => " + data.err);
@@ -42,7 +44,6 @@ function getAllStudentContent() {
                     id: data.student[i].studentID,
                 })
             }
-            log(studentForSearch);
             $('.typeahead').typeahead({
                 source: studentForSearch,
                 autoSelect: true
@@ -50,14 +51,27 @@ function getAllStudentContent() {
             $('.typeahead').change(function () {
                 let current = $('.typeahead').typeahead("getActive");
                 if (current) {
-                    log(current)
                     writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
                     self.location = "/adminStudentprofile";
                 }
             });
 
             // for generate table data
-            generateStudentHtmlTable(filterData(data.student));
+            position(getCookieDict().monkeyWebUser).then(quarterData => {
+                var quaterStatus = "public";
+                switch (quarterData.position) {
+                    case "tutor":
+                    case "admin":
+                        quaterStatus = "protected";
+                        break;
+                    case "dev":
+                        quaterStatus = "private";
+                        break;
+                }
+                listQuarter(quaterStatus).then(quarterList => {
+                    generateStudentHtmlTable(filterData(data.student, quarterList));
+                });
+            });
         }
     })
 }
@@ -106,29 +120,31 @@ function loadSelectedMenu() {
     }
 
     var quarter = document.getElementById("quarter");
-    var quarterList = [{
-        value: "2017-3",
-        text: "CR60Q3"
-    }, {
-        value: "2017-12",
-        text: "CR60OCT"
-    }, {
-        value: "2017-4",
-        text: "CR60Q4"
-    }]
     quarter.innerHTML = "";
-    for (let i = 0; i < quarterList.length; i++) {
-        quarter.innerHTML += "<option value = '" + quarterList[i].value + "'>" + quarterList[i].text + "</option>";
-    }
-
-    getConfig().then(data => {
-        if (cookie.monkeyWebSelectedQuarter === undefined) {
-            quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
-        } else {
-            quarter.value = cookie.monkeyWebSelectedQuarter;
+    let quaterStatus = "";
+    position(cookie.monkeyWebUser).then(data => {
+        switch (data.position) {
+            case "tutor":
+            case "admin":
+                quaterStatus = "protected"
+                break;
+            case "dev":
+                quaterStatus = "private"
+                break;
         }
+        listQuarter(quaterStatus).then(data => {
+            for (let i = 0; i < data.quarter.length; i++) {
+                quarter.innerHTML += "<option value = '" + data.quarter[i].year + "-" + data.quarter[i].quarter + "'>" + data.quarter[i].name + "</option>";
+            }
+            getConfig().then(data => {
+                if (cookie.monkeyWebSelectedQuarter === undefined) {
+                    quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+                } else {
+                    quarter.value = cookie.monkeyWebSelectedQuarter;
+                }
+            });
+        })
     });
-
 }
 
 
@@ -137,28 +153,27 @@ function loadSelectedMenu() {
  * @param data array of student info
  * @returns {*} array of student to display in table
  */
-function filterData(data) {
+function filterData(data, quarterList) {
     let quarter = document.getElementById("quarter");
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     let course = document.getElementById("course");
+    var cookie = getCookieDict();
 
+    let selectedYear = parseInt(cookie.monkeyWebSelectedQuarter.substring(0, cookie.monkeyWebSelectedQuarter.indexOf("-")));
+    let selectedQuarter = parseInt(cookie.monkeyWebSelectedQuarter.substring(cookie.monkeyWebSelectedQuarter.indexOf("-") + 1));
     data = data.filter(data => {
-        let registrationState = true;
-        for (let i = 0; i < data.quarter.length; i++) {
-            if (stage.options[stage.selectedIndex].value !== "all") {
-                registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
+        if (stage.options[stage.selectedIndex].value !== "all") {
+            var registrationState = "unregistered";
+            for (let i = 0; i < data.quarter.length; i++) {
+                if (selectedYear = data.quarter[i].year && selectedQuarter === data.quarter[i].quarter) {
+                    registrationState = data.quarter[i].registrationState;
+                }
             }
-            let selectedQuarter = quarter.options[quarter.selectedIndex].value;
-            if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
-                data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
-                registrationState)
-                // return (stage.options[stage.selectedIndex].value === "unregistered") ? false : true;
-                return true
+            return stage.options[stage.selectedIndex].value === registrationState;
         }
-        // return (stage.options[stage.selectedIndex].value === "unregistered") ? true : false;
-        return false
+        return true;
     });
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => {

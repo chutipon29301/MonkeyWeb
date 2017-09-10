@@ -19,6 +19,7 @@ function getAllCourseContent() {
         } else {
             log("[getAllCourseContent()] : post/allCourse => ");
             log(data);
+            loadSelectedMenu();
             generateCourseHtmlTable(filterCourseData(data.course));
         }
     });
@@ -59,7 +60,6 @@ function filterCourseData(data) {
  * @param course information to fill in table
  */
 function generateCourseHtmlTable(course) {
-    loadSelectedMenu();
     let table = document.getElementById("allCourseTable");
     table.innerHTML = "";
     for (let i = 0; i < course.length; i++) {
@@ -86,7 +86,7 @@ function generateCourseHtmlTable(course) {
     }
 }
 
-function loadSelectedMenu() {
+function loadSelectedMenu() {   
     var cookie = getCookieDict();
     var quarter = document.getElementById("quarter");
     var quarterList = [{
