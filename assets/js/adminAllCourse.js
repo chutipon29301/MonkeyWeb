@@ -14,28 +14,30 @@ const getDateName = (date) => {
  */
 function getAllCourseContent() {
     var cookie = getCookieDict();
-    allCourse().then((data) => {
-        if (data.err) {
-            log("[getAllCourseContent()] : post/allCourse => " + data.err);
-        } else {
-            log("[getAllCourseContent()] : post/allCourse => ");
-            log(data);
-            position(cookie.monkeyWebUser).then(position => {
-                switch (position.position) {
-                    case "tutor":
-                    case "admin":
-                        quaterStatus = "protected"
-                        break;
-                    case "dev":
-                        quaterStatus = "private"
-                        break;
-                }
-                listQuarter(quaterStatus).then(quarterList => {
-                    loadSelectedMenu(quarterList);
-                    generateCourseHtmlTable(filterCourseData(data.course));
+    getConfig().then(config => {
+        allCourse().then((data) => {
+            if (data.err) {
+                log("[getAllCourseContent()] : post/allCourse => " + data.err);
+            } else {
+                log("[getAllCourseContent()] : post/allCourse => ");
+                log(data);
+                position(cookie.monkeyWebUser).then(position => {
+                    switch (position.position) {
+                        case "tutor":
+                        case "admin":
+                            quaterStatus = "protected"
+                            break;
+                        case "dev":
+                            quaterStatus = "private"
+                            break;
+                    }
+                    listQuarter(quaterStatus).then(quarterList => {
+                        loadSelectedMenu(quarterList, config);
+                        generateCourseHtmlTable(filterCourseData(data.course, config));
+                    });
                 });
-            });
-        }
+            }
+        });
     });
 }
 
@@ -43,7 +45,7 @@ function getAllCourseContent() {
  * Filter data for showing in all course table
  * @param {*} data tobe filtered
  */
-function filterCourseData(data) {
+function filterCourseData(data, config) {
     let subject = document.getElementById("subject");
     let grade = document.getElementById("grade");
     let name = document.getElementById("name");
@@ -51,11 +53,13 @@ function filterCourseData(data) {
     let quarter = document.getElementById("quarter");
     let cookie = getCookieDict();
 
+    if(cookie.monkeyWebSelectedQuarter === null || cookie.monkeyWebSelectedQuarter === undefined){
+        cookie.monkeyWebSelectedQuarter = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
+    }
+
     data = data.filter(data => {
         let selectedYear = parseInt(cookie.monkeyWebSelectedQuarter.substring(0, cookie.monkeyWebSelectedQuarter.indexOf("-")));
         let selectedQuarter = parseInt(cookie.monkeyWebSelectedQuarter.substring(cookie.monkeyWebSelectedQuarter.indexOf("-") + 1));
-        log(selectedYear);
-        log(selectedQuarter)
         return (data.year === selectedYear && data.quarter === selectedQuarter);
     });
 
@@ -105,20 +109,18 @@ function generateCourseHtmlTable(course) {
     }
 }
 
-function loadSelectedMenu(quarterList) {
+function loadSelectedMenu(quarterList, config) {
     var cookie = getCookieDict();
     var quarter = document.getElementById("quarter");
     quarter.innerHTML = "";
     for (let i = 0; i < quarterList.quarter.length; i++) {
         quarter.innerHTML += "<option value = '" + quarterList.quarter[i].year + "-" + quarterList.quarter[i].quarter + "'>" + quarterList.quarter[i].name + "</option>";
     }
-    getConfig().then(data => {
-        if (cookie.monkeyWebSelectedQuarter === undefined) {
-            quarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
-        } else {
-            quarter.value = cookie.monkeyWebSelectedQuarter;
-        }
-    });
+    if (cookie.monkeyWebSelectedQuarter === undefined) {
+        quarter.value = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
+    } else {
+        quarter.value = cookie.monkeyWebSelectedQuarter;
+    }
 }
 
 function quarterChange() {
