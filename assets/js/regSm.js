@@ -23,18 +23,19 @@ $(document).ready(function () {
 	$("#group").change(function () {
 		let allbtn = document.getElementsByClassName('btn');
 		let val = $("#group").val();
+		for (let i = 0; i < allbtn.length; i++) {
+			$(allbtn[i]).removeClass("btn-grow")
+		}
 		for (let i = 0; i < crSuggest.length; i++) {
 			if (crSuggest[i].level === val) {
+				// log(crSuggest[i].courseID)
 				for (let j = 0; j < crSuggest[i].courseID.length; j++) {
 					for (let k = 0; k < allbtn.length; k++) {
+						log(crSuggest[i].courseID[j] === allbtn[k].id)
 						if (crSuggest[i].courseID[j] === allbtn[k].id) {
 							$(allbtn[k]).addClass("btn-grow")
-						} else $(allbtn[k]).removeClass("btn-grow")
+						}
 					}
-				}
-			} else {
-				for (let k = 0; k < allbtn.length; k++) {
-					$(allbtn[k]).removeClass("btn-grow")
 				}
 			}
 		}
@@ -65,7 +66,7 @@ function addCourse(allcourse, id) {
 				}
 				cr.push(allcourse[i])
 				let coursetime = new Date(allcourse[i].day)
-				log(coursetime.getHours())
+				// log(coursetime.getHours())
 				let btn = document.getElementsByName(coursetime.getHours())
 				for (let j = 0; j < btn.length; j++) {
 					if (btn[j].innerHTML == '&nbsp;') {
