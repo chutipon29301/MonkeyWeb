@@ -29,19 +29,10 @@ function getStudentProfile() {
     putQuarter();
 
     let cookie = getCookieDict();
-    /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
     let selectedValue = cookie.monkeyWebSelectedQuarter
 
-    // getConfig().then((data) => {
-    //     log("[getStudentProfile()] : post/getConfig => ");
-    //     log(data);
-    //     // let label = "CR" + data.year + "Q" + data.quarter;
-    //     // document.getElementById("qLabel").innerHTML = label;
-    // });
-
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     studentProfile(studentID).then((data) => {
         log("[getStudentProfile()] : post/studentProfile => ");
         log(data);
@@ -51,23 +42,11 @@ function getStudentProfile() {
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
 
-        // let quarterData = data.quarter.filter((list) => {
-        //     log('Hello WOrld')
-        //     log(list);
-        //     log(selectedValue);
-        //     log(parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))));
-        //     log(parseInt(selectedValue.slice(selectedValue.indexOf("-"))));
-        //     log(parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1)));
-        //     return list.year === parseInt(selectedValue.slice(0,selectedValue.indexOf("-"))) && list.quarter === parseInt(selectedValue.slice(selectedValue.indexOf("-") + 1));
-        // });
 
-        // log("234871084359732089572038459720348572304857348095723849750283457230489572034895789")
-        // log(quarterData);
-
-        if(data.quarter.length>1){
+        if (data.quarter.length > 1) {
             document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;
             document.getElementById("studentStateSm").innerHTML = "STAGE SM: " + data.quarter[1].registrationState;
-        }else{
+        } else {
             document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + data.quarter[0].registrationState;
             document.getElementById("studentStateSm").innerHTML = "STAGE SM: unregistered";
         }
@@ -94,7 +73,6 @@ function getStudentProfile() {
                     log("[getCourseDescription()] : post/courseInfo => ");
                     log(course);
                     let time = new Date(course.day);
-                    //noinspection ES6ModulesDependencies,JSUnresolvedFunction
                     let courseTimeID = moment(0).day(time.getDay()).hour(time.getHours()).minute(time.getMinutes()).valueOf();
                     document.getElementById(courseTimeID).innerHTML = course.courseName;
                     document.getElementById(courseTimeID).value = data.courseID[i];
@@ -197,7 +175,7 @@ function generateImageData() {
                     if (data.courseName[0] === "M") {
                         mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
                         inMath = true;
-                    } else {
+                    } else if (data.courseName[0] === "P") {
                         physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
                         inPhy = true;
                     }
@@ -312,7 +290,7 @@ function addRemoveCourse(timeID) {
                 select.innerHTML = "";
 
                 let time = new Date(parseInt(timeID));
-                if(!(time.getDay() === 1)){
+                if (!(time.getDay() === 1)) {
                     select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
                     select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
                 }
@@ -480,7 +458,7 @@ function editStudent() {
 }
 
 
-function putQuarter(){
+function putQuarter() {
     var quarter = document.getElementById("quarter");
     var quarterList = [{
         value: "2017-3",

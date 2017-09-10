@@ -86,8 +86,8 @@ function loadSelectedMenu() {
         value: "unregistered",
         text: "Unregistered"
     }, {
-        value: "untransfered",
-        text: "Untransfered"
+        value: "untransferred",
+        text: "Untransferred"
     }, {
         value: "transferred",
         text: "Transferred"
