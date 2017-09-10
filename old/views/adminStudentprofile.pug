@@ -171,8 +171,8 @@ block body
                     .col-sm-12.text-right
                         br
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished','summer');") Finished
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending','summer');") Pending
+                            button#finishedSummerBtn.btn.btn-success(type="button" onClick="setRegistrationState('finished','summer');") Finished
+                            button#pendingSummerBtn.btn.btn-danger(type="button" onClick="setRegistrationState('pending','summer');") Pending
         canvas#appRej(style="border:1px solid black" width="560" height="380" hidden="true")
     .container
         hr

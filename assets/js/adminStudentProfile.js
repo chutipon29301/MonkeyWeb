@@ -66,6 +66,16 @@ function getStudentProfile() {
                 case "rejected":
                     document.getElementById("rejectSummerBtn").className += " disabled";
                     break;
+                case "pending":
+                    document.getElementById("approveSummerBtn").className += " disabled";
+                    document.getElementById("rejectSummerBtn").className += " disabled";
+                    document.getElementById("pendingSummerBtn").className += " disabled";
+                    break;
+                case "finished":
+                    document.getElementById("approveSummerBtn").className += " disabled";
+                    document.getElementById("rejectSummerBtn").className += " disabled";
+                    document.getElementById("finishedSummerBtn").className += " disabled";
+                    break;
                 default:
                     break;
             }
