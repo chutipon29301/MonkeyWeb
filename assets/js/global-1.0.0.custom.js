@@ -83,9 +83,18 @@ const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const registrationState = (studentID) => $.post("post/registrationState", {
-    studentID: studentID
-});
+const registrationState = (studentID, quarter) => {
+    if (quarter === undefined) {
+        $.post("post/registrationState", {
+            studentID: studentID
+        });
+    } else {
+        $.post("post/registrationState", {
+            studentID: studentID,
+            quarter: quarter
+        });
+    }
+}
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const getConfig = () => $.post("post/getConfig", {});
@@ -184,16 +193,13 @@ function clearAllCookie() {
  * Load registration page from status of student
  */
 function loadRegistrationPage() {
-    "use strict";
     let cookie = getCookieDict();
-    //noinspection JSUnresolvedVariable
     registrationState(cookie.monkeyWebUser).then((data) => {
         if (data.err) {
             log("[loadRegistrationPage()] : post/registrationState => " + data.err);
         } else {
             log("[loadRegistrationPage()] : post/registrationState =>");
             log(data);
-            //noinspection SpellCheckingInspection
             switch (data.registrationState) {
                 case "unregistered":
                     log("[loadRegistrationPage()] : redirection to registrationName");
@@ -211,6 +217,39 @@ function loadRegistrationPage() {
                     self.location = "/studentProfile";
                     break;
                 default:
+                    break;
+            }
+        }
+    });
+}
+
+/**
+ * Load registration page for summer
+ */
+function loadSummerRegistrationPage() {
+    let cookie = getCookieDict();
+    registrationState(cookie.monkeyWebUser, "summer").then((data) => {
+        if (data.err) {
+            log("[loadSummerRegistrationPage()] : post/registrationState => " + data.err);
+        } else {
+            log("[loadSummerRegistrationPage()] : post/registrationState =>");
+            log(data);
+            switch (data.registrationState) {
+
+                case "untransferred":
+                    log("[loadSummerRegistrationPage()] : redirection to ");
+                    self.location = "/summerReceipt";
+                    break;
+                case "transferred":
+                case "approved":
+                case "rejected":
+                case "finished":
+                    log("[loadSummerRegistrationPage()] : redirection to studentProfile");
+                    self.location = "/studentProfile";
+                    break;
+                default:
+                    log("[loadSummerRegistrationPage()] : redirection to registrationSummer");
+                    self.location = "/registrationSummer";
                     break;
             }
         }
