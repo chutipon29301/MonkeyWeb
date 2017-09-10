@@ -161,53 +161,19 @@ function filterData(data, quarterList) {
     let course = document.getElementById("course");
     var cookie = getCookieDict();
 
+    let selectedYear = parseInt(cookie.monkeyWebSelectedQuarter.substring(0, cookie.monkeyWebSelectedQuarter.indexOf("-")));
+    let selectedQuarter = parseInt(cookie.monkeyWebSelectedQuarter.substring(cookie.monkeyWebSelectedQuarter.indexOf("-") + 1));
     data = data.filter(data => {
-        // log(cookie);
-        // log(cookie.monkeyWebSelectedQuarter);
-        var isUnregisted = true;
-        for (let i = 0; i < data.quarter.length; i++) {
-            // log(data.quarter[i]);
+        if (stage.options[stage.selectedIndex].value !== "all") {
+            var registrationState = "unregistered";
+            for (let i = 0; i < data.quarter.length; i++) {
+                if (selectedYear = data.quarter[i].year && selectedQuarter === data.quarter[i].quarter) {
+                    registrationState = data.quarter[i].registrationState;
+                }
+            }
+            return stage.options[stage.selectedIndex].value === registrationState;
         }
-        // if (quarterList.length === 0) return true;
-        // for (let i = 0; i < quarterList.length; i++) {
-        //     let registrationState = true;
-        //     if (stage.options[stage.selectedIndex].value !== "all") {
-        //         registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
-        //     }
-        //     let selectedQuarter = cookie.monkeyWebSelectedQuarter;
-        //     if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
-        //         data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
-        //         registrationState) {
-        //         return true
-        //     }
-        // }
-        // return true;
-        // let registrationState = true;
-        // for (let i = 0; i < data.quarter.length; i++) {
-        //     if (stage.options[stage.selectedIndex].value !== "all") {
-        //         registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
-        //     }
-        //     let selectedQuarter = quarter.options[quarter.selectedIndex].value;
-        //     if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
-        //         data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
-        //         registrationState)
-        //         return true
-        // }
-        // for (let i = 0; i < quarterList.lastIndexOf; i++) {
-        //     for (let j = 0; j < data.quarter.length; j++) {
-        //         if (stage.options[stage.selectedIndex].value !== "all") {
-        //             registrationState = data.quarter[i].registrationState === stage.options[stage.selectedIndex].value;
-        //         }
-        //         let selectedQuarter = quarter.options[quarter.selectedIndex].value;
-        //         if (data.quarter[i].year === parseInt(selectedQuarter.substring(0, selectedQuarter.indexOf("-"))) &&
-        //             data.quarter[i].quarter === parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) &&
-        //             registrationState)
-        //             return true
-        //     }
-        //     return true;
-        // }
-        // return false;
-        // return true
+        return true;
     });
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => {
