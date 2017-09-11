@@ -53,29 +53,18 @@ $(document).ready(function () {
                     let temp = moment().hour($(".btn-danger")[i].id.slice(4, 6)).minute(0).date($(".btn-danger")[i].id.slice(1, 3)).month(9);
                     day.push(temp.valueOf());
                 }
+                if ($(".btn-info").length > 0) {
+                    for (let i = 0; i < $(".btn-info").length; i++) {
+                        let temp = moment().hour($(".btn-info")[i].id.slice(4, 6)).minute(0).date($(".btn-info")[i].id.slice(1, 3)).month(9);
+                        pre.push(temp.valueOf());
+                    }
+                }
                 $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "ลา", sender: $("#sender").val(), day: day }).then((data) => {
-                    if ($(".btn-info").length > 0) {
-                        for (let i = 0; i < $(".btn-info").length; i++) {
-                            let temp = moment().hour($(".btn-info")[i].id.slice(4, 6)).minute(0).date($(".btn-info")[i].id.slice(1, 3)).month(9);
-                            pre.push(temp.valueOf());
-                        }
-                        log(pre)
-                        $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "เพิ่ม", sender: $("#sender").val(), day: pre }).then((data) => {
-                            self.location = 'summerReceipt';
-                        })
-                    } else self.location = 'summerReceipt';
+                    $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "เพิ่ม", sender: $("#sender").val(), day: pre }).then((data) => {
+                        self.location = 'summerReceipt';
+                    })
                 })
             } else alert("กรุณาใส่ชื่อผู้ส่ง");
-            if ($(".btn-info").length > 0) {
-                for (let i = 0; i < $(".btn-info").length; i++) {
-                    let temp = moment().hour($(".btn-info")[i].id.slice(4, 6)).minute(0).date($(".btn-info")[i].id.slice(1, 3)).month(9);
-                    pre.push(temp.valueOf());
-                }
-                log(pre)
-                $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "เพิ่ม", sender: $("#sender").val(), day: pre }).then((data) => {
-                    self.location = 'summerReceipt';
-                })
-            }
         } else self.location = 'summerReceipt';
     })
 });
