@@ -842,12 +842,56 @@ function generateSummerCover() {
     ctx.fillText(($("#-255600000").html() === "Add Course") ? "" : $("#-255600000").html(), 200, 125);
     ctx.fillText(($("#-248400000").html() === "Add Course") ? "" : $("#-248400000").html(), 200, 175);
     ctx.fillText(($("#-237600000").html() === "Add Course") ? "" : $("#-237600000").html(), 200, 225);
-    // $.post("post/listStudentAttendanceModifierByStudent", { studentID: ID, start: moment("10-09-2017 8:00", "MM-DD-YYYY HH:mm").valueOf() }).then((data) => {
-    //     for (let i = 0; i < data.modifier.length; i++) {
-    //         log(data.modifier[i].reason)
-
-    //     }
-    // })
+    $.post("post/listStudentAttendanceModifierByStudent", { studentID: ID, start: moment("10-09-2017 8:00", "MM-DD-YYYY HH:mm").valueOf() }).then((data) => {
+        var numAbs = 0;
+        var oldDay = moment("10-08-2017", "MM-DD-YYYY");
+        var numPre = 0;
+        for (let i = 0; i < data.modifier.length; i++) {
+            let day = moment(data.modifier[i].day);
+            if (data.modifier[i].reason === "ลา") {
+                if (day.date() !== oldDay.date()) {
+                    let text = ((day.date() < 10) ? "0" + day.date() : day.date()) + "  " + (day.month() + 1) + "   " + (day.year() - 1957);
+                    ctx.fillText(text, 50, 355 + (35 * numAbs));
+                    switch (day.hour()) {
+                        case 8:
+                            ctx.fillText("✔", 185, 355 + (35 * numAbs));
+                            break;
+                        case 10:
+                            ctx.fillText("✔", 230, 355 + (35 * numAbs));
+                            break;
+                        case 13:
+                            ctx.fillText("✔", 275, 355 + (35 * numAbs));
+                            break;
+                        default:
+                            break;
+                    };
+                    oldDay = day;
+                    numAbs += 1;
+                } else {
+                    switch (day.hour()) {
+                        case 8:
+                            ctx.fillText("✔", 185, 355 + (35 * (numAbs - 1)));
+                            break;
+                        case 10:
+                            ctx.fillText("✔", 230, 355 + (35 * (numAbs - 1)));
+                            break;
+                        case 13:
+                            ctx.fillText("✔", 275, 355 + (35 * (numAbs - 1)));
+                            break;
+                        default:
+                            break;
+                    };
+                }
+            } else if (data.modifier[i].reason === "เพิ่ม") {
+                // log("present")
+                if (day.date() !== oldDay.date()) {
+                    let text = ((day.date() < 10) ? "0" + day.date() : day.date()) + "  " + (day.month() + 1) + "   " + (day.year() - 1957);
+                    ctx.fillText(text, 325, 355 + (35 * numPre));
+                    numPre += 1;
+                }
+            }
+        }
+    })
 }
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
