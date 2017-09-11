@@ -294,8 +294,10 @@ function setRegistrationState(registrationState, quarter) {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            if (registrationState === "finished" || registrationState === "pending") acceptReject(registrationState);
-            log("[setRegistrationState()] : post/changeRegistrationState => Success");
+            if (quarter !== "summer") {
+                if (registrationState === "finished" || registrationState === "pending") acceptReject(registrationState);
+                log("[setRegistrationState()] : post/changeRegistrationState => Success");
+            }
         }
         location.reload();
     });
@@ -604,18 +606,21 @@ function showReceipt() {
         $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg', function (data, status) {
             if (status === 'success') {
                 $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg');
+                acRjSummer("");
             }
         });
         //noinspection ES6ModulesDependencies
         $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg', function (data, status) {
             if (status === 'success') {
                 $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg');
+                acRjSummer("");
             }
         });
         //noinspection ES6ModulesDependencies
         $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png', function (data, status) {
             if (status === 'success') {
                 $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png');
+                acRjSummer("");
             }
         });
     });
@@ -636,7 +641,7 @@ function barcode(tableInfo) {
         displayValue: false
     });
 }
-
+// gen accept or reject img for CR
 function acceptReject(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     let cfCanvas = document.getElementById('appRej');
@@ -673,7 +678,19 @@ function acceptReject(state) {
     document.body.appendChild(aref);
     aref.click();
 }
-
+// gen accept or reject for SM
+function acRjSummer(state) {
+    let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let canvas = document.getElementById('acRjSummerCanvas');
+    let ctx = canvas.getContext('2d');
+    let img = document.getElementById('summerReceiptTableImg');
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.drawImage(img, Math.abs(img.width / img.height * canvas.height - canvas.width) / 2, 0, img.width / img.height * canvas.height, canvas.height);
+    ctx.restore();
+}
+// upload profile picture
 function upPic() {
     //noinspection JSUnresolvedVariable
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
@@ -699,6 +716,7 @@ function upPic() {
         });
     }
 }
+// upload receipt
 function upReciept() {
     //noinspection JSUnresolvedVariable
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
@@ -798,7 +816,7 @@ function generateSummerCover() {
     let ctx = canvas.getContext('2d');
     //add Table BG
     let img = document.getElementById('summerImg');
-    ctx.drawImage(img, 0, 0, 621, 440);
+    ctx.drawImage(img, 0, 0, 622, 880);
 }
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
