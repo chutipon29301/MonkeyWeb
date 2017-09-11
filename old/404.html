@@ -22,9 +22,17 @@
 		<!-- <canvas id="myCanvas" width=1400px height=900px></canvas> -->
 	</div>
 	<div class="container">
-		<button class="btn btn-warning col-md-2 col-md-offset-9 col-xs-6 col-xs-offset-3" type="button" onclick="relocation()"><span class="glyphicon glyphicon-share"></span> Back to Homepage</button>
+		<button class="btn btn-warning col-md-2 col-md-offset-9 col-xs-6 col-xs-offset-3" type="button"><span class="glyphicon glyphicon-share"></span> Back to Homepage</button>
 	</div>
 	<script>
+		$(document).ready(function () {
+			$("#back").click(function () {
+				relocation();
+			});
+			setTimeout(function () {
+				relocation();
+			}, 3000);
+		});
 		// var img = new Image();
 		// img.src = "images/404Monkey.png";
 		// var canvas = document.getElementById("myCanvas");
@@ -66,11 +74,13 @@
 		// }
 		function relocation() {
 			let cookie = getCookieDict();
-			log(cookie.monkeyWebUser);
+			// log(cookie.monkeyWebUser);
 			if (cookie.monkeyWebUser.length > 0) {
 				$.post("post/position", { userID: cookie.monkeyWebUser }).then((data) => {
 					if (data.position === "dev") {
-						self.location = 'testDev';
+						self.location = 'adminHome';
+					} else if (data.position === "tutor") {
+						self.location = 'tutorCourseMaterial';
 					} else if (data.position === "admin") {
 						self.location = 'adminHome';
 					} else if (data.position === 'student') {
