@@ -692,9 +692,9 @@ function acRjSummer(state) {
     ctx.drawImage(img2, (canvas.width - img2.width / img2.height * 230) / 2, 220, img2.width / img2.height * 230, 230);
     ctx.font = "bold 24px Cordia New";
     ctx.fillStyle = "black";
-    ctx.fillText($("#-255600000").html(), 200, 75);
-    ctx.fillText($("#-248400000").html(), 200, 125);
-    ctx.fillText($("#-237600000").html(), 200, 175);
+    ctx.fillText(($("#-255600000").html() === "Add Course") ? "" : $("#-255600000").html(), 200, 75);
+    ctx.fillText(($("#-248400000").html() === "Add Course") ? "" : $("#-248400000").html(), 200, 125);
+    ctx.fillText(($("#-237600000").html() === "Add Course") ? "" : $("#-237600000").html(), 200, 175);
     ctx.font = "bold 90px Cordia New";
     ctx.textAlign = 'center';
     ctx.fillStyle = (state == "finished") ? "green" : "red";
@@ -837,11 +837,17 @@ function generateSummerCover() {
     ctx.drawImage(img1, 0, 0, 622, 880);
     ctx.fillStyle = "black";
     ctx.font = "bold 24px Cordia New";
-    ctx.fillText($("#studentID").html().slice(4, 9), 525, 45);
-    ctx.fillText($("#-255600000").html(), 200, 125);
-    ctx.fillText($("#-248400000").html(), 200, 175);
-    ctx.fillText($("#-237600000").html(), 200, 225);
+    let ID = $("#studentID").html().slice(4, 9);
+    ctx.fillText(ID, 525, 45);
+    ctx.fillText(($("#-255600000").html() === "Add Course") ? "" : $("#-255600000").html(), 200, 125);
+    ctx.fillText(($("#-248400000").html() === "Add Course") ? "" : $("#-248400000").html(), 200, 175);
+    ctx.fillText(($("#-237600000").html() === "Add Course") ? "" : $("#-237600000").html(), 200, 225);
+    // $.post("post/listStudentAttendanceModifierByStudent", { studentID: ID, start: moment("10-09-2017 8:00", "MM-DD-YYYY HH:mm").valueOf() }).then((data) => {
+    //     for (let i = 0; i < data.modifier.length; i++) {
+    //         log(data.modifier[i].reason)
 
+    //     }
+    // })
 }
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
