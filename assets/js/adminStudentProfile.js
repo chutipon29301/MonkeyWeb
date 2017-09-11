@@ -884,11 +884,9 @@ function generateSummerCover() {
                 }
             } else if (data.modifier[i].reason === "เพิ่ม") {
                 // log("present")
-                if (day.date() !== oldDay.date()) {
-                    let text = ((day.date() < 10) ? "0" + day.date() : day.date()) + "  " + (day.month() + 1) + "   " + (day.year() - 1957);
-                    ctx.fillText(text, 325, 355 + (35 * numPre));
-                    numPre += 1;
-                }
+                let text = ((day.date() < 10) ? "0" + day.date() : day.date()) + "  " + (day.month() + 1) + "   " + (day.year() - 1957);
+                ctx.fillText(text, 325, 355 + (35 * numPre));
+                numPre += 1;
             }
         }
     })
