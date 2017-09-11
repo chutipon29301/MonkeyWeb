@@ -14,6 +14,7 @@ block body
     img#mathImg(src="#" hidden="true")
     img#phyImg(src="#" hidden="true")
     img#summerImg(src="images/summer.png" hidden="true")
+    img#summerReceiptTableImg(src="images/summerReceiptTable.png" hidden="true")
     canvas#mathBarcode(hidden="true")
     canvas#phyBarcode(hidden="true")
     .container
@@ -143,12 +144,12 @@ block body
                     .col-sm-3
                         select.form-control#summerQuarter(style="margin-top: 17px" onChange="quarterChange()")
                 .row
-                    .col-sm-3
+                    .col-sm-12
                         button.btn.btn-default#summer(data-toggle='collapse' data-target='#summerDiv') Download Summer Table 
                             span.caret
-                    .col-sm-6
+                    .col-sm-12
                     .collapse#summerDiv
-                        canvas#summerCanvas(style="border:1px solid black" width="621" height="440" onClick="downloadCanvas('summer');")
+                        canvas#summerCanvas(style="border:1px solid black" width="622" height="880" onClick="downloadCanvas('summer');")
                 .row
                     .table-responsive.col-sm-8
                         br
@@ -172,6 +173,8 @@ block body
                 .row
                     .col-sm-12
                         img#smTrans.img-responsive(src="images/noImage.svg")
+                    .col-sm-12
+                        canvas#acRjSummerCanvas(style="border:1px solid black" width="662" height="479" hidden="true")
                 .row
                     .col-sm-12.text-right
                         br
