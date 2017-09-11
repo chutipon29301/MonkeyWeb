@@ -3,11 +3,16 @@ $(document).ready(function () {
     let cookies = getCookieDict();
     let ID = cookies.monkeyWebUser;
     $.post('post/studentProfile', { studentID: ID }).then((profile) => {
-        log(profile.courseID.length)
+        // log(profile.courseID.length)
         crInSumm(0, profile.courseID)
     });
     $("#submit").click(function () {
-        upPic(ID);
+        log($('#file-1').val() !== "");
+        if ($('#file-1').val() !== "") {
+            upPic(ID);
+        } else {
+            alert("กรุณาอัปโหลดรูปภาพ")
+        }
     })
 });
 function crInSumm(index, cr) {
