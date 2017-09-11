@@ -297,6 +297,9 @@ function setRegistrationState(registrationState, quarter) {
             if (quarter !== "summer") {
                 if (registrationState === "finished" || registrationState === "pending") acceptReject(registrationState);
                 log("[setRegistrationState()] : post/changeRegistrationState => Success");
+            } else if (quarter === "summer") {
+                if (registrationState === "finished" || registrationState === "pending") acRjSummer(registrationState);
+                log("[setRegistrationState()] : post/changeRegistrationState => Success");
             }
         }
         location.reload();
@@ -606,21 +609,18 @@ function showReceipt() {
         $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg', function (data, status) {
             if (status === 'success') {
                 $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg');
-                acRjSummer("");
             }
         });
         //noinspection ES6ModulesDependencies
         $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg', function (data, status) {
             if (status === 'success') {
                 $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg');
-                acRjSummer("");
             }
         });
         //noinspection ES6ModulesDependencies
         $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png', function (data, status) {
             if (status === 'success') {
                 $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png');
-                acRjSummer("");
             }
         });
     });
@@ -683,12 +683,30 @@ function acRjSummer(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     let canvas = document.getElementById('acRjSummerCanvas');
     let ctx = canvas.getContext('2d');
-    let img = document.getElementById('summerReceiptTableImg');
+    let img1 = document.getElementById('summerReceiptTableImg');
+    let img2 = document.getElementById('smTrans');
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.save();
-    ctx.drawImage(img, Math.abs(img.width / img.height * canvas.height - canvas.width) / 2, 0, img.width / img.height * canvas.height, canvas.height);
+    ctx.drawImage(img1, Math.abs(img1.width / img1.height * canvas.height - canvas.width) / 2, 0, img1.width / img1.height * canvas.height, canvas.height);
+    ctx.drawImage(img2, (canvas.width - img2.width / img2.height * 230) / 2, 220, img2.width / img2.height * 230, 230);
+    ctx.font = "bold 24px Cordia New";
+    ctx.fillStyle = "black";
+    ctx.fillText($("#-255600000").html(), 200, 75);
+    ctx.fillText($("#-248400000").html(), 200, 125);
+    ctx.fillText($("#-237600000").html(), 200, 175);
+    ctx.font = "bold 90px Cordia New";
+    ctx.textAlign = 'center';
+    ctx.fillStyle = (state == "finished") ? "green" : "red";
+    ctx.rotate(11 * Math.PI / 6);
+    ctx.fillText((state == "finished") ? "FINISHED" : "PENDING", 160, 400);
     ctx.restore();
+    let dlImg = canvas.toDataURL();
+    let aref = document.createElement('a');
+    aref.href = dlImg;
+    aref.download = studentID + state + '(CR60OCT).png';
+    document.body.appendChild(aref);
+    aref.click();
 }
 // upload profile picture
 function upPic() {
@@ -815,8 +833,15 @@ function generateSummerCover() {
     let canvas = document.getElementById(canvasID);
     let ctx = canvas.getContext('2d');
     //add Table BG
-    let img = document.getElementById('summerImg');
-    ctx.drawImage(img, 0, 0, 622, 880);
+    let img1 = document.getElementById('summerImg');
+    ctx.drawImage(img1, 0, 0, 622, 880);
+    ctx.fillStyle = "black";
+    ctx.font = "bold 24px Cordia New";
+    ctx.fillText($("#studentID").html().slice(4, 9), 525, 45);
+    ctx.fillText($("#-255600000").html(), 200, 125);
+    ctx.fillText($("#-248400000").html(), 200, 175);
+    ctx.fillText($("#-237600000").html(), 200, 225);
+
 }
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
