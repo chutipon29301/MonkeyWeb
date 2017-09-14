@@ -1,4 +1,6 @@
 const summerQ = 12;
+const summerMonth = 9;
+const summerYear = 2017;
 $(document).ready(function () {
     genTableByName();
     $("#smByName").collapse("show");
@@ -14,8 +16,14 @@ $(document).ready(function () {
             $("#smByWeek").collapse("show");
         }, 500);
     });
+    $("#weekSelect").change(function () {
+        genTableByWeek();
+    })
+    $("#typeSelect").change(function () {
+        genTableByWeek();
+    })
 });
-// func for generate student TypeAhead
+// func for generate student TypeAhead(Table by Name)
 function genTableByName() {
     let allStudent = [];
     // gen typeahead input
@@ -43,7 +51,7 @@ function genTableByName() {
                 }
             }
         }
-        log(allStudent);
+        // log(allStudent);
         $('.typeahead').typeahead({
             source: allStudent,
             autoSelect: true
@@ -126,4 +134,57 @@ function genPickedTable(ID) {
     }).fail(function () {
         log("=>fail to post/listStudentAttendanceModifierByStudent");
     })
+}
+// func for generate table by week
+function genTableByWeek() {
+    $("#smWeekBody").empty();
+    const startDay = parseInt($("#weekSelect").val());
+    const startHour = 8;
+    weekDayRecur(startDay, startDay, startHour);
+}
+function weekDayRecur(startDay, day, hour) {
+    if (day - startDay < 5) {
+        let time = moment(0).date(day).month(summerMonth).year(summerYear).hour(hour);
+        $.post("post/listStudentAttendanceModifierByDay", { day: time.valueOf() }).done(function (data) {
+            log(data.absence);
+            weekDayGetName(data.absence, 0, time, startDay);
+        })
+    }
+}
+function weekDayGetName(absent, index, moment, startDay) {
+    if (index < absent.length) {
+        $.post("post/name", { userID: absent[index].studentID }).done(function (data) {
+            if (absent[index].reason === "ลา" && ($("#typeSelect").val() === "0" || $("#typeSelect").val() === "1")) {
+                $("#smWeekBody").append("<tr class='danger'></tr>");
+                $("#smWeekBody tr:last-child").append(
+                    "<td class='text-center'>" + absent[index].studentID + "</td>" +
+                    "<td>" + data.firstname + " (" + data.nickname + ") " + data.lastname + "</td>" +
+                    "<td class='text-center'>" + moment.format("DD/MM/YYYY") + "</td>" +
+                    "<td class='text-center'>" + moment.format("HH:mm") + "</td>"
+                )
+            } else if (absent[index].reason === "เพิ่ม" && ($("#typeSelect").val() === "0" || $("#typeSelect").val() === "2")) {
+                $("#smWeekBody").append("<tr class='success'></tr>");
+                $("#smWeekBody tr:last-child").append(
+                    "<td class='text-center'>" + absent[index].studentID + "</td>" +
+                    "<td>" + data.firstname + " (" + data.nickname + ") " + data.lastname + "</td>" +
+                    "<td class='text-center'>" + moment.format("DD/MM/YYYY") + "</td>" +
+                    "<td class='text-center'>" + moment.format("HH:mm") + "</td>"
+                )
+            }
+            log(startDay)
+            weekDayGetName(absent, index + 1, moment, startDay)
+        })
+    } else {
+        let hour = moment.hour();
+        let day = moment.date();
+        if (hour === 8) {
+            weekDayRecur(startDay, day, 10)
+        } else if (hour === 10) {
+            weekDayRecur(startDay, day, 13)
+        } else if (hour === 13) {
+            weekDayRecur(startDay, day, 15)
+        } else if (hour === 15) {
+            weekDayRecur(startDay, day + 1, 8)
+        }
+    }
 }
