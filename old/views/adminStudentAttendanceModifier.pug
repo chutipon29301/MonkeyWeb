@@ -3,15 +3,21 @@ block head
     - var pageTitle = "Student Attendance Modifier"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/admin.min.js")
+    script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/adminStudentAttendanceModifier.min.js")
-    
+    script(src="js/adminStudentAttendanceModifier.js")
 block body
     .container
-        .form-group
-            .input-group.date.datePicker#datetimepicker1
-                input.form-control(type='text')
-                span.input-group-addon
-                    i.glyphicon.glyphicon-calendar
-        #absentTable
-        #presentTable
+        ul.nav.nav-tabs
+            li.active: a(data-toggle="tab" href="#fhb") FHB
+            li: a(data-toggle="tab" href="#sm") SUMMER
+        .tab-content
+            #fhb.tab-pane.fade.in.active
+                h3 Page1
+            #sm.tab-pane.fade
+                ul.breadcrumb
+                    li: a#aByName(href="#") By Name
+                    li: a#aByWeek(href="#") By Week
+                #smByName.collapse
+                #smByWeek.collapse
+                    h1 ByWeek
