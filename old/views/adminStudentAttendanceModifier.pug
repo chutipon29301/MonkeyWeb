@@ -5,7 +5,7 @@ block head
     script(src="js/admin.min.js")
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/adminStudentAttendanceModifier.js")
+    script(src="js/adminStudentAttendanceModifier.min.js")
 block body
     .container
         ul.nav.nav-tabs
@@ -13,11 +13,35 @@ block body
             li: a(data-toggle="tab" href="#sm") SUMMER
         .tab-content
             #fhb.tab-pane.fade.in.active
-                h3 Page1
+                h3 For FHB(On develop)
             #sm.tab-pane.fade
                 ul.breadcrumb
                     li: a#aByName(href="#") By Name
                     li: a#aByWeek(href="#") By Week
                 #smByName.collapse
                 #smByWeek.collapse
-                    h1 ByWeek
+                    .row
+                        form.col-sm-2
+                            .form-group
+                                label(for="weekSelect") Week:
+                                select.form-control#weekSelect
+                                    option(value="0") Select Week
+                                    option(value="9") 9-13
+                                    option(value="16") 16-20
+                                    option(value="23") 23-17
+                        form.col-sm-2
+                            .form-group
+                                label(for="typeSelect") Filter:
+                                select.form-control#typeSelect
+                                    option(value="0") No filter
+                                    option(value="1") ลา
+                                    option(value="2") เพิ่ม
+                    .table-responsive
+                        table.table.table-hover.table-bordered
+                            thead
+                                tr
+                                    th.text-center ID
+                                    th.text-center Name
+                                    th.text-center Date
+                                    th.text-center Time
+                            tbody#smWeekBody
