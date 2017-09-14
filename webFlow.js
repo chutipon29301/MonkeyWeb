@@ -184,6 +184,7 @@ module.exports=function(app,db){
         options.middlewareOptions.studentStatus="active";
             addPugPage("home",options);
             addPugPage("studentProfile",options);
+            addPugPage("summerAbsentForm",options);
             options.middlewareOptions.quarter={registrationState:"finished"};
                 addPugPage("absentForm",options);
                 addPugPage("addForm",options);
@@ -199,7 +200,6 @@ module.exports=function(app,db){
                 addPugPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
                 addPugPage("summerReceipt",options);
-                addPugPage("summerAbsentForm",options);
             delete options.middlewareOptions.quarter;
         delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};

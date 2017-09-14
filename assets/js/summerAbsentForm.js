@@ -50,12 +50,12 @@ $(document).ready(function () {
         if ($(".btn-danger").length > 0) {
             if ($("#sender").val().length > 0) {
                 for (let i = 0; i < $(".btn-danger").length; i++) {
-                    let temp = moment().hour($(".btn-danger")[i].id.slice(4, 6)).minute(0).date($(".btn-danger")[i].id.slice(1, 3)).month(9);
+                    let temp = moment(0).hour($(".btn-danger")[i].id.slice(4, 6)).minute(0).date($(".btn-danger")[i].id.slice(1, 3)).month(9);
                     day.push(temp.valueOf());
                 }
                 if ($(".btn-info").length > 0) {
                     for (let i = 0; i < $(".btn-info").length; i++) {
-                        let temp = moment().hour($(".btn-info")[i].id.slice(4, 6)).minute(0).date($(".btn-info")[i].id.slice(1, 3)).month(9);
+                        let temp = moment(0).hour($(".btn-info")[i].id.slice(4, 6)).minute(0).date($(".btn-info")[i].id.slice(1, 3)).month(9);
                         pre.push(temp.valueOf());
                     }
                 }
