@@ -1,4 +1,20 @@
 let app = angular.module('tableRoom', ['rx', 'ngMaterial']);
+var quarter = [
+    {
+        year: 2017,
+        quarter: 3,
+        name: 'CR60Q3'
+    }, {
+        year: 2017,
+        quarter: 12,
+        name: 'CR60OCT'
+    }, {
+        year: 2017,
+        quarter: 4,
+        name: 'CR60Q4 '
+    }
+];
+var selectQuarterObject = null
 
 app.config(function ($httpProvider) {
     $httpProvider.defaults.transformRequest = function (data) {
@@ -9,11 +25,11 @@ app.config(function ($httpProvider) {
     }
 });
 
-app.config(function($mdThemingProvider) {
+app.config(function ($mdThemingProvider) {
     $mdThemingProvider.theme('default')
 });
 
-var subjectColor={
+var subjectColor = {
     'M': 'Orange-200',
     'P': 'Purple-100',
     'C': 'Grey-400',
@@ -22,16 +38,17 @@ var subjectColor={
 }
 
 
-let tableGenerator = ($scope, $http, time) => {
+let tableGenerator = ($scope, $http, roomPostObject) => {
     $scope.roomDayList = [];
 
     var transform = function (data) {
         return $.param(data);
-    }
+    };
 
-    let roomInfo = Rx.Observable.fromPromise($http.post('post/roomInfo', {
-        day: time
-    }, {
+    console.log(roomPostObject);
+    let roomInfo = Rx.Observable.fromPromise($http.post('post/roomInfo',
+        roomPostObject
+        , {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             transformRequest: transform
         })
@@ -142,67 +159,160 @@ let tableGenerator = ($scope, $http, time) => {
 };
 
 app.controller('tue', function ($scope, $http) {
-    tableGenerator($scope, $http, -136800000);
+    tableGenerator($scope, $http, {
+        day: -136800000,
+        quarter: 3,
+        year: 2017
+    });
 });
 
 app.controller('thu', function ($scope, $http) {
-    tableGenerator($scope, $http, 36000000);
+    tableGenerator($scope, $http, {
+        day: 36000000,
+        quarter: 3,
+        year: 2017
+    });
 });
 
 app.controller('sat8', function ($scope, $http) {
-    tableGenerator($scope, $http, 176400000);
+    tableGenerator($scope, $http, {
+        day: 176400000,
+        quarter: 3,
+        year: 2017
+    });
 });
 
 app.controller('sat10', function ($scope, $http) {
-    tableGenerator($scope, $http, 183600000);
+    tableGenerator($scope, $http, {
+        day: 183600000,
+        quarter: 3,
+        year: 2017
+    });
 });
 
 app.controller('sat13', function ($scope, $http) {
-    tableGenerator($scope, $http, 194400000);
+    tableGenerator($scope, $http, {
+        day: 194400000,
+        quarter: 3,
+        year: 2017
+    });
 });
 
 app.controller('sat15', function ($scope, $http) {
-    tableGenerator($scope, $http, 201600000);
+    tableGenerator($scope, $http, {
+        day: 201600000,
+        quarter: 3,
+        year: 2017
+    });
 });
 
 app.controller('sun8', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -342000000);
+        tableGenerator($scope, $http, {
+            day: -342000000,
+            quarter: 3,
+            year: 2017
+        });
         res();
     });
     promise.then(() => {
-        tableGenerator($scope, $http, 262800000);
+        tableGenerator($scope, $http, {
+            day: 262800000,
+            quarter: 3,
+            year: 2017
+        });
     });
 });
 
 app.controller('sun10', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -334800000);
+        tableGenerator($scope, $http, {
+            day: -334800000,
+            quarter: 3,
+            year: 2017
+        });
         res();
     });
     promise.then(() => {
-        tableGenerator($scope, $http, 270000000);
+        tableGenerator($scope, $http, {
+            day: 270000000,
+            quarter: 3,
+            year: 2017
+        });
     });
 });
 
 app.controller('sun13', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -324000000);
+        tableGenerator($scope, $http, {
+            day: -324000000,
+            quarter: 3,
+            year: 2017
+        });
         res();
     });
     promise.then(() => {
-        tableGenerator($scope, $http, 280800000);
+        tableGenerator($scope, $http, {
+            day: 280800000,
+            quarter: 3,
+            year: 2017
+        });
     });
 });
 
 app.controller('sun15', function ($scope, $http) {
     var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -316800000);
+        tableGenerator($scope, $http, {
+            day: -316800000,
+            quarter: 3,
+            year: 2017
+        });
         res();
     });
     promise.then(() => {
-        tableGenerator($scope, $http, 288000000);
+        tableGenerator($scope, $http, {
+            day: 288000000,
+            quarter: 3,
+            year: 2017
+        });
     });
+});
+
+app.controller('mon8', function ($scope, $http) {
+    tableGenerator($scope, $http, {
+        day: -255600000,
+        quarter: 12,
+        year: 2017
+    });
+});
+
+app.controller('mon10', function ($scope, $http) {
+    tableGenerator($scope, $http, {
+        day: -248400000,
+        quarter: 12,
+        year: 2017
+    });
+});
+
+app.controller('mon13', function ($scope, $http) {
+    tableGenerator($scope, $http, {
+        day: -237600000,
+        quarter: 12,
+        year: 2017
+    });
+});
+
+app.controller('selectQuarter', function ($scope, $http) {
+    $scope.quarter = quarter;
+    $scope.items = [1, 2, 3, 4, 5, 6, 7];
+    $scope.selectedItem;
+    $scope.getSelectedText = function () {
+        if ($scope.selectedItem !== undefined) {
+            return $scope.selectedItem.name;
+        } else {
+            return "Select display quarter";
+        }
+    };
 });
 
 function indexOfObjectInArray(array, key) {
