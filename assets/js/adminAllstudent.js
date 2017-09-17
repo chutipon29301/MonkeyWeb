@@ -28,6 +28,7 @@ function registrationStateChange() {
  */
 function getAllStudentContent() {
     getConfig().then(config => {
+        document.getElementById("currentStudentLabel").innerHTML = "Current Student: " + (config.nextStudentID - 1);
         loadSelectedMenu(config);
         studentForSearch = [];
         allStudent().then((data) => {
@@ -259,4 +260,23 @@ function scanStudentBarcode() {
     let inputBox = document.getElementById("studentID")
     writeCookie("monkeyWebAdminAllstudentSelectedUser", inputBox.value.substring(0, inputBox.value.length - 1));
     self.location = "/adminStudentprofile";
+}
+
+function createNewStudent() {
+    $.post("/post/addBlankStudent", {
+        number: 1
+    }).then(data => {
+        log(data);
+        document.getElementById("newStudentUsername").innerHTML = "Username: " + data.student[0].studentID;
+        document.getElementById("newStudentPassword").innerHTML = "Password: " + data.student[0].password;
+        $("#newStudentDialog").modal({
+            backdrop: 'static',
+            keyboard: false        
+        });
+    });
+}
+
+function closeNewStudentDialog() {
+    $("#newStudentDialog").modal("hide");
+    location.reload();
 }
