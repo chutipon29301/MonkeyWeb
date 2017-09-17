@@ -1,7 +1,7 @@
 extends htmlTemplate
 block head
     -const pageTitle = "All Student"
-    script(src="js/adminAllstudent.min.js")
+    script(src="js/adminAllstudent.js")
     script(src="js/bootstrap3-typeahead.min.js")
 block body
     .container
@@ -12,6 +12,11 @@ block body
                 .form-group
                     label &nbsp;
                     select.form-control#quarter(onChange="quarterChange()")
+            .col-sm-4
+            .col-sm-2
+                label#currentStudentLabel 
+            .col-sm-2
+                button.btn.btn-default(onClick="createNewStudent()") Add Student
         .row
             form.col-sm-2
                 .form-group
@@ -70,5 +75,16 @@ block body
                         th.col-sm-1 CR
                         th.col-sm-1 HB
                 tbody#allStudentTable
+
+        .modal.fade#newStudentDialog
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h1 New Student
+                    .modal-body
+                        h4#newStudentUsername 
+                        h4#newStudentPassword 
+                    .modal-footer
+                        button.btn.btn-default(onClick="closeNewStudentDialog()") Close
     script.
         window.onload = getAllStudentContent();
