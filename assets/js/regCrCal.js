@@ -1,5 +1,5 @@
 let availableCourse;
-const pricepercourse = 7800;
+const pricepercourse = 6000;
 let allSuggest;
 let suggestCourse;
 $(document).ready(function () {
@@ -266,7 +266,7 @@ function next(gg) {
     }
 }
 function back() {
-    self.location = "registrationName";
+    self.location = "home";
 }
 function highlight() {
     let level = $('#level').val();
