@@ -69,26 +69,9 @@ module.exports=function(app,db){
         if(str=="false"||str=="0"||str==""||str===undefined||str===null)return false;
         return true;
     };
-    // function splitCourseName(name){
-    //     if(typeof(name)=="string"){
-    //         if(name.slice(0,3).toLowerCase()=="sat"){
-    //             return {subject:name.slice(3),grade:"SAT",level:""}
-    //         }
-    //         var subject,grade,level;
-    //         var firstdigit=name.indexOf(name.match(/\d/));
-    //         subject=name.slice(0,firstdigit-1).toUpperCase();
-    //         if(/[0-9]/.test(name[name.length-1])){
-    //             grade=name.slice(firstdigit-1,name.length).toUpperCase();
-    //             level="";
-    //         }
-    //         else{
-    //             grade=name.slice(firstdigit-1,name.length-1).toUpperCase();
-    //             level=name[name.length-1].toLowerCase();
-    //         }
-    //         return {subject:subject,grade:grade,level:level};
-    //     }
-    //     else return {subject:"Wrong input",grade:"Wrong input",level:"Wrong input"};
-    // };
+    var generalizedDay=function(time,option){
+        var ret=moment(0);
+    };
     // var gradeStringToBit=function(grade){
     //     var output=0;
     //     if(grade[0]=="P"){
@@ -761,11 +744,18 @@ module.exports=function(app,db){
     //OK Q{} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName,[tutorNicknameEn]}]}
     post("/post/allCourse",function(req,res){
         var output=[];
+        var all=false;
+        if(req.body.year===undefined&&req.body.quarter==="all"){
+            all=true;
+            req.body.quarter=undefined;
+        }
         getQuarter(req.body.year,req.body.quarter,function(err,quarter){
             if(err)res.send(err);
             else{
                 getCourseDB(function(courseDB){
-                    courseDB.find({year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
+                    var query={year:quarter.year,quarter:quarter.quarter};
+                    if(all)query={};
+                    courseDB.find(query).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
                         callbackLoop(result.length,function(i,continueLoop){
                             getCourseName(result[i]._id,function(courseName){
                                 output[i]={courseID:result[i]._id};
@@ -817,7 +807,7 @@ module.exports=function(app,db){
             }
         });
     });
-    //OK {courseID} return {courseName,day,[tutor],[student]}
+    //OK {courseID} return {courseName,day,[tutor],[student],year,quarter}
     post("/post/courseInfo",function(req,res){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
@@ -827,7 +817,8 @@ module.exports=function(app,db){
                     getCourseName(courseID,function(courseName){
                         res.send({
                             courseName:courseName,day:result.day,
-                            tutor:result.tutor,student:result.student
+                            tutor:result.tutor,student:result.student,
+                            year:result.year,quarter:result.quarter
                         });
                     });
                 }
@@ -1424,7 +1415,7 @@ module.exports=function(app,db){
     });
 
     // Student Attendance
-    //OK {studentID,day,reason,sender} return {}
+    //OK {studentID,[day],reason,sender} return {}
     post("/post/addStudentAbsenceModifier",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=req.body.day;
@@ -1438,7 +1429,7 @@ module.exports=function(app,db){
             callbackLoop(day.length,function(i,continueLoop){
                 studentAttendanceModifierDB.insertOne({
                     _id:new ObjectID().toString(),studentID:studentID,
-                    day:day[i],type:"absence",reason:reason,subjectToAdd:"",
+                    day:day[i],type:"absence",reason:reason,subject:"",
                     timestamp:timestamp,sender:sender
                 },function(){
                     continueLoop();
@@ -1460,17 +1451,17 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID,day,subjectToAdd,sender} return {}
+    //OK {studentID,day,subject,sender} return {}
     post("/post/addStudentPresenceModifier",function(req,res){
         var modifierID=new ObjectID().toString();
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
-        var subjectToAdd=req.body.subjectToAdd;
+        var subject=req.body.subject;
         var sender=req.body.sender;
         findUser(res,studentID,{position:"student"},function(){
             studentAttendanceModifierDB.insertOne({
                 _id:modifierID,studentID:studentID,
-                day:day,type:"presence",subjectToAdd:subjectToAdd,reason:"",
+                day:day,type:"presence",subject:subject,reason:"",
                 timestamp:moment().valueOf(),sender:sender
             },function(){
                 res.send({});
@@ -1484,7 +1475,7 @@ module.exports=function(app,db){
             res.send({});
         });
     });
-    //OK {day} return {[absence][presence]->modifierID,studentID,reason|subjectToAdd,timestamp,sender,subject(absence)}
+    //OK {day} return {[absence][presence]->modifierID,studentID,reason|subject,timestamp,sender,absentSubject(absence)}
     post("/post/listStudentAttendanceModifierByDay",function(req,res){
         var day=parseInt(req.body.day);
         var absence=[],presence=[];
@@ -1506,7 +1497,7 @@ module.exports=function(app,db){
                 else if(result[i].type=="presence"){
                     presence.push({
                         modifierID:result[i]._id,studentID:result[i].studentID,
-                        subjectToAdd:result[i].subjectToAdd,
+                        subject:result[i].subject,
                         timestamp:result[i].timestamp,sender:result[i].sender
                     });
                 }
@@ -1520,7 +1511,7 @@ module.exports=function(app,db){
                         var index=result.student.findIndex(function(x){
                             return x.studentID==absence[i].studentID;
                         });
-                        absence[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                        absence[i].absentSubject="FHB"+result.student[index].subject[0];//TODO remove [0]
                         continueLoop();
                     }
                     else{
@@ -1530,11 +1521,11 @@ module.exports=function(app,db){
                                 day:{$in:generalizedDay},student:absence[i].studentID
                             },function(err,result){
                                 if(result){
-                                    absence[i].subject=result._id;
+                                    absence[i].absentSubject=result._id;
                                     continueLoop();
                                 }
                                 else{
-                                    absence[i].subject="No timetable";
+                                    absence[i].absentSubject="No timetable";
                                     console.log(chalk.black.bgRed("[ERROR] No timetable"));
                                     continueLoop();
                                 }
@@ -1547,7 +1538,7 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subjectToAdd,timestamp,sender,subject}
+    //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subject,timestamp,sender,absentSubject}
     post("/post/listStudentAttendanceModifierByStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var start=parseInt(req.body.start);
@@ -1562,7 +1553,7 @@ module.exports=function(app,db){
                         day:result[i].day,
                         type:result[i].type,
                         reason:result[i].reason,
-                        subjectToAdd:result[i].subjectToAdd,
+                        subject:result[i].subject,
                         timestamp:result[i].timestamp,
                         sender:result[i].sender,
                     });
@@ -1583,7 +1574,7 @@ module.exports=function(app,db){
                                 var index=result.student.findIndex(function(x){
                                     return x.studentID==studentID;
                                 });
-                                output[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                                output[i].absentSubject="FHB"+result.student[index].subject[0];//TODO remove [0]
                                 continueLoop();
                             }
                             else{
@@ -1593,11 +1584,11 @@ module.exports=function(app,db){
                                         day:{$in:generalizedDay},student:studentID
                                     },function(err,result){
                                         if(result){
-                                            output[i].subject=result._id;
+                                            output[i].absentSubject=result._id;
                                             continueLoop();
                                         }
                                         else{
-                                            output[i].subject="No timetable";
+                                            output[i].absentSubject="No timetable";
                                             console.log(chalk.black.bgRed("[ERROR] No timetable"));
                                             continueLoop();
                                         }
@@ -1780,33 +1771,38 @@ module.exports=function(app,db){
                 quarter:parseInt(req.body.defaultQuarterQuarter)
             }
         };
-        if(req.body.defaultSummerYear!==undefined&&req.body.defaultSummerQuarter!==undefined){
-            defaultQuarter.summer={
-                year:parseInt(req.body.defaultSummerYear),
-                quarter:parseInt(req.body.defaultSummerQuarter)
+        getQuarter(defaultQuarter.quarter.year,defaultQuarter.quarter.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                if(req.body.defaultSummerYear!==undefined&&req.body.defaultSummerQuarter!==undefined){
+                    defaultQuarter.summer={
+                        year:parseInt(req.body.defaultSummerYear),
+                        quarter:parseInt(req.body.defaultSummerQuarter)
+                    }
+                }
+                var dirPath=function(path){
+                    if(path.endsWith("/"))return path;
+                    return path+"/";
+                };
+                configDB.updateOne({},{
+                    $set:{
+                        defaultQuarter:defaultQuarter,
+                        courseMaterialPath:dirPath(req.body.courseMaterialPath),
+                        receiptPath:dirPath(req.body.receiptPath),
+                        nextStudentID:parseInt(req.body.nextStudentID),
+                        nextTutorID:parseInt(req.body.nextTutorID),
+                        profilePicturePath:dirPath(req.body.profilePicturePath),
+                        studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
+                        studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath)
+                    }
+                },function(){
+                    configDB.findOne({},function(err,config){
+                        console.log("[SHOW] config");
+                        console.log(config);
+                        res.send({});
+                    });
+                });
             }
-        }
-        var dirPath=function(path){
-            if(path.endsWith("/"))return path;
-            return path+"/";
-        };
-        configDB.updateOne({},{
-            $set:{
-                defaultQuarter:defaultQuarter,
-                courseMaterialPath:dirPath(req.body.courseMaterialPath),
-                receiptPath:dirPath(req.body.receiptPath),
-                nextStudentID:parseInt(req.body.nextStudentID),
-                nextTutorID:parseInt(req.body.nextTutorID),
-                profilePicturePath:dirPath(req.body.profilePicturePath),
-                studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
-                studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath)
-            }
-        },function(){
-            configDB.findOne({},function(err,config){
-                console.log("[SHOW] config");
-                console.log(config);
-                res.send({});
-            });
         });
     });
     //OK {toAdd} return {}
@@ -1814,13 +1810,14 @@ module.exports=function(app,db){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
-    //OK {year,quarter,name,maxSeat,week}
+    //OK {year,quarter,name,maxSeat,week,status} return {}
     post("/post/addQuarter",function(req,res){
         var year=parseInt(req.body.year);
         var quarter=parseInt(req.body.quarter);
         var name=req.body.name;
         var maxSeat=[8+6+12+6+6+2,27,12,10,16,12];
         var week=[];
+        var status=req.body.status;
         // var maxSeat=[]; TODO
         // for(var i=0;i<req.body.maxSeat.length;i++){
         //     maxSeat.push(parseInt(req.body.maxSeat[i]));
@@ -1828,9 +1825,23 @@ module.exports=function(app,db){
         quarterDB.insertOne({
             _id:year+digit(quarter,2),
             year:year,quarter:quarter,name:name,
-            maxSeat:maxSeat,week:week
+            maxSeat:maxSeat,week:week,status:status
         },function(){
             res.send({});
+        });
+    });
+    //OK {status} return {[quarter]}
+    post("/post/listQuarter",function(req,res){
+        var status=req.body.status;
+        var query=[];
+        if(status==="public")query=["public"];
+        else if(status==="protected")query=["public","protected"];
+        else if(status==="private")query=["public","protected","private"];
+        quarterDB.find({status:{$in:query}}).toArray(function(err,result){
+            for(var i=0;i<result.length;i++){
+                delete result[i]._id;
+            }
+            res.send({quarter:result});
         });
     });
     post("/post/lineNotify",function(req,res){

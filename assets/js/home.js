@@ -16,7 +16,7 @@ function slideShow(type, mode, autoPlay) {
             extend: function () {
                 this.setOptions('transition', 'fade');
                 if (autoPlay) {
-                    this.play(5000);
+                    this.play(10000);
                 }
             }
         });

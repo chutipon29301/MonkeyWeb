@@ -176,7 +176,7 @@ module.exports=function(app,db){
     };
 
     addPage("login");
-    addPage("maintenance",{url:"/"});
+    addPage("login",{url:"/"});
     addPugPage("studentDocument");
     var options={middlewareOptions:{login:true,position:"student"}};
         options.middlewareOptions.studentStatus="inactive";
@@ -184,10 +184,11 @@ module.exports=function(app,db){
         options.middlewareOptions.studentStatus="active";
             addPugPage("home",options);
             addPugPage("studentProfile",options);
+            addPugPage("summerAbsentForm",options);
             options.middlewareOptions.quarter={registrationState:"finished"};
                 addPugPage("absentForm",options);
                 addPugPage("addForm",options);
-            options.middlewareOptions.quarter={registrationState:["unregistered","pending"]};
+            options.middlewareOptions.quarter={registrationState:["unregistered","rejected"]};
                 addPage("registrationCourse",options);
                 addPage("registrationHybrid",options);
                 addPage("registrationSkill",options);
@@ -195,13 +196,14 @@ module.exports=function(app,db){
                 addPage("submit",options);
             options.middlewareOptions.quarter={registrationState:"untransferred"};
                 addPage("registrationReceipt",options);
-            options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","pending"]};
+            options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","rejected"]};
                 addPugPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
                 addPugPage("summerReceipt",options);
             delete options.middlewareOptions.quarter;
         delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
+        addPage("editAbsent",options);
         addPugPage("adminHome",options);
         addPugPage("adminAllcourse",options);
         addPugPage("adminCoursedescription",options);
@@ -217,7 +219,10 @@ module.exports=function(app,db){
                         Object.assign(local,result);
                         post("post/getConfig",{},function(result){
                             Object.assign(local,{config:result});
-                            callback(local);
+                            post("post/listQuarter",{status:"protected"},function(result){
+                                Object.assign(local,{protectedQuarter:result.quarter});
+                                callback(local);
+                            });
                         });
                     });
                 }
@@ -239,7 +244,10 @@ module.exports=function(app,db){
                         Object.assign(local,result);
                         post("post/getConfig",{},function(result){
                             Object.assign(local,{config:result});
-                            callback(local);
+                            post("post/listQuarter",{status:"protected"},function(result){
+                                Object.assign(local,{protectedQuarter:result.quarter});
+                                callback(local);
+                            });
                         });
                     });
                 }
@@ -248,9 +256,12 @@ module.exports=function(app,db){
     addPage("testadmin",{middlewareOptions:{login:true,position:"dev"}});
     addPugPage("testDev",{middlewareOptions:{login:true,position:"dev"}},function(callback){
         var local={moment:moment};
-        post("post/allCourse",{},function(result){
+        post("post/allCourse",{quarter:"all"},function(result){
             Object.assign(local,result);
-            callback(local);
+            userDB.find({position:{$ne:"student"}}).sort({_id:1}).toArray(function(err,result){
+                Object.assign(local,{tutor:result});
+                callback(local);
+            });
         });
     });
     // addPage("firstConfig",{backendDir:true});

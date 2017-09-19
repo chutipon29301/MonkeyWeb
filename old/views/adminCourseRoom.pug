@@ -22,8 +22,15 @@ block head
 block body
     include generalTemplate
     +angular-template("tableRoom")
+        //- div(ng-controller="selectQuarter")
+        //-     md-input-container(flex-sm="100" flex-gt-sm="100" flex-gt-md="100")
+        //-         label Select quarter
+        //-         md-select(ng-model='selectedItem', md-selected-text='getSelectedText()')
+        //-             md-optgroup(label='Quarter')
+        //-                 md-option(ng-value='aQuarter', ng-repeat='aQuarter in quarter') {{aQuarter.name}}
         div(layout layout-align="center center")
             .md-whiteframe-3dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
+                h2 CR60Q3
                 div(ng-cloak)
                     md-content
                         md-tabs(md-dynamic-height="", md-border-bottom="")
@@ -37,6 +44,16 @@ block body
                             +adminRoom("Sun10", "sun10", "Sunday 10:00 - 12:00")
                             +adminRoom("Sun13", "sun13", "Sunday 13:00 - 15:00")
                             +adminRoom("Sun15", "sun15", "Sunday 15:00 - 17:00")
+        hr
+        div(layout layout-align="center center")
+            .md-whiteframe-3dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
+                h2 CR60OCT
+                div(ng-cloak)
+                    md-content
+                        md-tabs(md-dynamic-height="", md-border-bottom="")
+                            +adminRoom("Mon8", "mon8", "Monday 8:00 - 10:00")
+                            +adminRoom("Mon10", "mon10", "Monday 10:00 - 12:00")
+                            +adminRoom("Mon13", "mon13", "Monday 13:00 - 15:00")
 
         +angular-js
         script(src="js/adminRoom.js")

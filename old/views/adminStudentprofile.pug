@@ -14,14 +14,18 @@ block body
     img#mathImg(src="#" hidden="true")
     img#phyImg(src="#" hidden="true")
     img#summerImg(src="images/summer.png" hidden="true")
+    img#summerReceiptTableImg(src="images/summerReceiptTable.png" hidden="true")
     canvas#mathBarcode(hidden="true")
     canvas#phyBarcode(hidden="true")
     .container
         .row
-            .col-sm-12
-                button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
-                    span.caret
-                ul#quarterSelect.dropdown-menu
+            .col-sm-2
+                select.form-control#courseQuarter(onChange="quarterChange()")
+            .col-sm-10
+                //- button#quarterBtn.btn.btn-default.dropdown-toggle(data-toggle="dropdown") QuarterName
+                //-     span.caret
+                //- ul#quarterSelect.dropdown-menu
+                //-     li Hello World
         .row
             .col-sm-6
                 br
@@ -46,8 +50,8 @@ block body
                     .col-sm-12.text-right
                         br
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
+                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished','quarter');") Finished
+                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending','quarter');") Pending
         .row
             .col-sm-6.text-left
                 //- button.btn.btn-default#math(onClick="downloadCanvas(this.id);") Download Math Table
@@ -59,9 +63,9 @@ block body
             .col-sm-6.text-right
                 button.btn.btn-info(type="button" onClick="editProfile()") EDIT
             .collapse#mathDiv
-                canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170")
+                canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170" onClick="downloadCanvas('math');")
             .collapse#phyDiv
-                canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170")
+                canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170" onClick="downloadCanvas('phy');")
         .row
             br
             .table-responsive.col-sm-12
@@ -126,19 +130,26 @@ block body
         .row
             .col-sm-12.text-right
                 .btn-group
-                    button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
-                    button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+                    button.btn.btn-success(type="button" onClick="setRegistrationState('approved', 'quarter');") Approve Table
+                    button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected', 'quarter');") Reject Table
         hr
         .row
             .col-sm-6
                 .row
                     .col-sm-12
-                        h1 Summer
-                        h4 STAGE: SummerStage
+                        h2#summerStudentName &nbsp;
+                .row
+                    .col-sm-2
+                        h3 Course
+                    .col-sm-3
+                        select.form-control#summerQuarter(style="margin-top: 17px" onChange="quarterChange()")
+                .row
+                    .col-sm-12
                         button.btn.btn-default#summer(data-toggle='collapse' data-target='#summerDiv') Download Summer Table 
                             span.caret
+                    .col-sm-12
                     .collapse#summerDiv
-                        canvas#summerCanvas(style="border:1px solid black" width="621" height="440")
+                        canvas#summerCanvas(style="border:1px solid black" width="622" height="880" onClick="downloadCanvas('summer');")
                 .row
                     .table-responsive.col-sm-8
                         br
@@ -146,28 +157,30 @@ block body
                             thead
                                 tr
                                     th.text-center 8-10
-                                    td: button.btn.btn-default.col-sm-12 Add Course
+                                    td: button.btn.btn-default.col-sm-12#-255600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
                                 tr
                                     th.text-center 10-12
-                                    td: button.btn.btn-default.col-sm-12 Add Course
+                                    td: button.btn.btn-default.col-sm-12#-248400000(type="button" onClick="addRemoveCourse(this.id);") Add Course
                                 tr
                                     th.text-center 13-15
-                                    td: button.btn.btn-default.col-sm-12 Add Course
+                                    td: button.btn.btn-default.col-sm-12#-237600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
                 .row
                     .col-sm-12.text-left
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('approved');") Approve Table
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected');") Reject Table
+                            button.btn.btn-success#approveSummerBtn(type="button" onClick="setRegistrationState('approved','summer');") Approve Table
+                            button.btn.btn-danger#rejectSummerBtn(type="button" onClick="setRegistrationState('rejected', 'summer');") Reject Table
             .col-sm-6(align="right")
                 .row
                     .col-sm-12
                         img#smTrans.img-responsive(src="images/noImage.svg")
+                    .col-sm-12
+                        canvas#acRjSummerCanvas(style="border:1px solid black" width="662" height="479" hidden="true")
                 .row
                     .col-sm-12.text-right
                         br
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished');") Finished
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending');") Pending
+                            button#finishedSummerBtn.btn.btn-success(type="button" onClick="setRegistrationState('finished','summer');") Finished
+                            button#pendingSummerBtn.btn.btn-danger(type="button" onClick="setRegistrationState('pending','summer');") Pending
         canvas#appRej(style="border:1px solid black" width="560" height="380" hidden="true")
     .container
         hr
@@ -180,6 +193,9 @@ block body
                 });
                 $('#imgTrans').click(function () {
                     $('#rcModal').modal();
+                });
+                $('#smTrans').click(function () {
+                    $('#smRcModal').modal();
                 });
                 $('#math,#phy').attr("class","btn btn-default disabled");
                 $('#math,#phy').prop("disabled",true);
@@ -194,7 +210,21 @@ block body
                 let dlImg = canvas.toDataURL();
                 let aref = document.createElement('a');
                 aref.href = dlImg;
-                aref.download = sID + ((subj === "math") ? "1" : "2") + '.png';
+                var text = ""
+                switch(subj){
+                    case "math":
+                        text=sID+"1.png"
+                        break;
+                    case "phy":
+                        text=sID+"2.png"
+                        break;
+                    case "summer":
+                        text=sID+"oct.png"
+                        break;
+                    default:
+                        break;
+                }
+                aref.download = text;
                 document.body.appendChild(aref);
                 aref.click();
             }
@@ -312,7 +342,7 @@ block body
             .modal-dialog
                 .modal-content
                     .modal-header
-                        h4 เปลี่ยนรูปใบโอน
+                        h4 เปลี่ยนรูปใบโอน Course
                     .modal-body.form-group
                         .box(align="center")
                             input#file-2.inputfile.inputfile-1(
@@ -326,6 +356,27 @@ block body
                                     path(d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z")
                                 span เลือกรูป
                     .modal-footer
-                        button.btn.btn-primary(type="button" onClick="upReciept();") OK
+                        button.btn.btn-primary(type="button" onClick="upReciept('quarter');") OK
+                        button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+        //- Modal for uploadSummerReciept Picture
+        .modal.fade#smRcModal(role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4 เปลี่ยนรูปใบโอน Summer
+                    .modal-body.form-group
+                        .box(align="center")
+                            input#file-3.inputfile.inputfile-1(
+                                type="file"
+                                name="file-1[]"
+                                style="opacity: 0;height: 0;"
+                                data-multiple-caption="{count} files selected"
+                            )
+                            label(for="file-3")
+                                svg(xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17")
+                                    path(d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z")
+                                span เลือกรูป
+                    .modal-footer
+                        button.btn.btn-primary(type="button" onClick="upReciept('summer');") OK
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
         script(src="js/custom-file-input.js")
