@@ -42,6 +42,7 @@ function getStudentProfile() {
         document.getElementById("studentLevel").innerHTML = "Grade: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
+        document.getElementById("studentLevel").innerHTML = "Level: " + data.level;
         // summer
         document.getElementById("summerStudentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname + " (" + getLetterGrade(data.grade) + ")";
         var summerStage, courseStage;
@@ -93,7 +94,8 @@ function getStudentProfile() {
         document.getElementById("enName").value = data.firstnameEn;
         document.getElementById("enSName").value = data.lastnameEn;
         document.getElementById("classStudent").value = data.grade;
-        document.getElementById("stageStudent").value = data.registrationState;
+        // document.getElementById("stageStudent").value = data.registrationState;
+        document.getElementById("levelStudent").value = data.level;
         document.getElementById("statusStudent").value = data.status;
         document.getElementById("emailStudent").value = data.email;
         document.getElementById("telStudent").value = data.phone;
@@ -498,10 +500,14 @@ function editStudent() {
         status: status
     });
 
+    log("Hello World");
+
     let selectGrade = document.getElementById("classStudent");
     let grade = parseInt(selectGrade.options[selectGrade.selectedIndex].value);
-    let selectStage = document.getElementById("stageStudent");
-    let stage = selectStage.options[selectStage.selectedIndex].value;
+    let level = document.getElementById("levelStudent");
+    let selectLevel = level.options[level.selectedIndex].value;
+    // let selectStage = document.getElementById("stageStudent");
+    // let stage = selectStage.options[selectStage.selectedIndex].value;
     let selectStatus = document.getElementById("statusStudent");
     let status = selectStatus.options[selectStatus.selectedIndex].value;
 
@@ -515,10 +521,13 @@ function editStudent() {
         nicknameEn: document.getElementById("enNName").value,
         email: document.getElementById("emailStudent").value,
         phone: document.getElementById("telStudent").value,
+        level : selectLevel,
         grade: grade
-    }).then(() => {
-        return changeRegistrationState(studentID, stage);
-    }).then(() => {
+    })
+    // .then(() => {
+    //     return changeRegistrationState(studentID, stage);
+    // })
+    .then(() => {
         changeStatus(studentID, status).then((data) => {
             location.reload();
         });
