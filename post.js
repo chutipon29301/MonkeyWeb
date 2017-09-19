@@ -17,6 +17,7 @@ module.exports=function(app,db){
     var studentCommentDB=db.collection("studentComment");
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
+    var conferenceDB=db.collection("conference");
 
     var gradeBitToString=function(bit){
         var output="",p=false,s=false;
@@ -360,7 +361,8 @@ module.exports=function(app,db){
                 lastnameEn:result.lastnameEn,
                 nicknameEn:result.nicknameEn,
                 email:result.email,phone:result.phone,
-                courseID:[],hybridDay:[]
+                courseID:[],hybridDay:[],
+                level:result.level
             });
             getCourseDB(function(courseDB){
                 courseDB.find({student:studentID}).sort({day:1}).toArray(function(err,course){
@@ -606,6 +608,7 @@ module.exports=function(app,db){
         addField("nicknameEn");
         addField("email");
         addField("phone");
+        addField("level");
         addField("grade",{out:"student.grade",toInt:true});
         addField("phoneParent",{out:"student.phoneParent"});
         findUser(res,studentID,{position:"student"},function(result){
@@ -1754,6 +1757,44 @@ module.exports=function(app,db){
             "_id": req.body.fullname
         })
         res.status(200).send("OK");
+    });
+
+    // Conference
+    /**
+     * Add conference
+     * 
+     */
+    post("/post/addConferenceDate", function (req, res) {
+        if (req.body.day === undefined || req.body.name === undefined) return res.status(400).send("Bad Request");
+        var reqDate = new Date(parseInt(req.body.day));
+        var serverDate = new Date(0);
+        serverDate.setHours(reqDate.getHours());
+        serverDate.setMinutes(reqDate.getMinutes());
+        serverDate.setDate(reqDate.getDate());
+        serverDate.setMonth(reqDate.getMonth());
+        serverDate.setFullYear(reqDate.getFullYear());
+        console.log(reqDate);
+        console.log(serverDate);
+        conferenceDB.insertOne({
+            day: serverDate.valueOf(),
+            name: req.body.name,
+            accept: [],
+            reject: []
+        }, function (err, result) {
+            if (err) {
+                console.log(err);
+                res.status(500).send("Internal Server Error");
+            }
+            res.status(200).send("OK");
+        });
+    });
+
+    /**
+     * Add student to Conference
+     */
+    post("/post/addStudentToConference", function(req, res){
+        if (req.body.conferenceID === undefined || req.body.studentID === undefined) return res.status(400).send("Bad Request");
+
     });
 
     // Configuration
