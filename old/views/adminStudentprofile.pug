@@ -3,7 +3,7 @@ block head
     -const pageTitle = "Admin Student Profile"
     link(href="css/component.css", rel="stylesheet")
     script(src="js/JsBarcode.code128.min.js" type="text/javascript")
-    script(src="js/adminStudentProfile.min.js")
+    script(src="js/adminStudentProfile.js")
     style.
         #comment p{
             margin-bottom:20px;
@@ -248,7 +248,7 @@ block body
                             input#enName.form-control.col-sm-2(type="text" placeholder="Firstname")
                             input#enSName.form-control.col-sm-2(type="text" placeholder="Surname")
                         .form-group
-                            label Level :
+                            label Grade :
                             select#classStudent.form-control
                                 option(value="1") ประถม 1
                                 option(value="2") ประถม 2
@@ -264,15 +264,24 @@ block body
                                 option(value="12") มัธยม 6
                                 option(value="13") SAT
                         .form-group
-                            label Stage :
-                            select#stageStudent.form-control
-                                option(value="unregistered") Unregistered
-                                option(value="untransferred") Untransferred
-                                option(value="transferred") Transferred
-                                option(value="pending") Pending
-                                option(value="rejected") Rejected
-                                option(value="registered") Registered
-                                option(value="finished") Finished
+                            label Level :
+                            select#levelStudent.form-control
+                                option(value="a") a
+                                option(value="b") b
+                                option(value="c") c
+                                option(value="g") g
+                                option(value="w") w
+                                option(value="x") x
+                        //- .form-group
+                        //-     label Stage :
+                        //-     select#stageStudent.form-control
+                        //-         option(value="unregistered") Unregistered
+                        //-         option(value="untransferred") Untransferred
+                        //-         option(value="transferred") Transferred
+                        //-         option(value="pending") Pending
+                        //-         option(value="rejected") Rejected
+                        //-         option(value="registered") Registered
+                        //-         option(value="finished") Finished
                         .form-group
                             label Status :
                             select#statusStudent.form-control
