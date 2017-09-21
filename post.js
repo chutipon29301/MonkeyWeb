@@ -1775,8 +1775,9 @@ module.exports=function(app,db){
         serverDate.setFullYear(reqDate.getFullYear());
         console.log(reqDate);
         console.log(serverDate);
+        console.log(serverDate.getTime());
         conferenceDB.insertOne({
-            day: serverDate.valueOf(),
+            day: serverDate.getTime(),
             name: req.body.name,
             accept: [],
             reject: []
@@ -1790,12 +1791,52 @@ module.exports=function(app,db){
     });
 
     /**
+     * List all of conference in database
+     */
+    post("/post/listConference", function (req, res) {
+        var querryObject = {};
+        if (req.body.day !== undefined) {
+            querryObject.day = req.body.day;
+        }
+        conferenceDB.find(querryObject).toArray(function(err, result){
+            console.log(result);
+            for(let i = 0; i < result.length; i++){
+                delete result[i].accept;
+                delete result[i].reject;
+            }
+            res.status(200).send(result);
+        });
+    });
+
+    /**
      * Add student to Conference
      */
-    post("/post/addStudentToConference", function(req, res){
-        if (req.body.conferenceID === undefined || req.body.studentID === undefined) return res.status(400).send("Bad Request");
-
+    post("/post/addStudentToConference", function (req, res) {
+        if (req.body.conferenceID === undefined || req.body.studentID === undefined || req.body.isAttended === undefined) return res.status(400).send("Bad Request");
+        let studentID = parseInt(req.body.studentID);
+        if (req.body.isAttended) {
+            conferenceDB.update(
+                { _id: ObjectID(req.body.conferenceID) },
+                { $push: { accept: studentID } }
+            );
+        } else {
+            conferenceDB.update(
+                { _id: ObjectID(req.body.conferenceID) },
+                { $push: { reject: studentID } });
+        }
+        res.status(200).send("OK");
     });
+
+    post("/post/listStudentInConference", function(req, res){
+        if(req.body.conferenceID === undefined) return res.status(400).send("Bad Request");
+        conferenceDB.findOne({
+            _id: ObjectID(req.body.conferenceID)
+        }, function(err, result){
+            console.log(result);
+            res.status(200).send(result);
+        });
+    });
+
 
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
