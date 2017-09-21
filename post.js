@@ -1792,9 +1792,20 @@ module.exports=function(app,db){
     /**
      * Add student to Conference
      */
-    post("/post/addStudentToConference", function(req, res){
-        if (req.body.conferenceID === undefined || req.body.studentID === undefined) return res.status(400).send("Bad Request");
-
+    post("/post/addStudentToConference", function (req, res) {
+        if (req.body.conferenceID === undefined || req.body.studentID === undefined || req.body.isAttended === undefined) return res.status(400).send("Bad Request");
+        let studentID = parseInt(req.body.studentID);
+        if (req.body.isAttended) {
+            conferenceDB.update(
+                { _id: ObjectID(req.body.conferenceID) },
+                { $push: { accept: studentID } }
+            );
+        } else {
+            conferenceDB.update(
+                { _id: ObjectID(req.body.conferenceID) },
+                { $push: { reject: studentID } });
+        }
+        res.status(200).send("OK");
     });
 
     // Configuration
