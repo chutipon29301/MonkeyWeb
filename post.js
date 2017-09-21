@@ -1827,6 +1827,16 @@ module.exports=function(app,db){
         res.status(200).send("OK");
     });
 
+    post("/post/listStudentInConference", function(req, res){
+        if(req.body.conferenceID === undefined) return res.status(400).send("Bad Request");
+        conferenceDB.findOne({
+            _id: ObjectID(req.body.conferenceID)
+        }, function(err, result){
+            console.log(result);
+            res.status(200).send(result);
+        });
+    });
+
 
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
