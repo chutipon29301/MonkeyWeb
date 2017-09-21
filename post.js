@@ -1775,8 +1775,9 @@ module.exports=function(app,db){
         serverDate.setFullYear(reqDate.getFullYear());
         console.log(reqDate);
         console.log(serverDate);
+        console.log(serverDate.getTime());
         conferenceDB.insertOne({
-            day: serverDate.valueOf(),
+            day: serverDate.getTime(),
             name: req.body.name,
             accept: [],
             reject: []
@@ -1786,6 +1787,24 @@ module.exports=function(app,db){
                 res.status(500).send("Internal Server Error");
             }
             res.status(200).send("OK");
+        });
+    });
+
+    /**
+     * List all of conference in database
+     */
+    post("/post/listConference", function (req, res) {
+        var querryObject = {};
+        if (req.body.day !== undefined) {
+            querryObject.day = req.body.day;
+        }
+        conferenceDB.find(querryObject).toArray(function(err, result){
+            console.log(result);
+            for(let i = 0; i < result.length; i++){
+                delete result[i].accept;
+                delete result[i].reject;
+            }
+            res.status(200).send(result);
         });
     });
 
@@ -1807,6 +1826,7 @@ module.exports=function(app,db){
         }
         res.status(200).send("OK");
     });
+
 
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
