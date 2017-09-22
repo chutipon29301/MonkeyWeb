@@ -192,7 +192,6 @@ module.exports=function(app,db){
                 addPage("registrationCourse",options);
                 addPage("registrationHybrid",options);
                 addPage("registrationSkill",options);
-                addPage("registrationSkill2",options);
                 addPage("submit",options);
             options.middlewareOptions.quarter={registrationState:"untransferred"};
                 addPage("registrationReceipt",options);
