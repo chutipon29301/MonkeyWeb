@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en"><!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<html lang="en">
+<!-- InstanceBegin template="/Templates/MainTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,17 +9,20 @@
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
-	.cr{
-		background-color: #FFE4F5!important;
-		border-color: transparent!important;
+.course{
+		color:black!important;
+		background-color: rgba(250,253,197,1.00)!important;
+		border:rgba(250,253,197,1.00)!important;
 	}
-	.hb{
-		background-color: #FFF8BA!important;
-		border-color: transparent!important;
+	.hybrid{
+		color: black!important;
+		background-color: #FFC8EF!important;
+		border:#FFC8EF!important;
 	}
-	.sk{
-		background-color: #FAFFAA!important;
-		border-color: transparent!important;
+	.skill{
+		color: black!important;
+		background-color: #C4F5ED!important;
+		border:#C4F5ED!important;
 	}
 </style>
 <!-- InstanceEndEditable -->
@@ -37,8 +41,10 @@
 <script src="js/student.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- InstanceBeginEditable name="script" -->
-<script type="text/javascript" src="js/regSkCal.min.js"></script>
+<script type="text/javascript" src="js/constRegisQuarter.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+<script type="text/javascript" src="js/regSkCal.js"></script>
+
 <!-- InstanceEndEditable -->
 </head>
 <body>
@@ -80,132 +86,93 @@
   <!-- /.container-fluid --> 
 </nav>
 <div class="container-fluid"> <!-- InstanceBeginEditable name="body" -->
-  	  <div class="container">
-    <form class="form-horizontal">
-    <div class="form-group">
-     <label class="control-label col-md-1 col-md-offset-1" style="font-size: large">Skill:</label>
-     <div class="col-md-3">
-     <select class="form-control" id="skillSel">
-           <option value="0">กรุณาเลือกวิชา</option>
-            <option value="1">MATH and ENG</option>
-            <option value="2">MATH</option>
-            <option value="3">ENG</option>
-            <option value="4">Complete</option>
-     </select>
-     </div>
-    </div>
-    <p style="color: red" class="col-md-offset-2">*Complete คือ จบหลักสูตร Monkey Skill แล้ว</p>
-</form>
+  <div class="col-xs-10 col-md-4 col-md-offset-4 col-xs-offset-1" style="margin-bottom: 5px">
+    <div class="col-sm-12 col-md-12"> <img src="/images/SkillState.jpg" class="img-responsive"> </div>
+  </div>
+  <div class="container">
+  	<br>
+  	<form class="form-horizontal col-sm-12 col-md-12">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">ข้อกำหนด</label>
+          <div class="col-sm-10">
+            <p class="control-label" style="text-align: left">1. สำหรับนักเรียนที่เรียนสกิลจบแล้วสามารถข้ามหน้านี้ได้เลย</p>
+            <p class="control-label" style="text-align: left">2. การลงทะเบียนสกิลจะทำเฉพาะการเรียนที่สาขาสยามเท่านั้น</p>
+            <p class="control-label" style="text-align: left">3. สามารถลงเฉพาะเลขหรืออังกฤษได้ แต่ไม่สามารถลงเวลาทับกันได้</p>
+          </div>
+        </div>
+      </form>
+   </div>
+   <div class="container">
+   <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="col-xs-4">&nbsp;</th>
+              <th class="col-xs-4">Sat</th>
+              <th class="col-xs-4">Sun</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>8.00-10.00 น.</td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sat M disabled" name="8" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sat E disabled" name="8" onClick="btntoggle(this)">Eng</button></td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sun M disabled" name="8" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sun E disabled" name="8" onClick="btntoggle(this)">Eng</button></td>
+            </tr>
+            <tr>
+              <td>10.00-12.00 น.</td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sat M disabled" name="10" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sat E disabled" name="10" onClick="btntoggle(this)">Eng</button></td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sun M disabled" name="10" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sun E disabled" name="10" onClick="btntoggle(this)">Eng</button></td>
+            </tr>
+            <tr>
+              <td>13.00-15.00 น.</td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sat M disabled" name="13" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sat E disabled" name="13" onClick="btntoggle(this)">Eng</button></td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sun M disabled" name="13" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sun E disabled" name="13" onClick="btntoggle(this)">Eng</button></td>
+            </tr>
+            <tr>
+              <td>15.00-17.00 น.</td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sat M disabled" name="15" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sat E disabled" name="15" onClick="btntoggle(this)">Eng</button></td>
+              <td><button class="btn btn-default col-md-6 col-xs-12 sun M disabled" name="15" onClick="btntoggle(this)">Math</button>
+                <button class="btn btn-default col-md-6 col-xs-12 sun E disabled" name="15" onClick="btntoggle(this)">Eng</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 	</div>
-	<br>
-	<div class="table-responsive w3-hide-small w3-hide-medium col-md-10 col-md-offset-1">
-   <label class="control-label col-md-3" style="font-size: large">Class Schedule:</label>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th></th>
-          <th>8:00-10:00</th>
-          <th>10:00-12:00</th>
-          <th>13:00-15:00</th>
-          <th>15:00-17:00</th>
-          <th>17:00-19:00</th>
-        </tr>
-      </thead>
-      <tr>
-        <td>TUE</td>
-        <td></td>
-		<td></td>
-        <td></td>
-        <td></td>
-        <td><button type="button" class="btn-tue 17.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-
-      </tr>
-      <tr>
-        <td>THU</td>
-       <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><button type="button" class="btn-thu 17.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-      </tr>
-      <tr>
-        <td>SAT</td>
-        <td><button type="button" class="btn-sat 8.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sat 10.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sat 13.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sat 15.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>SUN</td>
-        <td><button type="button" class="btn-sun 8.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sun 10.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sun 13.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sun 15.1 btn btn-default disabled col-md-12" onClick="this.blur(); ">-</button></td>
-        <td></td>
-      </tr>
-    </table>
-  </div>
-  <div class="w3-hide-large">
-  	<label class="control-label col-md-2" style="font-size: large">Class Schedule:</label>
-  </div>
-  <div class="table-responsive w3-hide-large">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th></th>
-          <th>TUE</th>
-          <th>THU</th>
-        </tr>
-      </thead>
-      <tr>
-        <td style="width: 10vw">17-19</td>
-        <td style="width: 40vw"><button type="button" class="btn-tue 17.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-        <td style="width: 40vw"><button type="button" class="btn-thu 17.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-   
-      </tr>
-	</table>
-  </div>
-  <div class="table-responsive w3-hide-large">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th></th>
-          <th>SAT</th>
-          <th>SUN</th>
-        </tr>
-      </thead>
-      <tr>
-        <td style="width: 10vw">8-10</td>
-        <td style="width: 40vw"><button type="button" class="btn-sat 8.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-        <td style="width: 40vw"><button type="button" class="btn-sun 8.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-      </tr>
-      <tr>
-        <td>10-12</td>
-        <td><button type="button" class="btn-sat 10.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sun 10.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-      </tr>
-      <tr>
-        <td>13-15</td>
-        <td><button type="button" class="btn-sat 13.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sun 13.1 btn btn-default disabled col-xs-12" onClick="this.blur(); " >-</button></td>
-      </tr>
-      <tr>
-        <td>15-17</td>
-        <td><button type="button" class="btn-sat 15.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-        <td><button type="button" class="btn-sun 15.1 btn btn-default disabled col-xs-12" onClick="this.blur(); ">-</button></td>
-      </tr>
-
-    </table>
-  </div>
-  <br>
-  <div class="container col-md-5 col-md-offset-1 col-xs-5 col-xs-offset-0" align="left" >
- 	<button id="back" class="btn btn-default" onClick="this.blur(); back();">Back</button>
-  </div>
-<div class="container col-md-4 col-md-offset-1 col-xs-6 col-xs-offset-1" align="right" >
-    <button id="next" class="btn btn-default" onClick="this.blur(); nextbtn();">Next</button>
-  </div>
-	
+	<div class="container">
+       <div class="col-md-1 col-xs-3">
+        <button class="btn btn-default col-md-12 col-xs-12" onClick="self.location = '/registrationHybrid'">Back</button>
+      </div>
+      <div class="col-md-1 col-md-offset-10 col-xs-3 col-xs-offset-6">
+        <button class="btn btn-default col-md-12 col-xs-12" onClick="next()">Next</button>
+      </div>
+      </div>
+	</div>
+	<div class="modal fade" id="timeSelect" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">กรุณาเลือกเวลา</h4>
+        </div>
+        <div class="modal-body">
+         <div class="container-fluid" id="time">
+          <button type="button" class="btn btn-default col-md-4 col-xs-12" data-dismiss="modal" onClick="addTime(this)">&nbsp;</button>
+          <button type="button" class="btn btn-default col-md-4 col-xs-12" data-dismiss="modal" onClick="addTime(this)">&nbsp;</button>
+          <button type="button" class="btn btn-default col-md-4 col-xs-12" data-dismiss="modal" onClick="addTime(this)">&nbsp;</button>
+        </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
   <!-- InstanceEndEditable --> </div>
 <div class="container">
   <div class="row">
@@ -216,4 +183,5 @@
   </div>
 </div>
 </body>
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
