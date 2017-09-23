@@ -95,4 +95,7 @@ function next(){
         writeCookie('skill',JSON.stringify(skill))
         self.location = '/submit'
     }
+    else if(allselect.length == 0){
+        self.location = '/submit'   
+    }
 }
