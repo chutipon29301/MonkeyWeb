@@ -3,7 +3,7 @@ block head
     -const pageTitle = "Upload CR60Q4 Receipt"
     link(href="css/component.css", rel="stylesheet")
     script(src="js/constRegisQuarter.js")
-    script(src="js/regRc.js")
+    script(src="js/regRc.min.js")
 block body
     .container
         .row
@@ -33,7 +33,7 @@ block body
                         span เลือกรูป
             .col-sm-3.col-xs-12.text-center
                 h4 Preview
-                img.img-responsive(src="images/nopic.png")
+                img.img-responsive#preview(src="images/nopic.png")
         .row
             br
             .col-sm-12.col-xs-12.text-right
