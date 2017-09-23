@@ -1,6 +1,19 @@
 var studentForSearch = [];
 
 /**
+ * Convert number grade to string grade
+ * @param grade in form for number
+ * @returns {string} grade letter
+ */
+const getLetterGrade = (grade) => {
+    if (grade <= 6) {
+        return "P" + grade;
+    } else {
+        return "S" + (grade - 6);
+    }
+};
+
+/**
  * Get short name of day
  * @param date int day 0 - 6
  * @returns {string} name of day
@@ -238,13 +251,17 @@ function generateStudentHtmlTable(student) {
         let cell4 = row.insertCell(4);
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
+        let cell7 = row.insertCell(7);
+        let cell8 = row.insertCell(8);
         cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
-        cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
-        cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
-        cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
-        cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
-        cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
+        cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
+        cell3.innerHTML = "<td>" + student[i].level + "</td>";
+        cell4.innerHTML = "<td>" + student[i].nickname + "</td>";
+        cell5.innerHTML = "<td>" + student[i].firstname + "</td>";
+        cell6.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell7.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+        cell8.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
             //noinspection SpellCheckingInspection

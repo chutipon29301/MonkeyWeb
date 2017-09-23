@@ -337,6 +337,7 @@ module.exports=function(app,db){
                                 grade:result[i].student.grade,
                                 quarter:result[i].student.quarter,
                                 status:result[i].student.status,
+                                level:result[i].level,
                                 inCourse:course!=null,
                                 inHybrid:hybrid!=null
                             };
