@@ -1,5 +1,5 @@
 var cookie;
-var studentProfile;
+var profile;
 $(document).ready(function(){
     cookie = getCookieDict()
     if(cookie.courseID){
@@ -42,7 +42,7 @@ $(document).ready(function(){
             alert('ขาดการเชื่อมต่อจากเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง')
             self.location = '/registrationCourse'
         }
-        studentProfile = data;
+        profile = data;
     })
 })
 
@@ -74,7 +74,7 @@ function confirm(){
         $.post('post/listConference',{},(data)=>{
             var conferenceID;
             for(let i in data){
-                if(data[i].name.indexOf((studentProfile.grade>6)?'s':'p') && data[i].name.indexOf((studentProfile.grade>6)?(''+studentProfile.grade-6):(''+studentProfile.grade))){
+                if(data[i].name.indexOf((profile.grade>6)?'s':'p')>-1 && data[i].name.indexOf((profile.grade>6)?(''+studentProfile.grade-6):(''+studentProfile.grade))>-1){
                     conferenceID = data[i].conferenceID
                 }
             }
