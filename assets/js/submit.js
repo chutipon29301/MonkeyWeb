@@ -44,6 +44,7 @@ $(document).ready(function(){
         }
         profile = data;
     })
+    
 })
 
 function fillTable(course,option){
@@ -82,7 +83,7 @@ function confirm(){
             if(cookie.Hybrid){
                 for(let i in cookie.Hybrid){
                     promise.push($.post('post/addHybridDay',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,day:cookie.Hybrid[i].day}))
-                }    
+                }
             }
             if(cookie.skill){
                 for(let i in cookie.skill){
