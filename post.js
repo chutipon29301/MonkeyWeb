@@ -1801,6 +1801,8 @@ module.exports=function(app,db){
         conferenceDB.find(querryObject).toArray(function(err, result){
             console.log(result);
             for(let i = 0; i < result.length; i++){
+                result[i].conferenceID = result[i]._id;
+                delete result[i]._id
                 delete result[i].accept;
                 delete result[i].reject;
             }
