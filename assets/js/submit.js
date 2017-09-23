@@ -92,7 +92,7 @@ function confirm(){
             promise.push(
                 $.post('post/addStudentToConference',
                     {
-                        conferenceID: conferenceID
+                        conferenceID: conferenceID,
                         studentID : parseInt(cookie.monkeyWebUser),
                         isAttended : $('#check').is(':checked')
                     }
