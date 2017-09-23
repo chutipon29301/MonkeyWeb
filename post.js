@@ -18,6 +18,7 @@ module.exports=function(app,db){
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
     var conferenceDB=db.collection("conference");
+    var studentHybridDB = db.collection("hybridStudent");
 
     var gradeBitToString=function(bit){
         var output="",p=false,s=false;
@@ -1762,7 +1763,6 @@ module.exports=function(app,db){
     // Conference
     /**
      * Add conference
-     * 
      */
     post("/post/addConferenceDate", function (req, res) {
         if (req.body.day === undefined || req.body.name === undefined) return res.status(400).send("Bad Request");
@@ -1773,9 +1773,6 @@ module.exports=function(app,db){
         serverDate.setDate(reqDate.getDate());
         serverDate.setMonth(reqDate.getMonth());
         serverDate.setFullYear(reqDate.getFullYear());
-        console.log(reqDate);
-        console.log(serverDate);
-        console.log(serverDate.getTime());
         conferenceDB.insertOne({
             day: serverDate.getTime(),
             name: req.body.name,
@@ -1783,7 +1780,6 @@ module.exports=function(app,db){
             reject: []
         }, function (err, result) {
             if (err) {
-                console.log(err);
                 res.status(500).send("Internal Server Error");
             }
             res.status(200).send("OK");
@@ -1799,7 +1795,6 @@ module.exports=function(app,db){
             querryObject.day = req.body.day;
         }
         conferenceDB.find(querryObject).toArray(function(err, result){
-            console.log(result);
             for(let i = 0; i < result.length; i++){
                 result[i].conferenceID = result[i]._id;
                 delete result[i]._id
@@ -1811,7 +1806,13 @@ module.exports=function(app,db){
     });
 
     /**
-     * Add student to Conference
+     * Post method for adding student to conference
+     * req.body = {
+     *      conferenceID: 38927hf83r9hjjaifwe
+     *      studentID: 15999
+     *      isAttended: true
+     * }
+     * res.body = "OK"
      */
     post("/post/addStudentToConference", function (req, res) {
         if (req.body.conferenceID === undefined || req.body.studentID === undefined || req.body.isAttended === undefined) return res.status(400).send("Bad Request");
@@ -1829,16 +1830,124 @@ module.exports=function(app,db){
         res.status(200).send("OK");
     });
 
+    /**
+     * Post method for adding student to conference
+     * req.body = {
+     *      conferenceID: 38927hf83r9hjjaifwe
+     *      studentID: 15999
+     *      isAttended: true
+     * }
+     * res.body = "OK"
+     */
     post("/post/listStudentInConference", function(req, res){
         if(req.body.conferenceID === undefined) return res.status(400).send("Bad Request");
         conferenceDB.findOne({
             _id: ObjectID(req.body.conferenceID)
         }, function(err, result){
-            console.log(result);
             res.status(200).send(result);
         });
     });
 
+    post("/post/v1/addHybridDayToQuarter", function (req, res) {
+        if (req.body.quarter === undefined || req.body.year === undefined  || req.body.day === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        }
+        var reqDate = new Date(parseInt(req.body.day));
+        var serverDate = new Date(0);
+        serverDate.setHours(reqDate.getHours());
+        serverDate.setDate(reqDate.getDate());
+        serverDate.setMonth(reqDate.getMonth());
+        serverDate.setFullYear(reqDate.getFullYear());
+        quarterDB.findOne({
+            year: req.body.year,
+            quarter: req.body.quarter
+        }).then(data => {
+            studentHybridDB.insertOne({
+                quarterID: data._id,
+                day: serverDate.getTime(),
+                student: []
+            }, function (err, result) {
+                if (err) {
+                    switch (err.code) {
+                        case 11000:
+                            return res.status(501).send({
+                                err: "Data already exist",
+                                msg: err.msg
+                            });
+                        default:
+                            return res.status(500).send({
+                                err: -1,
+                                msg: "Internal Server Error"
+                            });
+                    }
+                }
+                res.status(200).send("OK");
+            });
+        });
+    });
+
+    post("/post/v1/listHybridDayInQuarter", function(req, res){
+        if (req.body.quarter === undefined || req.body.year === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        }
+        quarterDB.findOne({
+            year: parseInt(req.body.year),
+            quarter: parseInt(req.body.quarter)
+        }).then(data => {
+            console.log(data);
+            studentHybridDB.find({
+                quarterID: data._id
+            }).toArray(function(err ,result){
+                if(err){
+                    res.status(500).send({
+                        err: 0,
+                        msg: "Internal server error"
+                    });
+                }
+                for(let i = 0; i < result.length;i++){
+                    result[i].hybridID = result[i]._id;
+                    delete result[i]._id;
+                    delete result[i].quarterID
+                }
+                console.log(result);
+                res.status(200).send(result);
+            });
+        });
+    });
+
+    /**
+     * 
+     */
+    post("/post/v1/addHybridStudent", function (req, res) {
+        if (req.body.hybridID === undefined || req.body.studentID === undefined || req.body.subject === undefined) {
+            res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        }
+        studentHybridDB.update({
+            _id: ObjectID(req.body.hybridID)
+        }, {
+                $push: {
+                    student: {
+                        studentID: parseInt(req.body.studentID),
+                        subject: req.body.subject
+                    }
+                }
+            }
+        );
+        res.status(200).send("OK")
+    });
+
+    post("/post/v1/studentPRofile", function(req, res){
+
+    });
 
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
@@ -1909,7 +2018,12 @@ module.exports=function(app,db){
         quarterDB.insertOne({
             _id:year+digit(quarter,2),
             year:year,quarter:quarter,name:name,
-            maxSeat:maxSeat,week:week,status:status
+            maxSeat:maxSeat,week:week,status:status,
+            hybird: {
+                tue: [],
+                thu: [],
+
+            }
         },function(){
             res.send({});
         });
@@ -1923,6 +2037,7 @@ module.exports=function(app,db){
         else if(status==="private")query=["public","protected","private"];
         quarterDB.find({status:{$in:query}}).toArray(function(err,result){
             for(var i=0;i<result.length;i++){
+                result[i].quarterID = result[i]._id;
                 delete result[i]._id;
             }
             res.send({quarter:result});
