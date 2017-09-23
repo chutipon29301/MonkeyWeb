@@ -1,7 +1,7 @@
 extends htmlTemplate
 block head
     -const pageTitle = "All Student"
-    script(src="js/adminAllstudent.min.js")
+    script(src="js/adminAllstudent.js")
     script(src="js/bootstrap3-typeahead.min.js")
 block body
     .container
@@ -68,8 +68,10 @@ block body
                 thead
                     tr
                         th.col-sm-1 No.
-                        th.col-sm-2 ID
-                        th.col-sm-2 Nickname
+                        th.col-sm-1 ID
+                        th.col-sm-1 Grade
+                        th.col-sm-1 Level
+                        th.col-sm-1 Nickname
                         th.col-sm-2 Name
                         th.col-sm-2 Surname
                         th.col-sm-1 CR
