@@ -189,10 +189,10 @@ module.exports=function(app,db){
                 addPugPage("absentForm",options);
                 addPugPage("addForm",options);
             options.middlewareOptions.quarter={registrationState:["unregistered","rejected"]};
-                addPage("registrationCourse",options);
-                addPage("registrationHybrid",options);
-                addPage("registrationSkill",options);
-                addPage("submit",options);
+                addPugPage("registrationCourse",options);
+                addPugPage("registrationHybrid",options);
+                addPugPage("registrationSkill",options);
+                addPugPage("submit",options);
             options.middlewareOptions.quarter={registrationState:"untransferred"};
                 addPage("registrationReceipt",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","rejected"]};

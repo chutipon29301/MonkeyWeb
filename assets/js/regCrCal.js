@@ -61,7 +61,7 @@ function btntoggle(btn){
             $(btn).removeClass('btn-default').addClass('btn-success')
         }
     }
-    $('#fee').html('Course fee : '+($('.sat.btn-success,.sun.btn-success').length*fee)+' บาท')
+    $('#fee').html('รวมเป็นเงิน '+($('.sat.btn-success,.sun.btn-success').length*fee)+' บาท')
 }
 
 function next(){

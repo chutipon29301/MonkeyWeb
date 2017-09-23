@@ -37,7 +37,7 @@ function btntoggle(btn){
 function fillTable(course){
 	let time = new Date(course.day)
 	let btn = $((time.getDay() == 6?'.sat':'.sun') +'[name="'+time.getHours()+'"]').addClass('course').addClass('disabled').html(course.courseName+'('+course.tutorNicknameEn[0]+')')
-	$(btn[0]).removeClass('col-md-6').addClass('col-md-12')
+	$(btn[0]).removeClass('col-sm-6').addClass('col-sm-12')
 	$(btn[1]).hide()
 }
 
