@@ -1832,7 +1832,7 @@ module.exports=function(app,db){
     });
 
     /**
-     * Post method for adding student to conference
+     * Post method for listing student to conference
      * req.body = {
      *      conferenceID: 38927hf83r9hjjaifwe
      *      studentID: 15999
@@ -1849,6 +1849,15 @@ module.exports=function(app,db){
         });
     });
 
+    /**
+     * Post method for adding hybird day to quarter
+     * req.body = {
+     *      quarter: 4
+     *      year: 2017
+     *      day: 1023004020
+     * }
+     * res.body = "OK"
+     */
     post("/post/v1/addHybridDayToQuarter", function (req, res) {
         if (req.body.quarter === undefined || req.body.year === undefined  || req.body.day === undefined) {
             return res.status(400).send({
@@ -1890,6 +1899,17 @@ module.exports=function(app,db){
         });
     });
 
+    /**
+     * Post method for listing all hybrid in quarter
+     * req.body = {
+     *      quarter: 4
+     *      year: 2017
+     * }
+     * res.body = [
+     *      day: 34320000
+     *      hybirdID: 49fjf8weijrfsfs4
+     * ]
+     */
     post("/post/v1/listHybridDayInQuarter", function(req, res){
         if (req.body.quarter === undefined || req.body.year === undefined) {
             return res.status(400).send({
@@ -1901,7 +1921,6 @@ module.exports=function(app,db){
             year: parseInt(req.body.year),
             quarter: parseInt(req.body.quarter)
         }).then(data => {
-            console.log(data);
             studentHybridDB.find({
                 quarterID: data._id
             }).toArray(function(err ,result){
@@ -1915,6 +1934,7 @@ module.exports=function(app,db){
                     result[i].hybridID = result[i]._id;
                     delete result[i]._id;
                     delete result[i].quarterID
+                    delete result[i].student
                 }
                 console.log(result);
                 res.status(200).send(result);
@@ -1923,7 +1943,13 @@ module.exports=function(app,db){
     });
 
     /**
-     * 
+     * Post method for adding stuednt to hybrid day
+     * req.body = {
+     *      hybridID: miagjngoajew934jr3432e3
+     *      studentID: 15999
+     *      subject: 'M'
+     * }
+     * res.body = "OK"
      */
     post("/post/v1/addHybridStudent", function (req, res) {
         if (req.body.hybridID === undefined || req.body.studentID === undefined || req.body.subject === undefined) {
@@ -1946,8 +1972,62 @@ module.exports=function(app,db){
         res.status(200).send("OK")
     });
 
-    post("/post/v1/studentPRofile", function(req, res){
-
+    /**
+     * Post method for list time of stuednt in hybrid day
+     * req.body = {
+     *      studentID: 15999
+     *      quarter: 4
+     *      year: 2017
+     * }
+     * res.body = [
+     *      {
+     *          day: 43959400000
+     *          hybridID: 'kiq034krmif035g'
+     *      }
+     * ]
+     */
+    post("/post/v1/listStudentHybird", function(req, res){
+        if (req.body.studentID === undefined || req.body.quarter === undefined || req.body.year === undefined) {
+            res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        }
+        quarterDB.findOne({
+            year: parseInt(req.body.year),
+            quarter: parseInt(req.body.quarter)
+        }).then(data => {
+            studentHybridDB.find({
+                student: {
+                    $elemMatch: {
+                        studentID: parseInt(req.body.studentID)
+                    }
+                },
+                quarterID: data._id
+            }).toArray(function(err, result){
+                if (err) {
+                    switch (err.code) {
+                        case 11000:
+                            return res.status(501).send({
+                                err: "Data aready exist",
+                                msg: err.msg
+                            });
+                        default:
+                            return res.status(500).send({
+                                err: -1,
+                                msg: "Internal Server Error"
+                            });
+                    }
+                }
+                for(let i = 0; i < result.length; i++){
+                    result[i].hybirdID = result[i]._id;
+                    delete result[i]._id;
+                    delete result[i].student;
+                    delete result[i].quarterID;
+                }
+                res.status(200).send(result);
+            });
+        });
     });
 
     // Configuration
