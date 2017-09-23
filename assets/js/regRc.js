@@ -2,12 +2,19 @@ var crNum = 0;
 $(document).ready(function () {
     let cookies = getCookieDict();
     let ID = cookies.monkeyWebUser;
+    showPreview(ID);
     $.post('post/studentProfile', { studentID: ID }).then((profile) => {
         // log(profile.courseID.length)
         crInSumm(0, profile.courseID)
     });
     $("#submit").click(function () {
-        self.location = 'studentProfile'
+        $.post("post/changeRegistrationState", { studentID: ID, registrationState: "transferred", year: year, quarter: quarter }, function (data2) {
+            if (data2.err) {
+                alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin');
+                throw data2.err
+            }
+            self.location = 'studentProfile'
+        })
         // log($('#file-1').val() !== "");
         // if ($('#file-1').val() !== "") {
         //     upPic(ID);
@@ -51,14 +58,28 @@ function upPic(ID) {
             processData: false,
             contentType: false,
             success: function (data) {
-                $.post("post/changeRegistrationState", { studentID: ID, registrationState: "transferred", year: year, quarter: quarter }, function (data2) {
-                    if (data2.err) {
-                        alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin');
-                        throw data2.err
-                    }
-                    self.location = 'studentProfile'
-                })
+                location.reload();
             }
         });
     }
+}
+function showPreview(ID) {
+    let picId = ID;
+    $.post("post/getConfig").then((config) => {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpg');
+            }
+        });
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpeg');
+            }
+        });
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.png', function (data, status) {
+            if (status === 'success') {
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.png');
+            }
+        });
+    });
 }
