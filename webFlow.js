@@ -194,7 +194,7 @@ module.exports=function(app,db){
                 addPugPage("registrationSkill",options);
                 addPugPage("submit",options);
             options.middlewareOptions.quarter={registrationState:"untransferred"};
-                addPage("registrationReceipt",options);
+                addPugPage("registrationReceipt",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","rejected"]};
                 addPugPage("registrationSummer",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:"untransferred"};
