@@ -1,5 +1,7 @@
 var cookie;
 var profile;
+var promise = []
+
 $(document).ready(function(){
     cookie = getCookieDict()
     if(cookie.courseID){
@@ -23,6 +25,7 @@ $(document).ready(function(){
             }
         }
     })
+    promise.push($.post('post/addStudentCourse',{studentID : parseInt(cookie.monkeyWebUser),courseID : cookie.courseID}))
     if(cookie.skill){
         cookie.skill = JSON.parse(cookie.skill)
         for(let i in cookie.skill){
@@ -44,7 +47,34 @@ $(document).ready(function(){
         }
         profile = data;
     })
-    
+    if(cookie.Hybrid){
+        $.post('post/v1/listHybridDayInQuarter',{quarter:4 , year : 2017},(data)=>{    
+            for(let j in data){
+                let time2 = new Date(data[j].day)
+                for(let i in cookie.Hybrid){
+                    let time1 = new Date(cookie.Hybrid[i].day)
+                    if(time1.getDay() == time2.getDay() && time1.getHours() == time2.getHours()){
+                        promise.push($.post('post/v1/addHybridStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,hybridID : data[j].hybridID}))
+                        break
+                    }
+                }    
+            }
+        })
+    }
+    // if(cookie.skill){
+    //     $.post('post/v1/listSkillDayInQuarter',{quarter:quarter , year : year},(data)=>{    
+    //         for(let j in data){
+    //             let time2 = new Date(data[j].day)
+    //             for(let i in cookie.skill){
+    //                 let time1 = new Date(cookie.skill[i].day)
+    //                 if(time1.getDay() == time2.getDay() && time1.getHours() == time2.getHours() && time1.getMinutes() == time2.getMinutes()){
+    //                     promise.push($.post('post/v1/addSkillStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.skill[i].subject,skillID : data[j].skillID}))
+    //                     break
+    //                 }
+    //             }    
+    //         }
+    //     })
+    // }
 })
 
 function fillTable(course,option){
@@ -70,36 +100,30 @@ function fillTable(course,option){
 }
 
 function confirm(){
-    var promise = []
     if($('#check').is(':checked') || $('#reason').val().length>3){
         $.post('post/listConference',{},(data)=>{
             var conferenceID;
             for(let i in data){
-                if(data[i].name.indexOf((profile.grade>6)?'s':'p')>-1 && data[i].name.indexOf((profile.grade>6)?(''+studentProfile.grade-6):(''+studentProfile.grade))>-1){
-                    conferenceID = data[i].conferenceID
-                }
-            }
-            promise.push($.post('post/addStudentCourse',{studentID : parseInt(cookie.monkeyWebUser),courseID : cookie.courseID}))
-            if(cookie.Hybrid){
-                for(let i in cookie.Hybrid){
-                    promise.push($.post('post/addHybridDay',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,day:cookie.Hybrid[i].day}))
-                }
-            }
-            if(cookie.skill){
-                for(let i in cookie.skill){
-                    promise.push($.post('post/addSkillDay',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.skill[i].subject,day:cookie.skill[i].day}))
-                }
-            }
-            promise.push(
-                $.post('post/addStudentToConference',
-                    {
-                        conferenceID: conferenceID,
-                        studentID : parseInt(cookie.monkeyWebUser),
-                        isAttended : $('#check').is(':checked')
+                if(data[i].name.indexOf((profile.grade>6)?'s':'p')>-1){
+                    if(profile.grade > 6 && data[i].name.indexOf(profile.grade-6) > -1){
+                        conferenceID = data[i].conferenceID    
                     }
-                )
-            )
-            promise.push($.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}))
+                    else if (data[i].name.indexOf(profile.grade)>-1){
+                        conferenceID = data[i].conferenceID
+                    }
+                }
+            }
+            if(conferenceID){
+                promise.push(
+                    $.post('post/addStudentToConference',
+                        {
+                            conferenceID: conferenceID,
+                            studentID : parseInt(cookie.monkeyWebUser),
+                            isAttended : $('#check').is(':checked')
+                        }
+                    )
+                )    
+            }
             Promise.all(promise).then((data)=>{
                 for(let i in data){
                     if(data[i].err){
@@ -107,7 +131,9 @@ function confirm(){
                         throw data[i].err
                     }
                 }
-                self.location = '/registrationReceipt'
+                $.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}).then((data)=>{
+                    self.location = '/registrationReceipt'
+                })
             })    
         })
     }

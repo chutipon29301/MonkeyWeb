@@ -1863,8 +1863,8 @@ module.exports=function(app,db){
         serverDate.setMonth(reqDate.getMonth());
         serverDate.setFullYear(reqDate.getFullYear());
         quarterDB.findOne({
-            year: req.body.year,
-            quarter: req.body.quarter
+            year: parseInt(req.body.year),
+            quarter: parseInt(req.body.quarter)
         }).then(data => {
             studentHybridDB.insertOne({
                 quarterID: data._id,
