@@ -1,5 +1,5 @@
-var cookie
-
+var cookie;
+var studentProfile;
 $(document).ready(function(){
     cookie = getCookieDict()
     if(cookie.courseID){
@@ -29,7 +29,21 @@ $(document).ready(function(){
             fillTable(cookie.skill[i],'skill')
         }
     }
-
+    $('#check').change(function(){
+        if($('#check').is(':checked')){
+            $('#reason').hide()
+        }
+        else{
+            $('#reason').show()
+        }
+    })
+    $.post('post/studentProfile',{studentID:parseInt(cookie.monkeyWebUser)},(data)=>{
+        if(data.err){
+            alert('ขาดการเชื่อมต่อจากเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง')
+            self.location = '/registrationCourse'
+        }
+        studentProfile = data;
+    })
 })
 
 function fillTable(course,option){
@@ -56,34 +70,47 @@ function fillTable(course,option){
 
 function confirm(){
     var promise = []
-    promise.push($.post('post/addStudentCourse',{studentID : parseInt(cookie.monkeyWebUser),courseID : cookie.courseID}))
-    if(cookie.Hybrid){
-        for(let i in cookie.Hybrid){
-            promise.push($.post('post/addHybridDay',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,day:cookie.Hybrid[i].day}))
-        }    
-    }
-    if(cookie.skill){
-        for(let i in cookie.skill){
-            promise.push($.post('post/addSkillDay',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.skill[i].subject,day:cookie.skill[i].day}))
-        }
-    }
-    promise.push(
-        $.post('post/addStudentToConference',
-            {
-                //conferenceID: something
-                studentID : parseInt(cookie.monkeyWebUser),
-                isAttended : $('#check').is(':checked')
+    if($('#check').is(':checked') || $('#reason').val().length>3){
+        $.post('post/listConference',{},(data)=>{
+            var conferenceID;
+            for(let i in data){
+                if(data[i].name.indexOf((studentProfile.grade>6)?'s':'p') && data[i].name.indexOf((studentProfile.grade>6)?(''+studentProfile.grade-6):(''+studentProfile.grade))){
+                    conferenceID = data[i].conferenceID
+                }
             }
-        )
-    )
-    promise.push($.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}))
-    Promise.all(promise).then((data)=>{
-        for(let i in data){
-            if(data[i].err){
-                alert('การลงทะเบียนมีปัญหา กรุณาติดต่อ Admin')
-                throw data[i].err
+            promise.push($.post('post/addStudentCourse',{studentID : parseInt(cookie.monkeyWebUser),courseID : cookie.courseID}))
+            if(cookie.Hybrid){
+                for(let i in cookie.Hybrid){
+                    promise.push($.post('post/addHybridDay',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,day:cookie.Hybrid[i].day}))
+                }    
             }
-        }
-        self.location = '/registrationReceipt'
-    })
+            if(cookie.skill){
+                for(let i in cookie.skill){
+                    promise.push($.post('post/addSkillDay',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.skill[i].subject,day:cookie.skill[i].day}))
+                }
+            }
+            promise.push(
+                $.post('post/addStudentToConference',
+                    {
+                        conferenceID: conferenceID
+                        studentID : parseInt(cookie.monkeyWebUser),
+                        isAttended : $('#check').is(':checked')
+                    }
+                )
+            )
+            promise.push($.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}))
+            Promise.all(promise).then((data)=>{
+                for(let i in data){
+                    if(data[i].err){
+                        alert('การลงทะเบียนมีปัญหา กรุณาติดต่อ Admin')
+                        throw data[i].err
+                    }
+                }
+                self.location = '/registrationReceipt'
+            })    
+        })
+    }
+    else{
+        alert('กรุณากรอกเหตุผลที่ไม่เข้าร่วมการสอบและประชุม')
+    }
 }
