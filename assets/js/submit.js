@@ -103,7 +103,8 @@ function confirm(){
                         {
                             conferenceID: conferenceID,
                             studentID : parseInt(cookie.monkeyWebUser),
-                            isAttended : $('#check').is(':checked')
+                            isAttended : $('#check').is(':checked'),
+                            reason : ($('#check').is(':checked'))?'':$('#reason').val()
                         }
                     )
                 )    
