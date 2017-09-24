@@ -83,7 +83,7 @@ function next(){
         alert('ไม่สามารถเลือกเวลาเรียนทับกันได้')
     }
     else if(allselect.length>0){
-        $.post('post/v1/listSkillDayInQuarter',{quarter:4 , year : 2017},(data)=>{    
+        $.post('post/v1/listSkillDayInQuarter',{quarter:quarter , year : year},(data)=>{    
             for(let i = 0 ; i < allselect.length ; i++){
                 let eachbtn = $(allselect[i])
                 for (let j in data) {
