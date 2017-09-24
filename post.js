@@ -1818,16 +1818,30 @@ module.exports=function(app,db){
      */
     post("/post/addStudentToConference", function (req, res) {
         if (req.body.conferenceID === undefined || req.body.studentID === undefined || req.body.isAttended === undefined) return res.status(400).send("Bad Request");
-        let studentID = parseInt(req.body.studentID);
-        if (req.body.isAttended) {
+        var pushObject = {
+            studentID: parseInt(req.body.studentID)
+        }
+        if (req.body.reason) {
+            pushObject.reason = req.body.reason
+        }
+        if (req.body.isAttended == "true") {
             conferenceDB.update(
                 { _id: ObjectID(req.body.conferenceID) },
-                { $push: { accept: studentID } }
+                {
+                    $push: {
+                        accept: pushObject
+                    }
+                }
             );
         } else {
             conferenceDB.update(
                 { _id: ObjectID(req.body.conferenceID) },
-                { $push: { reject: studentID } });
+                {
+                    $push: {
+                        reject: pushObject
+                    }
+                }
+            );
         }
         res.status(200).send("OK");
     });
