@@ -2,7 +2,7 @@ extends htmlTemplate
 block head
     -const pageTitle = "Registration Course"
     script(src="js/constRegisQuarter.js")
-    script(src="js/regCrCal.min.js")
+    script(src="js/regCrCal.js")
     style.
         .btn-default{
             background-color: white!important;
@@ -34,7 +34,7 @@ block body
                     input#grade.form-control(type="text" readonly)
         .row
             .col-xs-12.text-center
-                label(style="color:blue") ในการลงทะเบียนคอร์ส จะต้องลงอย่างน้อย2คอร์ส
+                label(style="color:blue") ในการลงทะเบียนคอร์ส จะต้องลงอย่างน้อย 2 คอร์ส
         br
         .table-responsive
             table.table.table-bordered

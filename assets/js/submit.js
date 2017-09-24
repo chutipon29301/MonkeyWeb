@@ -1,6 +1,5 @@
 var cookie;
 var profile;
-var promise = []
 
 $(document).ready(function(){
     cookie = getCookieDict()
@@ -25,14 +24,13 @@ $(document).ready(function(){
             }
         }
     })
-    promise.push($.post('post/addStudentCourse',{studentID : parseInt(cookie.monkeyWebUser),courseID : cookie.courseID}))
     if(cookie.skill){
         cookie.skill = JSON.parse(cookie.skill)
         for(let i in cookie.skill){
             fillTable(cookie.skill[i],'skill')
         }
     }
-    $('#check').change(function(){
+    $('#check,#checkPair').click(function(){
         if($('#check').is(':checked')){
             $('#reason').hide()
         }
@@ -47,34 +45,8 @@ $(document).ready(function(){
         }
         profile = data;
     })
-    if(cookie.Hybrid){
-        $.post('post/v1/listHybridDayInQuarter',{quarter:4 , year : 2017},(data)=>{    
-            for(let j in data){
-                let time2 = new Date(data[j].day)
-                for(let i in cookie.Hybrid){
-                    let time1 = new Date(cookie.Hybrid[i].day)
-                    if(time1.getDay() == time2.getDay() && time1.getHours() == time2.getHours()){
-                        promise.push($.post('post/v1/addHybridStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,hybridID : data[j].hybridID}))
-                        break
-                    }
-                }    
-            }
-        })
-    }
-    // if(cookie.skill){
-    //     $.post('post/v1/listSkillDayInQuarter',{quarter:quarter , year : year},(data)=>{    
-    //         for(let j in data){
-    //             let time2 = new Date(data[j].day)
-    //             for(let i in cookie.skill){
-    //                 let time1 = new Date(cookie.skill[i].day)
-    //                 if(time1.getDay() == time2.getDay() && time1.getHours() == time2.getHours() && time1.getMinutes() == time2.getMinutes()){
-    //                     promise.push($.post('post/v1/addSkillStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.skill[i].subject,skillID : data[j].skillID}))
-    //                     break
-    //                 }
-    //             }    
-    //         }
-    //     })
-    // }
+
+
 })
 
 function fillTable(course,option){
@@ -101,39 +73,57 @@ function fillTable(course,option){
 
 function confirm(){
     if($('#check').is(':checked') || $('#reason').val().length>3){
-        $.post('post/listConference',{},(data)=>{
-            var conferenceID;
-            for(let i in data){
-                if(data[i].name.indexOf((profile.grade>6)?'s':'p')>-1){
-                    if(profile.grade > 6 && data[i].name.indexOf(profile.grade-6) > -1){
-                        conferenceID = data[i].conferenceID    
-                    }
-                    else if (data[i].name.indexOf(profile.grade)>-1){
-                        conferenceID = data[i].conferenceID
+        if(cookie.Hybrid){
+            for(let i in cookie.Hybrid){
+                $.post('post/v1/addHybridStudent',{
+                    studentID : parseInt(cookie.monkeyWebUser),
+                    subject:cookie.Hybrid[i].subject,
+                    hybridID : cookie.Hybrid[i].hybridID
+                })
+            }
+        }
+        if(cookie.skill){
+            for(let i in cookie.skill){
+                $.post('post/v1/addSkillStudent',{
+                    studentID : parseInt(cookie.monkeyWebUser),
+                    subject:cookie.skill[i].subject,
+                    skillID : cookie.skill[i].skillID
+                })
+            }
+        }
+        $.post('post/addStudentCourse',{studentID : parseInt(cookie.monkeyWebUser),courseID : cookie.courseID},(addCourseCallBack)=>{
+            $.post('post/listConference',{},(data)=>{
+                var conferenceID;
+                for(let i in data){
+                    if(data[i].name.indexOf((profile.grade>6)?'s':'p')>-1){
+                        if(profile.grade > 6 && data[i].name.indexOf(profile.grade-6) > -1){
+                            conferenceID = data[i].conferenceID    
+                        }
+                        else if (data[i].name.indexOf(profile.grade)>-1){
+                            conferenceID = data[i].conferenceID
+                        }
                     }
                 }
-            }
-            if(conferenceID){
-                promise.push(
+                if(conferenceID){
                     $.post('post/addStudentToConference',
                         {
                             conferenceID: conferenceID,
                             studentID : parseInt(cookie.monkeyWebUser),
-                            isAttended : $('#check').is(':checked')
+                            isAttended : $('#check').is(':checked'),
+                            reason : ($('#check').is(':checked'))?'':$('#reason').val()
+                        },
+                        (conferecnceCallBack)=>{
+                            $.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}).then((data)=>{
+                                self.location = '/registrationReceipt'
+                            })
                         }
                     )
-                )    
-            }
-            Promise.all(promise).then((data)=>{
-                for(let i in data){
-                    if(data[i].err){
-                        alert('การลงทะเบียนมีปัญหา กรุณาติดต่อ Admin')
-                        throw data[i].err
-                    }
                 }
-                $.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}).then((data)=>{
-                    self.location = '/registrationReceipt'
-                })
+                else{
+                    $.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}).then((data)=>{
+                        self.location = '/registrationReceipt'
+                    })
+                }
             })    
         })
     }

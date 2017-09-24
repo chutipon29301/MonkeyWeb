@@ -21,16 +21,15 @@ $(document).ready(function(){
                     for(let j = 0 ; j < selectbtn.length ; j++){
                         if($(selectbtn[j]).hasClass('disabled')){
                             $(selectbtn[j]).removeClass('disabled')
-                            if(sbj.course[i].description!=undefined) $('#description').html($('#description').html()+sbj.course[i].courseName+'('+sbj.course[i].tutorNicknameEn[0]+') : '+sbj.course[i].description+'<br>');
+                            if(sbj.course[i].description!='-') $('#description').html($('#description').html()+sbj.course[i].courseName+'('+sbj.course[i].tutorNicknameEn[0]+') : '+sbj.course[i].description+'<br>');
                             $(selectbtn[j]).html(sbj.course[i].courseName+'('+sbj.course[i].tutorNicknameEn[0]+')'+'<span style="display:none">'+sbj.course[i].courseID+'</span>')
                             break
                         }
                     }    
                 }
             }
-            $.post('/post/listCourseSuggestion', {grade: data.grade}, function(suggest) {
+            $.post('/post/listCourseSuggestion', {grade: data.grade , quarter:quarter , year:year}, function(suggest) {
                 let allbtn = $('.sat,.sun')
-                console.log(suggest)
                 for(let i = 0 ; i < allbtn.length ; i++){
                     for(let j in suggest.course){
                         if(suggest.course[j].level == data.level){

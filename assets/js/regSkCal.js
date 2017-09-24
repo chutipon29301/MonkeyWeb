@@ -79,21 +79,29 @@ function addTime(btn){
 function next(){
     var allselect = $('.sat.btn-success,.sun.btn-success')
     var skill = []
-    if(allselect.length == 2 && $(allselect[0]).html().split(' ')[1] == $(allselect[1]).html().split(' ')[1] && $(allselect[0]).hasClass('sat') == $(allselect[1]).hasClass('sat')){
-        alert('ไม่สามารถเลือกเวลาเรียนทับกันได้')
-    }
-    else if(allselect.length>0){
-        for(let i = 0 ; i < allselect.length ; i++){
-            skill.push({
-                studentID : cookie.monkeyWebUser ,
-                subject : $(allselect[i]).hasClass('M')?'M':'E' ,
-                day : moment(0).day($(allselect[i]).hasClass('sat')?6:7).hour(parseInt($(allselect[i]).html().split(' ')[1].split('-')[0])).minute(parseInt($(allselect[i]).html().split(' ')[1].split('-')[0].split('.')[1])).valueOf(),
-                btn : allselect[i].name,
-                text : $(allselect[i]).html()
-            })
-        }
-        writeCookie('skill',JSON.stringify(skill))
-        self.location = '/submit'
+    if(allselect.length>0){
+        $.post('post/v1/listSkillDayInQuarter',{quarter:quarter , year : year},(data)=>{    
+            for(let i = 0 ; i < allselect.length ; i++){
+                let eachbtn = $(allselect[i])
+                for (let j in data) {
+                    let time = new Date(data[j].day)
+                    if(time.getHours() == parseInt(eachbtn.html().split(' ')[1].split('-')[0]) && (time.getDay() == (eachbtn.hasClass('sat')?6:0)) && time.getMinutes() == parseInt(eachbtn.html().split(' ')[1].split('-')[0].split('.')[1])){
+                        skill.push({
+                            studentID : cookie.monkeyWebUser ,
+                            subject : $(allselect[i]).hasClass('M')?'M':'E' ,
+                            day : moment(0).day($(allselect[i]).hasClass('sat')?6:0).hour(parseInt(eachbtn.html().split(' ')[1].split('-')[0])).minute(parseInt($(allselect[i]).html().split(' ')[1].split('-')[0].split('.')[1])).valueOf(),
+                            btn : allselect[i].name,
+                            text : $(allselect[i]).html(),
+                            skillID : data[j].skillID
+                        })
+                        break
+                    }
+                }
+            }
+            writeCookie('skill',JSON.stringify(skill))
+            self.location = '/submit'
+        })
+        
     }
     else if(allselect.length == 0){
         self.location = '/submit'   

@@ -46,15 +46,26 @@ function next(){
 	var Hybrid = []
 	var btn
 	if($('.btn-success.sat,.btn-success.sun,.btn-success.tue,.btn-success.thu').length>0){
-		for(let i = 0 ; i < all.length ; i++){
-			btn = $('.btn-success.'+all[i])
-			for(let j = 0 ; j < btn.length ; j++){
-				Hybrid.push(JSON.stringify({ studentID : cookie.monkeyWebUser , day : moment(0).day(daytoNum(all[i])).hour(parseInt(btn[j].name)).valueOf() , subject : $(btn[j]).hasClass('M')?'M':'PH'}))	
+		$.post('post/v1/listHybridDayInQuarter',{quarter:quarter , year : year},(data)=>{
+			for(let i = 0 ; i < all.length ; i++){
+				btn = $('.btn-success.'+all[i])
+				for(let j = 0 ; j < btn.length ; j++){
+					for(let k in data){
+						let time = new Date(data[k].day)
+						if(time.getHours() == parseInt(btn[j].name) && time.getDay() == daytoNum(all[i])){
+							Hybrid.push(JSON.stringify({ studentID : cookie.monkeyWebUser , day : moment(0).day(daytoNum(all[i])).hour(parseInt(btn[j].name)).valueOf() , subject : $(btn[j]).hasClass('M')?'M':'PH' , hybridID : data[k].hybridID}))	
+							break
+						}
+					}
+				}
 			}
-		}
-		writeCookie('Hybrid',JSON.stringify(Hybrid))	
+			writeCookie('Hybrid',JSON.stringify(Hybrid))
+			self.location = '/registrationSkill'
+		})
 	}
-	self.location = '/registrationSkill'
+	else{
+		self.location = '/registrationSkill'
+	}
 }
 
 function daytoNum(day) {
