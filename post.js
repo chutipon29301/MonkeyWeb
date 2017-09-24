@@ -1796,8 +1796,8 @@ module.exports=function(app,db){
         if (req.body.day !== undefined) {
             querryObject.day = req.body.day;
         }
-        conferenceDB.find(querryObject).toArray(function(err, result){
-            for(let i = 0; i < result.length; i++){
+        conferenceDB.find(querryObject).toArray(function (err, result) {
+            for (let i = 0; i < result.length; i++) {
                 result[i].conferenceID = result[i]._id;
                 delete result[i]._id
                 delete result[i].accept;
@@ -1818,16 +1818,30 @@ module.exports=function(app,db){
      */
     post("/post/addStudentToConference", function (req, res) {
         if (req.body.conferenceID === undefined || req.body.studentID === undefined || req.body.isAttended === undefined) return res.status(400).send("Bad Request");
-        let studentID = parseInt(req.body.studentID);
-        if (req.body.isAttended) {
+        var pushObject = {
+            studentID: parseInt(req.body.studentID)
+        }
+        if (req.body.reason) {
+            pushObject.reason = req.body.reason
+        }
+        if (req.body.isAttended == "true") {
             conferenceDB.update(
                 { _id: ObjectID(req.body.conferenceID) },
-                { $push: { accept: studentID } }
+                {
+                    $push: {
+                        accept: pushObject
+                    }
+                }
             );
         } else {
             conferenceDB.update(
                 { _id: ObjectID(req.body.conferenceID) },
-                { $push: { reject: studentID } });
+                {
+                    $push: {
+                        reject: pushObject
+                    }
+                }
+            );
         }
         res.status(200).send("OK");
     });
@@ -1841,14 +1855,16 @@ module.exports=function(app,db){
      * }
      * res.body = "OK"
      */
-    post("/post/listStudentInConference", function(req, res){
-        if(req.body.conferenceID === undefined) return res.status(400).send("Bad Request");
+    post("/post/listStudentInConference", function (req, res) {
+        if (req.body.conferenceID === undefined) return res.status(400).send("Bad Request");
         conferenceDB.findOne({
             _id: ObjectID(req.body.conferenceID)
-        }, function(err, result){
+        }, function (err, result) {
             res.status(200).send(result);
         });
     });
+
+    //Hybrid
 
     /**
      * Post method for adding hybrid day to quarter
@@ -1860,7 +1876,7 @@ module.exports=function(app,db){
      * res.body = "OK"
      */
     post("/post/v1/addHybridDayToQuarter", function (req, res) {
-        if (req.body.quarter === undefined || req.body.year === undefined  || req.body.day === undefined) {
+        if (req.body.quarter === undefined || req.body.year === undefined || req.body.day === undefined) {
             return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
@@ -1911,7 +1927,7 @@ module.exports=function(app,db){
      *      hybridID: 49fjf8weijrfsfs4
      * ]
      */
-    post("/post/v1/listHybridDayInQuarter", function(req, res){
+    post("/post/v1/listHybridDayInQuarter", function (req, res) {
         if (req.body.quarter === undefined || req.body.year === undefined) {
             return res.status(400).send({
                 err: -1,
@@ -1924,14 +1940,14 @@ module.exports=function(app,db){
         }).then(data => {
             studentHybridDB.find({
                 quarterID: data._id
-            }).toArray(function(err ,result){
-                if(err){
+            }).toArray(function (err, result) {
+                if (err) {
                     res.status(500).send({
                         err: 0,
                         msg: "Internal server error"
                     });
                 }
-                for(let i = 0; i < result.length;i++){
+                for (let i = 0; i < result.length; i++) {
                     result[i].hybridID = result[i]._id;
                     delete result[i]._id;
                     delete result[i].quarterID
@@ -1974,6 +1990,34 @@ module.exports=function(app,db){
     });
 
     /**
+     * Post method for remove student from hybrid day
+     * req.body = {
+     *      hybridID: miagjngoajew934jr3432e3
+     *      studentID: 15999
+     * }
+     * res.body = "OK"
+     */
+    post("/post/v1/removeHybridStudent", function (req, res) {
+        if (req.body.hybridID === undefined || req.body.studentID === undefined) {
+            res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        }
+        studentHybridDB.update({
+            _id: ObjectID(req.body.hybridID)
+        }, {
+                $pull: {
+                    student: {
+                        studentID: parseInt(req.body.studentID)
+                    }
+                }
+            }
+        );
+        res.status(200).send("OK")
+    });
+
+    /**
      * Post method for list time of student in hybrid day
      * req.body = {
      *      studentID: 15999
@@ -1987,7 +2031,7 @@ module.exports=function(app,db){
      *      }
      * ]
      */
-    post("/post/v1/listStudentHybrid", function(req, res){
+    post("/post/v1/listStudentHybrid", function (req, res) {
         if (req.body.studentID === undefined || req.body.quarter === undefined || req.body.year === undefined) {
             res.status(400).send({
                 err: -1,
@@ -2005,7 +2049,7 @@ module.exports=function(app,db){
                     }
                 },
                 quarterID: data._id
-            }).toArray(function(err, result){
+            }).toArray(function (err, result) {
                 if (err) {
                     switch (err.code) {
                         case 11000:
@@ -2020,7 +2064,7 @@ module.exports=function(app,db){
                             });
                     }
                 }
-                for(let i = 0; i < result.length; i++){
+                for (let i = 0; i < result.length; i++) {
                     result[i].hybridID = result[i]._id;
                     delete result[i]._id;
                     delete result[i].student;
@@ -2030,6 +2074,8 @@ module.exports=function(app,db){
             });
         });
     });
+
+    //Skill
 
     /**
      * Post method for adding skill day to quarter
@@ -2041,7 +2087,7 @@ module.exports=function(app,db){
      * res.body = "OK"
      */
     post("/post/v1/addSkillDayToQuarter", function (req, res) {
-        if (req.body.quarter === undefined || req.body.year === undefined  || req.body.day === undefined) {
+        if (req.body.quarter === undefined || req.body.year === undefined || req.body.day === undefined) {
             return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
@@ -2049,6 +2095,7 @@ module.exports=function(app,db){
         }
         var reqDate = new Date(parseInt(req.body.day));
         var serverDate = new Date(0);
+        serverDate.setMinutes(reqDate.getMinutes());
         serverDate.setHours(reqDate.getHours());
         serverDate.setDate(reqDate.getDate());
         serverDate.setMonth(reqDate.getMonth());
@@ -2092,7 +2139,7 @@ module.exports=function(app,db){
      *      skillID: 49fjf8weijrfsfs4
      * ]
      */
-    post("/post/v1/listSkillDayInQuarter", function(req, res){
+    post("/post/v1/listSkillDayInQuarter", function (req, res) {
         if (req.body.quarter === undefined || req.body.year === undefined) {
             return res.status(400).send({
                 err: -1,
@@ -2105,14 +2152,14 @@ module.exports=function(app,db){
         }).then(data => {
             studentSkillDB.find({
                 quarterID: data._id
-            }).toArray(function(err ,result){
-                if(err){
+            }).toArray(function (err, result) {
+                if (err) {
                     res.status(500).send({
                         err: 0,
                         msg: "Internal server error"
                     });
                 }
-                for(let i = 0; i < result.length;i++){
+                for (let i = 0; i < result.length; i++) {
                     result[i].skillID = result[i]._id;
                     delete result[i]._id;
                     delete result[i].quarterID
@@ -2155,6 +2202,34 @@ module.exports=function(app,db){
     });
 
     /**
+     * Post method for remove student from skill day
+     * req.body = {
+     *      skillID: miagjngoajew934jr3432e3
+     *      studentID: 15999
+     * }
+     * res.body = "OK"
+     */
+    post("/post/v1/removeSkillStudent", function (req, res) {
+        if (req.body.skillID === undefined || req.body.studentID === undefined) {
+            res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        }
+        studentSkillDB.update({
+            _id: ObjectID(req.body.skillID)
+        }, {
+                $pull: {
+                    student: {
+                        studentID: parseInt(req.body.studentID)
+                    }
+                }
+            }
+        );
+        res.status(200).send("OK")
+    });
+
+    /**
      * Post method for list time of student in skill day
      * req.body = {
      *      studentID: 15999
@@ -2168,7 +2243,7 @@ module.exports=function(app,db){
      *      }
      * ]
      */
-    post("/post/v1/listStudentSkill", function(req, res){
+    post("/post/v1/listStudentSkill", function (req, res) {
         if (req.body.studentID === undefined || req.body.quarter === undefined || req.body.year === undefined) {
             res.status(400).send({
                 err: -1,
@@ -2186,7 +2261,7 @@ module.exports=function(app,db){
                     }
                 },
                 quarterID: data._id
-            }).toArray(function(err, result){
+            }).toArray(function (err, result) {
                 if (err) {
                     switch (err.code) {
                         case 11000:
@@ -2201,7 +2276,7 @@ module.exports=function(app,db){
                             });
                     }
                 }
-                for(let i = 0; i < result.length; i++){
+                for (let i = 0; i < result.length; i++) {
                     result[i].skillID = result[i]._id;
                     delete result[i]._id;
                     delete result[i].student;
