@@ -79,10 +79,7 @@ function addTime(btn){
 function next(){
     var allselect = $('.sat.btn-success,.sun.btn-success')
     var skill = []
-    if(allselect.length == 2 && $(allselect[0]).html().split(' ')[1] == $(allselect[1]).html().split(' ')[1] && $(allselect[0]).hasClass('sat') == $(allselect[1]).hasClass('sat')){
-        alert('ไม่สามารถเลือกเวลาเรียนทับกันได้')
-    }
-    else if(allselect.length>0){
+    if(allselect.length>0){
         $.post('post/v1/listSkillDayInQuarter',{quarter:quarter , year : year},(data)=>{    
             for(let i = 0 ; i < allselect.length ; i++){
                 let eachbtn = $(allselect[i])
