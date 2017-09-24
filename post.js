@@ -2093,6 +2093,11 @@ module.exports=function(app,db){
                 }
                 for (let i = 0; i < result.length; i++) {
                     result[i].hybridID = result[i]._id;
+                    for (let j = 0; j < result[i].student.length; j++) {
+                        if(result[i].student[j].studentID === parseInt(req.body.studentID)){
+                            result[i].subject = result[i].student[j].subject;
+                        }
+                    }
                     delete result[i]._id;
                     delete result[i].student;
                     delete result[i].quarterID;
@@ -2305,6 +2310,11 @@ module.exports=function(app,db){
                 }
                 for (let i = 0; i < result.length; i++) {
                     result[i].skillID = result[i]._id;
+                    for (let j = 0; j < result[i].student.length; j++) {
+                        if(result[i].student[j].studentID === parseInt(req.body.studentID)){
+                            result[i].subject = result[i].student[j].subject;
+                        }
+                    }
                     delete result[i]._id;
                     delete result[i].student;
                     delete result[i].quarterID;
