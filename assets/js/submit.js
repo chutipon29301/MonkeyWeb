@@ -47,34 +47,18 @@ $(document).ready(function(){
         }
         profile = data;
     })
+
     if(cookie.Hybrid){
-        $.post('post/v1/listHybridDayInQuarter',{quarter:4 , year : 2017},(data)=>{    
-            for(let j in data){
-                let time2 = new Date(data[j].day)
-                for(let i in cookie.Hybrid){
-                    let time1 = new Date(cookie.Hybrid[i].day)
-                    if(time1.getDay() == time2.getDay() && time1.getHours() == time2.getHours()){
-                        promise.push($.post('post/v1/addHybridStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,hybridID : data[j].hybridID}))
-                        break
-                    }
-                }    
-            }
-        })
+        for(let i in cookie.Hybrid){
+            promise.push($.post('post/v1/addHybridStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.Hybrid[i].subject,hybridID : cookie.Hybrid[i].hybridID}))
+        }
     }
-    // if(cookie.skill){
-    //     $.post('post/v1/listSkillDayInQuarter',{quarter:quarter , year : year},(data)=>{    
-    //         for(let j in data){
-    //             let time2 = new Date(data[j].day)
-    //             for(let i in cookie.skill){
-    //                 let time1 = new Date(cookie.skill[i].day)
-    //                 if(time1.getDay() == time2.getDay() && time1.getHours() == time2.getHours() && time1.getMinutes() == time2.getMinutes()){
-    //                     promise.push($.post('post/v1/addSkillStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.skill[i].subject,skillID : data[j].skillID}))
-    //                     break
-    //                 }
-    //             }    
-    //         }
-    //     })
-    // }
+
+    if(cookie.skill){
+        for(let i in cookie.skill){
+            promise.push($.post('post/v1/addSkillStudent',{studentID : parseInt(cookie.monkeyWebUser),subject:cookie.skill[i].subject,skillID : cookie.skill[i].skillID}))
+        }
+    }
 })
 
 function fillTable(course,option){
