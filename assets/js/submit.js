@@ -84,13 +84,11 @@ function confirm(){
         }
         if(cookie.skill){
             for(let i in cookie.skill){
-                promise.push(
-                    $.post('post/v1/addSkillStudent',{
-                        studentID : parseInt(cookie.monkeyWebUser),
-                        subject:cookie.skill[i].subject,
-                        skillID : cookie.skill[i].skillID
-                    })
-                )
+                $.post('post/v1/addSkillStudent',{
+                    studentID : parseInt(cookie.monkeyWebUser),
+                    subject:cookie.skill[i].subject,
+                    skillID : cookie.skill[i].skillID
+                })
             }
         }
         $.post('post/addStudentCourse',{studentID : parseInt(cookie.monkeyWebUser),courseID : cookie.courseID},(addCourseCallBack)=>{
