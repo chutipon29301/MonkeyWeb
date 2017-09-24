@@ -30,7 +30,7 @@ $(document).ready(function(){
             fillTable(cookie.skill[i],'skill')
         }
     }
-    $('#check').change(function(){
+    $('#check,#checkPair').click(function(){
         if($('#check').is(':checked')){
             $('#reason').hide()
         }
@@ -120,6 +120,11 @@ function confirm(){
                             })
                         }
                     )
+                }
+                else{
+                    $.post('post/changeRegistrationState',{studentID : parseInt(cookie.monkeyWebUser),registrationState:'untransferred',quarter:quarter,year:year}).then((data)=>{
+                        self.location = '/registrationReceipt'
+                    })
                 }
             })    
         })

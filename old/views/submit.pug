@@ -86,15 +86,18 @@ block body
                         .col-xs-12.col-xs-12
                             form.form-horizontal
                                 .form-group
-                                    label.control-label.col-sm-4(style="color: red;text-decoration: underline;font-size:120%") การสอบประจำปี
-                                    .checkbox.col-sm-8
+                                    label.control-label.col-sm-3(style="color: red;text-decoration: underline;font-size:120%") การสอบประจำปี
+                                    .radio.col-sm-9
                                         label(style="font-size:120%")
-                                            input#check(type="checkbox" value="0") 
-                                            |ยินดีเข้าร่วมประชุมผู้ปกครองและเข้าสอบประจำปี
-                                .form-group(style="margin-right:1px; margin-left:1px")
-                                    label.control-label.col-sm-4 &nbsp;
-                                    .col-sm-8
-                                        input#reason.form-control(type="text" placeholder="เหตุผลที่ไม่เข้าร่วมการสอบ")
+                                            input#check(type="radio" value="0" name="join") 
+                                            |เข้าร่วมประชุมผู้ปกครองและเข้าสอบประจำปี
+                                    .radio.col-sm-9.col-sm-offset-3
+                                        label(style="font-size:120%")
+                                            input#checkPair(type="radio" value="0" name="join") 
+                                            |ไม่เข้าร่วมประชุมผู้ปกครองและเข้าสอบประจำปี
+
+                            .col-sm-9.col-sm-offset-3
+                                input#reason.form-control(type="text" placeholder="เหตุผลที่ไม่เข้าร่วมการสอบ")
                     .row
                         div(align="center")
                             h4(style="color:red;") หลังจาก Confirm แล้วจะย้ายไปที่หน้าอัพโหลดใบโอนค่าคอร์สและจะไม่สามารถกลับมาแก้ไขได้อีก
