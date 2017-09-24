@@ -11,7 +11,9 @@ const positionCheck = (userID) => $.post("/post/position", {
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const registrationStateCheck = (studentID) => $.post("post/registrationState", {
-    studentID: studentID
+    studentID: studentID,
+    year: 2017,
+    quarter: 4
 });
 
 function loginSubmit() {
