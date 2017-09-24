@@ -21,7 +21,7 @@ $(document).ready(function () {
 // func for fill student profile
 function fillData(ID) {
     $.post("post/studentProfile", { studentID: ID }, function (profile) {
-        log(profile)
+        // log(profile)
         $("#id").html(ID);
         $("#name").html(profile.firstname + " (" + profile.nickname + ") " + profile.lastname);
         $("#nameE").html(profile.firstnameEn + " (" + profile.nicknameEn + ") " + profile.lastnameEn);
@@ -42,7 +42,8 @@ function fillData(ID) {
             $("#status").html("ยังไม่ได้ลงทะเบียน")
         }
         $(".btn-default").removeClass("hb cr sk").html("&nbsp;");
-        fillTable(profile.courseID, 0);
+        fillTableCr(profile.courseID, 0);
+        fillTableFhb(ID, 0);
     })
 }
 // func for show picture
@@ -67,23 +68,31 @@ function showProfilePic(ID) {
     });
 }
 // func for fill table
-function fillTable(cr, index) {
-    log("im herreeeeeee");
+function fillTableCr(cr, index) {
+    // log("im herreeeeeee");
     if (index < cr.length) {
         $.post("post/courseInfo", { courseID: cr[index] }, function (data) {
             if (data.quarter == $("#qList").val().slice($("#qList").val().indexOf("-") + 2)) {
-                log(data);
+                // log(data);
                 let time = moment(data.day).hour();
-                log(time);
+                // log(time);
                 let dow = moment(data.day).day();
-                log(dayOfWeek[dow]);
+                // log(dayOfWeek[dow]);
                 $.post("post/name", { userID: data.tutor[0] }, function (name) {
                     $("." + dayOfWeek[dow] + "-" + time).html("CR: " + data.courseName + " (" + name.nicknameEn + ")").addClass("cr")
-                    fillTable(cr, index + 1);
+                    fillTableCr(cr, index + 1);
                 })
             }
+            fillTableCr(cr, index + 1);
         })
     }
+}
+function fillTableFhb(ID, index) {
+    let currentQ = $("#qList").val().slice($("#qList").val().indexOf("-") + 2);
+    log(currentQ)
+    $.post("post/v1/listStudentHybrid", { year: year, quarter: currentQ, studentID: ID }, function (fhb) {
+        log(fhb)
+    })
 }
 // // const studentProf = (studentID) => $.post("post/studentProfile", {
 // //     studentID: studentID
