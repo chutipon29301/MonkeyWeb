@@ -8,13 +8,18 @@ $(document).ready(function () {
         crInSumm(0, profile.courseID)
     });
     $("#submit").click(function () {
-        $.post("post/changeRegistrationState", { studentID: ID, registrationState: "transferred", year: year, quarter: quarter }, function (data2) {
-            if (data2.err) {
-                alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin');
-                throw data2.err
-            }
-            self.location = 'studentProfile'
-        })
+    	if($('#preview').attr('src') != 'images/nopic.png'){
+    		$.post("post/changeRegistrationState", { studentID: ID, registrationState: "transferred", year: year, quarter: quarter }, function (data2) {
+	            if (data2.err) {
+	                alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin');
+	                throw data2.err
+	            }
+	            self.location = 'studentProfile'
+	        })	
+    	}
+        else{
+        	alert('กรุณาอัพโหลดใบโอน')
+        }
         // log($('#file-1').val() !== "");
         // if ($('#file-1').val() !== "") {
         //     upPic(ID);
