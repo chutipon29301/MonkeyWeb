@@ -2063,6 +2063,7 @@ module.exports=function(app,db){
         }
         var reqDate = new Date(parseInt(req.body.day));
         var serverDate = new Date(0);
+        serverDate.setMinutes(reqDate.getMinutes());
         serverDate.setHours(reqDate.getHours());
         serverDate.setDate(reqDate.getDate());
         serverDate.setMonth(reqDate.getMonth());
