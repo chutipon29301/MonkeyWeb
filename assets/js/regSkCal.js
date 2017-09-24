@@ -65,7 +65,7 @@ function fillTable(course,option){
         else{
             btn.addClass('course').addClass('disabled').html(course.courseName+'('+course.tutorNicknameEn[0]+')')    
         }
-        $(btn[0]).removeClass('col-md-6').addClass('col-md-12').removeClass($(btn[0]).hasClass('M')?'M':'E')
+        $(btn[0]).removeClass('col-sm-6').addClass('col-sm-12').removeClass($(btn[0]).hasClass('M')?'M':'E')
         $(btn[1]).hide()    
     }
 }
