@@ -404,8 +404,27 @@ module.exports=function(app,db){
             }
         });
     });
+
+    /**
+     * Post method getting path name where file is existed
+     * req.body = {
+     *      fullname: "sheet fullname", eg. "MJ-BB01(REV1_0)"
+     *      checkExist: boolean (optional) defualt is true
+     * }
+     * res.body = "OK"
+     */
     //OK Q{studentID,registrationState} return {}
-    post("/post/changeRegistrationState",function(req,res){
+    post("/post/changeRegistrationState", function (req, res) {
+        // if(req.body.studentID === undefined || req.body.registrationState === undefined){
+        //     return res.status(400).send({
+        //         err: -1,
+        //         msg: "Bad request"
+        //     });
+        // }
+        // // configDB.find({}).then(config =>{
+
+        // // });
+
         var studentID=parseInt(req.body.studentID);
         var registrationState=req.body.registrationState;
         getQuarter(req.body.year,req.body.quarter,function(err,quarter){
@@ -450,6 +469,7 @@ module.exports=function(app,db){
                 });
             }
         });
+        // res.status(200).send("OK");
     });
 
     // Student Timetable
@@ -1767,7 +1787,12 @@ module.exports=function(app,db){
      * Add conference
      */
     post("/post/addConferenceDate", function (req, res) {
-        if (req.body.day === undefined || req.body.name === undefined) return res.status(400).send("Bad Request");
+        if (req.body.day === undefined || req.body.name === undefined){
+            return res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        } 
         var reqDate = new Date(parseInt(req.body.day));
         var serverDate = new Date(0);
         serverDate.setHours(reqDate.getHours());
@@ -1782,7 +1807,10 @@ module.exports=function(app,db){
             reject: []
         }, function (err, result) {
             if (err) {
-                res.status(500).send("Internal Server Error");
+                return res.status(500).send({
+                    err: -1,
+                    msg: "Internal Server Error"
+                });
             }
             res.status(200).send("OK");
         });
@@ -1953,7 +1981,6 @@ module.exports=function(app,db){
                     delete result[i].quarterID
                     delete result[i].student
                 }
-                console.log(result);
                 res.status(200).send(result);
             });
         });
@@ -1970,7 +1997,7 @@ module.exports=function(app,db){
      */
     post("/post/v1/addHybridStudent", function (req, res) {
         if (req.body.hybridID === undefined || req.body.studentID === undefined || req.body.subject === undefined) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
             });
@@ -1999,7 +2026,7 @@ module.exports=function(app,db){
      */
     post("/post/v1/removeHybridStudent", function (req, res) {
         if (req.body.hybridID === undefined || req.body.studentID === undefined) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
             });
@@ -2033,7 +2060,7 @@ module.exports=function(app,db){
      */
     post("/post/v1/listStudentHybrid", function (req, res) {
         if (req.body.studentID === undefined || req.body.quarter === undefined || req.body.year === undefined) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
             });
@@ -2182,7 +2209,7 @@ module.exports=function(app,db){
      */
     post("/post/v1/addSkillStudent", function (req, res) {
         if (req.body.skillID === undefined || req.body.studentID === undefined || req.body.subject === undefined) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
             });
@@ -2211,7 +2238,7 @@ module.exports=function(app,db){
      */
     post("/post/v1/removeSkillStudent", function (req, res) {
         if (req.body.skillID === undefined || req.body.studentID === undefined) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
             });
@@ -2245,7 +2272,7 @@ module.exports=function(app,db){
      */
     post("/post/v1/listStudentSkill", function (req, res) {
         if (req.body.studentID === undefined || req.body.quarter === undefined || req.body.year === undefined) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: -1,
                 msg: "Bad Request"
             });
