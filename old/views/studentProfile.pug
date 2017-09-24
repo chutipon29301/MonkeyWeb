@@ -4,7 +4,7 @@ block head
     link(href="css/component.css", rel="stylesheet")
     script(src="js/student.min.js")
     script(src="js/constRegisQuarter.js")
-    script(src="js/studentProfile.js")
+    script(src="js/studentProfile.min.js")
     style.
         .cr {
             background-color: #FFE4F5!important;
@@ -73,52 +73,73 @@ block body
         .row
             p.col-sm-12.col-xs-12
                 kbd ตารางเรียน
-        .table-responsive
-            table.table.table-bordered
-                thead
-                    tr
-                        th.col-xs-2
-                        th.col-xs-5.text-center TUE
-                        th.col-xs-5.text-center THU
-                tbody
-                    tr
-                        td.text-center 17-19
-                        td
-                            button(class="btn-tue-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        td
-                            button(class="btn-thu-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-        .table-responsive
-            table.table.table-bordered
-                thead
-                    tr
-                        th.col-xs-2
-                        th.col-xs-5.text-center SAT
-                        th.col-xs-5.text-center SUN
-                tbody
-                    tr
-                        td.text-center 8-10
-                        td
-                            button(class="btn-sat-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        td
-                            button(class="btn-sun-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                    tr
-                        td.text-center 10-12
-                        td
-                            button(class="btn-sat-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        td
-                            button(class="btn-sun-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                    tr
-                        td.text-center 13-15
-                        td
-                            button(class="btn-sat-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        td
-                            button(class="btn-sun-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                    tr
-                        td.text-center 15-17
-                        td
-                            button(class="btn-sat-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        td
-                            button(class="btn-sun-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+        .collapse#crTable
+            .table-responsive
+                table.table.table-bordered
+                    thead
+                        tr
+                            th.col-xs-2
+                            th.col-xs-5.text-center TUE
+                            th.col-xs-5.text-center THU
+                    tbody
+                        tr
+                            td.text-center 17-19
+                            td
+                                button(class="btn-tue-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-thu-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+            .table-responsive
+                table.table.table-bordered
+                    thead
+                        tr
+                            th.col-xs-2
+                            th.col-xs-5.text-center SAT
+                            th.col-xs-5.text-center SUN
+                    tbody
+                        tr
+                            td.text-center 8-10
+                            td
+                                button(class="btn-sat-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 10-12
+                            td
+                                button(class="btn-sat-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 13-15
+                            td
+                                button(class="btn-sat-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 15-17
+                            td
+                                button(class="btn-sat-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+        .collapse#smTable
+            .table-responsive
+                table.table.table-bordered
+                    thead
+                        tr
+                            th.col-xs-4.text-center TIME
+                            th.col-xs-8.text-center COURSE
+                    tbody
+                        tr
+                            td.text-center 8-10
+                            td
+                                button(class="btn-mon-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 10-12
+                            td
+                                button(class="btn-mon-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 13-15
+                            td
+                                button(class="btn-mon-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
         //- modal for upPic
         #profileModal.modal.fade(role="dialog")
             .modal-dialog.modal-sm

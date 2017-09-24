@@ -12,10 +12,24 @@ $(document).ready(function () {
             }
         }
         fillData(ID);
+        if ($("#qList").val().slice($("#qList").val().indexOf("-") + 2) == summerQuarter) {
+            $("#crTable").collapse("hide");
+            $("#smTable").collapse("show");
+        } else {
+            $("#crTable").collapse("show");
+            $("#smTable").collapse("hide");
+        }
     })
     // func when change Q
     $("#qList").change(function () {
         fillData(ID);
+        if ($("#qList").val().slice($("#qList").val().indexOf("-") + 2) == summerQuarter) {
+            $("#crTable").collapse("hide");
+            $("#smTable").collapse("show");
+        } else {
+            $("#crTable").collapse("show");
+            $("#smTable").collapse("hide");
+        }
     })
 });
 // func for fill student profile
@@ -43,8 +57,10 @@ function fillData(ID) {
         }
         $(".btn-default").removeClass("hb cr sk").html("&nbsp;");
         fillTableCr(profile.courseID, 0);
-        fillTableFhb(ID);
-        fillTableSk(ID);
+        if ($("#qList").val().slice($("#qList").val().indexOf("-") + 2) != summerQuarter && $("#qList").val().slice($("#qList").val().indexOf("-") + 2) != 3) {
+            fillTableFhb(ID);
+            fillTableSk(ID);
+        }
     })
 }
 // func for show picture
@@ -74,11 +90,11 @@ function fillTableCr(cr, index) {
     if (index < cr.length) {
         $.post("post/courseInfo", { courseID: cr[index] }, function (data) {
             if (data.quarter == $("#qList").val().slice($("#qList").val().indexOf("-") + 2)) {
-                // log(data);
+                log(data);
                 let time = moment(data.day).hour();
-                // log(time);
+                log(time);
                 let dow = moment(data.day).day();
-                // log(dayOfWeek[dow]);
+                log(dayOfWeek[dow]);
                 $.post("post/name", { userID: data.tutor[0] }, function (name) {
                     $("." + dayOfWeek[dow] + "-" + time).html("CR: " + data.courseName + " (" + name.nicknameEn + ")").addClass("cr")
                     fillTableCr(cr, index + 1);
@@ -92,22 +108,24 @@ function fillTableFhb(ID) {
     let currentQ = $("#qList").val().slice($("#qList").val().indexOf("-") + 2);
     // log(currentQ)
     $.post("post/v1/listStudentHybrid", { year: year, quarter: currentQ, studentID: ID }, function (fhb) {
+        // log(fhb)
         for (let i = 0; i < fhb.length; i++) {
             let time = moment(fhb[i].day).hour();
             let dow = moment(fhb[i].day).day();
-            $("." + dayOfWeek[dow] + "-" + time).html("FHB: " + "subj").addClass("hb")
+            $("." + dayOfWeek[dow] + "-" + time).html("FHB: " + fhb[i].subject).addClass("hb")
         }
     })
 }
 function fillTableSk(ID) {
     let currentQ = $("#qList").val().slice($("#qList").val().indexOf("-") + 2);
     $.post("post/v1/listStudentSkill", { year: year, quarter: currentQ, studentID: ID }, function (sk) {
-        log(sk)
+        // log(sk)
         log(moment(sk[0].day).format("DD/MM HH:mm"))
         for (let i = 0; i < sk.length; i++) {
             let time = moment(sk[i].day).hour();
             let dow = moment(sk[i].day).day();
-            log(skillTime(time))
+            // log(skillTime(time))
+            $("." + dayOfWeek[dow] + "-" + skillTime(time)).html("SKILL: " + sk[i].subject).addClass("sk")
         }
     })
 }
