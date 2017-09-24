@@ -29,7 +29,7 @@ block body
             .col-xs-8.visible-xs
                 img.profilePic.img-responsive(src="images/noImage.svg")
         .row
-            .col-sm-6.col-xs-12
+            .col-sm-8.col-xs-12
                 .row
                     label.col-sm-3.col-xs-4 ID:
                     p#id
@@ -68,7 +68,7 @@ block body
                 //-     label.col-sm-2.col-xs-4 สิ้นสุด:
                 //-     p#endCr
                 
-            .col-sm-6.hidden-xs(align="right")
+            .col-sm-4.hidden-xs(align="right")
                 img.profilePic.img-responsive(src="images/noImage.svg")
         .row
             p.col-sm-12.col-xs-12
@@ -142,7 +142,7 @@ block body
                                 button(class="btn-mon-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
         //- modal for upPic
         #profileModal.modal.fade(role="dialog")
-            .modal-dialog.modal-sm
+            .modal-dialog
                 .modal-content
                     .modal-header
                         h4 เปลี่ยนรูปประจำตัว
@@ -156,5 +156,5 @@ block body
                                     span เลือกรูป
                     .modal-footer
                         button.upload.btn.btn-primary(type="submit" onClick="upPic()") ตกลง
-                        button.btn.btn-default(type="button" data-dismiss="modal") ยกเลิก
+                        button.btn.btn-danger(type="button" data-dismiss="modal") ยกเลิก
         script(src="js/custom-file-input.js")
