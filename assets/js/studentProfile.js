@@ -31,6 +31,10 @@ $(document).ready(function () {
             $("#smTable").collapse("hide");
         }
     })
+    // func when click on profile pic
+    $(".profilePic").click(function () {
+        $("#profileModal").modal();
+    })
 });
 // func for fill student profile
 function fillData(ID) {
@@ -96,7 +100,11 @@ function fillTableCr(cr, index) {
                 let dow = moment(data.day).day();
                 log(dayOfWeek[dow]);
                 $.post("post/name", { userID: data.tutor[0] }, function (name) {
-                    $("." + dayOfWeek[dow] + "-" + time).html("CR: " + data.courseName + " (" + name.nicknameEn + ")").addClass("cr")
+                    if (name.nicknameEn !== "Hybrid") {
+                        $("." + dayOfWeek[dow] + "-" + time).html(data.courseName + " (" + name.nicknameEn + ")").addClass("cr")
+                    }else{
+                        $("." + dayOfWeek[dow] + "-" + time).html(data.courseName + " (HB)").addClass("cr")
+                    }
                     fillTableCr(cr, index + 1);
                 })
             }
@@ -145,5 +153,31 @@ function skillTime(time) {
             break;
         default:
             return time;
+    }
+}
+// func for upload profile picture
+function upPic() {
+    let cookie = getCookieDict();
+    let ID = cookie.monkeyWebUser;
+    let ufile = $('#file-1');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        formData.append('file', files[0], files[0].name);
+        formData.append('userID', ID);
+        $.ajax({
+            url: 'post/updateProfilePicture',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $('#profileModal').modal('hide');
+                location.reload();
+            }
+        });
     }
 }
