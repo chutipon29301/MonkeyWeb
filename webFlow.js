@@ -230,6 +230,7 @@ module.exports=function(app,db){
         options.middlewareOptions.position={$in:["admin","dev"]};
         addPugPage("adminStudentAttendanceModifier",options);
         addPugPage("adminAllstudent",options);
+        addPugPage("adminConference",options);
         addPugPage("adminCourseRoom",options);
         addPugPage("adminCourseTable",options);
         addPugPage("adminStudentprofile",options);

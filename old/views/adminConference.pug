@@ -1,0 +1,21 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Conference list"
+    link(href="css/component.css", rel="stylesheet")
+    script(src="js/adminConference.js")
+block body
+    .container
+        .col-md-12
+            h1 List Conference
+        table.table.table-hover.table-responsive
+            thead
+                tr
+                    th.col-md-1 #
+                    th.col-md-4 Name
+                    th.col-md-1 Grade
+                    th.col-md-2 Co.Name
+                    th.col-md-1 Day
+                    th.col-md-2 Time
+                    th.col-md-1 Decision
+            tbody#tablebody
+                
