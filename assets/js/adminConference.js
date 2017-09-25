@@ -16,18 +16,38 @@ $(document).ready(function(){
 			updateTable('all')
 		})
 	})
+	$('#filter,#sortby').change(function(){
+		updateTable($('#filter').val(),$('#sortby').val())
+	})
 })
 
 function updateTable(option,sortby){
-	let body = $('#tablebody')
+	let body = $('#tablebody').html('')
+	body.children().show()
+	if(sortby == 'grade') listConferenceObj.sort(function(a,b){return (a.name>b.name)?1:-1;});
+	if(sortby == 'time'){
+		listConferenceObj.sort(function(a,b){
+			let time1 = new Date(a.day)
+			let time2 = new Date(b.day)
+			return (time1.getDay()<time2.getDay())?1:(time1.getDay() == time2.getDay() && time1.getHours()>time2.getHours())?1:-1;
+		})
+	}
+	if(option == 'accept'){
+		updateTable('all')
+		body.children('.active').hide()
+	}
+	if(option == 'reject'){
+		updateTable('all')
+		body.children('.reject').hide()	
+	}
 	if(option == 'all'){
 		let index = 1
 		for(let i in listConferenceObj){
 			let date = new Date(listConferenceObj[i].day)
 			for(let j in listConferenceObj[i].accept){
-				body.append('<tr name="'+listConferenceObj[i].accept[j].id+'">'+
+				body.append('<tr class="accept" name="'+listConferenceObj[i].accept[j].id+'">'+
 					'<td>'+index+'</td>'+
-					'<td>'+listConferenceObj[i].accept[j].firstname+' '+listConferenceObj[i].accept[j].lastname+'</td>'+
+					'<td>'+listConferenceObj[i].accept[j].firstname+'('+listConferenceObj[i].accept[j].nickname+')'+listConferenceObj[i].accept[j].lastname+'</td>'+
 					'<td>'+(listConferenceObj[i].accept[j].grade>6?'ม.'+(listConferenceObj[i].accept[j].grade-6):'ป.'+listConferenceObj[i].accept[j].grade)+'</td>'+
 					'<td>'+listConferenceObj[i].name+'</td>'+
 					'<td>'+date.toDateString().split(' ')[0]+'</td>'+
@@ -38,15 +58,15 @@ function updateTable(option,sortby){
 				index++;
 			}
 			for(let j in listConferenceObj[i].reject){
-				body.append('<tr class="active" name="'+listConferenceObj[i].reject[j].id+'">'+
+				body.append('<tr class="active reject" name="'+listConferenceObj[i].reject[j].id+'">'+
 					'<td>'+index+'</td>'+
-					'<td>'+listConferenceObj[i].accept[j].firstname+' '+listConferenceObj[i].accept[j].lastname+'</td>'+
+					'<td>'+listConferenceObj[i].accept[j].firstname+'('+listConferenceObj[i].accept[j].nickname+')'+listConferenceObj[i].accept[j].lastname+'</td>'+
 					'<td>'+(listConferenceObj[i].accept[j].grade>6?'ม.'+(listConferenceObj[i].accept[j].grade-6):'ป.'+listConferenceObj[i].accept[j].grade)+'</td>'+
 					'<td>'+listConferenceObj[i].name+'</td>'+
 					'<td>'+date.toDateString().split(' ')[0]+'</td>'+
 					'<td>'+date.toString().split(' ')[4]+'</td>'+
 					'<td>Reject</td>'+
-					'<td>'+
+					'<td>'+listConferenceObj[i].reject[j].reason+'</td>'+
 					'</tr>'
 				)
 				index++;
