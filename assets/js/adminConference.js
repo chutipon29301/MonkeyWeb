@@ -28,7 +28,7 @@ function updateTable(option,sortby){
 				body.append('<tr name="'+listConferenceObj[i].accept[j].id+'">'+
 					'<td>'+index+'</td>'+
 					'<td>'+listConferenceObj[i].accept[j].firstname+' '+listConferenceObj[i].accept[j].lastname+'</td>'+
-					'<td>'+listConferenceObj[i].accept[j].grade+'</td>'+
+					'<td>'+(listConferenceObj[i].accept[j].grade>6?listConferenceObj[i].accept[j].grade-6:listConferenceObj[i].accept[j].grade)+'</td>'+
 					'<td>'+listConferenceObj[i].name+'</td>'+
 					'<td>'+date.toDateString().split(' ')[0]+'</td>'+
 					'<td>'+date.toString().split(' ')[4]+'</td>'+
@@ -38,10 +38,10 @@ function updateTable(option,sortby){
 				index++;
 			}
 			for(let j in listConferenceObj[i].reject){
-				body.append('<tr class="active" name="'+listConferenceObj[i].reject[j].id+'"'+
+				body.append('<tr class="active" name="'+listConferenceObj[i].reject[j].id+'">'+
 					'<td>'+index+'</td>'+
 					'<td>'+listConferenceObj[i].accept[j].firstname+' '+listConferenceObj[i].accept[j].lastname+'</td>'+
-					'<td>'+listConferenceObj[i].accept[j].grade+'</td>'+
+					'<td>'+(listConferenceObj[i].accept[j].grade>6?listConferenceObj[i].accept[j].grade-6:listConferenceObj[i].accept[j].grade)+'</td>'+
 					'<td>'+listConferenceObj[i].name+'</td>'+
 					'<td>'+date.toDateString().split(' ')[0]+'</td>'+
 					'<td>'+date.toString().split(' ')[4]+'</td>'+
