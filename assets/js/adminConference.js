@@ -32,7 +32,7 @@ function updateTable(option,sortby){
 					'<td>'+listConferenceObj[i].name+'</td>'+
 					'<td>'+date.toDateString().split(' ')[0]+'</td>'+
 					'<td>'+date.toString().split(' ')[4]+'</td>'+
-					'<td>Accept</td>'+
+					'<td>Accept</td><td>&nbsp;</td>'+
 					'</tr>'
 				)
 				index++;
@@ -46,6 +46,7 @@ function updateTable(option,sortby){
 					'<td>'+date.toDateString().split(' ')[0]+'</td>'+
 					'<td>'+date.toString().split(' ')[4]+'</td>'+
 					'<td>Reject</td>'+
+					'<td>'+
 					'</tr>'
 				)
 				index++;
@@ -75,6 +76,9 @@ function reqListStudent(id){
 			}
 			Promise.all([accept,reject].map(Promise.all,Promise)).then(data=>{
 				listConferenceObj[index].accept = data[0].sort(function(a,b){return (a.grade<b.grade)?-1:1})
+				for(let i in data[1]){
+					data[1][i]['reason'] = listConferenceObj[index].reject[i].reason
+				}
 				listConferenceObj[index].reject = data[1].sort(function(a,b){return (a.grade<b.grade)?-1:1})
 				res()
 			})
