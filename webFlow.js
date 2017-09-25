@@ -231,6 +231,7 @@ module.exports=function(app,db){
         addPugPage("adminStudentAttendanceModifier",options);
         addPugPage("adminAllstudent",options);
         addPage("adminStudentProfileQ4",options);
+        addPugPage("adminConference",options);
         addPugPage("adminCourseRoom",options);
         addPugPage("adminCourseTable",options);
         addPugPage("adminStudentprofile",options);
