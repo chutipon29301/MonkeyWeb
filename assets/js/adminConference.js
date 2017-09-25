@@ -36,11 +36,11 @@ function updateTable(option,sortby,byname){
 		})
 	}
 	if(option == 'accept'){
-		updateTable('all')
+		updateTable('all','',byname)
 		body.children('.reject').hide()
 	}
 	if(option == 'reject'){
-		updateTable('all')
+		updateTable('all','',byname)
 		body.children('.accept').hide()	
 	}
 	if(option == 'all'){
