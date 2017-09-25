@@ -46,7 +46,7 @@ function updateTable(option,sortby){
 					'<td>'+date.toDateString().split(' ')[0]+'</td>'+
 					'<td>'+date.toString().split(' ')[4]+'</td>'+
 					'<td>Reject</td>'+
-					'<td>'+
+					'<td>'+listConferenceObj[i].reject[j].reason+'</td>'+
 					'</tr>'
 				)
 				index++;
