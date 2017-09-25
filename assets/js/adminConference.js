@@ -16,7 +16,7 @@ $(document).ready(function(){
 				return (time1.getDay()<time2.getDay())?1:(time1.getDay() == time2.getDay() && time1.getHours()>time2.getHours())?1:-1;
 			})
 			
-			updateTable('all','time','all')
+			updateTable($('#filter').val(),$('#sortby').val(),$('#byname').val())
 		})
 	})
 	$('#filter,#sortby,#byname').change(function(){
