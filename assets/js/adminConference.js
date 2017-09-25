@@ -34,11 +34,11 @@ function updateTable(option,sortby){
 	}
 	if(option == 'accept'){
 		updateTable('all')
-		body.children('.active').hide()
+		body.children('.reject').hide()
 	}
 	if(option == 'reject'){
 		updateTable('all')
-		body.children('.reject').hide()	
+		body.children('.accept').hide()	
 	}
 	if(option == 'all'){
 		let index = 1
