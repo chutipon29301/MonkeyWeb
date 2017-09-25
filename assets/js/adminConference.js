@@ -64,8 +64,8 @@ function updateTable(option,sortby,byname){
 				for(let j in listConferenceObj[i].reject){
 					body.append('<tr class="active reject" name="'+listConferenceObj[i].reject[j].id+'">'+
 						'<td>'+index+'</td>'+
-						'<td>'+listConferenceObj[i].accept[j].firstname+'('+listConferenceObj[i].accept[j].nickname+')'+listConferenceObj[i].accept[j].lastname+'</td>'+
-						'<td>'+(listConferenceObj[i].accept[j].grade>6?'ม.'+(listConferenceObj[i].accept[j].grade-6):'ป.'+listConferenceObj[i].accept[j].grade)+'</td>'+
+						'<td>'+listConferenceObj[i].reject[j].firstname+'('+listConferenceObj[i].reject[j].nickname+')'+listConferenceObj[i].reject[j].lastname+'</td>'+
+						'<td>'+(listConferenceObj[i].reject[j].grade>6?'ม.'+(listConferenceObj[i].reject[j].grade-6):'ป.'+listConferenceObj[i].reject[j].grade)+'</td>'+
 						'<td>'+listConferenceObj[i].name+'</td>'+
 						'<td>'+date.toDateString().split(' ')[0]+'</td>'+
 						'<td>'+date.toString().split(' ')[4]+'</td>'+
