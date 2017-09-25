@@ -17,6 +17,12 @@ block body
                         option(value="reject") Reject
             form.col-sm-2
                 .form-group
+                    label &nbsp;
+                    select.form-control#byname(style="margin-bottom: 5px")
+                        option(value="all") All
+                        
+            form.col-sm-2
+                .form-group
                     label Sort:
                     select.form-control#sortby(style="margin-bottom: 5px")
                         option(value="time") By time
