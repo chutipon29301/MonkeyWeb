@@ -7,14 +7,18 @@ $(document).ready(function(){
 			promise.push(reqListStudent(data[i].conferenceID))
 		}
 		Promise.all(promise).then(()=>{
-			listConferenceObj.sort(function(a,b){return (a.name>b.name)?1:-1})
+			listConferenceObj.sort(function(a,b){
+				let time1 = new Date(a.day)
+				let time2 = new Date(b.day)
+				return (time1.getDay()<time2.getDay())?1:(time1.getDay() == time2.getDay() && time1.getHours()>time2.getHours())?1:-1;
+			})
 			console.log(listConferenceObj)
 			updateTable('all')
 		})
 	})
 })
 
-function updateTable(option){
+function updateTable(option,sortby){
 	let body = $('#tablebody')
 	if(option == 'all'){
 		let index = 1
