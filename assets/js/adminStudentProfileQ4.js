@@ -299,10 +299,10 @@ function upPic() {
     }
 }
 // upload receipt
-function upReciept(quarter) {
+function upReciept() {
     //noinspection JSUnresolvedVariable
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
-    let ufile = ((quarter === "quarter") ? $('#file-2') : $('#file-3'));
+    let ufile = $('#file-2');
     let ext = ufile.val().split('.').pop().toLowerCase();
     if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
         alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
