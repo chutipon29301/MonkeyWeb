@@ -202,7 +202,7 @@ module.exports=function(app,db){
             delete options.middlewareOptions.quarter;
         delete options.middlewareOptions.studentStatus;
     options.middlewareOptions.position={$ne:"student"};
-        addPage("editAbsent",options);
+        // addPage("editAbsent",options);
         addPugPage("adminHome",options);
         addPugPage("adminAllcourse",options);
         addPugPage("adminCoursedescription",options);

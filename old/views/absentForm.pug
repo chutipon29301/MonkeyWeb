@@ -3,71 +3,39 @@ block head
     -const pageTitle = "Absent Form"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/student.min.js")
     script(src="js/studentAbsentForm.js")
     style.
-        .btn1,.btn2,.btn3,.btn4{
-            margin-bottom:3vh;
+        .btn-default{
+            margin-bottom:25px;
         }
 block body
     .jumbotron
         .container
             h2 แบบฟอร์มลา
-            p แบบฟอร์มสำหรับการลาเรียน Monkey
+            p#pageHead
     .container
-        .row
-            .col-sm-12
-                h4#name: span.glyphicon.glyphicon-user
-                p(style="color:red") เลือกวันที่ต้องการลาจากปฏิธินด้านล่างแล้วกดยืนยัน
-                br
-        .table-responsive
-            table.table.table-bordered
-                thead
-                    tr
-                        th.text-center#prevMonth: span.glyphicon.glyphicon-chevron-left
-                        th#monthTable.text-center(colspan="5") Month
-                        th.text-center#nextMonth: span.glyphicon.glyphicon-chevron-right
-                    tr
-                        th.danger.text-center SUN
-                        th.text-center MON
-                        th.text-center TUE
-                        th.text-center WED
-                        th.text-center THU
-                        th.text-center FRI
-                        th.info.text-center SAT
-                tbody#tableBody
-    .container
-        hr
         .form-group
-            label วันที่ลา:
-            .input-group.date.datePicker#datetimepicker1
-                input.form-control(type='text')
-                span.input-group-addon
-                    i.glyphicon.glyphicon-calendar
-            br
-        label วิชาที่ลา:
+            label.control-label วันที่ต้องการลา:
+            input.form-control#datePicker(type="text")
+        .row
+            .col-xs-12
+                label วิชา:
         .row
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn1.disabled(type='button') -
+                button.col-xs-12.btn.btn-default.selector#btn8 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn2.disabled(type='button') -
+                button.col-xs-12.btn.btn-default.selector#btn10 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn3.disabled(type='button') -
+                button.col-xs-12.btn.btn-default.selector#btn13 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn4.disabled(type='button') -
-        .form-group
-            label ผู้แจ้ง:
-            input.form-control#contact(type="text")
-        .form-group
-            label เหตุผล:
-            textarea.form-control#reason(rows='3')
-        button.btn.btn-default.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9#submit(type="button") ยืนยัน
-        .modal.fade#confirmModal(role="dialog")
-                .modal-dialog
-                    .modal-content
-                        .modal-header
-                            h3 ลา
-                        .modal-body
-                        .modal-footer
-                            button#confirm.btn.btn-success(type="button" onClick="sendData()") ใช่
-                            button.btn.btn-danger(type="button" data-dismiss="modal") ไม่ใช่
+                button.col-xs-12.btn.btn-default.selector#btn15 &nbsp;
+        form
+            .form-group
+                label เหตุผล:
+                input.form-control(type="text")
+            .form-group
+                label ผู้แจ้ง:
+                input.form-control(type="text")
+        .row
+            .col-xs-3.col-xs-offset-9.col-sm-1.col-sm-offset-11
+                button.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน
