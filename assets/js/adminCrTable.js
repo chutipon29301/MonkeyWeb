@@ -48,8 +48,8 @@ function sendLevel() {
 function genTable(allLevel, i) {
     if (i >= allLevel.length) return;
     let position = allLevel[i] - 1;
-    $.post("post/gradeCourse", { grade: allLevel[i] }).then((allCr) => {
-        $.post("post/listCourseSuggestion", { grade: allLevel[i] }).then((suggCr) => {
+    $.post("post/gradeCourse", { grade: allLevel[i], year: year, quarter: quarter }).then((allCr) => {
+        $.post("post/listCourseSuggestion", { grade: allLevel[i], year: year, quarter: quarter }).then((suggCr) => {
             //init column
             for (let j = 0; j < suggCr.course.length; j++) {
                 $("#sat8").append("<td style='text-align: center' id=" + allLevel[i] + 'sat8' + (j + 1) + "></td>");

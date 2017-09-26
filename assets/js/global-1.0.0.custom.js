@@ -83,7 +83,7 @@ const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const registrationState = (studentID, quarter) => {
+const registrationState = (studentID, quarter, year) => {
     if (quarter === undefined) {
         return $.post("post/registrationState", {
             studentID: studentID
@@ -91,7 +91,8 @@ const registrationState = (studentID, quarter) => {
     } else {
         return $.post("post/registrationState", {
             studentID: studentID,
-            quarter: quarter
+            quarter: quarter,
+            year: year
         });
     }
 }
@@ -194,7 +195,7 @@ function clearAllCookie() {
  */
 function loadRegistrationPage() {
     let cookie = getCookieDict();
-    registrationState(cookie.monkeyWebUser).then((data) => {
+    registrationState(cookie.monkeyWebUser, 4, 2017).then((data) => {
         if (data.err) {
             log("[loadRegistrationPage()] : post/registrationState => " + data.err);
         } else {
@@ -202,8 +203,8 @@ function loadRegistrationPage() {
             log(data);
             switch (data.registrationState) {
                 case "unregistered":
-                    log("[loadRegistrationPage()] : redirection to registrationName");
-                    self.location = "/registrationName";
+                    log("[loadRegistrationPage()] : redirection to registrationCourse");
+                    self.location = "/registrationCourse";
                     break;
                 case "untransferred":
                 case "rejected":

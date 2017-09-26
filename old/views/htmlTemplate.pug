@@ -18,7 +18,7 @@ html(lang="en")
         script(src="/js/bootstrap.min.js")
         script(src="/js/ui-bootstrap-2.5.0.min.js")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
-        script(type="text/javascript" src="/js/global-1.0.0.custom.min.js")
+        script(type="text/javascript" src="/js/global-1.0.0.custom.js")
         block head
         title= pageTitle?pageTitle:"Monkey-Monkey Official Website"
     body
@@ -38,13 +38,7 @@ html(lang="en")
                     #navbar.collapse.navbar-collapse
                         ul.nav.navbar-nav
                             if(webUser.position=="student")
-                                //- li: a(href="/registrationCourse") ลงทะเบียน CR60Q4
-                                //- li.dropdown
-                                    a.dropdown-toggle(data-toggle="dropdown" href="#") ลงทะเบียน 
-                                        span.caret
-                                    ul.dropdown-menu
-                                        li: a(href="/registrationCourse") CR60Q4
-                                        //- li: a(href="#" onClick="loadSummerRegistrationPage()") CR60OCT
+                                //- li: a(href="#" onClick="loadRegistrationPage()") ลงทะเบียน CR60Q4
                                 //- li.dropdown
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") อัปโหลดใบโอน 
                                         span.caret
@@ -61,13 +55,14 @@ html(lang="en")
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") แบบฟอร์ม
                                         span.caret
                                     ul.dropdown-menu
-                                        li: a(href="summerAbsentForm") ลาCR60OCT
-                                        //- li: a(href="absentForm") ลา
+                                        //- li: a(href="summerAbsentForm") ลาCR60OCT
+                                        li: a(href="absentForm") ลา
                                         //- li: a(href="addForm") เพิ่ม
                             else
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminAllStudent") All Student
                                 li: a(href="/tutorCommentStudent") Comments
+                                 li: a(href="/adminConference") Conference
                                 if(webUser.position=="tutor")
                                     li: a(href="/adminAllCourse") My Course
                                 else

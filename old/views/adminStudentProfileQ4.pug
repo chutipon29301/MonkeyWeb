@@ -1,0 +1,214 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Admin Student Profile CR60Q4"
+    link(href="css/component.css", rel="stylesheet")
+    //- script(src="js/JsBarcode.code128.min.js" type="text/javascript")
+    script(src="js/adminStudentProfileQ4.js")
+block body
+    //- div(hidden="true")
+    //-     img#mathImg
+    //-     img#phyImg
+    //-     canvas#mathBarcode
+    //-     canvas#phyBarcode
+    .container
+        .row
+            .col-sm-6
+                .row
+                    img.img-responsive.col-sm-6#profilePic(src="images/noImage.svg")
+                .row
+                    .col-sm-12
+                        h2#studentName
+                        h2#studentNameEng
+                        h3#studentLevel
+                        h4#studentID
+                        h4#studentStateCr
+                        h4#studentStatus
+                        h4#email
+                        h4#phone
+            .col-sm-6(align="right")
+                .row
+                    img.img-responsive.col-sm-12#imgTrans(src="images/noImage.svg")
+                .row
+                    br
+                    .col-sm-12.text-right
+                        .btn-group
+                            button.btn.btn-success#finishedBtn(type="button" onClick="setRegistrationState('finished','quarter');") Finished
+                            button.btn.btn-danger#pendingBtn(type="button" onClick="setRegistrationState('pending','quarter');") Pending
+        br
+        .table-responsive
+            table.table.table-bordered#courseTable
+                thead
+                    tr
+                        th.col-sm-2.text-center
+                        th.col-sm-2.text-center TUE
+                        th.col-sm-2.text-center THU
+                        th.col-sm-2.text-center SAT
+                        th.col-sm-2.text-center SUN
+                tbody
+                    tr
+                        th.text-center 8:00-10:00
+                        td
+                            button.btn.btn-disable.col-sm-12#-169200000(type="button") &nbsp;
+                        td
+                            button.btn.btn-disable.col-sm-12#3600000(type="button") &nbsp;
+                        td
+                            button.btn.btn-default.col-sm-12#176400000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        td
+                            button.btn.btn-default.col-sm-12#262800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                    tr
+                        th.text-center 10:00-12:00
+                        td
+                            button.btn.btn-disable.col-sm-12#-162000000(type="button") &nbsp;
+                        td
+                            button.btn.btn-disable.col-sm-12#10800000(type="button") &nbsp;
+                        td
+                            button.btn.btn-default.col-sm-12#183600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        td
+                            button.btn.btn-default.col-sm-12#270000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                    tr
+                        th.text-center 13:00-15:00
+                        td
+                            button.btn.btn-disable.col-sm-12#-151200000(type="button") &nbsp;
+                        td
+                            button.btn.btn-disable.col-sm-12#21600000(type="button") &nbsp;
+                        td
+                            button.btn.btn-default.col-sm-12#194400000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        td
+                            button.btn.btn-default.col-sm-12#280800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                    tr
+                        th.text-center 15:00-17:00
+                        td
+                            button.btn.btn-disable.col-sm-12#-144000000(type="button") &nbsp;
+                        td
+                            button.btn.btn-disable.col-sm-12#28800000(type="button") &nbsp;
+                        td
+                            button.btn.btn-default.col-sm-12#201600000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        td
+                            button.btn.btn-default.col-sm-12#288000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                    tr
+                        th.text-center 15:00-17:00
+                        td
+                            button.btn.btn-default.col-sm-12#-136800000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        td
+                            button.btn.btn-default.col-sm-12#36000000(type="button" onClick="addRemoveCourse(this.id);") Add Course
+                        td
+                            button.btn.btn-disable.col-sm-12#208800000(type="button") &nbsp;
+                        td
+                            button.btn.btn-disable.col-sm-12#295200000(type="button") &nbsp;
+        .row
+            .col-sm-12.text-right
+                .btn-group
+                    button.btn.btn-success#approveBtn(type="button" onClick="setRegistrationState('approved', 'quarter');") Approve Table
+                    button.btn.btn-danger#rejectBtn(type="button" onClick="setRegistrationState('rejected', 'quarter');") Reject Table
+        //- Modal for remove course
+        .modal.fade#removeModal(role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h1 Remove Course
+                    .modal-body
+                        h4
+                            |Are you sure to delete
+                            span#courseName
+                            |&nbsp;?
+                    .modal-footer
+                        button#confirmDelete.btn.btn-danger(type="button" onClick="removeCourse();") Yes
+                        button.btn.btn-default(type="button" data-dismiss="modal") No
+        //- Modal for addCourse
+        .modal.fade#addModal(role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h1 Add Course
+                    .modal-body.form-group
+                        select.form-control#courseSelector
+                    .modal-footer
+                        button.btn.btn-primary(type="button" onClick="addCourse();") Confirm
+                        button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+        //- Modal for uploadProfile Picture
+        .modal.fade#profileModal(role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4 เปลี่ยนรูปประจำตัว
+                    .modal-body.form-group
+                        .box(align="center")
+                            input#file-1.inputfile.inputfile-1(
+                                type="file"
+                                name="file-1[]"
+                                style="opacity: 0;height: 0;"
+                                data-multiple-caption="{count} files selected"
+                            )
+                            label(for="file-1")
+                                svg(xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17")
+                                    path(d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z")
+                                span เลือกรูป
+                    .modal-footer
+                        button.btn.btn-primary(type="button" onClick="upPic();") OK
+                        button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+        //- Modal for uploadReciept Picture
+        .modal.fade#rcModal(role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4 เปลี่ยนรูปใบโอน Course
+                    .modal-body.form-group
+                        .box(align="center")
+                            input#file-2.inputfile.inputfile-1(
+                                type="file"
+                                name="file-1[]"
+                                style="opacity: 0;height: 0;"
+                                data-multiple-caption="{count} files selected"
+                            )
+                            label(for="file-2")
+                                svg(xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17")
+                                    path(d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z")
+                                span เลือกรูป
+                    .modal-footer
+                        button.btn.btn-primary(type="button" onClick="upReciept();") OK
+                        button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+        script.
+            $(document).ready(function () {
+                $('#profilePic').click(function () {
+                    $('#profileModal').modal();
+                });
+                $('#imgTrans').click(function () {
+                    $('#rcModal').modal();
+                });
+                $('#smTrans').click(function () {
+                    $('#smRcModal').modal();
+                });
+                $('#math,#phy').attr("class", "btn btn-default disabled");
+                $('#math,#phy').prop("disabled", true);
+                getStudentProfile();
+                // showReceipt();
+                // showComment();
+            });
+            function downloadCanvas(subj) {
+                let sID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+                let canvas = document.getElementById(subj + "Canvas"), ctx = canvas.getContext("2d");
+                let dlImg = canvas.toDataURL();
+                let aref = document.createElement('a');
+                aref.href = dlImg;
+                var text = ""
+                switch (subj) {
+                    case "math":
+                        text = sID + "1.png"
+                        break;
+                    case "phy":
+                        text = sID + "2.png"
+                        break;
+                    case "summer":
+                        text = sID + "oct.png"
+                        break;
+                    default:
+                        break;
+                }
+                aref.download = text;
+                document.body.appendChild(aref);
+                aref.click();
+            }
+            function editProfile() {
+                $("#editModal").modal();
+            }
+        script(src="js/custom-file-input.js")
