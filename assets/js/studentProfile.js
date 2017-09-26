@@ -94,15 +94,15 @@ function fillTableCr(cr, index) {
     if (index < cr.length) {
         $.post("post/courseInfo", { courseID: cr[index] }, function (data) {
             if (data.quarter == $("#qList").val().slice($("#qList").val().indexOf("-") + 2)) {
-                log(data);
+                // log(data);
                 let time = moment(data.day).hour();
-                log(time);
+                // log(time);
                 let dow = moment(data.day).day();
-                log(dayOfWeek[dow]);
+                // log(dayOfWeek[dow]);
                 $.post("post/name", { userID: data.tutor[0] }, function (name) {
                     if (name.nicknameEn !== "Hybrid") {
                         $("." + dayOfWeek[dow] + "-" + time).html(data.courseName + " (" + name.nicknameEn + ")").addClass("cr")
-                    }else{
+                    } else {
                         $("." + dayOfWeek[dow] + "-" + time).html(data.courseName + " (HB)").addClass("cr")
                     }
                     fillTableCr(cr, index + 1);
@@ -127,13 +127,13 @@ function fillTableFhb(ID) {
 function fillTableSk(ID) {
     let currentQ = $("#qList").val().slice($("#qList").val().indexOf("-") + 2);
     $.post("post/v1/listStudentSkill", { year: year, quarter: currentQ, studentID: ID }, function (sk) {
-        // log(sk)
-        log(moment(sk[0].day).format("DD/MM HH:mm"))
+        log(sk)
+        // log(moment(sk[0].day).format("DD/MM HH:mm"))
         for (let i = 0; i < sk.length; i++) {
             let time = moment(sk[i].day).hour();
             let dow = moment(sk[i].day).day();
             // log(skillTime(time))
-            $("." + dayOfWeek[dow] + "-" + skillTime(time)).html("SKILL: " + sk[i].subject).addClass("sk")
+            $("." + dayOfWeek[dow] + "-" + skillTime(time)).html("SKILL: " + sk[i].subject + " (" + moment(sk[i].day).format("HH:mm") + ")").addClass("sk")
         }
     })
 }
