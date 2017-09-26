@@ -1,6 +1,7 @@
 var listConferenceObj = []
 $(document).ready(function(){
 	deleteCookie('monkeyWebAdminAllstudentSelectedUser')
+	$('#student').hide()
 	$.post('post/listConference',{},(data)=>{
 		let promise = []
 		for(i in data){
@@ -15,8 +16,8 @@ $(document).ready(function(){
 				let time2 = new Date(b.day)
 				return (time1.getDay()<time2.getDay())?1:(time1.getDay() == time2.getDay() && time1.getHours()>time2.getHours())?1:-1;
 			})
-			
 			updateTable($('#filter').val(),$('#sortby').val(),$('#byname').val())
+			updateList()
 		})
 	})
 	$('#filter,#sortby,#byname').change(function(){
@@ -35,19 +36,11 @@ function updateTable(option,sortby,byname){
 			return (time1.getDay()<time2.getDay())?1:(time1.getDay() == time2.getDay() && time1.getHours()>time2.getHours())?1:-1;
 		})
 	}
-	if(option == 'accept'){
-		updateTable('all','',byname)
-		body.children('.reject').hide()
-	}
-	if(option == 'reject'){
-		updateTable('all','',byname)
-		body.children('.accept').hide()	
-	}
-	if(option == 'all'){
-		let index = 1
-		for(let i in listConferenceObj){
-			if(listConferenceObj[i].name == byname || byname == 'all'){
-				let date = new Date(listConferenceObj[i].day)
+	let index = 1
+	for(let i in listConferenceObj){
+		if(listConferenceObj[i].name == byname || byname == 'all'){
+			let date = new Date(listConferenceObj[i].day)
+			if(option == 'accept' || option == 'all'){
 				for(let j in listConferenceObj[i].accept){
 					body.append('<tr class="accept" name="'+listConferenceObj[i].accept[j].id+'">'+
 						'<td>'+index+'</td>'+
@@ -61,6 +54,8 @@ function updateTable(option,sortby,byname){
 					)
 					index++;
 				}
+			}
+			if(option == 'reject' || option == 'all'){
 				for(let j in listConferenceObj[i].reject){
 					body.append('<tr class="active reject" name="'+listConferenceObj[i].reject[j].id+'">'+
 						'<td>'+index+'</td>'+
@@ -77,12 +72,13 @@ function updateTable(option,sortby,byname){
 				}
 			}
 		}
-		$('tbody').children().click(function(){
-			console.log($(this).attr('name'))
-			writeCookie('monkeyWebAdminAllstudentSelectedUser',$(this).attr('name'))
-			self.location = 'adminStudentProfile'
-		})
 	}
+	$('#tablebody').children().click(function(){
+		console.log($(this).attr('name'))
+		writeCookie('monkeyWebAdminAllstudentSelectedUser',$(this).attr('name'))
+		self.location = 'adminStudentProfile'
+	})
+
 }
 
 function reqListStudent(id){
@@ -118,5 +114,37 @@ function reqProfile(id){
 			data['id'] = (""+id);
 			resolve(data);
 		})
+	})
+}
+
+function updateList(){
+	let allaccept = 0
+	let allreject = 0
+	let index = 1;
+	for(let i in listConferenceObj){
+		allaccept += listConferenceObj[i].accept.length
+		allreject += listConferenceObj[i].reject.length
+		let time = new Date(listConferenceObj[i].day)
+		console.log(time)
+		$('#conferencename').append(
+			'<tr name="'+listConferenceObj[i].name+'">'+
+			'<td>'+index+'</td>'+
+			'<td>'+listConferenceObj[i].name+'</td>'+
+			'<td>'+listConferenceObj[i].accept.length+'</td>'+
+			'<td>'+listConferenceObj[i].reject.length+'</td>'+
+			'<td>'+(time.getDay() == 0?'01/10/2017':'30/09/2017')+'</td>'+
+			'<td>'+(time.getDay() == 0?'Sun':'Sat')+'</td>'+
+			'<td>'+time.toString().split(' ')[4]+'</td>'+
+			'</tr>'
+		)
+		index++;
+	}
+	$('#allaccept').html(allaccept)
+	$('#allreject').html(allreject)
+	$('#conferencename').children().click(function(){
+		$('#byname').val($(this).attr('name'))
+		$('#list').hide()
+		$('#student').show()
+		updateTable($('#filter').val(),$('#sortby').val(),$('#byname').val())
 	})
 }
