@@ -43,13 +43,14 @@ function updateTable(option,sortby,byname){
 			if(option == 'accept' || option == 'all'){
 				for(let j in listConferenceObj[i].accept){
 					body.append('<tr class="accept" name="'+listConferenceObj[i].accept[j].id+'">'+
-						'<td>'+index+'</td>'+
+						'<td><div class="text-center">'+index+'</div></td>'+
+						'<td><div class="text-center">'+listConferenceObj[i].accept[j].id+'</div></td>'+
 						'<td>'+listConferenceObj[i].accept[j].firstname+'('+listConferenceObj[i].accept[j].nickname+')'+listConferenceObj[i].accept[j].lastname+'</td>'+
-						'<td>'+(listConferenceObj[i].accept[j].grade>6?'ม.'+(listConferenceObj[i].accept[j].grade-6):'ป.'+listConferenceObj[i].accept[j].grade)+'</td>'+
-						'<td>'+listConferenceObj[i].name+'</td>'+
-						'<td>'+date.toDateString().split(' ')[0]+'</td>'+
-						'<td>'+date.toString().split(' ')[4]+'</td>'+
-						'<td>Accept</td><td>&nbsp;</td>'+
+						'<td><div class="text-center">'+(listConferenceObj[i].accept[j].grade>6?'ม.'+(listConferenceObj[i].accept[j].grade-6):'ป.'+listConferenceObj[i].accept[j].grade)+'</div></td>'+
+						'<td><div class="text-center">'+listConferenceObj[i].name+'</div></td>'+
+						'<td><div class="text-center">'+date.toDateString().split(' ')[0]+'</div></td>'+
+						'<td><div class="text-center">'+date.toString().split(' ')[4]+'</div></td>'+
+						'<td><div align="center">✔</div></td><td>&nbsp;</td>'+
 						'</tr>'
 					)
 					index++;
@@ -58,13 +59,14 @@ function updateTable(option,sortby,byname){
 			if(option == 'reject' || option == 'all'){
 				for(let j in listConferenceObj[i].reject){
 					body.append('<tr class="active reject" name="'+listConferenceObj[i].reject[j].id+'">'+
-						'<td>'+index+'</td>'+
+						'<td><div class="text-center">'+index+'</div></td>'+
+						'<td><div class="text-center">'+listConferenceObj[i].reject[j].id+'</div></td>'+
 						'<td>'+listConferenceObj[i].reject[j].firstname+'('+listConferenceObj[i].reject[j].nickname+')'+listConferenceObj[i].reject[j].lastname+'</td>'+
-						'<td>'+(listConferenceObj[i].reject[j].grade>6?'ม.'+(listConferenceObj[i].reject[j].grade-6):'ป.'+listConferenceObj[i].reject[j].grade)+'</td>'+
-						'<td>'+listConferenceObj[i].name+'</td>'+
-						'<td>'+date.toDateString().split(' ')[0]+'</td>'+
-						'<td>'+date.toString().split(' ')[4]+'</td>'+
-						'<td>Reject</td>'+
+						'<td><div class="text-center">'+(listConferenceObj[i].reject[j].grade>6?'ม.'+(listConferenceObj[i].reject[j].grade-6):'ป.'+listConferenceObj[i].reject[j].grade)+'</div></td>'+
+						'<td><div class="text-center">'+listConferenceObj[i].name+'</div></td>'+
+						'<td><div class="text-center">'+date.toDateString().split(' ')[0]+'</div></td>'+
+						'<td><div class="text-center">'+date.toString().split(' ')[4]+'</div></td>'+
+						'<td><div align="center">✖</div></td>'+
 						'<td>'+listConferenceObj[i].reject[j].reason+'</td>'+
 						'</tr>'
 					)
@@ -128,13 +130,13 @@ function updateList(){
 		console.log(time)
 		$('#conferencename').append(
 			'<tr name="'+listConferenceObj[i].name+'">'+
-			'<td>'+index+'</td>'+
-			'<td>'+listConferenceObj[i].name+'</td>'+
-			'<td>'+listConferenceObj[i].accept.length+'</td>'+
-			'<td>'+listConferenceObj[i].reject.length+'</td>'+
-			'<td>'+(time.getDay() == 0?'01/10/2017':'30/09/2017')+'</td>'+
-			'<td>'+(time.getDay() == 0?'Sun':'Sat')+'</td>'+
-			'<td>'+time.toString().split(' ')[4]+'</td>'+
+			'<td><div class="text-center">'+index+'</div></td>'+
+			'<td><div class="text-center">'+listConferenceObj[i].name+'</div></td>'+
+			'<td><div class="text-center">'+listConferenceObj[i].accept.length+'</div></td>'+
+			'<td><div class="text-center">'+listConferenceObj[i].reject.length+'</div></td>'+
+			'<td><div class="text-center">'+(time.getDay() == 0?'01/10/2017':'30/09/2017')+'</div></td>'+
+			'<td><div class="text-center">'+(time.getDay() == 0?'Sun':'Sat')+'</div></td>'+
+			'<td><div class="text-center">'+time.toString().split(' ')[4]+'</div></td>'+
 			'</tr>'
 		)
 		index++;
