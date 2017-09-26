@@ -29,10 +29,12 @@ block body
                 .row
                     img.img-responsive.col-sm-12#imgTrans(src="images/noImage.svg")
                 .row
+                    br
                     .col-sm-12.text-right
                         .btn-group
                             button.btn.btn-success(type="button" onClick="setRegistrationState('finished','quarter');") Finished
                             button.btn.btn-danger(type="button" onClick="setRegistrationState('pending','quarter');") Pending
+        br
         .table-responsive
             table.table.table-bordered#courseTable
                 thead
@@ -209,3 +211,4 @@ block body
             function editProfile() {
                 $("#editModal").modal();
             }
+        script(src="js/custom-file-input.js")
