@@ -94,7 +94,7 @@ function getStudentProfile() {
                 let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
                 document.getElementById(serverTime).innerHTML = "SKILL : " + table.skill[i].subject;
                 document.getElementById(serverTime).value = table.skill[i].skillID
-                document.getElementById(serverTime).className = "btn btn-primary col-sm-12";
+                document.getElementById(serverTime).className = "btn btn-info col-sm-12";
             }
         });
     });
