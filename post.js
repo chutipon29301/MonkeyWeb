@@ -2455,7 +2455,7 @@ module.exports=function(app,db){
                 var startTime = querryObject.day;
                 delete querryObject.day
                 querryObject.day = {
-                    $gte: startTime, $lte: date.getTime()
+                    $gte: startTime, $lt: date.getTime()
                 }
             }
 
