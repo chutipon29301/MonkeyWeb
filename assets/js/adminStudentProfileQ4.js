@@ -47,6 +47,26 @@ function getStudentProfile() {
 
         if (courseStage !== undefined) {
             document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + courseStage;
+            switch (courseStage) {
+                case "approved":
+                    document.getElementById("approveBtn").className += " disabled";
+                    break;
+                case "rejected":
+                    document.getElementById("rejectBtn").className += " disabled";
+                    break;
+                case "pending":
+                    document.getElementById("approveBtn").className += " disabled";
+                    document.getElementById("rejectBtn").className += " disabled";
+                    document.getElementById("pendingBtn").className += " disabled";
+                    break;
+                case "finished":
+                    document.getElementById("approveBtn").className += " disabled";
+                    document.getElementById("rejectBtn").className += " disabled";
+                    document.getElementById("finishedBtn").className += " disabled";
+                    break;
+                default:
+                    break;
+            }
         }
 
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;

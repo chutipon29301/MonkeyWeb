@@ -32,8 +32,8 @@ block body
                     br
                     .col-sm-12.text-right
                         .btn-group
-                            button.btn.btn-success(type="button" onClick="setRegistrationState('finished','quarter');") Finished
-                            button.btn.btn-danger(type="button" onClick="setRegistrationState('pending','quarter');") Pending
+                            button.btn.btn-success#finishedBtn(type="button" onClick="setRegistrationState('finished','quarter');") Finished
+                            button.btn.btn-danger#pendingBtn(type="button" onClick="setRegistrationState('pending','quarter');") Pending
         br
         .table-responsive
             table.table.table-bordered#courseTable
@@ -98,8 +98,8 @@ block body
         .row
             .col-sm-12.text-right
                 .btn-group
-                    button.btn.btn-success(type="button" onClick="setRegistrationState('approved', 'quarter');") Approve Table
-                    button.btn.btn-danger(type="button" onClick="setRegistrationState('rejected', 'quarter');") Reject Table
+                    button.btn.btn-success#approveBtn(type="button" onClick="setRegistrationState('approved', 'quarter');") Approve Table
+                    button.btn.btn-danger#rejectBtn(type="button" onClick="setRegistrationState('rejected', 'quarter');") Reject Table
         //- Modal for remove course
         .modal.fade#removeModal(role="dialog")
             .modal-dialog
