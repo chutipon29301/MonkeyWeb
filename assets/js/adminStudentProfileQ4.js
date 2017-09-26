@@ -70,7 +70,8 @@ function getStudentProfile() {
             }
             for (let i = 0; i < table.skill.length; i++) {
                 let localTime = new Date(parseInt(table.skill[i].day));
-                let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
+                let time = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours());
+                let serverTime = time.valueOf();
                 document.getElementById(serverTime).innerHTML = "SKILL : " + table.skill[i].subject;
                 document.getElementById(serverTime).value = table.skill[i].skillID
                 document.getElementById(serverTime).className = "btn btn-primary col-md-12";
