@@ -85,14 +85,27 @@ function getStudentProfile() {
             for (let i = 0; i < table.hybrid.length; i++) {
                 let localTime = new Date(parseInt(table.hybrid[i].day));
                 let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
-                document.getElementById(serverTime).innerHTML = "FHB : " + table.hybrid[i].subject;
-                document.getElementById(serverTime).value = table.hybrid[i].hybridID
-                document.getElementById(serverTime).className = "btn btn-primary col-sm-12";
+                var button = document.getElementById(serverTime);
+                if(button === undefined) {
+                    button = document.getElementById(table.hybrid[i].day);
+                }
+                button.innerHTML = "FHB : " + table.hybrid[i].subject;
+                button.value = table.hybrid[i].hybridID
+                button.className = "btn btn-primary col-sm-12";
             }
             for (let i = 0; i < table.skill.length; i++) {
+                let displayTime = new Date(parseInt(table.skill[i].day));
                 let localTime = new Date(parseInt(table.skill[i].day));
+                localTime.setMinutes(0);
+                if (localTime.getHours() === 9 || localTime.getHours() === 11 || localTime.getHours() === 14 || localTime.getHours() === 16) {
+                    localTime.setHours(localTime.getHours() - 1);
+                }
                 let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
-                document.getElementById(serverTime).innerHTML = "SKILL : " + table.skill[i].subject;
+                var button = document.getElementById(serverTime);
+                if(button === undefined) {
+                    button = document.getElementById(localTime.valueOf());
+                }
+                document.getElementById(serverTime).innerHTML = "SKILL : " + table.skill[i].subject + " " + displayTime.getHours() + ":" + ((displayTime.getMinutes() === 0) ? "00" : displayTime.getMinutes());
                 document.getElementById(serverTime).value = table.skill[i].skillID
                 document.getElementById(serverTime).className = "btn btn-info col-sm-12";
             }
