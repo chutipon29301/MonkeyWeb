@@ -3,9 +3,9 @@ block head
     -const pageTitle = "Absent Form"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/studentAbsentForm.js")
+    script(src="js/studentAbsentForm.min.js")
     style.
-        .btn-default{
+        .btn-default, .btn-success{
             margin-bottom:25px;
         }
 block body
@@ -32,10 +32,28 @@ block body
         form
             .form-group
                 label เหตุผล:
-                input.form-control(type="text")
+                input.form-control#reasonInput(type="text")
             .form-group
                 label ผู้แจ้ง:
-                input.form-control(type="text")
+                input.form-control#senderInput(type="text")
+        .row
+            label.col-xs-12 Summary:
+        .row
+            p.col-xs-12.col-sm-6#summaryMath
+            p.col-xs-12.col-sm-6#summaryPhy
+        .row.visible-xs
+            p.col-xs-12
+                span.glyphicon.glyphicon-record(style="color:green")
+                |&nbsp;จำนวนครั้งคงเหลือ
+            p.col-xs-12
+                span.glyphicon.glyphicon-record(style="color:red")
+                |&nbsp;จำนวนครั้งที่ลาไปแล้ว
+        .row.hidden-xs
+            p.col-sm-12
+                span.glyphicon.glyphicon-record(style="color:green")
+                |&nbsp;จำนวนครั้งคงเหลือ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                span.glyphicon.glyphicon-record(style="color:red")
+                |&nbsp;จำนวนครั้งที่ลาไปแล้ว
         .row
             .col-xs-3.col-xs-offset-9.col-sm-1.col-sm-offset-11
-                button.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน
+                button#submit.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน
