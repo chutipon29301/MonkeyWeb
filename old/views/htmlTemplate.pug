@@ -46,18 +46,14 @@ html(lang="en")
                                         li: a(href="/registrationReceipt") CR60Q4
                                         //- li: a(href="/summerReceipt") CR60OCT
                                 //- li.dropdown
-                                    a.dropdown-toggle(data-toggle="dropdown" href="#") Course
-                                        span.caret
-                                    ul.dropdown-menu
-                                        li.disabled: a(href="#") ลา
-                                        li.disabled: a(href="#") ชดเชย
-                                li.dropdown
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") แบบฟอร์ม
                                         span.caret
                                     ul.dropdown-menu
                                         //- li: a(href="summerAbsentForm") ลาCR60OCT
                                         li: a(href="absentForm") ลา CR&FHB
                                         //- li: a(href="addForm") เพิ่ม FHB
+                                li: a(href="/absentForm") ลา CR&FHB
+                                li: a(href="/addForm") เพิ่ม FHB
                             else
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminAllStudent") All Student
