@@ -97,6 +97,10 @@ function fillButt(course) {
         $("#btn13").addClass("disabled");
         $("#btn15").addClass("disabled");
     } else {
+        $("#btn8").html("8-10");
+        $("#btn10").html("10-12");
+        $("#btn13").html("13-15");
+        $("#btn15").html("15-17");
         for (let i = 0; i < course.length; i++) {
             let crDate = moment(course[i].day);
             if (crDate.day() == pickDate.day()) {
