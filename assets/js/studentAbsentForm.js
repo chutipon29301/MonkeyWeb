@@ -116,20 +116,20 @@ function fillTable(ID, fhb, cr) {
         for (let i in data.modifier) {
             if (data.modifier[i].reason == "addFHB:M") {
                 useM -= 1;
-                $("#presentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + " - <strong>MATH</strong></td></tr>");
+                $("#presentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + " - <strong>FHB:M</strong></td></tr>");
             } else if (data.modifier[i].reason == "addFHB:P") {
                 useP -= 1;
-                $("#presentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + "- <strong>PHYSIC</strong></td></tr>");
+                $("#presentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + "- <strong>FHB:P</strong></td></tr>");
             } else if (data.modifier[i].reason != "ลา" && data.modifier[i].reason != "เพิ่ม") {
                 for (let j = 0; j < fhb.length; j++) {
                     if (moment(fhb[j].day).hour() == moment(data.modifier[i].day).hour() && moment(fhb[j].day).day() == moment(data.modifier[i].day).day()) {
                         let str = "";
                         if (fhb[j].subject == "M") {
                             useM += 1;
-                            str = "MATH";
+                            str = "FHB:M";
                         } else {
                             useP += 1;
-                            str = "PHYSIC";
+                            str = "FHB:P";
                         }
                         $("#absentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + " - <strong>" + str + "</strong></td></tr>");
                     }
