@@ -3,9 +3,9 @@ block head
     -const pageTitle = "Absent Form"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/studentAbsentForm.js")
+    script(src="js/studentAbsentForm.min.js")
     style.
-        .btn-default{
+        .btn-default, .btn-success{
             margin-bottom:25px;
         }
 block body
@@ -32,10 +32,31 @@ block body
         form
             .form-group
                 label เหตุผล:
-                input.form-control(type="text")
+                input.form-control#reasonInput(type="text")
             .form-group
                 label ผู้แจ้ง:
-                input.form-control(type="text")
+                input.form-control#senderInput(type="text")
+        label ประวัติการลา/เพิ่ม
+
+        label(style="color:red") (ย้อนหลัง 3 เดือนจากวันที่เลือก)
+        .row
+            .col-xs-12.col-sm-6
+                p#mathSum
+            .col-xs-12.col-sm-6
+                p#phySum
+        .row
+            .col-xs-12.col-sm-6
+                .table-responsive
+                    table.table.table-bordered.table-striped
+                        thead
+                            tr: td.text-center.danger ลา
+                        tbody#absentTableBody
+            .col-xs-12.col-sm-6
+                .table-responsive
+                    table.table.table-bordered.table-striped
+                        thead
+                            tr: td.text-center.success เพิ่ม
+                        tbody#presentTableBody
         .row
             .col-xs-3.col-xs-offset-9.col-sm-1.col-sm-offset-11
-                button.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน
+                button#submit.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน

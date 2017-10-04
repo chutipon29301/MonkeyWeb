@@ -3,53 +3,62 @@ block head
     -const pageTitle = "Add Form"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/student.min.js")
     script(src="js/studentAddForm.min.js")
     style.
-        .btn1,.btn2,.btn3,.btn4{
-            margin-bottom:3vh;
+        .btn-default, .btn-success{
+            margin-bottom:25px;
+        }
+        .course{
+            color: black!important;
+            background-color: #FFC8EF!important;
         }
 block body
     .jumbotron
         .container
-            h2 แบบฟอร์มเพิ่ม
-            p แบบฟอร์มสำหรับการเพิ่มเรียน FHB
+            h2 แบบฟอร์มเพิ่ม FHB
     .container
-        h4#name
-            span.glyphicon.glyphicon-user
-        hr
         .form-group
-            label วันที่เพิ่ม:
-            .input-group.date.datePicker#datetimepicker1
-                input.form-control(type='text')
-                span.input-group-addon
-                    i.glyphicon.glyphicon-calendar
-            br
-        .form-group
-            label วิชา:
-            select.form-control#subj
-                option(value='FHBM') FHB:M
-                option(value='FHBP') FHB:P
-        label เวลาที่เพิ่ม:
+            label.control-label วันที่ต้องการเพิ่ม:
+            input.form-control#datePicker(type="text")
+        form
+            .form-group
+                label วิชา:
+                select.form-control#subjInput(type="text")
+                    option FHB:Math
+                    option FHB:Physic
+        .row
+            .col-xs-12
+                label เวลา:
         .row
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn1(type='button') 8.00-10.00
+                button.col-xs-12.btn.btn-default.selector#btn8 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn2(type='button') 10.00-12.00
+                button.col-xs-12.btn.btn-default.selector#btn10 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn3(type='button') 13.00-15.00
+                button.col-xs-12.btn.btn-default.selector#btn13 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn4(type='button') 15.00-17.00
-        .form-group
-            label ผู้แจ้ง:
-            input.form-control#contact(type="text")
-        button.btn.btn-info.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9#submit(type="button") ยืนยัน
-        .modal.fade#confirmModal(role="dialog")
-                .modal-dialog
-                    .modal-content
-                        .modal-header
-                            h3 เพิ่ม
-                        .modal-body
-                        .modal-footer
-                            button#confirm.btn.btn-success(type="button" onClick="sendData(0)") ใช่
-                            button.btn.btn-danger(type="button" data-dismiss="modal") ไม่ใช่
+                button.col-xs-12.btn.btn-default.selector#btn15 &nbsp;
+        form
+            .form-group
+                label ผู้แจ้ง:
+                input.form-control#senderInput(type="text")
+        label ประวัติการลา/เพิ่ม FHB
+        label(style="color:red") (ตั้งแต่ปัจจุบัน)
+        .row
+            .col-xs-12.col-sm-6
+                .table-responsive
+                    table.table.table-striped.table-bordered
+                        thead
+                            tr
+                                td.text-center.col-xs-6.danger ลา
+                        tbody#absentTableBody
+            .col-xs-12.col-sm-6
+                .table-responsive
+                    table.table.table-striped.table-bordered
+                        thead
+                            tr
+                                td.text-center.col-xs-6.success เพิ่ม
+                        tbody#presentTableBody
+        .row
+            .col-xs-3.col-xs-offset-9.col-sm-1.col-sm-offset-11
+                button#submit.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน
