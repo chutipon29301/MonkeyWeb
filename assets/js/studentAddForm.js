@@ -111,7 +111,7 @@ function fillTable(ID, fhb) {
             } else if (data.modifier[i].reason != "ลา" && data.modifier[i].reason != "เพิ่ม" && data.modifier[i].subject == "") {
                 for (let j = 0; j < fhb.length; j++) {
                     if (moment(fhb[j].day).hour() == moment(data.modifier[i].day).hour() && moment(fhb[j].day).day() == moment(data.modifier[i].day).day()) {
-                        let str = (fhb[j].subject == "M") ? "MATH" : "PHYSIC";
+                        let str = (fhb[j].subject == "M") ? "FHB:M" : "FHB:P";
                         $("#absentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + " " + str + "</td></tr>");
                     }
                 }
