@@ -52,7 +52,7 @@ $(document).ready(function () {
     })
     // add event when submit
     $("#submit").click(function () {
-        if ($(".btn-success").length < 0) {
+        if ($(".btn-success").length == 0) {
             alert("กรุณาเลือกเวลา");
         } else if (!($("#senderInput").val())) {
             alert("กรุณาใส่ชื่อผู้ส่ง");
