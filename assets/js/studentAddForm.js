@@ -1,3 +1,5 @@
+var nickname = "";
+var firstname = "";
 $(document).ready(function () {
     // get studentID
     let cookie = getCookieDict();
@@ -19,6 +21,8 @@ $(document).ready(function () {
         year = config.defaultQuarter.quarter.year;
         quarter = config.defaultQuarter.quarter.quarter;
         $.post("post/studentProfile", { studentID: ID }).done((profile) => {
+            nickname = profile.nickname;
+            firstname = profile.firstname;
             $.post("post/gradeCourse", { grade: profile.grade, year: year, quarter: quarter }).done((cr) => {
                 // log(cr)
                 for (let i = 0; i < profile.courseID.length; i++) {
@@ -69,9 +73,16 @@ $(document).ready(function () {
             }
             // log(day);
             if (confirm("ต้องการเพิ่ม " + $("#subjInput").val() + " เวลา " + moment(day[0]).format("HH:mm") + " วันที่ " + moment(day[0]).format("DD/MM/YYYY")) == true) {
-                $.post("post/addStudentAbsenceModifier", { studentID: ID, day: day, reason: "add" + $("#subjInput").val().slice(0, 5), sender: $("#senderInput").val() }).done((data) => {
-                    location.reload();
-                })
+                let str = "\n" + nickname + " " + firstname + "\n"
+                    + "เพิ่ม " + $("#subjInput").val().slice(0, 5) + "\n"
+                    + moment(day).format("DD/MM/YYYY รอบ HH:mm");
+                Promise.all([$.post("post/addStudentAbsenceModifier", { studentID: ID, day: day, reason: "add" + $("#subjInput").val().slice(0, 5), sender: $("#senderInput").val() }, (data) => { })
+                    , $.post("post/lineNotify", { recipient: "MonkeyAdmin", message: str }, () => { })]).then(() => {
+                        location.reload();
+                    })
+                // $.post("post/addStudentAbsenceModifier", { studentID: ID, day: day, reason: "add" + $("#subjInput").val().slice(0, 5), sender: $("#senderInput").val() }).done((data) => {
+                //     location.reload();
+                // })
             }
         }
     })

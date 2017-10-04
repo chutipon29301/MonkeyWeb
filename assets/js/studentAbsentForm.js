@@ -3,6 +3,8 @@ var useM = 0;
 var useP = 0;
 var maxM = 0;
 var maxP = 0;
+var firstname = "";
+var nickname = "";
 $(document).ready(function () {
     // get studentID
     let cookie = getCookieDict();
@@ -25,6 +27,8 @@ $(document).ready(function () {
         quarter = config.defaultQuarter.quarter.quarter;
         $("#pageHead").html("CR60Q" + config.defaultQuarter.quarter.quarter + " & FHB");
     }).then($.post("post/studentProfile", { studentID: ID }, (profile) => {
+        nickname = profile.nickname;
+        firstname = profile.firstname;
         let promise = [];
         for (let i in profile.courseID) {
             promise.push($.post("post/courseInfo", { courseID: profile.courseID[i] }));
@@ -181,20 +185,27 @@ function emergencyCheck(pickDate) {
 // func for send absent to server
 function sendAbsentModifier(ID, pickDate) {
     let absent = [];
+    let str = "\n" + nickname + " " + firstname + "\n" + "ต้องการลา:";
     if (pickDate.day() == 2 || pickDate.day() == 4) {
         for (let i = 0; i < $(".btn-success").length; i++) {
             absent.push(pickDate.hour(17).minute(0).second(0).millisecond(0).valueOf());
+            str += ("\n" + $($(".btn-success")[i]).html());
+            str += (" - " + pickDate.format("DD/MM/YYYY รอบ HH:mm"));
         }
     } else {
         for (let i = 0; i < $(".btn-success").length; i++) {
             let hour = $($(".btn-success")[i]).attr("id").slice(3);
             absent.push(pickDate.hour($($(".btn-success")[i]).attr("id").slice(3)).minute(0).second(0).millisecond(0).valueOf());
+            str += ("\n" + $($(".btn-success")[i]).html());
+            str += (" - " + pickDate.format("DD/MM/YYYY รอบ HH:mm"));
         }
     }
     // log(absent)
     $.post("post/addStudentAbsenceModifier", { studentID: ID, day: absent, reason: $("#reasonInput").val(), sender: $("#senderInput").val() }, (data) => {
         if (confirm("ยืนยันการลา")) {
-            location.reload();
+            $.post("post/lineNotify", { recipient: "MonkeyAdmin", message: str }, () => {
+                location.reload();
+            })
         }
     })
 }
