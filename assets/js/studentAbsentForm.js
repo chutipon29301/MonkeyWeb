@@ -190,16 +190,17 @@ function sendAbsentModifier(ID, pickDate) {
         for (let i = 0; i < $(".btn-success").length; i++) {
             absent.push(pickDate.hour(17).minute(0).second(0).millisecond(0).valueOf());
             str += ("\n" + $($(".btn-success")[i]).html());
-            str += (" - " + pickDate.format("DD/MM/YYYY รอบ HH:mm"));
+            str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
         }
     } else {
         for (let i = 0; i < $(".btn-success").length; i++) {
             let hour = $($(".btn-success")[i]).attr("id").slice(3);
             absent.push(pickDate.hour($($(".btn-success")[i]).attr("id").slice(3)).minute(0).second(0).millisecond(0).valueOf());
             str += ("\n" + $($(".btn-success")[i]).html());
-            str += (" - " + pickDate.format("DD/MM/YYYY รอบ HH:mm"));
+            str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
         }
     }
+    str += ("\n" + "เหตุผล:" + $("#reasonInput").val());
     // log(absent)
     $.post("post/addStudentAbsenceModifier", { studentID: ID, day: absent, reason: $("#reasonInput").val(), sender: $("#senderInput").val() }, (data) => {
         if (confirm("ยืนยันการลา")) {

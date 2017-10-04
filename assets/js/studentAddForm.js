@@ -75,7 +75,7 @@ $(document).ready(function () {
             if (confirm("ต้องการเพิ่ม " + $("#subjInput").val() + " เวลา " + moment(day[0]).format("HH:mm") + " วันที่ " + moment(day[0]).format("DD/MM/YYYY")) == true) {
                 let str = "\n" + nickname + " " + firstname + "\n"
                     + "เพิ่ม " + $("#subjInput").val().slice(0, 5) + "\n"
-                    + moment(day).format("DD/MM/YYYY รอบ HH:mm");
+                    + moment(day).format("ddd DD/MM/YYYY รอบ HH:mm");
                 Promise.all([$.post("post/addStudentAbsenceModifier", { studentID: ID, day: day, reason: "add" + $("#subjInput").val().slice(0, 5), sender: $("#senderInput").val() }, (data) => { })
                     , $.post("post/lineNotify", { recipient: "MonkeyAdmin", message: str }, () => { })]).then(() => {
                         location.reload();
