@@ -2,14 +2,13 @@ extends htmlTemplate
 block head
     -const pageTitle = "Admin Student Profile CR60Q4"
     link(href="css/component.css", rel="stylesheet")
-    //- script(src="js/JsBarcode.code128.min.js" type="text/javascript")
-    script(src="js/adminStudentProfileQ4.js")
+    script(src="js/JsBarcode.code128.min.js" type="text/javascript")
+    script(src="js/adminStudentProfileQ4.min.js")
 block body
-    //- div(hidden="true")
-    //-     img#mathImg
-    //-     img#phyImg
-    //-     canvas#mathBarcode
-    //-     canvas#phyBarcode
+    div(hidden="true")
+        img#tableTemplate
+        canvas#mathBarcode
+        canvas#phyBarcode
     .container
         .row
             .col-sm-6
@@ -34,6 +33,16 @@ block body
                         .btn-group
                             button.btn.btn-success#finishedBtn(type="button" onClick="setRegistrationState('finished','quarter');") Finished
                             button.btn.btn-danger#pendingBtn(type="button" onClick="setRegistrationState('pending','quarter');") Pending
+        .row
+            .col-sm-12.text-left
+                button.btn.btn-default#math(data-toggle='collapse' data-target='#mathDiv') Download Math Table 
+                    span.caret
+                button.btn.btn-default#phy(data-toggle='collapse' data-target='#phyDiv') Download Physics Table 
+                    span.caret
+            .collapse#mathDiv
+                canvas#mathCanvas(style="border:1px solid black" width="1654" height="1170" onClick="downloadCanvas('math');")
+            .collapse#phyDiv
+                canvas#phyCanvas(style="border:1px solid black" width="1654" height="1170" onClick="downloadCanvas('phy');")
         br
         .table-responsive
             table.table.table-bordered#courseTable
@@ -169,6 +178,7 @@ block body
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
         script.
             $(document).ready(function () {
+                getStudentProfile();
                 $('#profilePic').click(function () {
                     $('#profileModal').modal();
                 });
@@ -178,9 +188,8 @@ block body
                 $('#smTrans').click(function () {
                     $('#smRcModal').modal();
                 });
-                $('#math,#phy').attr("class", "btn btn-default disabled");
-                $('#math,#phy').prop("disabled", true);
-                getStudentProfile();
+                //- $('#math,#phy').attr("class", "btn btn-default disabled");
+                //- $('#math,#phy').prop("disabled", true);
                 // showReceipt();
                 // showComment();
             });
@@ -208,7 +217,7 @@ block body
                 document.body.appendChild(aref);
                 aref.click();
             }
-            function editProfile() {
-                $("#editModal").modal();
-            }
+            //- function editProfile() {
+            //-     $("#editModal").modal();
+            //- }
         script(src="js/custom-file-input.js")
