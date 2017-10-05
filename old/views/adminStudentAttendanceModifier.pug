@@ -13,7 +13,38 @@ block body
             li: a(data-toggle="tab" href="#sm") SUMMER
         .tab-content
             #fhb.tab-pane.fade.in.active
-                h3 For FHB(On develop)
+                .row
+                    .col-sm-7
+                        .form-group
+                            label.control-label Day:
+                            input.form-control#datePicker(type="text")
+                    .col-sm-5
+                        .form-group
+                            label Time:
+                            select.form-control#crTimePick(type="text")
+                .row
+                    .col-sm-7
+                        .table-responsive
+                            table.table.table-bordered
+                                thead
+                                    tr: td.text-center.danger(colspan=5) ลา
+                                    tr
+                                        td.text-center Time
+                                        td.text-center ID
+                                        td.text-center Name
+                                        td.text-center Subject
+                                        td.text-center Reason
+                                tbody#crAbsentTable
+                    .col-sm-5
+                        .table-responsive
+                            table.table.table-bordered
+                                thead
+                                    tr: td.text-center.success(colspan=3) เพิ่ม
+                                    tr
+                                        td.text-center ID
+                                        td.text-center Name
+                                        td.text-center Subject
+                                tbody#crPresentTable
             #sm.tab-pane.fade
                 ul.breadcrumb
                     li: a#aByName(href="#") By Name
