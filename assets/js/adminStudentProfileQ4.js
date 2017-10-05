@@ -77,7 +77,6 @@ function getStudentProfile() {
             studentID: studentID
         }).then(table => {
             console.log(table);
-            genCover(studentID, data, data.grade, table);
             for (let i = 0; i < table.course.length; i++) {
                 document.getElementById(table.course[i].day).innerHTML = table.course[i].courseName + " -  " + table.course[i].tutorName
                 document.getElementById(table.course[i].day).value = table.course[i].courseID
@@ -110,6 +109,7 @@ function getStudentProfile() {
                 document.getElementById(serverTime).value = table.skill[i].skillID
                 document.getElementById(serverTime).className = "btn btn-info col-sm-12";
             }
+            genCover(studentID, data, data.grade, table);
         });
     });
 }
