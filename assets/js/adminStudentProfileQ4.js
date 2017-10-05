@@ -77,6 +77,7 @@ function getStudentProfile() {
             studentID: studentID
         }).then(table => {
             console.log(table);
+            genCover(studentID, data, data.grade, table);
             for (let i = 0; i < table.course.length; i++) {
                 document.getElementById(table.course[i].day).innerHTML = table.course[i].courseName + " -  " + table.course[i].tutorName
                 document.getElementById(table.course[i].day).value = table.course[i].courseID
@@ -86,7 +87,7 @@ function getStudentProfile() {
                 let localTime = new Date(parseInt(table.hybrid[i].day));
                 let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
                 var button = document.getElementById(serverTime);
-                if(button === undefined) {
+                if (button === undefined) {
                     button = document.getElementById(table.hybrid[i].day);
                 }
                 button.innerHTML = "FHB : " + table.hybrid[i].subject;
@@ -102,7 +103,7 @@ function getStudentProfile() {
                 }
                 let serverTime = moment(0).day((localTime.getDay() === 0) ? 7 : localTime.getDay()).hour(localTime.getHours()).valueOf();
                 var button = document.getElementById(serverTime);
-                if(button === undefined) {
+                if (button === undefined) {
                     button = document.getElementById(localTime.valueOf());
                 }
                 document.getElementById(serverTime).innerHTML = "SKILL : " + table.skill[i].subject + " " + displayTime.getHours() + ":" + ((displayTime.getMinutes() === 0) ? "00" : displayTime.getMinutes());
@@ -357,5 +358,208 @@ function upReciept() {
                 location.reload();
             }
         });
+    }
+}
+// func for gen cover
+function genCover(ID, profile, grade, table) {
+    log("=======================");
+    log(ID);
+    log(profile);
+    log(grade);
+    log(table);
+    log("=======================");
+    barcode(ID);
+    let hasMath = false;
+    let hasPhy = false;
+    for (let i in table.hybrid) {
+        if (table.hybrid[i].subject == "M") hasMath = true;
+        if (table.hybrid[i].subject == "PH") hasPhy = true;
+    }
+    if (!hasMath) {
+        $("#math").addClass("disabled");
+        $("#math").prop("disabled", true);
+    }
+    if (!hasPhy) {
+        $("#phy").addClass("disabled");
+        $("#phy").prop("disabled", true);
+    }
+    let str = "";
+    if (hasMath) str += "m";
+    if (hasPhy) str += "p";
+    (grade > 6) ? str += "h" : str += "j";
+    $("#tableTemplate").attr("src", "images/" + str + ".png");
+    if (hasMath) fillCover(ID, profile, grade, "math", table);
+    if (hasPhy) fillCover(ID, profile, grade, "phy", table);
+}
+function barcode(ID) {
+    JsBarcode("#mathBarcode", ID + '1', {
+        lineColor: "black",
+        width: 3.4,
+        height: 68,
+        displayValue: false
+    });
+    JsBarcode("#phyBarcode", ID + '2', {
+        lineColor: "black",
+        width: 3.4,
+        height: 68,
+        displayValue: false
+    });
+}
+function fillCover(ID, profile, grade, subj, table) {
+    let canvasID = subj + 'Canvas';
+    let canvas = document.getElementById(canvasID);
+    let ctx = canvas.getContext('2d');
+    //add Table BG
+    let img = document.getElementById("tableTemplate");
+    ctx.drawImage(img, 0, 0, 1654, 1170);
+    //add Level
+    ctx.font = "bold 150px Cordia New";
+    ctx.fillText(getLetterGrade(grade), 55, 128);
+    //add barcode
+    let canvas2 = document.getElementById(subj + 'Barcode');
+    ctx.drawImage(canvas2, 430, 115);
+    //add profilePic
+    let profilePic = document.getElementById('profilePic');
+    let picH = 184;
+    let picW = profilePic.width * picH / profilePic.height;
+    ctx.drawImage(profilePic, 205, 30, picW, picH);
+    //add ID
+    ctx.font = "bold 70px Cordia New";
+    if (subj === "math") {
+        ctx.fillText("ID: " + ID + "1", 445, 84);
+    } else {
+        ctx.fillText("ID: " + ID + "2", 445, 84);
+    }
+    //add Name
+    let name1 = ((profile.firstname + profile.nickname).length > 18) ? profile.firstname : profile.firstname + ' (' + profile.nickname + ')';
+    let name2 = ((profile.firstname + profile.nickname).length > 18) ? '(' + profile.nickname + ') ' + profile.lastname : profile.lastname;
+    ctx.font = "bold 75px Cordia New";
+    ctx.textAlign = "center";
+    ctx.fillText(name1, 930, 94);
+    ctx.fillText(name2, 930, 180);
+    // fill table
+    ctx.textBaseline = "middle";
+    ctx.font = "bold 55px Cordia New";
+    // var for position
+    const mainW = [324, 568, 812, 1056];
+    const mainCrH = [386, 514, 642, 770, 898];
+    const mainTutorH = [448, 576, 704, 832, 960];
+    const miniW = [1342, 1420, 1498, 1576];
+    const miniH = [144, 218, 292, 366, 440];
+    // func for get cr&fhb position
+    const getPosition = (day) => {
+        let position = [0, 0];
+        switch (moment(day).day()) {
+            case 0:
+                position[0] = 3;
+                break;
+            case 2:
+                position[0] = 0;
+                break;
+            case 4:
+                position[0] = 1;
+                break;
+            case 6:
+                position[0] = 2;
+                break;
+            default:
+                break;
+        }
+        switch (moment(day).hour()) {
+            case 8:
+                position[1] = 0;
+                break;
+            case 10:
+                position[1] = 1;
+                break;
+            case 13:
+                position[1] = 2;
+                break;
+            case 15:
+                position[1] = 3;
+                break;
+            case 17:
+                position[1] = 4;
+                break;
+            default:
+                break;
+        }
+        return position;
+    }
+    // func for get skill position
+    const getSkPosition = (day) => {
+        let position = [0, 0];
+        switch (moment(day).day()) {
+            case 0:
+                position[0] = 3;
+                break;
+            case 2:
+                position[0] = 0;
+                break;
+            case 4:
+                position[0] = 1;
+                break;
+            case 6:
+                position[0] = 2;
+                break;
+            default:
+                break;
+        }
+        switch (moment(day).hour()) {
+            case 8:
+                position[1] = 0;
+                break;
+            case 9:
+                position[1] = 0;
+                break;
+            case 10:
+                position[1] = 1;
+                break;
+            case 11:
+                position[1] = 1;
+                break;
+            case 12:
+                position[1] = 1;
+                break;
+            case 13:
+                position[1] = 2;
+                break;
+            case 14:
+                position[1] = 2;
+                break;
+            case 15:
+                position[1] = 3;
+                break;
+            case 16:
+                position[1] = 3;
+                break;
+            default:
+                break;
+        }
+        return position;
+    }
+    // fill data
+    for (let i in table.course) {
+        let p = getPosition(table.course[i].day);
+        ctx.fillText("CR : " + table.course[i].courseName, mainW[p[0]], mainCrH[p[1]]);
+        ctx.fillText((table.course[i].tutorName == "Hybrid") ? "HB" : table.course[i].tutorName, mainW[p[0]], mainTutorH[p[1]]);
+        if (table.course[i].tutorName == "Hybrid") {
+            if (subj.slice(0, 1).toLowerCase() == table.course[i].courseName.slice(0, 1).toLowerCase()) {
+                ctx.fillText("CR", miniW[p[0]], miniH[p[1]]);
+            }
+        }
+    }
+    for (let i in table.hybrid) {
+        let p = getPosition(table.hybrid[i].day);
+        ctx.fillText("FHB : " + ((table.hybrid[i].subject == "M") ? "M" : "P"), mainW[p[0]], mainCrH[p[1]]);
+        ctx.fillText("HB", mainW[p[0]], mainTutorH[p[1]]);
+        log(subj.slice(0, 1).toLowerCase() == table.hybrid[i].subject.slice(0, 1).toLowerCase());
+        if (subj.slice(0, 1).toLowerCase() == table.hybrid[i].subject.slice(0, 1).toLowerCase()) {
+            ctx.fillText("HB", miniW[p[0]], miniH[p[1]]);
+        }
+    }
+    for (let i in table.skill) {
+        let p = getSkPosition(table.skill[i].day);
+        ctx.fillText("SKILL : " + moment(table.skill[i].day).format("H:mm"), mainW[p[0]], mainCrH[p[1]]);
     }
 }
