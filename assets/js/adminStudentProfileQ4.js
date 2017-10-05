@@ -566,11 +566,11 @@ function fillCover(ID, profile, grade, subj, table) {
         if (moment(table.skill[i].day).hour() == lastSkillTime) {
             ctx.fillStyle = "white";
             if (moment(table.skill[i].day).hour() == 9 || moment(table.skill[i].day).hour() == 11 || moment(table.skill[i].day).hour() == 14 || moment(table.skill[i].day).hour() == 16) {
-                ctx.fillRect(mainW[p[0]] - 120, mainTutorH[p[1]] - 90, 235, 50);
+                ctx.fillRect(mainW[p[0]] - 120, mainTutorH[p[1]] - 30, 235, 50);
                 ctx.fillStyle = "black";
                 ctx.fillText("SK : " + moment(table.skill[i].day).format("H:00"), mainW[p[0]], mainTutorH[p[1]]);
             } else {
-                ctx.fillRect(mainW[p[0]] - 120, mainCrH[p[1]] - 90, 235, 50);
+                ctx.fillRect(mainW[p[0]] - 120, mainCrH[p[1]] - 30, 235, 50);
                 ctx.fillStyle = "black";
                 ctx.fillText("SK : " + moment(table.skill[i].day).format("H:00"), mainW[p[0]], mainCrH[p[1]]);
             }
