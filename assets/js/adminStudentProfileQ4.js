@@ -560,12 +560,25 @@ function fillCover(ID, profile, grade, subj, table) {
             ctx.fillText("HB", miniW[p[0]], miniH[p[1]]);
         }
     }
+    let lastSkillTime = 0;
     for (let i in table.skill) {
         let p = getSkPosition(table.skill[i].day);
-        if (moment(table.skill[i].day).hour() == 9 || moment(table.skill[i].day).hour() == 11 || moment(table.skill[i].day).hour() == 14 || moment(table.skill[i].day).hour() == 16) {
+        if (moment(table.skill[i].day).hour() == lastSkillTime) {
+            ctx.fillStyle = "white";
+            if (moment(table.skill[i].day).hour() == 9 || moment(table.skill[i].day).hour() == 11 || moment(table.skill[i].day).hour() == 14 || moment(table.skill[i].day).hour() == 16) {
+                ctx.fillRect(mainW[p[0]] - 120, mainTutorH[p[1]] - 90, 235, 50);
+                ctx.fillStyle = "black";
+                ctx.fillText("SK : " + moment(table.skill[i].day).format("H:00"), mainW[p[0]], mainTutorH[p[1]]);
+            } else {
+                ctx.fillRect(mainW[p[0]] - 120, mainTutorH[p[1]] - 90, 235, 50);
+                ctx.fillStyle = "black";
+                ctx.fillText("SK : " + moment(table.skill[i].day).format("H:00"), mainW[p[0]], mainCrH[p[1]]);
+            }
+        } else if (moment(table.skill[i].day).hour() == 9 || moment(table.skill[i].day).hour() == 11 || moment(table.skill[i].day).hour() == 14 || moment(table.skill[i].day).hour() == 16) {
             ctx.fillText("SK : " + table.skill[i].subject + " " + moment(table.skill[i].day).format("H:mm"), mainW[p[0]], mainTutorH[p[1]]);
         } else {
             ctx.fillText("SK : " + table.skill[i].subject + " " + moment(table.skill[i].day).format("H:mm"), mainW[p[0]], mainCrH[p[1]]);
         }
+        lastSkillTime = moment(table.skill[i].day).hour();
     }
 }
