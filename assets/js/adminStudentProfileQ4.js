@@ -370,6 +370,13 @@ function genCover(ID, profile, grade, table) {
         if (table.hybrid[i].subject == "PH") hasPhy = true;
         if (table.hybrid[i].subject == "P") hasPhy = true;
     }
+    for (let i in table.course) {
+        if (table.course[i].tutorName == "Hybrid") {
+            if (table.course[i].courseName.slice(0, 1) == "M") {
+                hasMath = true;
+            } else hasPhy = true;
+        }
+    }
     if (!hasMath) {
         $("#math").addClass("disabled");
         $("#math").prop("disabled", true);
