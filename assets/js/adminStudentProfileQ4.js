@@ -26,7 +26,8 @@ function getStudentProfile() {
     let cookie = getCookieDict();
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
-
+    showProfilePic();
+    showReceipt();
     studentProfile(studentID).then(data => {
         log("[getStudentProfile()] : post/studentProfile => ");
         log(data);
@@ -36,8 +37,6 @@ function getStudentProfile() {
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
         document.getElementById("studentLevel").innerHTML = "Level: " + data.level;
-        showProfilePic();
-        showReceipt();
         for (let i = 0; i < data.quarter.length; i++) {
             log(data.quarter[i]);
             if (data.quarter[i].year === 2017 && data.quarter[i].quarter === 4) {
@@ -362,12 +361,6 @@ function upReciept() {
 }
 // func for gen cover
 function genCover(ID, profile, grade, table) {
-    log("=======================");
-    log(ID);
-    log(profile);
-    log(grade);
-    log(table);
-    log("=======================");
     barcode(ID);
     let hasMath = false;
     let hasPhy = false;
