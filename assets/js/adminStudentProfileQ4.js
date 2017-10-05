@@ -364,9 +364,11 @@ function genCover(ID, profile, grade, table) {
     barcode(ID);
     let hasMath = false;
     let hasPhy = false;
+    log(table)
     for (let i in table.hybrid) {
         if (table.hybrid[i].subject == "M") hasMath = true;
         if (table.hybrid[i].subject == "PH") hasPhy = true;
+        if (table.hybrid[i].subject == "P") hasPhy = true;
     }
     if (!hasMath) {
         $("#math").addClass("disabled");
