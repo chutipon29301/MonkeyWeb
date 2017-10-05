@@ -553,6 +553,10 @@ function fillCover(ID, profile, grade, subj, table) {
     }
     for (let i in table.skill) {
         let p = getSkPosition(table.skill[i].day);
-        ctx.fillText("SKILL : " + moment(table.skill[i].day).format("H:mm"), mainW[p[0]], mainCrH[p[1]]);
+        if (moment(table.skill[i].day).hour() == 9 || moment(table.skill[i].day).hour() == 11 || moment(table.skill[i].day).hour() == 14 || moment(table.skill[i].day).hour() == 16) {
+            ctx.fillText("SK : " + table.skill[i].subject + " " + moment(table.skill[i].day).format("H:mm"), mainW[p[0]], mainTutorH[p[1]]);
+        } else {
+            ctx.fillText("SK : " + table.skill[i].subject + " " + moment(table.skill[i].day).format("H:mm"), mainW[p[0]], mainCrH[p[1]]);
+        }
     }
 }
