@@ -91,31 +91,37 @@ function genCrTable() {
                         "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY") + "</td>" +
                         "<td class='text-center'>" + data.absence[i].studentID + "</td>" +
                         "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
-                        "<td class='text-center'>" + myFHB(dt[0][i].courseID, dt[1][i], dataDate) + "</td>" +
+                        "<td class='text-center absentSubject" + i + "'></td>" +
                         "<td class='text-center'>" + data.absence[i].reason + "</td>" +
                         "</tr>"
                     )
+                    myFHB(dt[0][i].courseID, dt[1][i], dataDate, i);
                 }
             }
         })
     })
 }
-function myFHB(cr, fhb, time) {
+function myFHB(cr, fhb, time, index) {
     // log(cr);
     // log(fhb);
     let promise = [];
     for (let i in fhb) {
         if (moment(fhb[i].day).day() == time.day() && moment(fhb[i].day).hour() == time.hour()) {
-            return ("FHB:" + fhb[i].subject);
+            $(".absentSubject" + index).html("FHB:" + fhb[i].subject);
+            return;
         }
     }
     for (let i in cr) {
         promise.push($.post("post/courseInfo", { courseID: cr[i] }));
     }
     Promise.all(promise).then((data) => {
+        log(data)
         for (let i in data) {
-            if (moment(data[i].day).day() == time.day() && moment(data[i].day).hour() == time.hour()) {
-                return ("CR:" + data[i].courseName);
+            if (data[i].quarter == crQuarter) {
+                if (moment(data[i].day).day() == time.day() && moment(data[i].day).hour() == time.hour()) {
+                    $(".absentSubject" + index).html("CR:" + data[i].courseName);
+                    return;
+                }
             }
         }
     })
