@@ -19,6 +19,9 @@ $(document).ready(function () {
     $("#crTimePick").change(function () {
         genCrTable();
     });
+    $("#filterPick").change(function () {
+        filterTable();
+    });
     // for summer
     genTableByName();
     $("#smByName").collapse("show");
@@ -82,22 +85,25 @@ function genCrTable() {
                         "<td class='text-center'>" + data.absence[i].studentID + "</td>" +
                         "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center'>" + data.absence[i].reason.slice(3) + "</td>" +
+                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
                         "</tr>"
                     )
                 } else {
                     // log("pending");
                     $("#crAbsentTable").append(
-                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "warning" : "") + "'>" +
+                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "warning" : "") + " row" + i + "'>" +
                         "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY") + "</td>" +
                         "<td class='text-center'>" + data.absence[i].studentID + "</td>" +
                         "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center absentSubject" + i + "'></td>" +
                         "<td class='text-center'>" + data.absence[i].reason + "</td>" +
+                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
                         "</tr>"
                     )
                     myFHB(dt[0][i].courseID, dt[1][i], dataDate, i);
                 }
             }
+            filterTable();
         })
     })
 }
@@ -107,6 +113,7 @@ function myFHB(cr, fhb, time, index) {
     let promise = [];
     for (let i in fhb) {
         if (moment(fhb[i].day).day() == time.day() && moment(fhb[i].day).hour() == time.hour()) {
+            $(".row" + index).addClass("fhb");
             $(".absentSubject" + index).html("FHB:" + fhb[i].subject);
             return;
         }
@@ -115,16 +122,38 @@ function myFHB(cr, fhb, time, index) {
         promise.push($.post("post/courseInfo", { courseID: cr[i] }));
     }
     Promise.all(promise).then((data) => {
-        log(data)
+        // log(data)
         for (let i in data) {
             if (data[i].quarter == crQuarter) {
                 if (moment(data[i].day).day() == time.day() && moment(data[i].day).hour() == time.hour()) {
+                    if (data[i].tutor[0] == 99000) {
+                        $(".row" + index).addClass("fhb");
+                    } else {
+                        $(".row" + index).addClass("cr");
+                    }
                     $(".absentSubject" + index).html("CR:" + data[i].courseName);
                     return;
                 }
             }
         }
     })
+}
+function filterTable() {
+    let filter = $("#filterPick").val();
+    switch (filter) {
+        case "FHB":
+            $(".cr").hide();
+            $(".fhb").show();
+            break;
+        case "CR":
+            $(".fhb").hide();
+            $(".cr").show();
+            break;
+        default:
+            $(".fhb").show();
+            $(".cr").show();
+            break;
+    }
 }
 function emergencyCheck(pickDate, timestamp) {
     let time = moment(0).year(pickDate.year()).month(pickDate.month()).date(pickDate.date()).hour(18);
@@ -135,6 +164,14 @@ function emergencyCheck(pickDate, timestamp) {
     } else if (time.valueOf() - timestamp.valueOf() < aDayValue) {
         return true;
     } else return false;
+}
+// For remove attendance
+function removeAttend(id) {
+    if (confirm("ต้องการลบประวัติการลานี้?")) {
+        $.post("post/removeStudentAttendanceModifier", { modifierID: id }).then(() => {
+            genCrTable();
+        })
+    }
 }
 // For summer
 function genTableByName() {
