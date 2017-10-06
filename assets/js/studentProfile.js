@@ -4,12 +4,16 @@ $(document).ready(function () {
     let ID = cookie.monkeyWebUser;
     showProfilePic(ID);
     $.post("post/listQuarter", { status: "public" }, function (q) {
+        let tempQuarterData = [];
         for (let i = 0; i < q.quarter.length; i++) {
             if (q.quarter[i].quarter === quarter) {
-                $("#qList").prepend("<option>" + q.quarter[i].name + " - " + q.quarter[i].quarter + "</option>")
+                tempQuarterData.unshift(q.quarter[i]);
             } else {
-                $("#qList").append("<option>" + q.quarter[i].name + " - " + q.quarter[i].quarter + "</option>")
+                tempQuarterData.push(q.quarter[i])
             }
+        }
+        for (let i in tempQuarterData) {
+            $("#qList").append("<option>" + tempQuarterData[i].name + " - " + tempQuarterData[i].quarter + "</option>")
         }
         fillData(ID);
         if ($("#qList").val().slice($("#qList").val().indexOf("-") + 2) == summerQuarter) {
