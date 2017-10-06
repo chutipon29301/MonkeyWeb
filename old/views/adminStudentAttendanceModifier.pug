@@ -14,36 +14,45 @@ block body
         .tab-content
             #fhb.tab-pane.fade.in.active
                 .row
-                    .col-sm-7
+                    .col-sm-4
                         .form-group
                             label.control-label Day:
                             input.form-control#datePicker(type="text")
-                    .col-sm-5
+                    .col-sm-4
                         .form-group
                             label Time:
                             select.form-control#crTimePick(type="text")
+                    .col-sm-4
+                        .form-group
+                            label Filter:
+                            select.form-control#filterPick(type="text")
+                                option ALL
+                                option FHB
+                                option CR
                 .row
-                    .col-sm-7
+                    .col-sm-8
                         .table-responsive
                             table.table.table-bordered
                                 thead
-                                    tr: td.text-center.danger(colspan=5) ลา
+                                    tr: td.text-center.danger(colspan=6) ลา
                                     tr
                                         td.text-center Time
                                         td.text-center ID
                                         td.text-center Name
                                         td.text-center Subject
                                         td.text-center Reason
+                                        td.text-center ลบ
                                 tbody#crAbsentTable
-                    .col-sm-5
+                    .col-sm-4
                         .table-responsive
                             table.table.table-bordered
                                 thead
-                                    tr: td.text-center.success(colspan=3) เพิ่ม
+                                    tr: td.text-center.success(colspan=4) เพิ่ม
                                     tr
                                         td.text-center ID
                                         td.text-center Name
                                         td.text-center Subject
+                                        td.text-center ลบ
                                 tbody#crPresentTable
             #sm.tab-pane.fade
                 ul.breadcrumb
