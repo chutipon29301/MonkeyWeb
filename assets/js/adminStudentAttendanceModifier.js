@@ -39,7 +39,6 @@ $(document).ready(function () {
     });
     $("#weekSelect").change(function () {
         genTableByWeek();
-        filterSmTable();
     })
     $("#typeSelect").change(function () {
         filterSmTable();
@@ -178,6 +177,9 @@ function removeAttend(id) {
     if (confirm("ต้องการลบประวัติการลานี้?")) {
         $.post("post/removeStudentAttendanceModifier", { modifierID: id }).then(() => {
             genCrTable();
+            let picked = $('.typeahead').typeahead("getActive");
+            genPickedTable(picked.id);
+            genTableByWeek();
         })
     }
 }
@@ -288,6 +290,7 @@ function genTableByWeek() {
                         "</tr>"
                     );
                 }
+                filterSmTable();
                 weekDayGetName(i, j, data[i].absence[j].studentID);
             }
         }
