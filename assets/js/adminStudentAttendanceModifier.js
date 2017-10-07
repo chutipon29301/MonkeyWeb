@@ -43,6 +43,34 @@ $(document).ready(function () {
     $("#typeSelect").change(function () {
         filterSmTable();
     })
+    // for add new attendance
+    $("#addDatePicker").datetimepicker({
+        format: "DD/MM/YYYY HH"
+    });
+    $("#addNewAttend").click(function () {
+        if (!($("#addDatePicker").val())) {
+            alert("Pick Day");
+        } else if (!($("#addID").val())) {
+            alert("Input Student ID");
+        } else if (!($("#addSender").val())) {
+            alert("Input Sender");
+        } else {
+            let addDate = $('#addDatePicker').data('DateTimePicker').date().minute(0).second(0).millisecond(0).valueOf();
+            if ($("#addType").val() == "ลา") {
+                if (!($("#addReason").val())) {
+                    alert("Input Reason");
+                } else {
+                    $.post("post/addStudentAbsenceModifier", { studentID: $("#addID").val(), day: [addDate], reason: $("#addReason").val(), sender: $("#addSender").val() }).then(() => {
+                        location.reload();
+                    })
+                }
+            } else {
+                $.post("post/addStudentAbsenceModifier", { studentID: $("#addID").val(), day: [addDate], reason: "add" + $("#addSubj").val(), sender: $("#addSender").val() }).then(() => {
+                    location.reload();
+                })
+            }
+        }
+    });
 });
 // For cr&fhb
 function genCrTimePick() {
