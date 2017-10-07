@@ -39,9 +39,10 @@ $(document).ready(function () {
     });
     $("#weekSelect").change(function () {
         genTableByWeek();
+        filterSmTable();
     })
     $("#typeSelect").change(function () {
-        genTableByWeek();
+        filterSmTable();
     })
 });
 // For cr&fhb
@@ -108,8 +109,6 @@ function genCrTable() {
     })
 }
 function myFHB(cr, fhb, time, index) {
-    // log(cr);
-    // log(fhb);
     let promise = [];
     for (let i in fhb) {
         if (moment(fhb[i].day).day() == time.day() && moment(fhb[i].day).hour() == time.hour()) {
@@ -124,7 +123,6 @@ function myFHB(cr, fhb, time, index) {
         promise.push($.post("post/courseInfo", { courseID: cr[i] }));
     }
     Promise.all(promise).then((data) => {
-        // log(data)
         for (let i in data) {
             if (data[i].quarter == crQuarter) {
                 if (moment(data[i].day).day() == time.day() && moment(data[i].day).hour() == time.hour()) {
@@ -186,19 +184,7 @@ function removeAttend(id) {
 // For summer
 function genTableByName() {
     let allStudent = [];
-    // gen typeahead input
-    $("#smByName").empty();
-    $("#smByName").append("<div class='row' id='smHeader'></div>");
-    $("#smHeader").append(
-        "<form class='col-sm-2'>" +
-        "<div class='form-group'>" +
-        "<label>Input Name:</label>" +
-        "<input class='form-control typeahead' type='text' data-provide='typeahead' autofocus>" +
-        "</div>" +
-        "</form>"
-    );
-    // get typeahead data
-    $.post("post/allStudent").done(function (data) {
+    $.post("post/allStudent").done((data) => {
         for (let i = 0; i < data.student.length; i++) {
             if (data.student[i].status === "active") {
                 for (let j = 0; j < data.student[i].quarter.length; j++) {
@@ -211,39 +197,10 @@ function genTableByName() {
                 }
             }
         }
-        // log(allStudent);
         $('.typeahead').typeahead({
             source: allStudent,
             autoSelect: true
         });
-        // gen table head
-        $("#smByName").append(
-            "<div class='row'>" +
-            "<div class='table-responsive col-sm-9'>" +
-            "<table class='table table-hover table-bordered'>" +
-            "<thead>" +
-            "<tr><th colspan='4' class='danger text-center' style='font-size:2em'>ลา</th></tr>" +
-            "<tr>" +
-            "<th class='text-center col-sm-6'>DATE</th>" +
-            "<th class='text-center col-sm-2'>8.00-10.00</th>" +
-            "<th class='text-center col-sm-2'>10.00-12.00</th>" +
-            "<th class='text-center col-sm-2'>13.00-15.00</th>" +
-            "</tr>" +
-            "</thead>" +
-            "<tbody id='smAbsentBody'></tbody>" +
-            "</table>" +
-            "</div>" +
-            "<div class='table-responsive col-sm-3'>" +
-            "<table class='table table-hover table-bordered'>" +
-            "<thead>" +
-            "<tr><th class='success text-center' style='font-size:2em'>เพิ่ม</th></tr>" +
-            "<tr><th class='text-center col-sm-6'>DATE</th></tr>" +
-            "</thead>" +
-            "<tbody id='smPresentBody'></tbody>" +
-            "</table>" +
-            "</div>" +
-            "</div>"
-        );
         // add func when pick student
         $(".typeahead").change(function () {
             let picked = $('.typeahead').typeahead("getActive");
@@ -251,31 +208,31 @@ function genTableByName() {
             $("#smPresentBody").empty();
             genPickedTable(picked.id);
         });
-    }).fail(function () {
-        log("=>fail to post/allStudent");
     })
 }
 function genPickedTable(ID) {
-    let time = moment();
+    let time = moment().date(8).month(9);
     $.post("post/listStudentAttendanceModifierByStudent", { studentID: ID, start: time.valueOf() }).done(function (data) {
-        // log(data)
         let oldAbsentDay = moment(0);
         for (let i = 0; i < data.modifier.length; i++) {
             if (data.modifier[i].reason === "เพิ่ม") {
                 $("#smPresentBody").append(
-                    "<tr><td class='text-center'>" + moment(data.modifier[i].day).format("DD/MM/YYYY") + "</td></tr>"
+                    "<tr>" +
+                    "<td class='text-center'>" + moment(data.modifier[i].day).format("DD/MM/YYYY") + "</td>" +
+                    "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                    "</tr>"
                 );
             } else if (data.modifier[i].reason === "ลา") {
                 let bool = (moment(data.modifier[i].day).date() === oldAbsentDay.date() && moment(data.modifier[i].day).month() === oldAbsentDay.month() && moment(data.modifier[i].day).year() === oldAbsentDay.year());
                 if (bool) {
                     if (moment(data.modifier[i].day).hour() === 8) {
-                        $(".a:last").html("✓");
+                        $(".a:last").html("✓").attr("id", data.modifier[i].modifierID).attr("onClick", "removeAttend(this.id);");
                     }
                     if (moment(data.modifier[i].day).hour() === 10) {
-                        $(".b:last").html("✓");
+                        $(".b:last").html("✓").attr("id", data.modifier[i].modifierID).attr("onClick", "removeAttend(this.id);");;
                     }
                     if (moment(data.modifier[i].day).hour() === 13) {
-                        $(".c:last").html("✓");
+                        $(".c:last").html("✓").attr("id", data.modifier[i].modifierID).attr("onClick", "removeAttend(this.id);");;
                     }
                 } else {
                     // log("present")
@@ -283,66 +240,80 @@ function genPickedTable(ID) {
                     $("#smAbsentBody").append("<tr></tr>");
                     $("#smAbsentBody tr:last-child").append(
                         "<td class='text-center'>" + moment(data.modifier[i].day).format("DD/MM/YYYY") + "</td>" +
-                        "<td class='text-center a'>" + ((moment(data.modifier[i].day).hour() === 8) ? "✓" : "-") + "</td>" +
-                        "<td class='text-center b'>" + ((moment(data.modifier[i].day).hour() === 10) ? "✓" : "-") + "</td>" +
-                        "<td class='text-center c'>" + ((moment(data.modifier[i].day).hour() === 13) ? "✓" : "-") + "</td>"
+                        "<td class='text-center a' id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'>" + ((moment(data.modifier[i].day).hour() === 8) ? "✓" : "-") + "</td>" +
+                        "<td class='text-center b' id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'>" + ((moment(data.modifier[i].day).hour() === 10) ? "✓" : "-") + "</td>" +
+                        "<td class='text-center c' id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'>" + ((moment(data.modifier[i].day).hour() === 13) ? "✓" : "-") + "</td>"
                     );
                 }
             }
         }
-    }).fail(function () {
-        log("=>fail to post/listStudentAttendanceModifierByStudent");
     })
 }
 function genTableByWeek() {
     $("#smWeekBody").empty();
     const startDay = parseInt($("#weekSelect").val());
-    const startHour = 8;
-    weekDayRecur(startDay, startDay, startHour);
-}
-function weekDayRecur(startDay, day, hour) {
-    if (day - startDay < 5) {
-        let time = moment(0).date(day).month(summerMonth).year(summerYear).hour(hour);
-        $.post("post/listStudentAttendanceModifierByDay", { day: time.valueOf() }).done(function (data) {
-            log(data.absence);
-            weekDayGetName(data.absence, 0, time, startDay);
-        })
-    }
-}
-function weekDayGetName(absent, index, moment, startDay) {
-    if (index < absent.length) {
-        $.post("post/name", { userID: absent[index].studentID }).done(function (data) {
-            if (absent[index].reason === "ลา" && ($("#typeSelect").val() === "0" || $("#typeSelect").val() === "1")) {
-                $("#smWeekBody").append("<tr class='danger'></tr>");
-                $("#smWeekBody tr:last-child").append(
-                    "<td class='text-center'>" + absent[index].studentID + "</td>" +
-                    "<td>" + data.firstname + " (" + data.nickname + ") " + data.lastname + "</td>" +
-                    "<td class='text-center'>" + moment.format("DD/MM/YYYY") + "</td>" +
-                    "<td class='text-center'>" + moment.format("HH:mm") + "</td>"
-                )
-            } else if (absent[index].reason === "เพิ่ม" && ($("#typeSelect").val() === "0" || $("#typeSelect").val() === "2")) {
-                $("#smWeekBody").append("<tr class='success'></tr>");
-                $("#smWeekBody tr:last-child").append(
-                    "<td class='text-center'>" + absent[index].studentID + "</td>" +
-                    "<td>" + data.firstname + " (" + data.nickname + ") " + data.lastname + "</td>" +
-                    "<td class='text-center'>" + moment.format("DD/MM/YYYY") + "</td>" +
-                    "<td class='text-center'>" + moment.format("HH:mm") + "</td>"
-                )
-            }
-            log(startDay)
-            weekDayGetName(absent, index + 1, moment, startDay)
-        })
-    } else {
-        let hour = moment.hour();
-        let day = moment.date();
-        if (hour === 8) {
-            weekDayRecur(startDay, day, 10)
-        } else if (hour === 10) {
-            weekDayRecur(startDay, day, 13)
-        } else if (hour === 13) {
-            weekDayRecur(startDay, day, 15)
-        } else if (hour === 15) {
-            weekDayRecur(startDay, day + 1, 8)
+    const time = [8, 10, 13, 15];
+    let weekPromise = [];
+    for (let i = startDay; i < startDay + 5; i++) {
+        for (let j in time) {
+            let day = moment(0).date(i).month(summerMonth).year(summerYear).hour(time[j]);
+            weekPromise.push(
+                $.post("post/listStudentAttendanceModifierByDay", { day: day.valueOf() }),
+                day
+            );
         }
     }
+    Promise.all(weekPromise).then((data) => {
+        for (let i = 0; i < data.length; i += 2) {
+            for (let j in data[i].absence) {
+                log(data[i].absence[j]);
+                if (data[i].absence[j].reason == "ลา") {
+                    $("#smWeekBody").append(
+                        "<tr class='danger smAbsentRow'>" +
+                        "<td class='text-center'>" + data[i].absence[j].studentID + "</td>" +
+                        "<td id='name" + i + j + "'></td>" +
+                        "<td class='text-center'>" + data[i + 1].format("DD/MM/YYYY") + "</td>" +
+                        "<td class='text-center'>" + data[i + 1].format("HH:mm") + "</td>" +
+                        "<td class='text-center'><button id='" + data[i].absence[j].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                        "</tr>"
+                    );
+                } else if (data[i].absence[j].reason == "เพิ่ม") {
+                    $("#smWeekBody").append(
+                        "<tr class='success smPresentRow'>" +
+                        "<td class='text-center'>" + data[i].absence[j].studentID + "</td>" +
+                        "<td id='name" + i + j + "'></td>" +
+                        "<td class='text-center'>" + data[i + 1].format("DD/MM/YYYY") + "</td>" +
+                        "<td class='text-center'>" + data[i + 1].format("HH:mm") + "</td>" +
+                        "<td class='text-center'><button id='" + data[i].absence[j].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                        "</tr>"
+                    );
+                }
+                weekDayGetName(i, j, data[i].absence[j].studentID);
+            }
+        }
+    })
 }
+function weekDayGetName(i, j, ID) {
+    let str = "name" + i + j;
+    $.post("post/name", { userID: ID }).then((smName) => {
+        let nameStr = smName.firstname + " (" + smName.nickname + ") " + smName.lastname;
+        $("#" + str).html(nameStr);
+    })
+}
+function filterSmTable() {
+    let filter = $("#typeSelect").val();
+    switch (filter) {
+        case "1":
+            $(".smPresentRow").hide();
+            $(".smAbsentRow").show();
+            break;
+        case "2":
+            $(".smPresentRow").show();
+            $(".smAbsentRow").hide();
+            break;
+        default:
+            $(".smPresentRow").show();
+            $(".smAbsentRow").show();
+            break;
+    }
+} 

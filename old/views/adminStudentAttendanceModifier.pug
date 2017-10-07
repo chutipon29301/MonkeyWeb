@@ -32,7 +32,7 @@ block body
                 .row
                     .col-sm-8
                         .table-responsive
-                            table.table.table-bordered
+                            table.table.table-bordered.table-hover
                                 thead
                                     tr: td.text-center.danger(colspan=7) ลา
                                     tr
@@ -46,7 +46,7 @@ block body
                                 tbody#crAbsentTable
                     .col-sm-4
                         .table-responsive
-                            table.table.table-bordered
+                            table.table.table-bordered.table-hover
                                 thead
                                     tr: td.text-center.success(colspan=4) เพิ่ม
                                     tr
@@ -60,6 +60,32 @@ block body
                     li: a#aByName(href="#") By Name
                     li: a#aByWeek(href="#") By Week
                 #smByName.collapse
+                    .row
+                        form.col-sm-2
+                            .form-group
+                                label Input Name:
+                                input.form-control.typeahead(type='text' data-provide='typeahead' autofocus)
+                    .row
+                        .table-responsive.col-sm-9
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th.text-center.danger(colspan=4) ลา
+                                    tr
+                                        th.text-center.col-sm-6 Date
+                                        th.text-center.col-sm-2 8-10
+                                        th.text-center.col-sm-2 10-12
+                                        th.text-center.col-sm-2 13-15
+                                tbody#smAbsentBody
+                        .table-responsive.col-sm-3
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th.text-center.success(colspan=2) เพิ่ม
+                                    tr
+                                        th.text-center.col-sm-9 Date
+                                        th.text-center.col-sm-3 ลบ
+                                tbody#smPresentBody
                 #smByWeek.collapse
                     .row
                         form.col-sm-2
@@ -81,8 +107,9 @@ block body
                         table.table.table-hover.table-bordered
                             thead
                                 tr
-                                    th.text-center ID
-                                    th.text-center Name
-                                    th.text-center Date
-                                    th.text-center Time
+                                    th.text-center.col-sm-2 ID
+                                    th.text-center.col-sm-5 Name
+                                    th.text-center.col-sm-2 Date
+                                    th.text-center.col-sm-2 Time
+                                    th.text-center.col-sm-1 ลบ
                             tbody#smWeekBody
