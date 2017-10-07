@@ -208,6 +208,7 @@ module.exports=function(app,db){
         addPugPage("adminCoursedescription",options);
         addPugPage("tutorCommentStudent",options);
         addPugPage("tutorEditProfile",options);
+        addPugPage("adminStudentAttendanceModifier",options);
         addPugPage("tutorCourseMaterial",options,function(callback,req,res){
             var local={moment:moment};
             getQuarter(req.query.year,req.query.quarter,function(err,quarter){
@@ -228,7 +229,6 @@ module.exports=function(app,db){
             });
         });
         options.middlewareOptions.position={$in:["admin","dev"]};
-        addPugPage("adminStudentAttendanceModifier",options);
         addPugPage("adminAllstudent",options);
         addPugPage("adminStudentProfileQ4",options);
         addPugPage("adminConference",options);
