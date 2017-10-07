@@ -177,9 +177,11 @@ function removeAttend(id) {
     if (confirm("ต้องการลบประวัติการลานี้?")) {
         $.post("post/removeStudentAttendanceModifier", { modifierID: id }).then(() => {
             genCrTable();
-            let picked = $('.typeahead').typeahead("getActive");
-            genPickedTable(picked.id);
             genTableByWeek();
+            let picked = $('.typeahead').typeahead("getActive");
+            if (picked != undefined) {
+                genPickedTable(picked.id);
+            }
         })
     }
 }
@@ -213,6 +215,8 @@ function genTableByName() {
     })
 }
 function genPickedTable(ID) {
+    $("#smAbsentBody").empty();
+    $("#smPresentBody").empty();
     let time = moment().date(8).month(9);
     $.post("post/listStudentAttendanceModifierByStudent", { studentID: ID, start: time.valueOf() }).done(function (data) {
         let oldAbsentDay = moment(0);
@@ -268,7 +272,6 @@ function genTableByWeek() {
     Promise.all(weekPromise).then((data) => {
         for (let i = 0; i < data.length; i += 2) {
             for (let j in data[i].absence) {
-                log(data[i].absence[j]);
                 if (data[i].absence[j].reason == "ลา") {
                     $("#smWeekBody").append(
                         "<tr class='danger smAbsentRow'>" +
