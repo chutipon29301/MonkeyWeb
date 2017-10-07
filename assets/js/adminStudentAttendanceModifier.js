@@ -96,6 +96,7 @@ function genCrTable() {
                         "<td class='text-center'>" + data.absence[i].studentID + "</td>" +
                         "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center absentSubject" + i + "'></td>" +
+                        "<td class='text-center absentTutor" + i + "'></td>" +
                         "<td class='text-center'>" + data.absence[i].reason + "</td>" +
                         "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
                         "</tr>"
@@ -103,7 +104,6 @@ function genCrTable() {
                     myFHB(dt[0][i].courseID, dt[1][i], dataDate, i);
                 }
             }
-            filterTable();
         })
     })
 }
@@ -114,7 +114,9 @@ function myFHB(cr, fhb, time, index) {
     for (let i in fhb) {
         if (moment(fhb[i].day).day() == time.day() && moment(fhb[i].day).hour() == time.hour()) {
             $(".row" + index).addClass("fhb");
+            $(".absentTutor" + index).html("HB");
             $(".absentSubject" + index).html("FHB:" + fhb[i].subject);
+            filterTable();
             return;
         }
     }
@@ -128,11 +130,19 @@ function myFHB(cr, fhb, time, index) {
                 if (moment(data[i].day).day() == time.day() && moment(data[i].day).hour() == time.hour()) {
                     if (data[i].tutor[0] == 99000) {
                         $(".row" + index).addClass("fhb");
+                        $(".absentTutor" + index).html("HB");
+                        $(".absentSubject" + index).html("CR:" + data[i].courseName);
+                        filterTable();
+                        return;
                     } else {
                         $(".row" + index).addClass("cr");
+                        $.post("post/name", { userID: data[i].tutor[0] }).then((tutorName) => {
+                            $(".absentTutor" + index).html(tutorName.nicknameEn);
+                            $(".absentSubject" + index).html("CR:" + data[i].courseName);
+                            filterTable();
+                            return;
+                        })
                     }
-                    $(".absentSubject" + index).html("CR:" + data[i].courseName);
-                    return;
                 }
             }
         }
@@ -141,7 +151,7 @@ function myFHB(cr, fhb, time, index) {
 function filterTable() {
     let filter = $("#filterPick").val();
     switch (filter) {
-        case "FHB":
+        case "HB":
             $(".cr").hide();
             $(".fhb").show();
             break;
