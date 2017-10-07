@@ -11,6 +11,7 @@ block body
         ul.nav.nav-tabs
             li.active: a(data-toggle="tab" href="#fhb") FHB
             li: a(data-toggle="tab" href="#sm") SUMMER
+            li: a(data-toggle="tab" href="#addAttend") ADD
         .tab-content
             #fhb.tab-pane.fade.in.active
                 .row
@@ -95,7 +96,7 @@ block body
                                     option(value="0") Select Week
                                     option(value="9") 9-13
                                     option(value="16") 16-20
-                                    option(value="23") 23-17
+                                    option(value="23") 23-27
                         form.col-sm-2
                             .form-group
                                 label(for="typeSelect") Filter:
@@ -113,3 +114,35 @@ block body
                                     th.text-center.col-sm-2 Time
                                     th.text-center.col-sm-1 ลบ
                             tbody#smWeekBody
+            #addAttend.tab-pane.fade
+                .row
+                    .col-sm-3
+                        .form-group
+                            label.control-label Day:
+                            input.form-control#addDatePicker(type="text")
+                    .col-sm-3
+                        .form-group
+                            label.control-label StudentID:
+                            input.form-control#addID(type="text")
+                    .col-sm-3
+                        .form-group
+                            label.control-label Sender:
+                            input.form-control#addSender(type="text")
+                    .col-sm-3
+                        .form-group
+                            label Type:
+                            select.form-control#addType(type="text")
+                                option ลา
+                                option เพิ่ม
+                .row
+                    .col-sm-6
+                        .form-group
+                            label.control-label Reason:
+                            input.form-control#addReason(type="text")
+                    .col-sm-3
+                        .form-group
+                            label Type:
+                            select.form-control#addSubj(type="text")
+                                option FHB:M
+                                option FHB:P
+                button.btn.btn-primary.col-sm-1.col-sm-offset-11#addNewAttend ADD NEW
