@@ -1,3 +1,27 @@
+var gradeBitToString = function (bit) {
+    var output = '', p = false, s = false;
+    for (var i = 0; i < 6; i++) {
+        if (bit & (1 << i)) {
+            if (p == false) {
+                p = true;
+                output += 'P';
+            }
+            output += (i + 1);
+        }
+    }
+    for (var i = 0; i < 6; i++) {
+        if (bit & (1 << (i + 6))) {
+            if (s == false) {
+                s = true;
+                output += 'S';
+            }
+            output += (i + 1);
+        }
+    }
+    if (bit & (1 << 12)) output += 'SAT';
+    return output;
+};
+
 module.exports = function (app, db, post) {
 
     var quarterDB = db.collection('quarter');
@@ -5,7 +29,7 @@ module.exports = function (app, db, post) {
     var studentSkillDB = db.collection('skillStudent');
     var userDB = db.collection('user');
     var courseDB = db.collection("course");
-    
+
     /**
      * Post method for adding hybrid day to quarter
      * req.body = {
@@ -621,28 +645,85 @@ module.exports = function (app, db, post) {
             });
         });
     });
-}
 
-var gradeBitToString = function (bit) {
-    var output = '', p = false, s = false;
-    for (var i = 0; i < 6; i++) {
-        if (bit & (1 << i)) {
-            if (p == false) {
-                p = true;
-                output += 'P';
-            }
-            output += (i + 1);
+    post('/post/v1/allRoom', function (req, res) {
+        if (req.body.year === undefined || req.body.quarter === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
         }
-    }
-    for (var i = 0; i < 6; i++) {
-        if (bit & (1 << (i + 6))) {
-            if (s == false) {
-                s = true;
-                output += 'S';
+
+        var courseRoom = courseDB.find({
+            quarter: parseInt(req.body.quarter),
+            year: parseInt(req.body.year)
+        }).toArray();
+
+        var hybridRoom = quarterDB.findOne({
+            quarter: parseInt(req.body.quarter),
+            year: parseInt(req.body.year)
+        }).then(data => {
+            return studentHybridDB.find({
+                quarterID: data._id
+            }).toArray();
+        });
+
+        var promise = [];
+        var responseObject = {};
+        var dayList = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+        promise.push(courseRoom);
+        promise.push(hybridRoom);
+
+        Promise.all(promise).then(values => {
+            for (let i = 0; i < values.length; i++) {
+                switch (i) {
+                    case 0:
+                        for (let j = 0; j < values[i].length; j++) {
+                            var date = new Date(values[i][j].day);
+                            var field = dayList[date.getDay() % 7] + date.getHours();
+                            if (responseObject[field] === undefined) {
+                                responseObject[field] = {};
+                            }
+                            if(responseObject[field]['room'+values[i][j].room] === undefined){
+                                responseObject[field]['room'+values[i][j].room] = {};
+                                responseObject[field]['room'+values[i][j].room].course = [];
+                                responseObject[field]['room'+values[i][j].room].studentCount = 0;
+                            }
+                            responseObject[field]['room'+values[i][j].room].studentCount += values[i][j].student.length;
+                            responseObject[field]['room'+values[i][j].room].course.push({
+                                courseID: values[i][j]._id,
+                                num: values[i][j].student.length
+                            });
+                        }
+                        break;
+                    case 1:
+                        for (let j = 0; j < values[i].length; j++) {
+                            var date = new Date(values[i][j].day);
+                            var field = dayList[date.getDay() % 7] + date.getHours();
+                            if (responseObject[field] === undefined) {
+                                responseObject[field] = [];
+                            }
+                            if(responseObject[field]['room0'] === undefined){
+                                responseObject[field]['room0'] = [];
+                                responseObject[field]['room0'].hybrid = [];
+                                responseObject[field]['room0'].studentCount = 0;
+                            }else if(responseObject[field]['room0'].hybrid === undefined){
+                                responseObject[field]['room0'].hybrid = [];
+                            }
+                            responseObject[field]['room0'].studentCount += values[i][j].student.length;
+                            responseObject[field]['room0'].hybrid.push({
+                                hybridID: values[i][j]._id,
+                                num: values[i][j].student.length
+                            });
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
-            output += (i + 1);
-        }
-    }
-    if (bit & (1 << 12)) output += 'SAT';
-    return output;
-};
+            res.status(200).send(responseObject);
+        });
+
+    });
+}
