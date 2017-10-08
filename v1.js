@@ -31,6 +31,19 @@ module.exports = function (app, db, post) {
     var courseDB = db.collection('course');
     var configDB = db.collection('config');
 
+    /**
+     * List all quarter available
+     * req.body = {
+     *      status: 'public' => Select from ['public','protected','private']
+     * }
+     * if not error
+     * res.body = {
+     *      quarterID: 201701,
+     *      year: 2017,
+     *      quarter: 1,
+     *      ...
+     * }
+     */
     post('/post/v1/listQuarter', function (req, res) {
         var status;
         if (req.body.status === undefined) {
@@ -70,6 +83,8 @@ module.exports = function (app, db, post) {
      *      year: 2017
      *      day: 1023004020
      * }
+     * 
+     * if not error:
      * res.body = 'OK'
      */
     post('/post/v1/addHybridDayToQuarter', function (req, res) {
@@ -119,6 +134,7 @@ module.exports = function (app, db, post) {
      *      quarter: 4
      *      year: 2017
      * }
+     * if not error
      * res.body = [
      *      day: 34320000
      *      hybridID: 49fjf8weijrfsfs4
@@ -162,6 +178,7 @@ module.exports = function (app, db, post) {
      *      studentID: 15999
      *      subject: 'M'
      * }
+     * if not error
      * res.body = 'OK'
      */
     post('/post/v1/addHybridStudent', function (req, res) {
@@ -191,6 +208,7 @@ module.exports = function (app, db, post) {
      *      hybridID: miagjngoajew934jr3432e3
      *      studentID: 15999
      * }
+     * if not error
      * res.body = 'OK'
      */
     post('/post/v1/removeHybridStudent', function (req, res) {
@@ -220,11 +238,13 @@ module.exports = function (app, db, post) {
      *      quarter: 4
      *      year: 2017
      * }
+     * if not error
      * res.body = [
      *      {
      *          day: 43959400000
      *          hybridID: 'kiq034krmif035g'
-     *      }
+     *      }, 
+     *      ...
      * ]
      */
     post('/post/v1/listStudentHybrid', function (req, res) {
@@ -285,6 +305,7 @@ module.exports = function (app, db, post) {
      *      year: 2017
      *      day: 1023004020
      * }
+     * if not error
      * res.body = 'OK'
      */
     post('/post/v1/addSkillDayToQuarter', function (req, res) {
@@ -335,6 +356,7 @@ module.exports = function (app, db, post) {
      *      quarter: 4
      *      year: 2017
      * }
+     * if not error
      * res.body = [
      *      day: 34320000
      *      skillID: 49fjf8weijrfsfs4
@@ -379,6 +401,7 @@ module.exports = function (app, db, post) {
      *      studentID: 15999
      *      subject: 'M'
      * }
+     * if not error
      * res.body = 'OK'
      */
     post('/post/v1/addSkillStudent', function (req, res) {
@@ -408,6 +431,7 @@ module.exports = function (app, db, post) {
      *      skillID: miagjngoajew934jr3432e3
      *      studentID: 15999
      * }
+     * if not error
      * res.body = 'OK'
      */
     post('/post/v1/removeSkillStudent', function (req, res) {
@@ -437,6 +461,7 @@ module.exports = function (app, db, post) {
      *      quarter: 4
      *      year: 2017
      * }
+     * if not error
      * res.body = [
      *      {
      *          day: 43959400000
@@ -493,6 +518,42 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Post method for list student time table
+     * req.body = {
+     *      year: 2017,
+     *      quarter: 1,
+     *      studentID: 15999
+     * }
+     * 
+     * if not error
+     * res.body = {
+     *      course: [
+     *          {
+     *              courseID: 'awmfmiu40h3qa94gaf94wr42wf',
+     *              courseName: 'MS123a',
+     *              day: 10000000000,
+     *              tutorName: 'Hybrid'
+     *          }
+     *      ],
+     *      hybrid: [
+     *          {
+     *              courseID: 'awmfmiu40h3qa94gaf94wr42wf',
+     *              courseName: 'MS123a',
+     *              day: 10000000000,
+     *              tutorName: 'Hybrid'
+     *          }
+     *      ],
+     *      skill: [
+     *          {
+     *              courseID: 'awmfmiu40h3qa94gaf94wr42wf',
+     *              courseName: 'MS123a',
+     *              day: 10000000000,
+     *              tutorName: 'Hybrid'
+     *          }
+     *      ]
+     * }
+     */
     post('/post/v1/studentTimeTable', function (req, res) {
         if (req.body.year === undefined || req.body.quarter === undefined || req.body.studentID === undefined) {
             return res.status(400).send({
@@ -589,6 +650,26 @@ module.exports = function (app, db, post) {
         })
     });
 
+    /**
+     * Post method for list all subject in quarter
+     * req.body = {
+     *      year: 2017,
+     *      quarter: 3
+     * }
+     * 
+     * if not error
+     * res.body = {
+     *      course: [
+     *          {
+     *              courseID: '349w7hxtq3un4w9hrt43',
+     *              courseName: 'MS123a',
+     *              day: 10000000000,
+     *              tutorName: 'Hybrid'
+     *          },
+     *          ...
+     *      ]
+     * }
+     */
     post('/post/v1/listSubjectInQuarter', function (req, res) {
         if (req.body.year === undefined || req.body.quarter === undefined) {
             return res.status(400).send({
@@ -679,6 +760,37 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Post method fot getting room info
+     * req.body = {
+     *      year 2017,
+     *      quarter: 4
+     * }
+     * if not error
+     * res.body = {
+     *      sat8: {
+     *          room0: {
+     *              course: [
+     *                  {
+     *                      courseID: '2j94jfu3hfeifkf24g4sdfs',
+     *                      courseName: 'MS123a',
+     *                      num: 10
+     *                  },
+     *                  ...
+     *              ],
+     *              studentCount: 30,
+     *              hybrid: [
+     *                  {
+     *                      hybridID: '49aw7hfj4gawrtf4wgweaf34',
+     *                      num: 20
+     *                  },
+     *                  ...
+     *              ]
+     *          }
+     *      },
+     *      ...
+     * }
+     */
     post('/post/v1/allRoom', function (req, res) {
         configDB.findOne({
             _id: 'config'
@@ -694,9 +806,9 @@ module.exports = function (app, db, post) {
                 year = parseInt(req.body.year);
             }
 
-            if(quarterID !== undefined){
-                year = parseInt(quarterID.substring(0,4));
-                quarter = parseInt(quarterID.substring(4,quarterID.length));
+            if (quarterID !== undefined) {
+                year = parseInt(quarterID.substring(0, 4));
+                quarter = parseInt(quarterID.substring(4, quarterID.length));
             }
 
             var courseRoom = courseDB.find({
