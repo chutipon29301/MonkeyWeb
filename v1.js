@@ -28,7 +28,40 @@ module.exports = function (app, db, post) {
     var studentHybridDB = db.collection('hybridStudent');
     var studentSkillDB = db.collection('skillStudent');
     var userDB = db.collection('user');
-    var courseDB = db.collection("course");
+    var courseDB = db.collection('course');
+    var configDB = db.collection('config');
+
+    post('/post/v1/listQuarter', function (req, res) {
+        var status;
+        if (req.body.status === undefined) {
+            status = 'public';
+        } else {
+            status = req.body.status;
+        }
+        var query = [];
+        switch (status) {
+            case 'private':
+                query.push('private');
+            case 'protected':
+                query.push('protected');
+            case 'public':
+            default:
+                query.push('public');
+                break;
+        }
+
+        quarterDB.find({
+            status: {
+                $in: query
+            }
+        }).toArray().then(result => {
+            for (var i = 0; i < result.length; i++) {
+                result[i].quarterID = result[i]._id;
+                delete result[i]._id;
+            }
+            return res.status(200).send(result);
+        });
+    });
 
     /**
      * Post method for adding hybrid day to quarter
@@ -647,83 +680,97 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/allRoom', function (req, res) {
-        if (req.body.year === undefined || req.body.quarter === undefined) {
-            return res.status(400).send({
-                err: -1,
-                msg: 'Bad Request'
-            });
-        }
-
-        var courseRoom = courseDB.find({
-            quarter: parseInt(req.body.quarter),
-            year: parseInt(req.body.year)
-        }).toArray();
-
-        var hybridRoom = quarterDB.findOne({
-            quarter: parseInt(req.body.quarter),
-            year: parseInt(req.body.year)
-        }).then(data => {
-            return studentHybridDB.find({
-                quarterID: data._id
-            }).toArray();
-        });
-
-        var promise = [];
-        var responseObject = {};
-        var dayList = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-
-        promise.push(courseRoom);
-        promise.push(hybridRoom);
-
-        Promise.all(promise).then(values => {
-            for (let i = 0; i < values.length; i++) {
-                switch (i) {
-                    case 0:
-                        for (let j = 0; j < values[i].length; j++) {
-                            var date = new Date(values[i][j].day);
-                            var field = dayList[date.getDay() % 7] + date.getHours();
-                            if (responseObject[field] === undefined) {
-                                responseObject[field] = {};
-                            }
-                            if(responseObject[field]['room'+values[i][j].room] === undefined){
-                                responseObject[field]['room'+values[i][j].room] = {};
-                                responseObject[field]['room'+values[i][j].room].course = [];
-                                responseObject[field]['room'+values[i][j].room].studentCount = 0;
-                            }
-                            responseObject[field]['room'+values[i][j].room].studentCount += values[i][j].student.length;
-                            responseObject[field]['room'+values[i][j].room].course.push({
-                                courseID: values[i][j]._id,
-                                num: values[i][j].student.length
-                            });
-                        }
-                        break;
-                    case 1:
-                        for (let j = 0; j < values[i].length; j++) {
-                            var date = new Date(values[i][j].day);
-                            var field = dayList[date.getDay() % 7] + date.getHours();
-                            if (responseObject[field] === undefined) {
-                                responseObject[field] = [];
-                            }
-                            if(responseObject[field]['room0'] === undefined){
-                                responseObject[field]['room0'] = [];
-                                responseObject[field]['room0'].hybrid = [];
-                                responseObject[field]['room0'].studentCount = 0;
-                            }else if(responseObject[field]['room0'].hybrid === undefined){
-                                responseObject[field]['room0'].hybrid = [];
-                            }
-                            responseObject[field]['room0'].studentCount += values[i][j].student.length;
-                            responseObject[field]['room0'].hybrid.push({
-                                hybridID: values[i][j]._id,
-                                num: values[i][j].student.length
-                            });
-                        }
-                        break;
-                    default:
-                        break;
-                }
+        configDB.findOne({
+            _id: 'config'
+        }).then(config => {
+            var quarter, year, quarterID;
+            quarterID = req.body.quarterID;
+            console.log(req.body);
+            if (req.body.year === undefined || req.body.quarter === undefined) {
+                quarter = config.defaultQuarter.quarter.quarter;
+                year = config.defaultQuarter.quarter.year
+            } else {
+                quarter = parseInt(req.body.quarter);
+                year = parseInt(req.body.year);
             }
-            res.status(200).send(responseObject);
-        });
 
+            if(quarterID !== undefined){
+                year = parseInt(quarterID.substring(0,4));
+                quarter = parseInt(quarterID.substring(4,quarterID.length));
+            }
+
+            var courseRoom = courseDB.find({
+                quarter: quarter,
+                year: year
+            }).toArray();
+
+            var hybridRoom = quarterDB.findOne({
+                quarter: quarter,
+                year: year
+            }).then(data => {
+                return studentHybridDB.find({
+                    quarterID: data._id
+                }).toArray();
+            });
+
+            var promise = [];
+            var response = {};
+            var dayList = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+            promise.push(courseRoom);
+            promise.push(hybridRoom);
+
+            Promise.all(promise).then(values => {
+                for (let i = 0; i < values.length; i++) {
+                    switch (i) {
+                        case 0:
+                            for (let j = 0; j < values[i].length; j++) {
+                                var date = new Date(values[i][j].day);
+                                var field = dayList[date.getDay() % 7] + date.getHours();
+                                if (response[field] === undefined) {
+                                    response[field] = {};
+                                }
+                                if (response[field]['room' + values[i][j].room] === undefined) {
+                                    response[field]['room' + values[i][j].room] = {};
+                                    response[field]['room' + values[i][j].room].course = [];
+                                    response[field]['room' + values[i][j].room].studentCount = 0;
+                                }
+                                response[field]['room' + values[i][j].room].studentCount += values[i][j].student.length;
+                                response[field]['room' + values[i][j].room].course.push({
+                                    courseID: values[i][j]._id,
+                                    courseName: values[i][j].subject + gradeBitToString(values[i][j].grade) + values[i][j].level,
+                                    num: values[i][j].student.length
+                                });
+                            }
+                            break;
+                        case 1:
+                            for (let j = 0; j < values[i].length; j++) {
+                                var date = new Date(values[i][j].day);
+                                var field = dayList[date.getDay() % 7] + date.getHours();
+                                if (response[field] === undefined) {
+                                    response[field] = {};
+                                }
+                                if (response[field]['room0'] === undefined) {
+                                    response[field]['room0'] = {};
+                                    response[field]['room0'].hybrid = [];
+                                    response[field]['room0'].studentCount = 0;
+                                } else if (response[field]['room0'].hybrid === undefined) {
+                                    response[field]['room0'].hybrid = [];
+                                }
+                                response[field]['room0'].studentCount += values[i][j].student.length;
+                                response[field]['room0'].hybrid.push({
+                                    hybridID: values[i][j]._id,
+                                    num: values[i][j].student.length
+                                });
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                res.status(200).send(response);
+            });
+
+        });
     });
 }
