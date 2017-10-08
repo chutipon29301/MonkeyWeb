@@ -2,147 +2,17 @@ extends htmlTemplate
 block head
     -const pageTitle = "Course Room"
     script(src="js/admin.min.js")
-    //- script(
-    //-     data-require="rxjs@*"
-    //-     data-semver="2.5.3"
-    //-     src="//cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.3/rx.all.js"
-    //- )
-    //- script(
-    //-     data-require="rx.angular.js@*"
-    //-     data-semver="0.0.14"
-    //-     src="https://cdn.rawgit.com/Reactive-Extensions/rx.angular.js/v0.0.14/dist/rx.angular.js"
-    //- )
-    //- style.
-    //-     .clickCard .md-button {
-    //-         padding: 0 !important;
-    //-     }
-    //-     .clickCard md-card {
-    //-         margin: 1px;
-    //-     }
 block body
     include generalTemplate
-
     .container
         .row
             h2 Room
         .row
             .form-group.col-sm-2
                 select#quarterSelect(name="Select Quarter" onchange="getTableContent()").form-control
-
         .row
             ul#tabs.nav.nav-tabs
             #content.tab-content
-                #fhb.tab-pane.fade.in.active
-                    h3 For FHB(On develop)
-                #sm.tab-pane.fade
-                    ul.breadcrumb
-                        li: a#aByName(href="#") By Name
-                        li: a#aByWeek(href="#") By Week
-                    #smByName.collapse
-                    #smByWeek.collapse
-                        .row
-                            form.col-sm-2
-                                .form-group
-                                    label(for="weekSelect") Week:
-                                    select.form-control#weekSelect
-                                        option(value="0") Select Week
-                                        option(value="9") 9-13
-                                        option(value="16") 16-20
-                                        option(value="23") 23-17
-                            form.col-sm-2
-                                .form-group
-                                    label(for="typeSelect") Filter:
-                                    select.form-control#typeSelect
-                                        option(value="0") No filter
-                                        option(value="1") ลา
-                                        option(value="2") เพิ่ม
-                        .table-responsive
-                            table.table.table-hover.table-bordered
-                                thead
-                                    tr
-                                        th.text-center ID
-                                        th.text-center Name
-                                        th.text-center Date
-                                        th.text-center Time
-                                tbody#smWeekBody
     script(src="js/adminRoom.js")
     script.
         getPageContent();
-    //- +angular-template("tableRoom")
-    //-     //- div(ng-controller="selectQuarter")
-    //-     //-     md-input-container(flex-sm="100" flex-gt-sm="100" flex-gt-md="100")
-    //-     //-         label Select quarter
-    //-     //-         md-select(ng-model='selectedItem', md-selected-text='getSelectedText()')
-    //-     //-             md-optgroup(label='Quarter')
-    //-     //-                 md-option(ng-value='aQuarter', ng-repeat='aQuarter in quarter') {{aQuarter.name}}
-    //-     div(layout layout-align="center center")
-    //-         .md-whiteframe-3dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
-    //-             h2 CR60Q3
-    //-             div(ng-cloak)
-    //-                 md-content
-    //-                     md-tabs(md-dynamic-height="", md-border-bottom="")
-    //-                         +adminRoom("Tue", "tue", "Tuesday")
-    //-                         +adminRoom("Thu", "thu", "Thursday")
-    //-                         +adminRoom("Sat8", "sat8", "Saturday 8:00 - 10:00")
-    //-                         +adminRoom("Sat10", "sat10", "Saturday 10:00 - 12:00")
-    //-                         +adminRoom("Sat13", "sat13", "Saturday 13:00 - 15:00")
-    //-                         +adminRoom("Sat15", "sat15", "Saturday 15:00 - 17:00")
-    //-                         +adminRoom("Sun8", "sun8", "Sunday 8:00 - 10:00")
-    //-                         +adminRoom("Sun10", "sun10", "Sunday 10:00 - 12:00")
-    //-                         +adminRoom("Sun13", "sun13", "Sunday 13:00 - 15:00")
-    //-                         +adminRoom("Sun15", "sun15", "Sunday 15:00 - 17:00")
-    //-     hr
-    //-     div(layout layout-align="center center")
-    //-         .md-whiteframe-3dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
-    //-             h2 CR60OCT
-    //-             div(ng-cloak)
-    //-                 md-content
-    //-                     md-tabs(md-dynamic-height="", md-border-bottom="")
-    //-                         +adminRoom("Mon8", "mon8", "Monday 8:00 - 10:00")
-    //-                         +adminRoom("Mon10", "mon10", "Monday 10:00 - 12:00")
-    //-                         +adminRoom("Mon13", "mon13", "Monday 13:00 - 15:00")
-    //-     div(layout layout-align="center center")
-    //-         .md-whiteframe-3dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
-    //-             h2 Quarter 4
-    //-             div(ng-cloak)
-    //-                 md-content
-    //-                     div(ng-controller=quarter4)
-    //-                         md-tabs(md-dynamic-height="", md-border-bottom="")
-    //-                             +roomTab("Mon8", "Monday 8:00 - 10:00")
-    //-                             +roomTab("Mon10", "Monday 10:00 - 12:00")
-    //-                             +roomTab("Mon13", "Monday 13:00 - 15:00")
-
-    //-     +angular-js
-        script(src="js/adminRoom.js")
-
-//- mixin adminRoom(label, controller, display)
-//-     md-tab(label=label)
-//-         md-content.md-padding
-//-             div(ng-controller=controller)
-//-                 .md-display-1= display
-//-                     md-content.md-padding
-//-                         md-list-item.clickCard(ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room)")
-//-                             md-card.md-title.md-padding(flex="100" layout="row" layout-align="space-between center" md-colors="{background: room.bgColor}")
-//-                                 div
-//-                                     span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-//-                                     span(ng-if="room.property=='expandable'") 
-//-                                 div {{ room.courseName }}
-//-                                 div
-//-                                     span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-//-                                     span(ng-if="room.property=='expandable'") {{ room.noStudent }}
-
-                
-//- mixin roomTab(label, display)
-//-     md-tab(label=label)
-//-         md-content.md-padding
-//-             .md-display-1= display
-//-                 md-content.md-padding
-//-                     md-list-item.clickCard(ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room)")
-//-                         md-card.md-title.md-padding(flex="100" layout="row" layout-align="space-between center" md-colors="{background: room.bgColor}")
-//-                             div
-//-                                 span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-//-                                 span(ng-if="room.property=='expandable'") 
-//-                             div {{ room.courseName }}
-//-                             div
-//-                                 span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-//-                                 span(ng-if="room.property=='expandable'") {{ room.noStudent }}
