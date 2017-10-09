@@ -6,12 +6,15 @@ block body
     include generalTemplate
     .container
         .row
-            h2 Room
+            .col-sm-12
+                h2 Room
         .row
             .form-group.col-sm-2
                 select#quarterSelect(name="Select Quarter" onchange="getTableContent()").form-control
         .row
-            ul#tabs.nav.nav-tabs
+            .col-sm-12
+                ul#tabs.nav.nav-tabs
+        .row
             #content.tab-content
     script(src="js/adminRoom.js")
     script.

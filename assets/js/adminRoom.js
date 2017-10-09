@@ -49,6 +49,7 @@ function getTableContent() {
         for (let i = 0; i < keys.length; i++) {
             tabs.innerHTML += '<li ' + ((i === 0) ? 'class="active"' : '') + '><a data-toggle="tab" href="#' + keys[i] + '">' + keys[i] + '</a></li>';
             content.innerHTML += '<div id="' + keys[i] + '" class = "fade collapse container' + ((i === 0) ? ' active in' : '') + '">' +
+                '<div class = "table-responsive">' +
                 '<table class = "table table-hover table-bordered">' +
                 '<thead>' +
                 '<tr>' +
@@ -60,6 +61,7 @@ function getTableContent() {
                 '<tbody id = "' + keys[i] + '">' +
                 '</tbody>' +
                 '</table>' +
+                '</div>' +
                 '</div>';
             var rooms = []
             for (var room in data[keys[i]]) {
