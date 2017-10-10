@@ -5,7 +5,6 @@ var allRoom = (quarterID) => $.post('post/v1/allRoom', {
 });
 
 function getPageContent() {
-
     getConfig().then(config => {
         allQuarter().then(data => {
             var selectQuarter = document.getElementById('quarterSelect');
