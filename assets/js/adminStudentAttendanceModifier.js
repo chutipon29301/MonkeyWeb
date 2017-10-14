@@ -8,7 +8,6 @@ $(document).ready(function () {
     $("#datePicker").datetimepicker({
         format: "DD/MM/YYYY",
         daysOfWeekDisabled: [1, 3, 5],
-        minDate: moment()
     });
     genCrTimePick();
     genCrTable();
