@@ -52,9 +52,11 @@ function getTableContent() {
                 '<table class = "table table-hover table-bordered">' +
                 '<thead>' +
                 '<tr>' +
-                '<th>Room</th>' +
-                '<th>Course</th>' +
-                '<th>No.</th>' +
+                '<th class="col-sm-2">Room</th>' +
+                '<th class="col-sm-2">Course</th>' +
+                '<th class="col-sm-2">Tutorname</th>' +
+                '<th class="col-sm-1">No. of Student</th>' +
+                '<th class="col-sm-1">Max Student</th>' +
                 '</tr>' +
                 '</thead>' +
                 '<tbody id = "' + keys[i] + '">' +
@@ -76,15 +78,20 @@ function getTableContent() {
                 let cell0 = row.insertCell(0);
                 let cell1 = row.insertCell(1);
                 let cell2 = row.insertCell(2);
+                let cell3 = row.insertCell(3);
+                let cell4 = row.insertCell(4);
 
                 if (rooms[j] !== 'room0' && data[keys[i]][rooms[j]].course !== undefined) {
-                    log(data[keys[i]][rooms[j]].course[0]);
                     cell1.innerHTML = '<td>' + data[keys[i]][rooms[j]].course[0].courseName + '</td>';
+                    cell2.innerHTML = '<td>' + data[keys[i]][rooms[j]].course[0].tutorName + '</td>';
                 } else {
                     cell1.innerHTML = '<td>Hybrid</td>';
+                    cell2.innerHTML = '<td>Hybrid</td>';
                 }
+                log(data[keys[i]][rooms[j]].course);
                 cell0.innerHTML = '<td>' + roomName[rooms[j]] + '</td>';
-                cell2.innerHTML = '<td>' + data[keys[i]][rooms[j]].studentCount + '</td>';
+                cell3.innerHTML = '<td>' + data[keys[i]][rooms[j]].studentCount + '</td>';
+                cell4.innerHTML = '<td>' + data[keys[i]][rooms[j]].maxStudent + '</td>';
             }
         }
 
