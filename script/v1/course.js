@@ -20,7 +20,7 @@ module.exports = function (app, db, post, gradeBitToString, gradeBitToArray) {
      *          day: 18000000,
      *          tutorName: 'Hybrid',
      *          studentCount: 10,
-     *          room: 1
+     *          room: 1,
      *          grade: [
      *              4,5,6
      *          ]
