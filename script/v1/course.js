@@ -3,6 +3,30 @@ module.exports = function (app, db, post, gradeBitToString, gradeBitToArray) {
     var configDB = db.collection('config');
     var userDB = db.collection('user');
 
+    /**
+     * Post method for getting all course
+     * 
+     * Optional
+     * req.body = {
+     *      year 2017,
+     *      quarter: 4
+     * }
+     * 
+     * if not error
+     * res.body = [
+     *      {
+     *          courseID: 'aurnvaweivawb83u24RQE9QJDF3F',
+     *          courseName: 'MS123a',
+     *          day: 18000000,
+     *          tutorName: 'Hybrid',
+     *          studentCount: 10,
+     *          room: 1
+     *          grade: [
+     *              4,5,6
+     *          ]
+     *      }
+     * ]
+     */
     post('/post/v1/allCourse', function (req, res) {
         configDB.findOne({
             _id: 'config'
