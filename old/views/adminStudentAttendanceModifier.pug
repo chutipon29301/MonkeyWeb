@@ -5,7 +5,7 @@ block head
     script(src="js/admin.min.js")
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/adminStudentAttendanceModifier.min.js")
+    script(src="js/adminStudentAttendanceModifier.js")
 block body
     .container
         ul.nav.nav-tabs
@@ -28,6 +28,7 @@ block body
                             label Filter:
                             select.form-control#filterPick(type="text")
                                 option ALL
+                                option FHB
                                 option HB
                                 option CR
                 .row

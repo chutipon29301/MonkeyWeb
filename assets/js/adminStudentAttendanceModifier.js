@@ -166,7 +166,7 @@ function myFHB(cr, fhb, time, index) {
             if (data[i].quarter == crQuarter) {
                 if (moment(data[i].day).day() == time.day() && moment(data[i].day).hour() == time.hour()) {
                     if (data[i].tutor[0] == 99000) {
-                        $(".row" + index).addClass("fhb");
+                        $(".row" + index).addClass("hb");
                         $(".absentTutor" + index).html("HB");
                         $(".absentSubject" + index).html("CR:" + data[i].courseName);
                         filterTable();
@@ -190,14 +190,22 @@ function filterTable() {
     switch (filter) {
         case "HB":
             $(".cr").hide();
+            $(".hb").show();
             $(".fhb").show();
             break;
         case "CR":
+            $(".hb").show();
             $(".fhb").hide();
             $(".cr").show();
             break;
+        case "FHB":
+            $(".hb").hide();
+            $(".fhb").show();
+            $(".cr").hide();
+            break;
         default:
             $(".fhb").show();
+            $(".hb").show();
             $(".cr").show();
             break;
     }
