@@ -8,7 +8,6 @@ $(document).ready(function () {
     $("#datePicker").datetimepicker({
         format: "DD/MM/YYYY",
         daysOfWeekDisabled: [1, 3, 5],
-        minDate: moment()
     });
     genCrTimePick();
     genCrTable();
@@ -23,18 +22,28 @@ $(document).ready(function () {
         filterTable();
     });
     // for summer
+    genSmCrPick();
     genTableByName();
     $("#smByName").collapse("show");
     $("#aByName").click(function () {
         $("#smByWeek").collapse("hide");
+        $("#smByCourse").collapse("hide");
         setTimeout(function () {
             $("#smByName").collapse("show");
         }, 500);
     });
     $("#aByWeek").click(function () {
         $("#smByName").collapse("hide");
+        $("#smByCourse").collapse("hide");
         setTimeout(function () {
             $("#smByWeek").collapse("show");
+        }, 500);
+    });
+    $("#aByCourse").click(function () {
+        $("#smByName").collapse("hide");
+        $("#smByWeek").collapse("hide");
+        setTimeout(function () {
+            $("#smByCourse").collapse("show");
         }, 500);
     });
     $("#weekSelect").change(function () {
@@ -42,6 +51,9 @@ $(document).ready(function () {
     })
     $("#typeSelect").change(function () {
         filterSmTable();
+    })
+    $("#smCrSelect").change(function () {
+        genSmTableByCr();
     })
     // for add new attendance
     $("#addDatePicker").datetimepicker({
@@ -154,7 +166,7 @@ function myFHB(cr, fhb, time, index) {
             if (data[i].quarter == crQuarter) {
                 if (moment(data[i].day).day() == time.day() && moment(data[i].day).hour() == time.hour()) {
                     if (data[i].tutor[0] == 99000) {
-                        $(".row" + index).addClass("fhb");
+                        $(".row" + index).addClass("hb");
                         $(".absentTutor" + index).html("HB");
                         $(".absentSubject" + index).html("CR:" + data[i].courseName);
                         filterTable();
@@ -178,14 +190,22 @@ function filterTable() {
     switch (filter) {
         case "HB":
             $(".cr").hide();
+            $(".hb").show();
             $(".fhb").show();
             break;
         case "CR":
+            $(".hb").show();
             $(".fhb").hide();
             $(".cr").show();
             break;
+        case "FHB":
+            $(".hb").hide();
+            $(".fhb").show();
+            $(".cr").hide();
+            break;
         default:
             $(".fhb").show();
+            $(".hb").show();
             $(".cr").show();
             break;
     }
@@ -350,4 +370,56 @@ function filterSmTable() {
             $(".smAbsentRow").show();
             break;
     }
-} 
+}
+function genSmCrPick() {
+    $.post("post/allCourse", { year: summerYear, quarter: summerQ }).then((allSmCr) => {
+        for (let i in allSmCr.course) {
+            $("#smCrSelect").append("<option value='" + allSmCr.course[i].courseID + "'>" + allSmCr.course[i].courseName + "</option>");
+        }
+    })
+}
+function genSmTableByCr() {
+    $("#smCrBody").empty();
+    $.post("post/courseInfo", { courseID: $("#smCrSelect").val() }).then((crInfo) => {
+        let promise = [];
+        let startDay = moment(0).year(2017).month(9).date(8).valueOf();
+        for (let i in crInfo.student) {
+            promise.push($.post("post/name", { userID: crInfo.student[i] }), $.post("post/listStudentAttendanceModifierByStudent", { studentID: crInfo.student[i], start: startDay }));
+        }
+        Promise.all(promise).then((smCrData) => {
+            for (let i = 0; i < smCrData.length; i += 2) {
+                let str1 = "";
+                let str2 = "";
+                for (let j = 0; j < 15; j++) {
+                    if (j < 5) {
+                        str1 += "<td id='smCrAbsentCell" + i + (j + 9) + "'></td>";
+                        str2 += "<td id='smCrPresentCell" + i + (j + 9) + "'></td>";
+                    } else if (j < 10) {
+                        str1 += "<td id='smCrAbsentCell" + i + (j + 11) + "'></td>";
+                        str2 += "<td id='smCrPresentCell" + i + (j + 11) + "'></td>";
+                    } else {
+                        str1 += "<td id='smCrAbsentCell" + i + (j + 13) + "'></td>";
+                        str2 += "<td id='smCrPresentCell" + i + (j + 13) + "'></td>";
+                    }
+                }
+                $("#smCrBody").append(
+                    "<tr>" +
+                    "<td rowspan='2'>" + smCrData[i].nickname + " " + smCrData[i].firstname + " " + smCrData[i].lastname + "</td>" +
+                    str1 +
+                    "</tr>" +
+                    "<tr>" +
+                    str2 +
+                    "</tr>"
+                )
+                for (let j in smCrData[i + 1].modifier) {
+                    let day = moment(smCrData[i + 1].modifier[j].day).date();
+                    if (smCrData[i + 1].modifier[j].reason == "ลา") {
+                        $("#smCrAbsentCell" + i + day).addClass("danger");
+                    } else if (smCrData[i + 1].modifier[j].reason == "เพิ่ม") {
+                        $("#smCrPresentCell" + i + day).addClass("success");
+                    }
+                }
+            }
+        })
+    })
+}

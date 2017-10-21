@@ -5,7 +5,7 @@ block head
     script(src="js/admin.min.js")
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/adminStudentAttendanceModifier.min.js")
+    script(src="js/adminStudentAttendanceModifier.js")
 block body
     .container
         ul.nav.nav-tabs
@@ -28,6 +28,7 @@ block body
                             label Filter:
                             select.form-control#filterPick(type="text")
                                 option ALL
+                                option FHB
                                 option HB
                                 option CR
                 .row
@@ -60,6 +61,7 @@ block body
                 ul.breadcrumb
                     li: a#aByName(href="#") By Name
                     li: a#aByWeek(href="#") By Week
+                    li: a#aByCourse(href="#") By Course
                 #smByName.collapse
                     .row
                         form.col-sm-2
@@ -114,6 +116,34 @@ block body
                                     th.text-center.col-sm-2 Time
                                     th.text-center.col-sm-1 ลบ
                             tbody#smWeekBody
+                #smByCourse.collapse
+                    .row
+                        form.col-sm-2
+                            .form-group
+                                label(for="crSelect") Course:
+                                select.form-control#smCrSelect
+                                    option(value="0") Select Course
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead
+                                tr
+                                    th.text-center.col-sm-4 Name
+                                    th.text-center 1
+                                    th.text-center 2
+                                    th.text-center 3
+                                    th.text-center 4
+                                    th.text-center 5
+                                    th.text-center 6
+                                    th.text-center 7
+                                    th.text-center 8
+                                    th.text-center 9
+                                    th.text-center 10
+                                    th.text-center 11
+                                    th.text-center 12
+                                    th.text-center 13
+                                    th.text-center 14
+                                    th.text-center 15
+                            tbody#smCrBody
             #addAttend.tab-pane.fade
                 .row
                     .col-sm-3
