@@ -1,6 +1,6 @@
 module.exports = function (app, db, post) {
 
-    const fs = require('fs-extra');
+    var fs = require('fs-extra');
 
     var courseDB = db.collection('course');
     var configDB = db.collection('config');

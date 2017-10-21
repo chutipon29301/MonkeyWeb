@@ -1,6 +1,8 @@
-var ObjectID=require("mongodb").ObjectID;
+var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function (app, db, post) {
+
+    var schedule = require('node-schedule');
 
     var quarterDB = db.collection('quarter');
     var studentHybridDB = db.collection('hybridStudent');
@@ -223,5 +225,71 @@ module.exports = function (app, db, post) {
                 res.status(200).send(result);
             });
         });
+    });
+
+    /**
+     * Post method for adding student to hybrid day on specific time
+     * req.body = {
+     *      hybridID: miagjngoajew934jr3432e3
+     *      studentID: 15999
+     *      subject: 'M'
+     * }
+     * if not error
+     * res.body = 'OK'
+     */
+    post('/post/v1/addHybridStudentOnTime', function (req, res) {
+        if (req.body.hybridID === undefined || req.body.studentID === undefined || req.body.subject === undefined || req.body.date === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var date = new Date(parseInt(req.body.date));
+        var excutejob = schedule.scheduleJob(date, () => {
+            studentHybridDB.update({
+                _id: ObjectID(req.body.hybridID)
+            }, {
+                    $push: {
+                        student: {
+                            studentID: parseInt(req.body.studentID),
+                            subject: req.body.subject
+                        }
+                    }
+                }
+            );
+        });
+        res.status(200).send('OK')
+    });
+
+    /**
+     * Post method for remove student from hybrid day on specific time
+     * req.body = {
+     *      hybridID: miagjngoajew934jr3432e3
+     *      studentID: 15999
+     * }
+     * if not error
+     * res.body = 'OK'
+     */
+    post('/post/v1/removeHybridStudent', function (req, res) {
+        if (req.body.hybridID === undefined || req.body.studentID === undefined || req.body.date === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var date = new Date(parseInt(req.body.date));
+        var excutejob = schedule.scheduleJob(date, () => {
+            studentHybridDB.update({
+                _id: ObjectID(req.body.hybridID)
+            }, {
+                    $pull: {
+                        student: {
+                            studentID: parseInt(req.body.studentID)
+                        }
+                    }
+                }
+            );
+        });
+        res.status(200).send('OK')
     });
 }
