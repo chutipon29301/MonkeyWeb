@@ -6,6 +6,18 @@ module.exports = function (app, db, post) {
     var configDB = db.collection('config');
     var studentDocumentDB = db.collection('studentDocument');
 
+    /**
+     * Post method for upload file to document coresponse to the course
+     * req.body = {
+     *      courseID: mu0rc23mibg-q4rawrvs (Optional),
+     *      displayDate: 1800000000 (Optional)
+     * }
+     * req.files = [file, ...]
+     * 
+     * if not error:
+     * 
+     * res.body = 'OK'
+     */
     post('/post/v1/uploadDocument', function (req, res) {
         if (req.files === undefined) {
             return res.status(400).send({
@@ -81,6 +93,27 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Post method for listing document in database
+     * req.body = {
+     *      courseID: mau9fgwa4egv024wreafc (Optional),
+     *      studentID: 15999 (Optinal)
+     * }
+     * 
+     * if not error
+     * 
+     * res.body = [
+     *      {
+     *          documentID: '24mt0fgbm35-tajr342grabag'
+     *          name: 'Filename',
+     *          location: '/testUpload/20174/SpringWaltz.pdf'
+     *          fileType: 'pdf',
+     *          courseID: 'gaenu4ag02wraj2o34wrgb',
+     *          upload: '2017-10-21T01:25:52.865Z',
+     *          displayDate: '2017-10-21T01:25:52.865Z'
+     *      }, ...
+     * ]
+     */
     post('/post/v1/listDocument', function (req, res) {
         configDB.findOne({
             _id: 'config'
