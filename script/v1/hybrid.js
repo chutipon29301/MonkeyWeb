@@ -10,6 +10,10 @@ module.exports = function (app, db, post) {
     var studentHybridDB = db.collection('hybridStudent');
     var hybridPendingDB = db.collection('hybridPending');
 
+    /**
+     * Function for initialize when server start
+     * - Add all pending hybrid change request to run function
+     */
     hybridPendingDB.find({}).toArray().then(data => {
         console.log('[HYBRID] Load pending hybrid change request');
         console.log('         Remaining request: ' + data.length);
@@ -294,6 +298,16 @@ module.exports = function (app, db, post) {
         res.status(200).send('OK')
     });
 
+    /**
+     * Function which execute when the input time is reached 
+     * Execute method has 2 mode add and remove selected by MODE_ADD_HYBRID, MODE_REMOVE_HYBRID
+     * @param {String} id ID of pending object
+     * @param {*} date For function to be execute
+     * @param {*} hybridID To be add or remove by selected mode
+     * @param {*} studentID To be modify
+     * @param {*} subject To be added
+     * @param {*} mode Select whether add or remove
+     */
     function modifyHybridOnTime(id, date, hybridID, studentID, subject, mode) {
         var executeDate = new Date(parseInt(date));
         var executeFunction;
