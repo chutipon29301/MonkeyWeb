@@ -11,6 +11,8 @@ module.exports = function (app, db, post) {
     var hybridPendingDB = db.collection('hybridPending');
 
     hybridPendingDB.find({}).toArray().then(data => {
+        console.log('[HYBRID] Load pending hybrid change request');
+        console.log('         Remaining request: ' + data.length);
         for (let i = 0; i < data.length; i++) {
             modifyHybridOnTime(data[i]._id, data[i].date, data[i].hybridID, data[i].studentID, data[i].subject, data[i].mode);
         }
@@ -322,11 +324,13 @@ module.exports = function (app, db, post) {
                 );
                 break;
         }
-        var executeJob = schedule.scheduleJob(date, function () {
+        console.log('[HYBRID] Request created, Ref_id = ' + id);
+        var executeJob = schedule.scheduleJob(executeDate, function () {
+            console.log('[HYBRID] Request execute, Ref_id = ' + id);
             executeFunction();
             hybridPendingDB.deleteOne({
                 _id: ObjectID(id)
-            })
+            });
         });
     }
 }

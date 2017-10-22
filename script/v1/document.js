@@ -147,4 +147,14 @@ module.exports = function (app, db, post) {
             }
         });
     });
+
+    post('/post/v1/removeDocument', function(req, res){
+        if(req.body.documentID === undefined){
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        
+    });
 }
