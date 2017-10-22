@@ -7,6 +7,7 @@ module.exports = function (app, db, post) {
     var courseDB = db.collection('course');
     var configDB = db.collection('config');
     var studentDocumentDB = db.collection('studentDocument');
+    var userDB = db.collection('user');
 
     /**
      * Post method for upload file to document coresponse to the course
@@ -38,7 +39,7 @@ module.exports = function (app, db, post) {
             } else {
                 date = new Date();
             }
-            var copyFile = (courseID, files, res) => {
+            var moveFile = (courseID, files, res) => {
                 var dir = config.documentPath + courseID;
                 try {
                     fs.ensureDirSync(dir);
@@ -87,10 +88,10 @@ module.exports = function (app, db, post) {
                             msg: 'Course not found'
                         });
                     }
-                    copyFile(course._id, files, res);
+                    moveFile(course._id, files, res);
                 })
             } else {
-                copyFile(config.defaultQuarter.quarter.year + (((('' + config.defaultQuarter.quarter.quarter).length) === 1) ? '0' : '') + config.defaultQuarter.quarter.quarter, files, res);
+                moveFile(config.defaultQuarter.quarter.year + (((('' + config.defaultQuarter.quarter.quarter).length) === 1) ? '0' : '') + config.defaultQuarter.quarter.quarter, files, res);
             }
         });
     });
@@ -120,7 +121,7 @@ module.exports = function (app, db, post) {
         configDB.findOne({
             _id: 'config'
         }).then(config => {
-            var allQuarterDocument = () => studentDocumentDB.find({
+            var quarterDocument = () => studentDocumentDB.find({
                 courseID: config.defaultQuarter.quarter.year + (((('' + config.defaultQuarter.quarter.quarter).length) === 1) ? '0' : '') + config.defaultQuarter.quarter.quarter
             }).toArray();
 
@@ -129,12 +130,12 @@ module.exports = function (app, db, post) {
             }).toArray();
 
             if (req.body.courseID === undefined && req.body.studentID === undefined) {
-                allQuarterDocument().then(data => {
+                quarterDocument().then(data => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].documentID = data[i]._id;
                         delete data[i]._id;
                     }
-                    res.status(200).send(data);
+                    return res.status(200).send(data);
                 });
             } else if (req.body.courseID !== undefined && req.body.studentID === undefined) {
                 courseDocument(req.body.courseID).then(data => {
@@ -142,10 +143,44 @@ module.exports = function (app, db, post) {
                         data[i].documentID = data[i]._id;
                         delete data[i]._id;
                     }
-                    res.status(200).send(data);
+                    return res.status(200).send(data);
+                });
+            } else if (req.body.courseID === undefined && req.body.studentID !== undefined) {
+                userDB.findOne({
+                    _id: parseInt(req.body.studentID)
+                }).then(user => {
+                    if (user === undefined) {
+                        return res.status(404).send({
+                            err: 404,
+                            msg: 'User not found'
+                        });
+                    }
+                    return courseDB.find({
+                        student: parseInt(req.body.studentID)
+                    }).toArray()
+                }).then(courses => {
+                    var promise = [];
+                    promise.push()
+                    promise.push(quarterDocument());
+                    for (let i = 0; i < courses.length; i++) {
+                        promise.push(courseDocument(courses._id));
+                    }
+                    Promise.all(promise).then(values => {
+                        var response = [];
+                        for (let i = 0; i < values.length; i++) {
+                            for (let j = 0; j < values[i].length; j++) {
+                                response.push(values[i][j]);
+                            }
+                        }
+                        for (let i = 0; i < response.length; i++) {
+                            response[i].documentID = response[i]._id;
+                            delete response[i]._id;
+                        }
+                        return res.status(200).send(response);
+                    });
                 });
             } else {
-                res.status(200).send('OK');
+                res.status(200).send([]);
             }
         });
     });
@@ -163,11 +198,27 @@ module.exports = function (app, db, post) {
             studentDocumentDB.findOne({
                 _id: ObjectID(req.body.documentID)
             }).then(data => {
+                if (data == null) {
+                    return res.status(404).send({
+                        err: 404,
+                        msg: 'Document not found'
+                    });
+                }
                 var rootPath = config.documentPath;
                 var filePath = data.location;
                 filePath = filePath.substring(1, filePath.length);
                 rootPath += filePath.substring(filePath.indexOf('/') + 1, filePath.length);
-                fs.removeSync(rootPath);
+                try {
+                    fs.removeSync(rootPath);
+                    studentDocumentDB.deleteOne({
+                        _id: ObjectID(data._id)
+                    });
+                } catch (error) {
+                    return res.status(404).send({
+                        err: 404,
+                        msg: 'File not found'
+                    });
+                }
                 res.status(200).send('OK');
             });
         });
