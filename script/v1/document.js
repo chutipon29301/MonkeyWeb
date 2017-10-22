@@ -1,3 +1,5 @@
+var ObjectID = require('mongodb').ObjectID;
+
 module.exports = function (app, db, post) {
 
     var fs = require('fs-extra');
@@ -142,19 +144,32 @@ module.exports = function (app, db, post) {
                     }
                     res.status(200).send(data);
                 });
-            }else{
+            } else {
                 res.status(200).send('OK');
             }
         });
     });
 
-    post('/post/v1/removeDocument', function(req, res){
-        if(req.body.documentID === undefined){
+    post('/post/v1/removeDocument', function (req, res) {
+        if (req.body.documentID === undefined) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
             });
         }
-        res.status(200).send('OK');
+        configDB.findOne({
+            _id: 'config'
+        }).then(config => {
+            studentDocumentDB.findOne({
+                _id: ObjectID(req.body.documentID)
+            }).then(data => {
+                var rootPath = config.documentPath;
+                var filePath = data.location;
+                filePath = filePath.substring(1, filePath.length);
+                rootPath += filePath.substring(filePath.indexOf('/') + 1, filePath.length);
+                fs.removeSync(rootPath);
+                res.status(200).send('OK');
+            });
+        });
     });
 }
