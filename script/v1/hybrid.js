@@ -1,9 +1,22 @@
-var ObjectID=require("mongodb").ObjectID;
+var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function (app, db, post) {
 
+    var schedule = require('node-schedule');
+    const MODE_ADD_HYBRID = 1;
+    const MODE_REMOVE_HYBRID = 2;
+
     var quarterDB = db.collection('quarter');
     var studentHybridDB = db.collection('hybridStudent');
+    var hybridPendingDB = db.collection('hybridPending');
+
+    hybridPendingDB.find({}).toArray().then(data => {
+        console.log('[HYBRID] Load pending hybrid change request');
+        console.log('         Remaining request: ' + data.length);
+        for (let i = 0; i < data.length; i++) {
+            modifyHybridOnTime(data[i]._id, data[i].date, data[i].hybridID, data[i].studentID, data[i].subject, data[i].mode);
+        }
+    });
 
     /**
      * Post method for adding hybrid day to quarter
@@ -224,4 +237,100 @@ module.exports = function (app, db, post) {
             });
         });
     });
+
+    /**
+     * Post method for adding student to hybrid day on specific time
+     * req.body = {
+     *      hybridID: miagjngoajew934jr3432e3
+     *      studentID: 15999
+     *      subject: 'M'
+     * }
+     * if not error
+     * res.body = 'OK'
+     */
+    post('/post/v1/addHybridStudentOnTime', function (req, res) {
+        if (req.body.hybridID === undefined || req.body.studentID === undefined || req.body.subject === undefined || req.body.date === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        hybridPendingDB.insertOne({
+            hybridID: req.body.hybridID,
+            studentID: req.body.studentID,
+            date: req.body.date,
+            subject: req.body.subject,
+            mode: MODE_ADD_HYBRID
+        }, function (err, response) {
+            modifyHybridOnTime(response.insertedId, req.body.date, req.body.hybridID, req.body.studentID, req.body.subject, MODE_REMOVE_HYBRID);
+        });
+        res.status(200).send('OK')
+    });
+
+    /**
+     * Post method for remove student from hybrid day on specific time
+     * req.body = {
+     *      hybridID: miagjngoajew934jr3432e3
+     *      studentID: 15999
+     * }
+     * if not error
+     * res.body = 'OK'
+     */
+    post('/post/v1/removeHybridStudentOnTime', function (req, res) {
+        if (req.body.hybridID === undefined || req.body.studentID === undefined || req.body.date === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        hybridPendingDB.insertOne({
+            hybridID: req.body.hybridID,
+            studentID: req.body.studentID,
+            date: req.body.date,
+            mode: MODE_REMOVE_HYBRID
+        }, function (err, response) {
+            modifyHybridOnTime(response.insertedId, req.body.date, req.body.hybridID, req.body.studentID, '', MODE_REMOVE_HYBRID);
+        });
+        res.status(200).send('OK')
+    });
+
+    function modifyHybridOnTime(id, date, hybridID, studentID, subject, mode) {
+        var executeDate = new Date(parseInt(date));
+        var executeFunction;
+        switch (mode) {
+            case MODE_ADD_HYBRID:
+                executeFunction = () => studentHybridDB.update({
+                    _id: ObjectID(hybridID)
+                }, {
+                        $push: {
+                            student: {
+                                studentID: parseInt(studentID),
+                                subject: subject
+                            }
+                        }
+                    }
+                );
+                break;
+            case MODE_REMOVE_HYBRID:
+                executeFunction = () => studentHybridDB.update({
+                    _id: ObjectID(hybridID)
+                }, {
+                        $pull: {
+                            student: {
+                                studentID: parseInt(studentID)
+                            }
+                        }
+                    }
+                );
+                break;
+        }
+        console.log('[HYBRID] Request created, Ref_id = ' + id);
+        var executeJob = schedule.scheduleJob(executeDate, function () {
+            console.log('[HYBRID] Request execute, Ref_id = ' + id);
+            executeFunction();
+            hybridPendingDB.deleteOne({
+                _id: ObjectID(id)
+            });
+        });
+    }
 }

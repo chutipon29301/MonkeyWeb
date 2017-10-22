@@ -3,7 +3,7 @@ module.exports = function (app, db, post, gradeBitToString) {
     var quarterDB = db.collection('quarter');
     var studentHybridDB = db.collection('hybridStudent');
     var courseDB = db.collection('course');
-    var userDB = db.collection("user");
+    var userDB = db.collection('user');
     var configDB = db.collection('config');
 
     /**
@@ -20,7 +20,8 @@ module.exports = function (app, db, post, gradeBitToString) {
      *                  {
      *                      courseID: '2j94jfu3hfeifkf24g4sdfs',
      *                      courseName: 'MS123a',
-     *                      num: 10
+     *                      num: 10,
+     *                      tutorName: Hybrid
      *                  },
      *                  ...
      *              ],

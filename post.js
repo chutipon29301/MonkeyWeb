@@ -1932,7 +1932,8 @@ module.exports=function(app,db){
                         nextTutorID:parseInt(req.body.nextTutorID),
                         profilePicturePath:dirPath(req.body.profilePicturePath),
                         studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
-                        studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath)
+                        studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath),
+                        documentPath:dirPath(req.body.documentPath)
                     }
                 },function(){
                     configDB.findOne({},function(err,config){

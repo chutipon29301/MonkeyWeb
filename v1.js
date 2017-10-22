@@ -21,6 +21,15 @@ var gradeBitToString = function (bit) {
     if (bit & (1 << 12)) output += 'SAT';
     return output;
 };
+var gradeBitToArray = function (bit) {
+    var output = [];
+    for (var i = 0; i < 13; i++) {
+        if (bit & (1 << i)) {
+            output.push(i + 1);
+        }
+    }
+    return output;
+};
 
 module.exports = function (app, db, post) {
 
@@ -32,8 +41,8 @@ module.exports = function (app, db, post) {
     var configDB = db.collection('config');
 
     require('./script/v1/quarter.js')(app, db, post);
-    require('./script/v1/subject.js')(app, db, post,gradeBitToString);
-    require('./script/v1/course.js')(app, db, post,gradeBitToString);
+    require('./script/v1/subject.js')(app, db, post, gradeBitToString);
+    require('./script/v1/course.js')(app, db, post, gradeBitToString, gradeBitToArray);
     require('./script/v1/hybrid.js')(app, db, post);
     require('./script/v1/skill.js')(app, db, post);
     require('./script/v1/timetable.js')(app, db, post, gradeBitToString);

@@ -1,15 +1,12 @@
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const passwordCheck = (userID, pwd) => $.post("/post/password", {
     userID: userID,
     password: pwd
 });
 
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const positionCheck = (userID) => $.post("/post/position", {
     userID: userID
 });
 
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const registrationStateCheck = (studentID) => $.post("post/registrationState", {
     studentID: studentID,
     year: 2017,
