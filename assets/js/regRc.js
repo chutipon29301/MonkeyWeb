@@ -1,7 +1,49 @@
-function upPic() {
-    let cookie = getCookieDict();
-    //noinspection JSUnresolvedVariable
-    let ID = cookie.monkeyWebUser;
+var crNum = 0;
+$(document).ready(function () {
+    let cookies = getCookieDict();
+    let ID = cookies.monkeyWebUser;
+    showPreview(ID);
+    $.post('post/studentProfile', { studentID: ID }).then((profile) => {
+        // log(profile.courseID.length)
+        crInSumm(0, profile.courseID)
+    });
+    $("#submit").click(function () {
+    	if($('#preview').attr('src') != 'images/nopic.png'){
+    		$.post("post/changeRegistrationState", { studentID: ID, registrationState: "transferred", year: year, quarter: quarter }, function (data2) {
+	            if (data2.err) {
+	                alert('เกิดข้อผิดพลาดบางอย่างขึ้น โปรดลองใหม่อีกครั้งหรือติดต่อAdmin');
+	                throw data2.err
+	            }
+	            self.location = 'studentProfile'
+	        })	
+    	}
+        else{
+        	alert('กรุณาอัพโหลดใบโอน')
+        }
+        // log($('#file-1').val() !== "");
+        // if ($('#file-1').val() !== "") {
+        //     upPic(ID);
+        // } else {
+        //     alert("กรุณาอัปโหลดรูปภาพ")
+        // }
+    })
+    $("#file-1").change(function () {
+        upPic(ID);
+    })
+});
+function crInSumm(index, cr) {
+    if (index < cr.length) {
+        $.post("post/courseInfo", { courseID: cr[index] }).then((data) => {
+            if (data.quarter === quarter) {
+                crNum += 1;
+            }
+            crInSumm(index + 1, cr)
+        })
+    } else {
+        $(".money").html("ชำระเงินจำนวน " + (crNum * fee) + " บาท");
+    }
+}
+function upPic(ID) {
     let ufile = $('#file-1');
     let ext = ufile.val().split('.').pop().toLowerCase();
     if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
@@ -9,63 +51,40 @@ function upPic() {
     } else {
         let files = ufile.get(0).files;
         let formData = new FormData();
-        if (!$('i').hasClass('fa')) {
-            $('.upload').prepend('<i class="fa fa-circle-o-notch fa-spin"></i>');
-            formData.append('file', files[0], files[0].name);
-            formData.append('studentID', ID);
-            //noinspection JSUnusedLocalSymbols
-            $.ajax({
-                url: 'post/submitReceipt',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    $('.fa').remove();
-                    showReceipt(ID);
-                }
-            });
-        }
+        let file = files[0];
+        formData.append('file', file, file.name);
+        formData.append('studentID', ID);
+        formData.append('year', year);
+        formData.append('quarter', quarter);
+        $.ajax({
+            url: 'post/submitReceipt',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                location.reload();
+            }
+        });
     }
 }
-function showReceipt(id) {
-    //noinspection ES6ModulesDependencies
+function showPreview(ID) {
+    let picId = ID;
     $.post("post/getConfig").then((config) => {
-        //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpg', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpg', function (data, status) {
             if (status === 'success') {
-                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpg');
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpg');
             }
         });
-        //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpeg', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpeg', function (data, status) {
             if (status === 'success') {
-                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.jpeg');
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.jpeg');
             }
         });
-        //noinspection ES6ModulesDependencies
-        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.png', function (data, status) {
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.png', function (data, status) {
             if (status === 'success') {
-                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + id + '.png');
+                $('#preview').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q' + quarter + '/' + picId + '.png');
             }
         });
     });
 }
-function next() {
-    self.location = '/studentProfile';
-}
-
-//noinspection ES6ModulesDependencies,JSUnresolvedFunction
-const studentProf = (studentID) => $.post("post/studentProfile", {
-    studentID: studentID
-});
-
-$(document).ready(function () {
-    let cookie = getCookieDict();
-    //noinspection JSUnresolvedVariable
-    studentProf(parseInt(cookie.monkeyWebUser)).then((data) => {
-        let fee = ' ' + (data.courseID.length * 7800);
-        $('#fee1').html('<strong>' + 'ค่า Course(CR) :' + fee.slice(0, fee.length - 3) + ',' + fee.slice(fee.length - 3, fee.length) + ' บาท' + '</strong>');
-        $('#fee2').html('<strong>' + 'ค่า Course(CR) :<br>' + fee.slice(0, fee.length - 3) + ',' + fee.slice(fee.length - 3, fee.length) + ' บาท' + '</strong>');
-    })
-});

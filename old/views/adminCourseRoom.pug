@@ -2,57 +2,20 @@ extends htmlTemplate
 block head
     -const pageTitle = "Course Room"
     script(src="js/admin.min.js")
-    script(
-        data-require="rxjs@*"
-        data-semver="2.5.3"
-        src="//cdnjs.cloudflare.com/ajax/libs/rxjs/2.5.3/rx.all.js"
-    )
-    script(
-        data-require="rx.angular.js@*"
-        data-semver="0.0.14"
-        src="https://cdn.rawgit.com/Reactive-Extensions/rx.angular.js/v0.0.14/dist/rx.angular.js"
-    )
-    style.
-        .clickCard .md-button {
-            padding: 0 !important;
-        }
-        .clickCard md-card {
-            margin: 1px;
-        }
 block body
     include generalTemplate
-    +angular-template("tableRoom")
-        div(layout layout-align="center center")
-            .md-whiteframe-3dp(flex-sm="80" flex-gt-sm="80" flex-gt-md="80")
-                div(ng-cloak)
-                    md-content
-                        md-tabs(md-dynamic-height="", md-border-bottom="")
-                            +adminRoom("Tue", "tue", "Tuesday")
-                            +adminRoom("Thu", "thu", "Thursday")
-                            +adminRoom("Sat8", "sat8", "Saturday 8:00 - 10:00")
-                            +adminRoom("Sat10", "sat10", "Saturday 10:00 - 12:00")
-                            +adminRoom("Sat13", "sat13", "Saturday 13:00 - 15:00")
-                            +adminRoom("Sat15", "sat15", "Saturday 15:00 - 17:00")
-                            +adminRoom("Sun8", "sun8", "Sunday 8:00 - 10:00")
-                            +adminRoom("Sun10", "sun10", "Sunday 10:00 - 12:00")
-                            +adminRoom("Sun13", "sun13", "Sunday 13:00 - 15:00")
-                            +adminRoom("Sun15", "sun15", "Sunday 15:00 - 17:00")
-
-        +angular-js
-        script(src="js/adminRoom.js")
-
-mixin adminRoom(label, controller, display)
-    md-tab(label=label)
-        md-content.md-padding
-            div(ng-controller=controller)
-                .md-display-1= display
-                    md-content.md-padding
-                        md-list-item.clickCard(ng-repeat="room in roomDayList" ng-hide="room.isHidden" ng-click="tableRowClick(room)")
-                            md-card.md-title.md-padding(flex="100" layout="row" layout-align="space-between center" md-colors="{background: room.bgColor}")
-                                div
-                                    span(ng-if="room.property=='nonExpandable'") Room: {{ room.room }}
-                                    span(ng-if="room.property=='expandable'") 
-                                div {{ room.courseName }}
-                                div
-                                    span(ng-if="room.property=='nonExpandable'") {{ room.noStudent }} / {{ room.full }}
-                                    span(ng-if="room.property=='expandable'") {{ room.noStudent }}
+    .container
+        .row
+            .col-sm-12
+                h2 Room
+        .row
+            .form-group.col-sm-2
+                select#quarterSelect(name="Select Quarter" onchange="getTableContent()").form-control
+        .row
+            .col-sm-12
+                ul#tabs.nav.nav-tabs
+        .row
+            #content.tab-content
+    script(src="js/adminRoom.js")
+    script.
+        getPageContent();

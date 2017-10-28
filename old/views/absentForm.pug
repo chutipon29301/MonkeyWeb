@@ -3,51 +3,71 @@ block head
     -const pageTitle = "Absent Form"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/student.min.js")
     script(src="js/studentAbsentForm.min.js")
     style.
-        .btn1,.btn2,.btn3,.btn4{
-            margin-bottom:3vh;
+        .btn-default, .btn-success{
+            margin-bottom:25px;
         }
 block body
     .jumbotron
         .container
             h2 แบบฟอร์มลา
-            p แบบฟอร์มสำหรับการลาเรียน Monkey
+            p#pageHead
     .container
-        h4#name
-            span.glyphicon.glyphicon-user
-        hr
+        .row
+            .col-xs-12
+                label(style="color:red") สำหรับระบบ FHB
+        .row
+            .col-xs-12
+                label(style="color:red") ต้องลาก่อนเวลา 18.00 น.  ก่อนวันเรียน 1 วัน
+        .row
+            .col-xs-12
+                label(style="color:red") มิฉะนั้น&nbsp;ระบบจะตัดเงินเหมือนมาเรียนตามปกติ
+        .row
+            .col-xs-12
+                label(style="color:red") *เสาร์,อาทิตย์ต้องลาภายในวันศุกร์*
         .form-group
-            label วันที่ลา:
-            .input-group.date.datePicker#datetimepicker1
-                input.form-control(type='text')
-                span.input-group-addon
-                    i.glyphicon.glyphicon-calendar
-            br
-        label วิชาที่ลา:
+            label.control-label วันที่ต้องการลา:
+            input.form-control#datePicker(type="text")
+        .row
+            .col-xs-12
+                label วิชา:
         .row
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn1.disabled(type='button') -
+                button.col-xs-12.btn.btn-default.selector#btn8 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn2.disabled(type='button') -
+                button.col-xs-12.btn.btn-default.selector#btn10 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn3.disabled(type='button') -
+                button.col-xs-12.btn.btn-default.selector#btn13 &nbsp;
             .col-xs-6.col-sm-3
-                button.btn.btn-default.col-xs-12.btn4.disabled(type='button') -
-        .form-group
-            label ผู้แจ้ง:
-            input.form-control#contact(type="text")
-        .form-group
-            label เหตุผล:
-            textarea.form-control#reason(rows='3')
-        button.btn.btn-default.col-md-1.col-md-offset-11.col-xs-3.col-xs-offset-9#submit(type="button") ยืนยัน
-        .modal.fade#confirmModal(role="dialog")
-                .modal-dialog
-                    .modal-content
-                        .modal-header
-                            h3 ลา
-                        .modal-body
-                        .modal-footer
-                            button#confirm.btn.btn-success(type="button" onClick="sendData()") ใช่
-                            button.btn.btn-danger(type="button" data-dismiss="modal") ไม่ใช่
+                button.col-xs-12.btn.btn-default.selector#btn15 &nbsp;
+        form
+            .form-group
+                label เหตุผล:
+                input.form-control#reasonInput(type="text")
+            .form-group
+                label ผู้แจ้ง:
+                input.form-control#senderInput(type="text")
+        label ประวัติการลา/เพิ่ม
+        label(style="color:red") (ย้อนหลัง 3 เดือนจากวันที่เลือก)
+        .row
+            .col-xs-12.col-sm-6
+                p#mathSum
+            .col-xs-12.col-sm-6
+                p#phySum
+        .row
+            .col-xs-12.col-sm-6
+                .table-responsive
+                    table.table.table-bordered.table-striped
+                        thead
+                            tr: td.text-center.danger ลา
+                        tbody#absentTableBody
+            .col-xs-12.col-sm-6
+                .table-responsive
+                    table.table.table-bordered.table-striped
+                        thead
+                            tr: td.text-center.success เพิ่ม
+                        tbody#presentTableBody
+        .row
+            .col-xs-3.col-xs-offset-9.col-sm-1.col-sm-offset-11
+                button#submit.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน

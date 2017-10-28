@@ -17,6 +17,10 @@ module.exports=function(app,db){
     var studentCommentDB=db.collection("studentComment");
     var randomPasswordDB=db.collection("randomPassword");
     var userDB=db.collection("user");
+    var conferenceDB=db.collection("conference");
+    var courseDB = db.collection("course");
+    var studentHybridDB = db.collection("hybridStudent");
+    var studentSkillDB = db.collection("skillStudent");
 
     var gradeBitToString=function(bit){
         var output="",p=false,s=false;
@@ -69,26 +73,9 @@ module.exports=function(app,db){
         if(str=="false"||str=="0"||str==""||str===undefined||str===null)return false;
         return true;
     };
-    // function splitCourseName(name){
-    //     if(typeof(name)=="string"){
-    //         if(name.slice(0,3).toLowerCase()=="sat"){
-    //             return {subject:name.slice(3),grade:"SAT",level:""}
-    //         }
-    //         var subject,grade,level;
-    //         var firstdigit=name.indexOf(name.match(/\d/));
-    //         subject=name.slice(0,firstdigit-1).toUpperCase();
-    //         if(/[0-9]/.test(name[name.length-1])){
-    //             grade=name.slice(firstdigit-1,name.length).toUpperCase();
-    //             level="";
-    //         }
-    //         else{
-    //             grade=name.slice(firstdigit-1,name.length-1).toUpperCase();
-    //             level=name[name.length-1].toLowerCase();
-    //         }
-    //         return {subject:subject,grade:grade,level:level};
-    //     }
-    //     else return {subject:"Wrong input",grade:"Wrong input",level:"Wrong input"};
-    // };
+    var generalizedDay=function(time,option){
+        var ret=moment(0);
+    };
     // var gradeStringToBit=function(grade){
     //     var output=0;
     //     if(grade[0]=="P"){
@@ -352,6 +339,7 @@ module.exports=function(app,db){
                                 grade:result[i].student.grade,
                                 quarter:result[i].student.quarter,
                                 status:result[i].student.status,
+                                level:result[i].level,
                                 inCourse:course!=null,
                                 inHybrid:hybrid!=null
                             };
@@ -377,7 +365,8 @@ module.exports=function(app,db){
                 lastnameEn:result.lastnameEn,
                 nicknameEn:result.nicknameEn,
                 email:result.email,phone:result.phone,
-                courseID:[],hybridDay:[]
+                courseID:[],hybridDay:[],
+                level:result.level
             });
             getCourseDB(function(courseDB){
                 courseDB.find({student:studentID}).sort({day:1}).toArray(function(err,course){
@@ -410,36 +399,78 @@ module.exports=function(app,db){
                     var index=result.student.quarter.findIndex(function(x){
                         return x.year===quarter.year&&x.quarter===quarter.quarter;
                     });
-                    if(index===-1)res.send({err:"Specified quarter information was not found in student."});// TODO return "unregistered"?
+                    if(index===-1)res.send({registrationState:"unregistered"});
                     else res.send({registrationState:result.student.quarter[index].registrationState});
                 });
             }
         });
     });
+
+    /**
+     * Post method getting path name where file is existed
+     * req.body = {
+     *      fullname: "sheet fullname", eg. "MJ-BB01(REV1_0)"
+     *      checkExist: boolean (optional) defualt is true
+     * }
+     * res.body = "OK"
+     */
     //OK Q{studentID,registrationState} return {}
-    post("/post/changeRegistrationState",function(req,res){
+    post("/post/changeRegistrationState", function (req, res) {
+        // if(req.body.studentID === undefined || req.body.registrationState === undefined){
+        //     return res.status(400).send({
+        //         err: -1,
+        //         msg: "Bad request"
+        //     });
+        // }
+        // // configDB.find({}).then(config =>{
+
+        // // });
+
         var studentID=parseInt(req.body.studentID);
         var registrationState=req.body.registrationState;
         getQuarter(req.body.year,req.body.quarter,function(err,quarter){
             if(err)res.send(err);
             else{
+                var year=quarter.year;
+                var quarter=quarter.quarter;
                 findUser(res,studentID,{position:"student"},function(result){
                     var index=result.student.quarter.findIndex(function(x){
-                        return x.year===quarter.year&&x.quarter===quarter.quarter;
+                        return x.year===year&&x.quarter===quarter;
                     });
-                    if(index===-1){// TODO create new element
-                        res.send({err:"Specified quarter information was not found in student."});
+                    if(index===-1){
+                        if(registrationState==="unregistered")res.send({});
+                        else{
+                            userDB.updateOne({_id:studentID},{
+                                $push:{"student.quarter":{
+                                    year:year,quarter:quarter,registrationState:registrationState
+                                }}
+                            },function(){
+                                res.send({});
+                            });
+                        }
                     }
                     else{
-                        userDB.updateOne({_id:studentID},{
-                            $set:{["student.quarter."+index+".registrationState"]:registrationState}
-                        },function(){
-                            res.send({});
-                        });
+                        if(registrationState==="unregistered"){
+                            userDB.updateOne({_id:studentID},{
+                                $pull:{"student.quarter":{
+                                    year:year,quarter:quarter
+                                }}
+                            },function(){
+                                res.send({});
+                            });
+                        }
+                        else{
+                            userDB.updateOne({_id:studentID},{
+                                $set:{["student.quarter."+index+".registrationState"]:registrationState}
+                            },function(){
+                                res.send({});
+                            });
+                        }
                     }
                 });
             }
         });
+        // res.status(200).send("OK");
     });
 
     // Student Timetable
@@ -559,10 +590,7 @@ module.exports=function(app,db){
                         student:{
                             grade:grade,skillDay:[],
                             phoneParent:phoneParent,status:"active",
-                            quarter:[{
-                                year:quarter.year,quarter:quarter.quarter,
-                                registrationState:"unregistered"
-                            }]
+                            quarter:[]
                         }
                     },function(err,result){
                         configDB.updateOne({},{$inc:{nextStudentID:1}});
@@ -604,6 +632,7 @@ module.exports=function(app,db){
         addField("nicknameEn");
         addField("email");
         addField("phone");
+        addField("level");
         addField("grade",{out:"student.grade",toInt:true});
         addField("phoneParent",{out:"student.phoneParent"});
         findUser(res,studentID,{position:"student"},function(result){
@@ -674,36 +703,6 @@ module.exports=function(app,db){
             });
         });
     });
-    // Old OK {studentID} return {}
-    // post("/post/addBlankStudent",function(req,res){
-    //     var studentID=req.body.studentID.split(" ");
-    //     for(var i=0;i<studentID.length;i++){
-    //         studentID[i]=parseInt(studentID[i]);
-    //         var password="";
-    //         password+=Math.floor(Math.random()*10);
-    //         password+=Math.floor(Math.random()*10);
-    //         password+=Math.floor(Math.random()*10);
-    //         password+=Math.floor(Math.random()*10);
-    //         getQuarter(undefined,undefined,function(err,quarter){
-    //             userDB.insertOne({
-    //                 _id:studentID[i],password:CryptoJS.SHA3(password).toString(),
-    //                 position:"student",
-    //                 firstname:"",lastname:"",nickname:"",
-    //                 firstnameEn:"",lastnameEn:"",nicknameEn:"",
-    //                 email:"",phone:"",
-    //                 student:{
-    //                     grade:0,skillDay:[],phoneParent:"",status:"active",
-    //                     quarter:[{
-    //                         year:quarter.year,quarter:quarter.quarter,
-    //                         registrationState:"unregistered"
-    //                     }]
-    //                 }
-    //             });
-    //             randomPasswordDB.insertOne({_id:studentID[i],password:password});
-    //         });
-    //     }
-    //     res.send({});
-    // });
     //OK {number} return {}
     post("/post/addBlankStudent",function(req,res){
         var number=parseInt(req.body.number);
@@ -728,10 +727,7 @@ module.exports=function(app,db){
                             email:"",phone:"",
                             student:{
                                 grade:0,skillDay:[],phoneParent:"",status:"inactive",
-                                quarter:[{
-                                    year:quarter.year,quarter:quarter.quarter,
-                                    registrationState:"unregistered"
-                                }]
+                                quarter:[]
                             }
                         },function(){
                             randomPasswordDB.insertOne({_id:studentID,password:password},function(){
@@ -775,11 +771,18 @@ module.exports=function(app,db){
     //OK Q{} return {course:[{courseID,subject,[grade],level,day,[tutor],[student],courseName,[tutorNicknameEn]}]}
     post("/post/allCourse",function(req,res){
         var output=[];
+        var all=false;
+        if(req.body.year===undefined&&req.body.quarter==="all"){
+            all=true;
+            req.body.quarter=undefined;
+        }
         getQuarter(req.body.year,req.body.quarter,function(err,quarter){
             if(err)res.send(err);
             else{
                 getCourseDB(function(courseDB){
-                    courseDB.find({year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
+                    var query={year:quarter.year,quarter:quarter.quarter};
+                    if(all)query={};
+                    courseDB.find(query).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
                         callbackLoop(result.length,function(i,continueLoop){
                             getCourseName(result[i]._id,function(courseName){
                                 output[i]={courseID:result[i]._id};
@@ -831,7 +834,7 @@ module.exports=function(app,db){
             }
         });
     });
-    //OK {courseID} return {courseName,day,[tutor],[student]}
+    //OK {courseID} return {courseName,day,[tutor],[student],year,quarter}
     post("/post/courseInfo",function(req,res){
         var courseID=req.body.courseID;
         getCourseDB(function(courseDB){
@@ -841,7 +844,8 @@ module.exports=function(app,db){
                     getCourseName(courseID,function(courseName){
                         res.send({
                             courseName:courseName,day:result.day,
-                            tutor:result.tutor,student:result.student
+                            tutor:result.tutor,student:result.student,
+                            year:result.year,quarter:result.quarter
                         });
                     });
                 }
@@ -1438,7 +1442,7 @@ module.exports=function(app,db){
     });
 
     // Student Attendance
-    //OK {studentID,day,reason,sender} return {}
+    //OK {studentID,[day],reason,sender} return {}
     post("/post/addStudentAbsenceModifier",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var day=req.body.day;
@@ -1452,7 +1456,7 @@ module.exports=function(app,db){
             callbackLoop(day.length,function(i,continueLoop){
                 studentAttendanceModifierDB.insertOne({
                     _id:new ObjectID().toString(),studentID:studentID,
-                    day:day[i],type:"absence",reason:reason,subjectToAdd:"",
+                    day:day[i],type:"absence",reason:reason,subject:"",
                     timestamp:timestamp,sender:sender
                 },function(){
                     continueLoop();
@@ -1474,17 +1478,17 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID,day,subjectToAdd,sender} return {}
+    //OK {studentID,day,subject,sender} return {}
     post("/post/addStudentPresenceModifier",function(req,res){
         var modifierID=new ObjectID().toString();
         var studentID=parseInt(req.body.studentID);
         var day=parseInt(req.body.day);
-        var subjectToAdd=req.body.subjectToAdd;
+        var subject=req.body.subject;
         var sender=req.body.sender;
         findUser(res,studentID,{position:"student"},function(){
             studentAttendanceModifierDB.insertOne({
                 _id:modifierID,studentID:studentID,
-                day:day,type:"presence",subjectToAdd:subjectToAdd,reason:"",
+                day:day,type:"presence",subject:subject,reason:"",
                 timestamp:moment().valueOf(),sender:sender
             },function(){
                 res.send({});
@@ -1498,7 +1502,7 @@ module.exports=function(app,db){
             res.send({});
         });
     });
-    //OK {day} return {[absence][presence]->modifierID,studentID,reason|subjectToAdd,timestamp,sender,subject(absence)}
+    //OK {day} return {[absence][presence]->modifierID,studentID,reason|subject,timestamp,sender,absentSubject(absence)}
     post("/post/listStudentAttendanceModifierByDay",function(req,res){
         var day=parseInt(req.body.day);
         var absence=[],presence=[];
@@ -1520,7 +1524,7 @@ module.exports=function(app,db){
                 else if(result[i].type=="presence"){
                     presence.push({
                         modifierID:result[i]._id,studentID:result[i].studentID,
-                        subjectToAdd:result[i].subjectToAdd,
+                        subject:result[i].subject,
                         timestamp:result[i].timestamp,sender:result[i].sender
                     });
                 }
@@ -1534,7 +1538,7 @@ module.exports=function(app,db){
                         var index=result.student.findIndex(function(x){
                             return x.studentID==absence[i].studentID;
                         });
-                        absence[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                        absence[i].absentSubject="FHB"+result.student[index].subject[0];//TODO remove [0]
                         continueLoop();
                     }
                     else{
@@ -1544,11 +1548,11 @@ module.exports=function(app,db){
                                 day:{$in:generalizedDay},student:absence[i].studentID
                             },function(err,result){
                                 if(result){
-                                    absence[i].subject=result._id;
+                                    absence[i].absentSubject=result._id;
                                     continueLoop();
                                 }
                                 else{
-                                    absence[i].subject="No timetable";
+                                    absence[i].absentSubject="No timetable";
                                     console.log(chalk.black.bgRed("[ERROR] No timetable"));
                                     continueLoop();
                                 }
@@ -1561,7 +1565,7 @@ module.exports=function(app,db){
             });
         });
     });
-    //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subjectToAdd,timestamp,sender,subject}
+    //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subject,timestamp,sender,absentSubject}
     post("/post/listStudentAttendanceModifierByStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
         var start=parseInt(req.body.start);
@@ -1576,7 +1580,7 @@ module.exports=function(app,db){
                         day:result[i].day,
                         type:result[i].type,
                         reason:result[i].reason,
-                        subjectToAdd:result[i].subjectToAdd,
+                        subject:result[i].subject,
                         timestamp:result[i].timestamp,
                         sender:result[i].sender,
                     });
@@ -1597,7 +1601,7 @@ module.exports=function(app,db){
                                 var index=result.student.findIndex(function(x){
                                     return x.studentID==studentID;
                                 });
-                                output[i].subject="FHB"+result.student[index].subject[0];//TODO remove [0]
+                                output[i].absentSubject="FHB"+result.student[index].subject[0];//TODO remove [0]
                                 continueLoop();
                             }
                             else{
@@ -1607,11 +1611,11 @@ module.exports=function(app,db){
                                         day:{$in:generalizedDay},student:studentID
                                     },function(err,result){
                                         if(result){
-                                            output[i].subject=result._id;
+                                            output[i].absentSubject=result._id;
                                             continueLoop();
                                         }
                                         else{
-                                            output[i].subject="No timetable";
+                                            output[i].absentSubject="No timetable";
                                             console.log(chalk.black.bgRed("[ERROR] No timetable"));
                                             continueLoop();
                                         }
@@ -1779,6 +1783,118 @@ module.exports=function(app,db){
         res.status(200).send("OK");
     });
 
+    // Conference
+    /**
+     * Add conference
+     */
+    post("/post/addConferenceDate", function (req, res) {
+        if (req.body.day === undefined || req.body.name === undefined){
+            return res.status(400).send({
+                err: -1,
+                msg: "Bad Request"
+            });
+        } 
+        var reqDate = new Date(parseInt(req.body.day));
+        var serverDate = new Date(0);
+        serverDate.setHours(reqDate.getHours());
+        serverDate.setMinutes(reqDate.getMinutes());
+        serverDate.setDate(reqDate.getDate());
+        serverDate.setMonth(reqDate.getMonth());
+        serverDate.setFullYear(reqDate.getFullYear());
+        conferenceDB.insertOne({
+            day: serverDate.getTime(),
+            name: req.body.name,
+            accept: [],
+            reject: []
+        }, function (err, result) {
+            if (err) {
+                return res.status(500).send({
+                    err: -1,
+                    msg: "Internal Server Error"
+                });
+            }
+            res.status(200).send("OK");
+        });
+    });
+
+    /**
+     * List all of conference in database
+     */
+    post("/post/listConference", function (req, res) {
+        var querryObject = {};
+        if (req.body.day !== undefined) {
+            querryObject.day = req.body.day;
+        }
+        conferenceDB.find(querryObject).toArray(function (err, result) {
+            for (let i = 0; i < result.length; i++) {
+                result[i].conferenceID = result[i]._id;
+                delete result[i]._id
+                delete result[i].accept;
+                delete result[i].reject;
+            }
+            res.status(200).send(result);
+        });
+    });
+
+    /**
+     * Post method for adding student to conference
+     * req.body = {
+     *      conferenceID: 38927hf83r9hjjaifwe
+     *      studentID: 15999
+     *      isAttended: true
+     * }
+     * res.body = "OK"
+     */
+    post("/post/addStudentToConference", function (req, res) {
+        if (req.body.conferenceID === undefined || req.body.studentID === undefined || req.body.isAttended === undefined) return res.status(400).send("Bad Request");
+        var pushObject = {
+            studentID: parseInt(req.body.studentID)
+        }
+        if (req.body.reason) {
+            pushObject.reason = req.body.reason
+        }
+        if (req.body.isAttended == "true") {
+            conferenceDB.update(
+                { _id: ObjectID(req.body.conferenceID) },
+                {
+                    $push: {
+                        accept: pushObject
+                    }
+                }
+            );
+        } else {
+            conferenceDB.update(
+                { _id: ObjectID(req.body.conferenceID) },
+                {
+                    $push: {
+                        reject: pushObject
+                    }
+                }
+            );
+        }
+        res.status(200).send("OK");
+    });
+
+    /**
+     * Post method for listing student to conference
+     * req.body = {
+     *      conferenceID: 38927hf83r9hjjaifwe
+     *      studentID: 15999
+     *      isAttended: true
+     * }
+     * res.body = "OK"
+     */
+    post("/post/listStudentInConference", function (req, res) {
+        if (req.body.conferenceID === undefined) return res.status(400).send("Bad Request");
+        conferenceDB.findOne({
+            _id: ObjectID(req.body.conferenceID)
+        }, function (err, result) {
+            res.status(200).send(result);
+        });
+    });
+
+    
+
     // Configuration
     //OK {} return {_id,year,quarter,courseMaterialPath,receiptPath,nextStudentID,nextTutorID,profilePicturePath,studentSlideshowPath,maxSeat}
     post("/post/getConfig",function(req,res){
@@ -1794,33 +1910,39 @@ module.exports=function(app,db){
                 quarter:parseInt(req.body.defaultQuarterQuarter)
             }
         };
-        if(req.body.defaultSummerYear!==undefined&&req.body.defaultSummerQuarter!==undefined){
-            defaultQuarter.summer={
-                year:parseInt(req.body.defaultSummerYear),
-                quarter:parseInt(req.body.defaultSummerQuarter)
+        getQuarter(defaultQuarter.quarter.year,defaultQuarter.quarter.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                if(req.body.defaultSummerYear!==undefined&&req.body.defaultSummerQuarter!==undefined){
+                    defaultQuarter.summer={
+                        year:parseInt(req.body.defaultSummerYear),
+                        quarter:parseInt(req.body.defaultSummerQuarter)
+                    }
+                }
+                var dirPath=function(path){
+                    if(path.endsWith("/"))return path;
+                    return path+"/";
+                };
+                configDB.updateOne({},{
+                    $set:{
+                        defaultQuarter:defaultQuarter,
+                        courseMaterialPath:dirPath(req.body.courseMaterialPath),
+                        receiptPath:dirPath(req.body.receiptPath),
+                        nextStudentID:parseInt(req.body.nextStudentID),
+                        nextTutorID:parseInt(req.body.nextTutorID),
+                        profilePicturePath:dirPath(req.body.profilePicturePath),
+                        studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
+                        studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath),
+                        documentPath:dirPath(req.body.documentPath)
+                    }
+                },function(){
+                    configDB.findOne({},function(err,config){
+                        console.log("[SHOW] config");
+                        console.log(config);
+                        res.send({});
+                    });
+                });
             }
-        }
-        var dirPath=function(path){
-            if(path.endsWith("/"))return path;
-            return path+"/";
-        };
-        configDB.updateOne({},{
-            $set:{
-                defaultQuarter:defaultQuarter,
-                courseMaterialPath:dirPath(req.body.courseMaterialPath),
-                receiptPath:dirPath(req.body.receiptPath),
-                nextStudentID:parseInt(req.body.nextStudentID),
-                nextTutorID:parseInt(req.body.nextTutorID),
-                profilePicturePath:dirPath(req.body.profilePicturePath),
-                studentSlideshowPath:dirPath(req.body.studentSlideshowPath),
-                studentCommentPicturePath:dirPath(req.body.studentCommentPicturePath)
-            }
-        },function(){
-            configDB.findOne({},function(err,config){
-                console.log("[SHOW] config");
-                console.log(config);
-                res.send({});
-            });
         });
     });
     //OK {toAdd} return {}
@@ -1828,13 +1950,14 @@ module.exports=function(app,db){
         userDB.updateMany({position:"student"},{$inc:{"student.grade":parseInt(req.body.toAdd)}});
         res.send({});
     });
-    //OK {year,quarter,name,maxSeat,week}
+    //OK {year,quarter,name,maxSeat,week,status} return {}
     post("/post/addQuarter",function(req,res){
         var year=parseInt(req.body.year);
         var quarter=parseInt(req.body.quarter);
         var name=req.body.name;
         var maxSeat=[8+6+12+6+6+2,27,12,10,16,12];
         var week=[];
+        var status=req.body.status;
         // var maxSeat=[]; TODO
         // for(var i=0;i<req.body.maxSeat.length;i++){
         //     maxSeat.push(parseInt(req.body.maxSeat[i]));
@@ -1842,16 +1965,29 @@ module.exports=function(app,db){
         quarterDB.insertOne({
             _id:year+digit(quarter,2),
             year:year,quarter:quarter,name:name,
-            maxSeat:maxSeat,week:week
+            maxSeat:maxSeat,week:week,status:status,
+            hybird: {
+                tue: [],
+                thu: [],
+
+            }
         },function(){
-            userDB.updateMany({position:"student","student.status":{$in:["active","inactive"]}},{
-                $push:{quarter:{
-                    year:year,quarter:quarter,
-                    registrationState:"unregistered"
-                }}
-            },function(){
-                res.send({});
-            })
+            res.send({});
+        });
+    });
+    //OK {status} return {[quarter]}
+    post("/post/listQuarter",function(req,res){
+        var status=req.body.status;
+        var query=[];
+        if(status==="public")query=["public"];
+        else if(status==="protected")query=["public","protected"];
+        else if(status==="private")query=["public","protected","private"];
+        quarterDB.find({status:{$in:query}}).toArray(function(err,result){
+            for(var i=0;i<result.length;i++){
+                result[i].quarterID = result[i]._id;
+                delete result[i]._id;
+            }
+            res.send({quarter:result});
         });
     });
     post("/post/lineNotify",function(req,res){
@@ -1893,12 +2029,19 @@ module.exports=function(app,db){
             res.send(result);
         });
     });
+    app.post("/debug/listQuarter",function(req,res){
+        quarterDB.find().toArray(function(err,result){
+            res.send(result);
+        });
+    });
+
+    var postV1 = require("./v1.js")(app, db, post);
 }
 
 /**
  * courseName format: subject + level + "-" + set + subset + setNo + {subscript + subscriptNo} + "(REV" + mainRev + "_" + subRev
  * e.g. MK-AB11r1(REV1_0)
- * @param {String} courseName 
+ * @param {String} courseName
  */
 function decodeCourseName(courseName) {
     var courseNameComponent = {};
