@@ -7,24 +7,17 @@ html(lang="en")
         link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
         link(rel="stylesheet" type="text/css" href="/css/bootstrap.min.css")
         link(rel="stylesheet" type="text/css" href="/css/style.min.css")
-        link(rel="stylesheet" href="/css/angular-material.min.css")
+        link(href="/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet")
         link(rel="apple-touch-icon" sizes="57x57" href="/images/ios_icon57x57.png")
         link(rel="apple-touch-icon" sizes="72x72" href="/images/ios_icon72x72.png")
         link(rel="apple-touch-icon" sizes="114x114" href="/images/ios_icon114x114.png")
         link(rel="apple-touch-icon" sizes="144x144" href="/images/ios_icon144x144.png")
-        script(src="/js/angular.min.js")
-        script(src="/js/angular-animate.min.js")
-        script(src="/js/jquery-3.2.1.min.js")
-        script(src="/js/bootstrap.min.js")
-        script(src="/js/ui-bootstrap-2.5.0.min.js")
-        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
-        script(type="text/javascript" src="/js/global-1.0.0.custom.js")
         block head
         title= pageTitle?pageTitle:"Monkey-Monkey Official Website"
     body
         block header
         if(!hideNavbar)
-            nav.navbar.navbar-default.navbar-fixed-top(style=removeNavbarBottomMargin?"margin-bottom:0px;":"")
+            nav.navbar.navbar-inverse.navbar-fixed-top(style=removeNavbarBottomMargin?"margin-bottom:0px;":"")
                 .container-fluid
                     .navbar-header
                         button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#navbar")
@@ -78,21 +71,21 @@ html(lang="en")
                         ul.nav.navbar-nav.navbar-right
                             if(webUser.position=="student")
                                 li: a(href="/studentProfile")
-                                    span.glyphicon.glyphicon-user
+                                    span.oi.oi-person
                                     //- = " "+webUser.firstname+" "+webUser.lastname
                                     = " "+webUser.firstname
                             else if(webUser.position=="dev")
                                 li: a(href="/testDev")
-                                    span.glyphicon.glyphicon-user
+                                    span.oi.oi-person
                                     //- = " "+webUser.firstname+" "+webUser.lastname
                                     = " "+webUser.firstname
                             else
                                 li: a(href="/tutorEditProfile")
-                                    span.glyphicon.glyphicon-user
+                                    span.oi.oi-person
                                     //- = " "+webUser.firstname+" "+webUser.lastname
                                     = " "+webUser.firstname
                             li: a(href="/login")
-                                span.glyphicon.glyphicon-log-out
+                                span.oi.oi-account-logout
                                 |  Logout
             div(style="margin-top:70px")
         block body
@@ -102,3 +95,8 @@ html(lang="en")
                 .text-center.center-block
                     h4 Powered by MonkeyIT
                     p Copyright &copy; 2017 &middot; All Rights Reserved
+        script(src="/js/jquery-3.2.1.min.js")
+        script(src="/js/bootstrap.min.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
+        script(type="text/javascript" src="/js/global-1.0.0.custom.js")
+        block script
