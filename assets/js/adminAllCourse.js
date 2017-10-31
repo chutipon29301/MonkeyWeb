@@ -8,7 +8,9 @@ const getDateName = (date) => {
     let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     return dateName[date];
 };
-
+$(function () {
+    getAllCourseContent();
+});
 /**
  * Generate element for adminAllcourse page
  */
@@ -53,7 +55,7 @@ function filterCourseData(data, config) {
     let quarter = document.getElementById("quarter");
     let cookie = getCookieDict();
 
-    if(cookie.monkeyWebSelectedQuarter === null || cookie.monkeyWebSelectedQuarter === undefined){
+    if (cookie.monkeyWebSelectedQuarter === null || cookie.monkeyWebSelectedQuarter === undefined) {
         cookie.monkeyWebSelectedQuarter = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
     }
 
