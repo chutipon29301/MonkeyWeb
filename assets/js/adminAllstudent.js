@@ -22,7 +22,9 @@ const getDateName = (date) => {
     let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     return dateName[date];
 };
-
+$(function () {
+    getAllStudentContent()
+});
 function quarterChange() {
     var quarter = document.getElementById("quarter");
     writeCookie("monkeyWebSelectedQuarter", quarter.options[quarter.selectedIndex].value);
@@ -255,11 +257,11 @@ function generateStudentHtmlTable(student) {
         let cell8 = row.insertCell(8);
         cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
-        cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
-        cell3.innerHTML = "<td>" + student[i].level + "</td>";
-        cell4.innerHTML = "<td>" + student[i].nickname + "</td>";
-        cell5.innerHTML = "<td>" + student[i].firstname + "</td>";
-        cell6.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
+        cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
+        cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell5.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
+        cell6.innerHTML = "<td>" + student[i].level + "</td>";
         cell7.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
         cell8.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
@@ -288,7 +290,7 @@ function createNewStudent() {
         document.getElementById("newStudentPassword").innerHTML = "Password: " + data.student[0].password;
         $("#newStudentDialog").modal({
             backdrop: 'static',
-            keyboard: false        
+            keyboard: false
         });
     });
 }
