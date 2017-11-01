@@ -1,41 +1,15 @@
 extends htmlTemplate
 block head
     -const pageTitle = "All Student"
-    style.
-        table {
-            width: 100%;
-        }
-        thead, tbody, tr, td, th { display: block; }
-        tr:after {
-            content: ' ';
-            display: block;
-            visibility: hidden;
-            clear: both;
-        }
-        thead th {
-            height: 30px;
-
-            /*text-align: left;*/
-        }
-        tbody {
-            height: 78vh;
-            overflow-y: auto;
-        }
-        thead {
-            /* fallback */
-        }
-        tbody td, thead th {
-            width: 11.1%;
-            float: left;
-        }
+    link(rel="stylesheet", href="css/typeaheadjs.css")
 block script
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/adminAllstudent.min.js")
 block body
     .container-fluid
         .row
-            .col-sm-3.col-lg-2
-                h1(style="margin-top:10px") Student
+            .col-3.col-xl-2.position-fixed
+                h1.mt-10 Student
                 form
                     .form-group
                         label
@@ -55,10 +29,10 @@ block body
                             option(value="all") All
                 form
                     .form-group
-                        select.form-control#stage(onChange="registrationStateChange()" style="margin-bottom: 5px")
+                        select.form-control#stage(onChange="registrationStateChange()")
                 form
                     .form-group
-                        select.form-control#grade(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                        select.form-control#grade(onChange="getAllStudentContent()")
                             option(value="all") All Grade
                             option(value="1") P1
                             option(value="2") P2
@@ -74,7 +48,7 @@ block body
                             option(value="12") S6
                 form
                     .form-group
-                        select.form-control#course(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                        select.form-control#course(onChange="getAllStudentContent()")
                             option(value="all" ) CR &amp; FHB
                             option(value="cr") CR
                             option(value="hb") FHB
@@ -89,30 +63,29 @@ block body
                         label Barcode:
                         input.form-control(type="number" id="studentID" autofocus)
                 label#currentStudentLabel 
-                button.btn.btn-default.col-sm-12(onClick="createNewStudent()") Add Student
-            .col-sm-9.col-lg-10(style="padding:0;")
+                button.btn.btn-outline-secondary.col-sm-12(onClick="createNewStudent()") Add Student
+            .col-9.offset-3.col-xl-10.offset-xl-2.p-0
                 .table-responsive
-                    table.table.table-hover(style="font-family:'maitree',serif;")
+                    table.table.table-hover
                         thead
                             tr
-                                th No.
-                                th ID
-                                th Nickname
-                                th Name
-                                th Surname
-                                th Grade
-                                th Level
-                                th CR
-                                th HB
+                                th.w-10 No.
+                                th.w-15 ID
+                                th.w-10 Grade
+                                th.w-15 Nickname
+                                th.w-20 Name
+                                th.w-20 Surname
+                                th.w-10 Level
+                                //- th CR
+                                //- th HB
                         tbody#allStudentTable
-
-                .modal.fade#newStudentDialog
-                    .modal-dialog
-                        .modal-content
-                            .modal-header
-                                h1 New Student
-                            .modal-body
-                                h4#newStudentUsername 
-                                h4#newStudentPassword 
-                            .modal-footer
-                                button.btn.btn-default(onClick="closeNewStudentDialog()") Close
+        .modal.fade#newStudentDialog
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h1 New Student
+                    .modal-body
+                        h4#newStudentUsername 
+                        h4#newStudentPassword 
+                    .modal-footer
+                        button.btn.btn-default(onClick="closeNewStudentDialog()") Close

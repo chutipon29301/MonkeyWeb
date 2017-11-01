@@ -1,4 +1,6 @@
 - if(!webUser)webUser={userID:12345,position:"dev",firstname:"ชื่อจริง",lastname:"นามสกุล"}
+mixin navLink(pageURL,pageName)
+    li.nav-item: a.nav-link(href=pageURL)=pageName
 doctype html
 html(lang="en")
     head
@@ -41,27 +43,27 @@ html(lang="en")
                                     //- li: a(href="summerAbsentForm") ลาCR60OCT
                                     li: a(href="absentForm") ลา CR&FHB
                                     //- li: a(href="addForm") เพิ่ม FHB
-                            li.nav-item: a.nav-link(href="/absentForm") ลา CR&FHB
-                            li.nav-item: a.nav-link(href="/addForm") เพิ่ม FHB
+                            +navLink("absentForm","ลา CR&FHB")
+                            +navLink("addForm","เพิ่ม FHB")
                         else
                             if(webUser.position!="tutor")
-                                li.nav-item: a.nav-link(href="/adminAllStudent") All Student
+                                +navLink("adminAllStudent","All Student")
                             if(webUser.position=="tutor")
-                                li.nav-item: a.nav-link(href="/adminAllCourse") My Course
+                                +navLink("adminAllCourse","My Course")
                             else
-                                li.nav-item: a.nav-link(href="/adminAllCourse") All Course
-                            li.nav-item: a.nav-link(href="/tutorCommentStudent") Comments
+                                +navLink("adminAllCourse","All Course")
+                            +navLink("tutorCommentStudent","Comments")
                             li.nav-item.dropdown
                                 a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") CR 
                                 .dropdown-menu(aria-labelledby="navbarDropdown")
                                     a.dropdown-item(href="/tutorCourseMaterial") CR Material
                                     if(webUser.position!="tutor")
                                         a.dropdown-item(href="/adminCourseMaterial") CR Tracking
-                            li.nav-item: a.nav-link(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
+                            +navLink("adminStudentAttendanceModifier","ลา/เพิ่ม")
                             if(webUser.position!="tutor")
-                                li.nav-item: a.nav-link(href="/adminCourseRoom") Room
-                            li.nav-item: a.nav-link(href="/adminConference") Conference
-                        li.nav-item: a.nav-link(href="studentDocument") เอกสาร
+                                +navLink("adminCourseRoom","Room")
+                            +navLink("adminConference","Conference")
+                        +navLink("studentDocument","เอกสาร")
                     ul.navbar-nav
                         if(webUser.position=="student")
                             li.nav-item: a.nav-link(href="/studentProfile")
