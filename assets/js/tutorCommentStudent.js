@@ -20,7 +20,7 @@ $(document).ready(function () {
         $("#uploadModal").modal();
     });
     $("#postButton").click(function () {
-        let comm = $('#search-box .typeahead').typeahead("getActive");
+        let comm = $('.typeahead').typeahead("getActive");
         let ufile = $('#file-1');
         let ext = ufile.val().split('.').pop().toLowerCase();
         if (comm !== undefined) {
@@ -123,15 +123,15 @@ function getName(cm, i) {
                     let path = config.studentCommentPicturePath;
                     path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
                     $.get(path + ".jpg").done(function (result) {
-                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
+                        $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpg" + "' class='img-fluid rounded mb-3'></div></div>");
                         if (i < cm.comment.length - 1) getName(cm, i + 1);
                     }).fail(function () {
                         $.get(path + ".jpeg").done(function (result) {
-                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+                            $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpeg" + "' class='img-fluid rounded mb-3'></div></div>");
                             if (i < cm.comment.length - 1) getName(cm, i + 1);
                         }).fail(function () {
                             $.get(path + ".png").done(function (result) {
-                                $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                                $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".png" + "' class='img-fluid rounded mb-3'></div></div>");
                                 if (i < cm.comment.length - 1) getName(cm, i + 1);
                             }).fail(function () {
                                 if (i < cm.comment.length - 1) getName(cm, i + 1);
@@ -164,15 +164,15 @@ function getNameAdmin(cm, i) {
                     let path = config.studentCommentPicturePath;
                     path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
                     $.get(path + ".jpg").done(function (result) {
-                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
+                        $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpg" + "' class='img-fluid rounded mb-3'></div></div>");
                         if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                     }).fail(function () {
                         $.get(path + ".jpeg").done(function (result) {
-                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+                            $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpeg" + "' class='img-fluid rounded mb-3'></div></div>");
                             if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                         }).fail(function () {
                             $.get(path + ".png").done(function (result) {
-                                $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                                $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".png" + "' class='img-fluid rounded mb-3'></div></div>");
                                 if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                             }).fail(function () {
                                 if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
