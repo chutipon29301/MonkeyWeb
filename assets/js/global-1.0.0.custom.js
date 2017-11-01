@@ -6,6 +6,11 @@ const allCourse = () => $.post("/post/allCourse", {
     quarter: "all"
 });
 
+const allCourseV1 = (year, quarter) => $.post("post/v1/allCourse", {
+    year: year,
+    quarter: quarter
+});
+
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const studentProfile = (studentID) => $.post("post/studentProfile", {
     studentID: studentID

@@ -3,12 +3,12 @@ block head
     -const pageTitle = "Student Document"
     script(src="js/student.min.js")
 block body
-    .container
+    .container-fluid
         .row
-            .col-sm-12
+            .col-12
                 h2: kbd Instruction
         .row
-            .col-sm-6
-                img.img-rounded.img-responsive(src="images/blue1.jpg")
-            .col-sm-6
-                img.img-rounded.img-responsive(src="images/blue2.jpg")
+            .col-6
+                img.rounded.img-fluid(src="images/blue1.jpg")
+            .col-6
+                img.rounded.img-fluid(src="images/blue2.jpg")
