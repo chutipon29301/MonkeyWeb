@@ -2,40 +2,13 @@ extends htmlTemplate
 block head
     - var pageTitle = "All Course"
     - if(webUser.position==="tutor")pageTitle="My Course"
-    style.
-        table {
-            width: 100%;
-        }
-        thead, tbody, tr, td, th { display: block; }
-        tr:after {
-            content: ' ';
-            display: block;
-            visibility: hidden;
-            clear: both;
-        }
-        thead th {
-            height: 30px;
-
-            /*text-align: left;*/
-        }
-        tbody {
-            height: 78vh;
-            overflow-y: auto;
-        }
-        thead {
-            /* fallback */
-        }
-        tbody td, thead th {
-            width: 20%;
-            float: left;
-        }
 block script
     script(src="js/adminAllCourse.js")
 block body
     .container-fluid
         .row
-            div(class=webUser.position === "tutor" ? "hidden" : "col-sm-3 col-lg-2")
-                h1(style="margin-top:10px") Course
+            div(class=webUser.position === "tutor" ? "hidden" : "col-3 col-xl-2 position-fixed")
+                h1.mt-10 Course
                 form
                     .form-group
                         label
@@ -50,12 +23,12 @@ block body
                         select.form-control#subject(onChange="getAllCourseContent()")
                             option(value="all") All Subject
                             option(value="M") Math
-                            option(value="PH") Physics
+                            option(value="P") Physics
                             option(value="E") English
-                            option(value="CH") Chemistry
+                            option(value="C") Chemistry
                 form
                     .form-group
-                        select.form-control#grade(onChange="getAllCourseContent()" style="margin-bottom:5px")
+                        select.form-control#grade(onChange="getAllCourseContent()")
                             option(value="all") All grade
                             option(value="1") P1
                             option(value="2") P2
@@ -71,29 +44,29 @@ block body
                             option(value="12") S6
                 form
                     .form-group
-                        select.form-control#name(onChange="getAllCourseContent()" style="margin-bottom:5px")
+                        select.form-control#name(onChange="getAllCourseContent()")
                             if(webUser.position === "tutor")
                                 option(value=webUser.userID)
                             else
                                 option(value="all") All Tutor
-                                option(value="99019") Anne
-                                option(value="99018") Atom
-                                option(value="99007") Bam
-                                option(value="99003") BB
-                                option(value="99025") Beng
-                                option(value="99012") Chote
-                                option(value="99006") Gag
-                                option(value="99000") Hybrid
-                                option(value="99010") Paan
-                                option(value="99022") Pele
-                                option(value="99004") Pre
-                                option(value="99023") Tao
-                                option(value="99008") Ten
-                                option(value="99026") Third
-                                option(value="99016") Ya
+                                option(value="Anne") Anne
+                                option(value="Atom") Atom
+                                option(value="Bam") Bam
+                                option(value="BB") BB
+                                option(value="Beng") Beng
+                                option(value="Chote") Chote
+                                option(value="Gag") Gag
+                                option(value="Hybrid") Hybrid
+                                option(value="Paan") Paan
+                                option(value="Pele") Pele
+                                option(value="Pre") Pre
+                                option(value="Tao") Tao
+                                option(value="Ten") Ten
+                                option(value="Third") Third
+                                option(value="Ya") Ya
                 form
                     .form-group
-                        select.form-control#time(onChange="getAllCourseContent()" style="margin-bottom:5px")
+                        select.form-control#time(onChange="getAllCourseContent()")
                             option(value="all") All Time
                             option(value="176400000") Sat 8
                             option(value="183600000") Sat 10
@@ -103,15 +76,19 @@ block body
                             option(value="270000000") Sun 10
                             option(value="280800000") Sun 13
                             option(value="288000000") Sun 15
-                a(href="adminCourseTable" class=webUser.position === "tutor" ? "hidden" : "") คัมภีร์เทวดา
-            div(style="padding:0" class=webUser.position === "tutor" ? "col-sm-12" : "col-sm-9 col-lg-10")
+                a(href="adminCourseTable" class=webUser.position === "tutor" ? "hidden" : "btn btn-link col")
+                    span.oi.oi-book
+                    |คัมภีร์เทวดา
+            div(class=webUser.position === "tutor" ? "col" : "col-9 offset-3 col-xl-10 offset-xl-2 p-0")
                 .table-responsive
-                    table.table.table-hover(style="font-family:'Trirong',serif")
+                    table.table.table-hover
                         thead
                             tr
-                                th No.
-                                th CourseName
-                                th Day
-                                th Time
-                                th Tutor
+                                th.w-10 No.
+                                th.w-20.text-center CourseName
+                                th.w-15.text-center Day
+                                th.w-20.text-center Time
+                                th.w-10.text-center Tutor
+                                th.w-10.text-center Student
+                                th.w-15.text-center Room
                         tbody#allCourseTable
