@@ -22,8 +22,9 @@ block body
                     span.oi.oi-text &nbsp;
                     |Comment
                 textarea.form-control#comment(rows="5")
-        button#uploadButton.btn.btn-light.col-xl-1.offset-xl-10.col-3.offset-6 UPLOAD
-        button#postButton.btn.btn-light.col-xl-1.col-3 SUBMIT
+        .btn-group.d-flex.justify-content-end
+            button#uploadButton.btn.btn-primary UPLOAD
+            button#postButton.btn.btn-primary SUBMIT
     .container
         hr
         h2 Recent comments
