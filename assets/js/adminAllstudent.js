@@ -269,7 +269,7 @@ function generateStudentHtmlTable(student) {
             //noinspection SpellCheckingInspection
             writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
             //noinspection SpellCheckingInspection
-            self.location = "/adminStudentprofile";
+            self.location = "/adminStudentprofileQ4";
         };
         row.onclick = clickHandler(row);
     }
@@ -278,7 +278,7 @@ function generateStudentHtmlTable(student) {
 function scanStudentBarcode() {
     let inputBox = document.getElementById("studentID")
     writeCookie("monkeyWebAdminAllstudentSelectedUser", inputBox.value.substring(0, inputBox.value.length - 1));
-    self.location = "/adminStudentprofile";
+    self.location = "/adminStudentprofileQ4";
 }
 
 function createNewStudent() {
