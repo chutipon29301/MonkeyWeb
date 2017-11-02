@@ -57,12 +57,11 @@ html(lang="en")
                             else
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminAllStudent") All Student
-                                li: a(href="/tutorCommentStudent") Comments
-                                 li: a(href="/adminConference") Conference
                                 if(webUser.position=="tutor")
                                     li: a(href="/adminAllCourse") My Course
                                 else
                                     li: a(href="/adminAllCourse") All Course
+                                li: a(href="/tutorCommentStudent") Comments
                                 li.dropdown
                                     a.dropdown-toggle(data-toggle="dropdown" href="#") CR 
                                         span.caret
@@ -73,6 +72,7 @@ html(lang="en")
                                 li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminCourseRoom") Room
+                                li: a(href="/adminConference") Conference
                                     //- li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
                             li: a(href="studentDocument") เอกสาร
                         ul.nav.navbar-nav.navbar-right
