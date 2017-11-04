@@ -159,32 +159,46 @@ function chkState() {
 }
 // send data to server
 function sendRequest(ID) {
-    $("#loaderModal").modal();
-    let pickDate = $('#datePicker').data('DateTimePicker').date();
-    if ($("#typeInput").val() === "0") {
-        let hbID = $(".btn-success").attr("id");
-        let date = $('#datePicker').data('DateTimePicker').date().hour(7);
-        $.post("post/v1/removeHybridStudentOnTime", { hybridID: hbID, studentID: ID, date: date.valueOf() }).then(data => {
-            log(data)
-            log("finish to remove")
-            location.reload();
-        })
-    } else {
-        let str = $(".btn-success").html();
-        pickDate.hour(str.slice(0, str.indexOf("-")));
-        let subj = $("#subjInput").val();
-        let date = pickDate;
-        date = date.minute(date.minute() + 2)
-        $.post('post/v1/listHybridDayInQuarter', { year: year, quarter: presentQuarter }).then(hb => {
-            for (let i in hb) {
-                if (moment(hb[i].day).day() === pickDate.day() && moment(hb[i].day).hour() === pickDate.hour()) {
-                    let hbID = hb[i].hybridID;
-                    $.post('post/v1/addHybridStudentOnTime', { hybridID: hbID, studentID: ID, subject: subj, date: date.valueOf() }).then(data => {
-                        log(data)
-                        log("finish to add")
-                    })
+    name(ID).then(name => {
+        let str = "\n" + name.nickname + " " + name.firstname;
+        $("#loaderModal").modal();
+        let pickDate = $('#datePicker').data('DateTimePicker').date();
+        if ($("#typeInput").val() === "0") {
+            str += "\n" + "ต้องการเพิ่มตลอดไป:" + "\n" + $(".btn-success").html() + " - ";
+            let hbID = $(".btn-success").attr("id");
+            let date = $('#datePicker').data('DateTimePicker').date().hour(7);
+            str += date.format("ddd DD/MM/YYYY");
+            str += "\n" + "ผู้แจ้ง:" + $("#senderInput").val();
+            $.post("post/v1/removeHybridStudentOnTime", { hybridID: hbID, studentID: ID, date: date.valueOf() }).then(data => {
+                log(data)
+                log("finish to remove")
+                $.post("post/lineNotify", { recipient: "MonkeyAdmin", message: str }, () => {
+                    location.reload();
+                })
+            })
+        } else {
+            let str2 = $(".btn-success").html();
+            pickDate.hour(str2.slice(0, str2.indexOf("-")));
+            let subj = $("#subjInput").val();
+            str += "\n" + "ต้องการลาตลอดไป:" + "\n" + $("#subjInput").html() + " - ";
+            let date = pickDate;
+            str += date.format("ddd DD/MM/YYYY HH:00");
+            str += "\n" + "ผู้แจ้ง:" + $("#senderInput").val();
+            date = date.minute(date.minute() + 2)
+            $.post('post/v1/listHybridDayInQuarter', { year: year, quarter: presentQuarter }).then(hb => {
+                for (let i in hb) {
+                    if (moment(hb[i].day).day() === pickDate.day() && moment(hb[i].day).hour() === pickDate.hour()) {
+                        let hbID = hb[i].hybridID;
+                        $.post('post/v1/addHybridStudentOnTime', { hybridID: hbID, studentID: ID, subject: subj, date: date.valueOf() }).then(data => {
+                            log(data)
+                            log("finish to add")
+                            $.post("post/lineNotify", { recipient: "MonkeyAdmin", message: str }, () => {
+                                location.reload();
+                            })
+                        })
+                    }
                 }
-            }
-        })
-    }
+            })
+        }
+    })
 }
