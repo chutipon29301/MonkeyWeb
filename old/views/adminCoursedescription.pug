@@ -1,26 +1,26 @@
 extends htmlTemplate
 block head
     -const pageTitle = "Course Description"
+block script
     script(src="js/adminCourseDescription.min.js")
-    script.
-        $(document).ready(getCourseDescription)
 block body
     .container
-        .col-sm-12
-            h1#courseName &nbsp;
-            h3#tutorName &nbsp;
-            br
-        div
-            p.col-sm-2#day &nbsp;
-            p.col-sm-2#time &nbsp;
-            p#courseID(align="right") &nbsp;
-        .table-responsive.col-sm-12
+        .row
+            .col
+                h1#courseName Course Name
+                h3#tutorName Tutor Name
+                br
+        .row
+            p.col-auto#day Day:Monday
+            p.col-auto.mr-auto#time 8:00-10:00
+            p.col-auto#courseID sadasdaskdkaskdkljakld
+        .table-responsive
             table.table.table-hover
-                thead
+                thead.thead-dark
                     tr
-                        th.col-sm-1 No.
-                        th.col-sm-2 ID
-                        th.col-sm-2 Nickname
-                        th.col-sm-2 Name
-                        th.col-sm-2 Surname
+                        th.w-10 No.
+                        th.w-10.text-center ID
+                        th.w-20.text-center Nickname
+                        th.w-30 Name
+                        th.w-20 Surname
                 tbody#allStudentInCourseTable

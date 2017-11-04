@@ -188,6 +188,7 @@ module.exports=function(app,db){
             options.middlewareOptions.quarter={quarter : 4 , year : 2017 , registrationState:"finished"};
                 addPugPage("absentForm",options);
                 addPugPage("addForm",options);
+                addPugPage("permanentAdtendance",options);
             options.middlewareOptions.quarter={quarter : 4 , year : 2017 , registrationState:["unregistered","rejected"]};
                 addPugPage("registrationCourse",options);
                 addPugPage("registrationHybrid",options);
