@@ -11,6 +11,18 @@ const allCourseV1 = (year, quarter) => $.post("post/v1/allCourse", {
     quarter: quarter
 });
 
+const listStudentHybrid = (year, quarter, studentID) => $.post("post/v1/listStudentHybrid", {
+    year: year,
+    quarter: quarter,
+    studentID: studentID
+})
+
+const listStudentSkill = (year, quarter, studentID) => $.post("post/v1/listStudentSkill", {
+    year: year,
+    quarter: quarter,
+    studentID: studentID
+})
+
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const studentProfile = (studentID) => $.post("post/studentProfile", {
     studentID: studentID
