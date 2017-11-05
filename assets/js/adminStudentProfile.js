@@ -26,29 +26,66 @@ const getLetterGrade = (grade) => {
  * Generate element for studentProfile page
  */
 function getStudentProfile() {
+    putQuarter();
+
     let cookie = getCookieDict();
-    /** @namespace cookie.monkeyWebAdminAllstudentSelectedUser */
     let studentID = cookie.monkeyWebAdminAllstudentSelectedUser;
     document.getElementById("studentID").innerHTML = "ID: " + studentID;
+    let selectedValue = cookie.monkeyWebSelectedQuarter
 
-    getConfig().then((data) => {
-        log("[getStudentProfile()] : post/getConfig => ");
-        log(data);
-        let label = "CR" + data.year + "Q" + data.quarter;
-        document.getElementById("qLabel").innerHTML = label;
-    });
-
-    //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
     studentProfile(studentID).then((data) => {
         log("[getStudentProfile()] : post/studentProfile => ");
         log(data);
+        // cr
         document.getElementById("studentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname;
         document.getElementById("studentNameEng").innerHTML = data.firstnameEn + " (" + data.nicknameEn + ") " + data.lastnameEn;
         document.getElementById("studentLevel").innerHTML = "Grade: " + getLetterGrade(data.grade);
         document.getElementById("email").innerHTML = "e-mail: " + data.email;
         document.getElementById("phone").innerHTML = "phone: " + data.phone;
-        document.getElementById("studentState").innerHTML = "STAGE: " + data.registrationState;
+        document.getElementById("studentLevel").innerHTML = "Level: " + data.level;
+        // summer
+        document.getElementById("summerStudentName").innerHTML = data.firstname + " (" + data.nickname + ") " + data.lastname + " (" + getLetterGrade(data.grade) + ")";
+        var summerStage, courseStage;
+        for (let i = 0; i < data.quarter.length; i++) {
+            log(data.quarter[i]);
+            if (data.quarter[i].year === parseInt(cookie.courseQuarter.substring(0, cookie.courseQuarter.indexOf("-"))) &&
+                data.quarter[i].quarter === parseInt(cookie.courseQuarter.substring(cookie.courseQuarter.indexOf("-") + 1))) {
+                courseStage = data.quarter[i].registrationState;
+            }
+            if (data.quarter[i].year === parseInt(cookie.summerQuarter.substring(0, cookie.summerQuarter.indexOf("-"))) &&
+                data.quarter[i].quarter === parseInt(cookie.summerQuarter.substring(cookie.summerQuarter.indexOf("-") + 1))) {
+                summerStage = data.quarter[i].registrationState;
+            }
+        }
+        if (courseStage !== undefined) {
+            document.getElementById("studentStateCr").innerHTML = "STAGE CR: " + courseStage;
+        }
+        if (summerStage !== undefined) {
+            document.getElementById("studentStateSm").innerHTML = "STAGE SM: " + summerStage;
+            log(summerStage);
+            switch (summerStage) {
+                case "approved":
+                    document.getElementById("approveSummerBtn").className += " disabled";
+                    break;
+                case "rejected":
+                    document.getElementById("rejectSummerBtn").className += " disabled";
+                    break;
+                case "pending":
+                    document.getElementById("approveSummerBtn").className += " disabled";
+                    document.getElementById("rejectSummerBtn").className += " disabled";
+                    document.getElementById("pendingSummerBtn").className += " disabled";
+                    break;
+                case "finished":
+                    document.getElementById("approveSummerBtn").className += " disabled";
+                    document.getElementById("rejectSummerBtn").className += " disabled";
+                    document.getElementById("finishedSummerBtn").className += " disabled";
+                    break;
+                default:
+                    break;
+            }
+        }
         document.getElementById("studentStatus").innerHTML = "STATUS: " + data.status;
+
         //add student data to modal
         document.getElementById("thNName").value = data.nickname;
         document.getElementById("thName").value = data.firstname;
@@ -57,7 +94,8 @@ function getStudentProfile() {
         document.getElementById("enName").value = data.firstnameEn;
         document.getElementById("enSName").value = data.lastnameEn;
         document.getElementById("classStudent").value = data.grade;
-        document.getElementById("stageStudent").value = data.registrationState;
+        // document.getElementById("stageStudent").value = data.registrationState;
+        document.getElementById("levelStudent").value = data.level;
         document.getElementById("statusStudent").value = data.status;
         document.getElementById("emailStudent").value = data.email;
         document.getElementById("telStudent").value = data.phone;
@@ -71,7 +109,6 @@ function getStudentProfile() {
                     log("[getCourseDescription()] : post/courseInfo => ");
                     log(course);
                     let time = new Date(course.day);
-                    //noinspection ES6ModulesDependencies,JSUnresolvedFunction
                     let courseTimeID = moment(0).day(time.getDay()).hour(time.getHours()).minute(time.getMinutes()).valueOf();
                     document.getElementById(courseTimeID).innerHTML = course.courseName;
                     document.getElementById(courseTimeID).value = data.courseID[i];
@@ -174,7 +211,7 @@ function generateImageData() {
                     if (data.courseName[0] === "M") {
                         mathMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
                         inMath = true;
-                    } else {
+                    } else if (data.courseName[0] === "P") {
                         physicsMiniTable[getDateName(time.getDay()) + time.getHours()] = "CR";
                         inPhy = true;
                     }
@@ -215,7 +252,7 @@ function generateImageData() {
                     $('#math').prop("disabled", false);
                     generateCover(tableInfo, "math");
                 }
-
+                generateSummerCover();
             });
         });
     });
@@ -225,15 +262,49 @@ function generateImageData() {
  * Change registration state of user
  * @param registrationState change registration stage of user
  */
-function setRegistrationState(registrationState) {
+function setRegistrationState(registrationState, quarter) {
     let studentID = parseInt(document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length));
-    changeRegistrationState(studentID, registrationState).then((data) => {
+    var quarterObject;
+    switch (quarter) {
+        case "quarter":
+            var selectedQuarter = document.getElementById("courseQuarter");
+            var selectedYear = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(0, selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-")));
+            var selectedQuarter = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-") + 1));
+            // quarterObject = {
+            //     "year": selectedYear,
+            //     "quarter": selectedQuarter
+            // }
+            quarterObject = {
+                year: 2017,
+                quarter: 3
+            }
+            break;
+        case "summer":
+            var selectedQuarter = document.getElementById("summerQuarter");
+            var selectedYear = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(0, selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-")));
+            var selectedQuarter = parseInt(selectedQuarter.options[selectedQuarter.selectedIndex].value.substring(selectedQuarter.options[selectedQuarter.selectedIndex].value.indexOf("-") + 1));
+            quarterObject = {
+                "year": selectedYear,
+                "quarter": selectedQuarter
+            }
+            break;
+        default:
+            break;
+    }
+    log(quarterObject);
+    changeRegistrationState(studentID, registrationState, quarterObject).then((data) => {
         if (data.err) {
             log("[setRegistrationState()] : post/changeRegistrationState => " + data.err);
         } else {
-            if (registrationState === "registered" || registrationState === "pending") acceptReject(registrationState);
-            log("[setRegistrationState()] : post/changeRegistrationState => Success");
+            if (quarter !== "summer") {
+                if (registrationState === "finished" || registrationState === "pending") acceptReject(registrationState);
+                log("[setRegistrationState()] : post/changeRegistrationState => Success");
+            } else if (quarter === "summer") {
+                if (registrationState === "finished" || registrationState === "pending") acRjSummer(registrationState);
+                log("[setRegistrationState()] : post/changeRegistrationState => Success");
+            }
         }
+        location.reload();
     });
 }
 
@@ -289,10 +360,12 @@ function addRemoveCourse(timeID) {
                 select.innerHTML = "";
 
                 let time = new Date(parseInt(timeID));
-                select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
-                select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
+                if (!(time.getDay() === 1)) {
+                    select.innerHTML += "<option id='" + time.getTime() + "'>FHB : M</option>";
+                    select.innerHTML += "<option id='" + time.getTime() + "'>FHB : PH</option>";
+                }
 
-                if (!(time.getDay() === 2 || time.getDay() === 4)) {
+                if (!(time.getDay() === 2 || time.getDay() === 4 || time.getDay() === 1)) {
                     for (let i = 0; i < 4; i++) {
                         select.innerHTML += "<option id='" + time.getTime() + "'>SKILL " + time.getHours() +
                             ((i % 2 === 0) ? ":00" : ":30") + "</option>";
@@ -427,10 +500,14 @@ function editStudent() {
         status: status
     });
 
+    log("Hello World");
+
     let selectGrade = document.getElementById("classStudent");
     let grade = parseInt(selectGrade.options[selectGrade.selectedIndex].value);
-    let selectStage = document.getElementById("stageStudent");
-    let stage = selectStage.options[selectStage.selectedIndex].value;
+    let level = document.getElementById("levelStudent");
+    let selectLevel = level.options[level.selectedIndex].value;
+    // let selectStage = document.getElementById("stageStudent");
+    // let stage = selectStage.options[selectStage.selectedIndex].value;
     let selectStatus = document.getElementById("statusStudent");
     let status = selectStatus.options[selectStatus.selectedIndex].value;
 
@@ -444,14 +521,74 @@ function editStudent() {
         nicknameEn: document.getElementById("enNName").value,
         email: document.getElementById("emailStudent").value,
         phone: document.getElementById("telStudent").value,
+        level : selectLevel,
         grade: grade
-    }).then(() => {
-        return changeRegistrationState(studentID, stage);
-    }).then(() => {
+    })
+    // .then(() => {
+    //     return changeRegistrationState(studentID, stage);
+    // })
+    .then(() => {
         changeStatus(studentID, status).then((data) => {
             location.reload();
         });
     });
+}
+
+
+function putQuarter() {
+    var courseQuarter = document.getElementById("courseQuarter");
+    var summerQuarter = document.getElementById("summerQuarter");
+    let cookie = getCookieDict();
+
+    position(cookie.monkeyWebUser).then(quarterData => {
+        var quaterStatus = "public";
+        switch (quarterData.position) {
+            case "tutor":
+            case "admin":
+                quaterStatus = "protected";
+                break;
+            case "dev":
+                quaterStatus = "private";
+                break;
+        }
+        listQuarter(quaterStatus).then(quarterList => {
+            courseQuarter.innerHTML = "";
+            summerQuarter.innerHTML = "";
+            for (let i = 0; i < quarterList.quarter.length; i++) {
+                let appendText = "<option value = '" + quarterList.quarter[i].year + "-" + quarterList.quarter[i].quarter + "'>" + quarterList.quarter[i].name + "</option>";
+                if (quarterList.quarter[i].quarter < 10) {
+                    courseQuarter.innerHTML += appendText;
+                } else {
+                    summerQuarter.innerHTML += appendText;
+                }
+            }
+            getConfig().then(data => {
+                if (cookie.monkeyWebSelectedQuarter === undefined) {
+                    courseQuarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+                    summerQuarter.value = data.defaultQuarter.summer.year + "-" + data.defaultQuarter.summer.quarter;
+                    writeCookie("courseQuarter", data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter);
+                    writeCookie("summerQuarter", data.defaultQuarter.summer.year + "-" + data.defaultQuarter.summer.quarter)
+                } else {
+                    let selectedQuarter = cookie.monkeyWebSelectedQuarter;
+                    if (parseInt(selectedQuarter.substring(selectedQuarter.indexOf("-") + 1)) < 10) {
+                        courseQuarter.value = cookie.monkeyWebSelectedQuarter;
+                        summerQuarter.value = data.defaultQuarter.summer.year + "-" + data.defaultQuarter.summer.quarter;
+                        writeCookie("courseQuarter", cookie.monkeyWebSelectedQuarter);
+                        writeCookie("summerQuarter", summerQuarter.value);
+                    } else {
+                        courseQuarter.value = data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter;
+                        summerQuarter.value = cookie.monkeyWebSelectedQuarter;
+                        writeCookie("courseQuarter", data.defaultQuarter.quarter.year + "-" + data.defaultQuarter.quarter.quarter);
+                        writeCookie("summerQuarter", cookie.monkeyWebSelectedQuarter);
+                    }
+                }
+            });
+        });
+    });
+}
+
+function quarterChange() {
+    log("Hello");
 }
 
 //for show receipt pic on page
@@ -477,6 +614,24 @@ function showReceipt() {
                 $('#imgTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60Q3/' + picId + '.png');
             }
         });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.jpeg');
+            }
+        });
+        //noinspection ES6ModulesDependencies
+        $.get(config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png', function (data, status) {
+            if (status === 'success') {
+                $('#smTrans').attr("src", config.receiptPath.slice(config.receiptPath.search("MonkeyWebData") + 14) + 'CR60OCT/' + picId + '.png');
+            }
+        });
     });
 }
 
@@ -495,7 +650,7 @@ function barcode(tableInfo) {
         displayValue: false
     });
 }
-
+// gen accept or reject img for CR
 function acceptReject(state) {
     let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
     let cfCanvas = document.getElementById('appRej');
@@ -532,7 +687,37 @@ function acceptReject(state) {
     document.body.appendChild(aref);
     aref.click();
 }
-
+// gen accept or reject for SM
+function acRjSummer(state) {
+    let studentID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
+    let canvas = document.getElementById('acRjSummerCanvas');
+    let ctx = canvas.getContext('2d');
+    let img1 = document.getElementById('summerReceiptTableImg');
+    let img2 = document.getElementById('smTrans');
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.drawImage(img1, Math.abs(img1.width / img1.height * canvas.height - canvas.width) / 2, 0, img1.width / img1.height * canvas.height, canvas.height);
+    ctx.drawImage(img2, (canvas.width - img2.width / img2.height * 230) / 2, 220, img2.width / img2.height * 230, 230);
+    ctx.font = "bold 24px Cordia New";
+    ctx.fillStyle = "black";
+    ctx.fillText(($("#-255600000").html() === "Add Course") ? "" : $("#-255600000").html(), 200, 75);
+    ctx.fillText(($("#-248400000").html() === "Add Course") ? "" : $("#-248400000").html(), 200, 125);
+    ctx.fillText(($("#-237600000").html() === "Add Course") ? "" : $("#-237600000").html(), 200, 175);
+    ctx.font = "bold 90px Cordia New";
+    ctx.textAlign = 'center';
+    ctx.fillStyle = (state == "finished") ? "green" : "red";
+    ctx.rotate(11 * Math.PI / 6);
+    ctx.fillText((state == "finished") ? "FINISHED" : "PENDING", 160, 400);
+    ctx.restore();
+    let dlImg = canvas.toDataURL();
+    let aref = document.createElement('a');
+    aref.href = dlImg;
+    aref.download = studentID + state + '(CR60OCT).png';
+    document.body.appendChild(aref);
+    aref.click();
+}
+// upload profile picture
 function upPic() {
     //noinspection JSUnresolvedVariable
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
@@ -558,10 +743,11 @@ function upPic() {
         });
     }
 }
-function upReciept() {
+// upload receipt
+function upReciept(quarter) {
     //noinspection JSUnresolvedVariable
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);
-    let ufile = $('#file-2');
+    let ufile = ((quarter === "quarter") ? $('#file-2') : $('#file-3'));
     let ext = ufile.val().split('.').pop().toLowerCase();
     if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
         alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
@@ -570,6 +756,7 @@ function upReciept() {
         let formData = new FormData();
         formData.append('file', files[0], files[0].name);
         formData.append('studentID', ID);
+        formData.append('quarter', quarter);
         $.ajax({
             url: 'post/submitReceipt',
             type: 'POST',
@@ -578,6 +765,7 @@ function upReciept() {
             contentType: false,
             success: function (data) {
                 $('#rcModal').modal('hide');
+                location.reload();
             }
         });
     }
@@ -650,6 +838,74 @@ function generateCover(tableInfo, subj) {
             }
         }
     }
+}
+function generateSummerCover() {
+    let canvasID = 'summerCanvas';
+    let canvas = document.getElementById(canvasID);
+    let ctx = canvas.getContext('2d');
+    //add Table BG
+    let img1 = document.getElementById('summerImg');
+    ctx.drawImage(img1, 0, 0, 622, 880);
+    ctx.fillStyle = "black";
+    ctx.font = "bold 40px Cordia New";
+    let ID = $("#studentID").html().slice(4, 9);
+    ctx.fillText(ID, 525, 45);
+    let name = $("#studentName").html().slice(0, $("#studentName").html().indexOf(")") + 1);
+    ctx.textAlign = "right";
+    ctx.fillText(name, 595, 85);
+    ctx.textAlign = "left";
+    ctx.fillText(($("#-255600000").html() === "Add Course") ? "" : $("#-255600000").html(), 200, 130);
+    ctx.fillText(($("#-248400000").html() === "Add Course") ? "" : $("#-248400000").html(), 200, 180);
+    ctx.fillText(($("#-237600000").html() === "Add Course") ? "" : $("#-237600000").html(), 200, 230);
+    ctx.font = "bold 32px Cordia New";
+    $.post("post/listStudentAttendanceModifierByStudent", { studentID: ID, start: moment("10-09-2017 8:00", "MM-DD-YYYY HH:mm").valueOf() }).then((data) => {
+        var numAbs = 0;
+        var oldDay = moment("10-08-2017", "MM-DD-YYYY");
+        var numPre = 0;
+        for (let i = 0; i < data.modifier.length; i++) {
+            let day = moment(data.modifier[i].day);
+            if (data.modifier[i].reason === "ลา") {
+                if (day.date() !== oldDay.date()) {
+                    let text = ((day.date() < 10) ? "0" + day.date() : day.date()) + "  " + (day.month() + 1) + "   " + (day.year() - 1957);
+                    ctx.fillText(text, 48, 355 + (35 * numAbs));
+                    switch (day.hour()) {
+                        case 8:
+                            ctx.fillText("✓", 180, 360 + (35 * numAbs));
+                            break;
+                        case 10:
+                            ctx.fillText("✓", 225, 360 + (35 * numAbs));
+                            break;
+                        case 13:
+                            ctx.fillText("✓", 270, 360 + (35 * numAbs));
+                            break;
+                        default:
+                            break;
+                    };
+                    oldDay = day;
+                    numAbs += 1;
+                } else {
+                    switch (day.hour()) {
+                        case 8:
+                            ctx.fillText("✓", 180, 360 + (35 * (numAbs - 1)));
+                            break;
+                        case 10:
+                            ctx.fillText("✓", 225, 360 + (35 * (numAbs - 1)));
+                            break;
+                        case 13:
+                            ctx.fillText("✓", 270, 360 + (35 * (numAbs - 1)));
+                            break;
+                        default:
+                            break;
+                    };
+                }
+            } else if (data.modifier[i].reason === "เพิ่ม") {
+                // log("present")
+                let text = ((day.date() < 10) ? "0" + day.date() : day.date()) + "  " + (day.month() + 1) + "   " + (day.year() - 1957);
+                ctx.fillText(text, 323, 355 + (35 * numPre));
+                numPre += 1;
+            }
+        }
+    })
 }
 function showComment() {
     let ID = document.getElementById("studentID").innerHTML.slice(4, document.getElementById("studentID").innerHTML.length);

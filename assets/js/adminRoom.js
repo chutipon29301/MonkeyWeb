@@ -1,215 +1,99 @@
-let app = angular.module('tableRoom', ['rx', 'ngMaterial']);
+var allQuarter = () => $.post('post/v1/listQuarter');
 
-app.config(function ($httpProvider) {
-    $httpProvider.defaults.transformRequest = function (data) {
-        if (data === undefined) {
-            return data;
-        }
-        return $.param(data);
-    }
+var allRoom = (quarterID) => $.post('post/v1/allRoom', {
+    quarterID: quarterID
 });
 
-app.config(function($mdThemingProvider) {
-    $mdThemingProvider.theme('default')
-});
-
-var subjectColor={
-    'M': 'Orange-200',
-    'P': 'Purple-100',
-    'C': 'Grey-400',
-    'S': 'Red-100',
-    'E': 'Blue-100',
+function getPageContent() {
+    getConfig().then(config => {
+        allQuarter().then(data => {
+            var selectQuarter = document.getElementById('quarterSelect');
+            selectQuarter.innerHTML = '';
+            for (let i = 0; i < data.length; i++) {
+                selectQuarter.innerHTML += '<option value="' + data[i].quarterID + '">' + data[i].name + '</option>';
+            }
+            selectQuarter.value = '' + config.defaultQuarter.quarter.year + ((('' + config.defaultQuarter.quarter.quarter).length === 1) ? '0' : '') + config.defaultQuarter.quarter.quarter;
+            getTableContent();
+        });
+    })
 }
 
-
-let tableGenerator = ($scope, $http, time) => {
-    $scope.roomDayList = [];
-
-    var transform = function (data) {
-        return $.param(data);
+function getTableContent() {
+    var selectQuarter = document.getElementById('quarterSelect');
+    var tabs = document.getElementById('tabs');
+    var content = document.getElementById('content');
+    var dayList = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    var roomName = {
+        'room0': 'Hybird',
+        'room1': 'Room 1',
+        'room2': 'Room 2',
+        'room3': 'Room 3',
+        'room4': 'Room 4',
+        'room5': 'Room 5'
     }
-
-    let roomInfo = Rx.Observable.fromPromise($http.post('post/roomInfo', {
-        day: time
-    }, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-            transformRequest: transform
-        })
-    );
-
-    let courseInfo = (courseID) => Rx.Observable.fromPromise($http.post('post/courseInfo', {
-        courseID: courseID
-    }, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-            transformRequest: transform
-        })
-    );
-
-    let tutorName = (userID) => Rx.Observable.fromPromise($http.post('post/name', {
-        userID: userID
-    }, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-            transformRequest: transform
-        })
-    );
-
-    let index = 0;
-    roomInfo.subscribe((res) => {
-        if (indexOfObjectInArray($scope.roomDayList, 'Hybrid') === -1) {
-            $scope.roomDayList.push({
-                room: 'Hybrid',
-                courseName: 'Hybrid',
-                noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length + res.data.fullHybrid[1].studentID.length),
-                full: res.data.maxHybridSeat,
-                courseID: 'Hybrid',
-                property: 'nonExpandable',
-                isHidden: false,
-                bgColor: 'Grey-200'
-            });
-            $scope.roomDayList.push({
-                courseID: 'Hybrid',
-                courseName: 'Full Hybrid Math',
-                noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[0].studentID.length),
-                property: 'expandable',
-                isHidden: true,
-                bgColor: 'Orange-200'
-            });
-            $scope.roomDayList.push({
-                courseID: 'Hybrid',
-                courseName: 'Full Hybrid Physics',
-                noStudent: (res.data.fullHybrid.length === 0) ? 0 : (res.data.fullHybrid[1].studentID.length),
-                property: 'expandable',
-                isHidden: true,
-                bgColor: 'Purple-100'
-            });
+    tabs.innerHTML = '';
+    content.innerHTML = '';
+    allRoom(selectQuarter.options[selectQuarter.selectedIndex].value).then(data => {
+        var keys = [];
+        for (var key in data) {
+            keys.push(key);
         }
-        for (let i = 0; i < res.data.courseHybrid.length; i++) {
-            $scope.roomDayList.push({
-                courseID: res.data.courseHybrid[i],
-                property: 'expandable',
-                isHidden: true
+        keys.sort((arg1, arg2) => {
+            var hour1 = parseInt(arg1.substring(3, arg1.length));
+            var hour2 = parseInt(arg2.substring(3, arg2.length));
+            hour1 += dayList.indexOf(arg1.substring(0, 3)) * 100;
+            hour2 += dayList.indexOf(arg2.substring(0, 3)) * 100;
+            return hour1 - hour2;
+        });
+        for (let i = 0; i < keys.length; i++) {
+            tabs.innerHTML += '<li ' + ((i === 0) ? 'class="active"' : '') + '><a data-toggle="tab" href="#' + keys[i] + '">' + keys[i] + '</a></li>';
+            content.innerHTML += '<div id="' + keys[i] + '" class = "fade collapse container' + ((i === 0) ? ' active in' : '') + '">' +
+                '<div class = "table-responsive">' +
+                '<table class = "table table-hover table-bordered">' +
+                '<thead>' +
+                '<tr>' +
+                '<th class="col-sm-2">Room</th>' +
+                '<th class="col-sm-2">Course</th>' +
+                '<th class="col-sm-2">Tutorname</th>' +
+                '<th class="col-sm-1">No. of Student</th>' +
+                '<th class="col-sm-1">Max Student</th>' +
+                '</tr>' +
+                '</thead>' +
+                '<tbody id = "' + keys[i] + '">' +
+                '</tbody>' +
+                '</table>' +
+                '</div>' +
+                '</div>';
+            var rooms = []
+            for (var room in data[keys[i]]) {
+                rooms.push(room);
+            }
+            rooms.sort((arg1, arg2) => {
+                return parseInt(arg1.charAt(arg1.length - 1)) - parseInt(arg2.charAt(arg2.length - 1))
             });
-        }
+            var table = document.getElementById(keys[i]);
+            var tbody = table.getElementsByTagName('tbody')[0];
+            for (let j = 0; j < rooms.length; j++) {
+                var row = tbody.insertRow(j);
+                let cell0 = row.insertCell(0);
+                let cell1 = row.insertCell(1);
+                let cell2 = row.insertCell(2);
+                let cell3 = row.insertCell(3);
+                let cell4 = row.insertCell(4);
 
-        for (let i = 0; i < res.data.course.length; i++) {
-            if (res.data.course[i] === null) continue;
-            $scope.roomDayList.push({
-                room: i,
-                full: res.data.course[i].maxSeat,
-                courseID: res.data.course[i].courseID,
-                property: 'nonExpandable',
-                isHidden: false
-            });
-        }
-
-        for (let i = 0; i < $scope.roomDayList.length; i++) {
-            if ($scope.roomDayList[i].courseID !== 'Hybrid') {
-                courseInfo($scope.roomDayList[i].courseID).subscribe(res => {
-                    $scope.roomDayList[i].courseName = res.data.courseName;
-                    $scope.roomDayList[i].noStudent = res.data.student.length;
-                    $scope.roomDayList[i].bgColor = subjectColor[res.data.courseName.charAt(0)];
-                    tutorName(res.data.tutor[0]).subscribe(response => {
-                        $scope.roomDayList[i].courseName += ' (' + response.data.nicknameEn + ')';
-                    });
-                });
-            } else {
-                for (let j = 0; j < res.data.courseHybrid.length; j++) {
-                    if ($scope.roomDayList[i].property === 'expandable') continue;
-                    courseInfo(res.data.courseHybrid[j]).subscribe(response => {
-                        $scope.roomDayList[i].noStudent += response.data.student.length;
-                        $scope.roomDayList[i].bgColor = subjectColor[res.data.courseName.charAt(0)];;
-                    })
+                if (rooms[j] !== 'room0' && data[keys[i]][rooms[j]].course !== undefined) {
+                    cell1.innerHTML = '<td>' + data[keys[i]][rooms[j]].course[0].courseName + '</td>';
+                    cell2.innerHTML = '<td>' + data[keys[i]][rooms[j]].course[0].tutorName + '</td>';
+                } else {
+                    cell1.innerHTML = '<td>Hybrid</td>';
+                    cell2.innerHTML = '<td>Hybrid</td>';
                 }
+                log(data[keys[i]][rooms[j]].course);
+                cell0.innerHTML = '<td>' + roomName[rooms[j]] + '</td>';
+                cell3.innerHTML = '<td>' + data[keys[i]][rooms[j]].studentCount + '</td>';
+                cell4.innerHTML = '<td>' + data[keys[i]][rooms[j]].maxStudent + '</td>';
             }
         }
+
     });
-
-    $scope.tableRowClick = (room) => {
-        if (room.courseID !== 'Hybrid') {
-            writeCookie('monkeyWebAdminAllcourseSelectedCourseID', room.courseID);
-            self.location = '/adminCoursedescription';
-        } else {
-            if (room.property !== 'expandable') {
-                for (let i = 0; i < $scope.roomDayList.length; i++) {
-                    if ($scope.roomDayList[i].property === 'expandable') {
-                        $scope.roomDayList[i].isHidden = !$scope.roomDayList[i].isHidden
-                    }
-                }
-            }
-        }
-    };
-
-};
-
-app.controller('tue', function ($scope, $http) {
-    tableGenerator($scope, $http, -136800000);
-});
-
-app.controller('thu', function ($scope, $http) {
-    tableGenerator($scope, $http, 36000000);
-});
-
-app.controller('sat8', function ($scope, $http) {
-    tableGenerator($scope, $http, 176400000);
-});
-
-app.controller('sat10', function ($scope, $http) {
-    tableGenerator($scope, $http, 183600000);
-});
-
-app.controller('sat13', function ($scope, $http) {
-    tableGenerator($scope, $http, 194400000);
-});
-
-app.controller('sat15', function ($scope, $http) {
-    tableGenerator($scope, $http, 201600000);
-});
-
-app.controller('sun8', function ($scope, $http) {
-    var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -342000000);
-        res();
-    });
-    promise.then(() => {
-        tableGenerator($scope, $http, 262800000);
-    });
-});
-
-app.controller('sun10', function ($scope, $http) {
-    var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -334800000);
-        res();
-    });
-    promise.then(() => {
-        tableGenerator($scope, $http, 270000000);
-    });
-});
-
-app.controller('sun13', function ($scope, $http) {
-    var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -324000000);
-        res();
-    });
-    promise.then(() => {
-        tableGenerator($scope, $http, 280800000);
-    });
-});
-
-app.controller('sun15', function ($scope, $http) {
-    var promise = new Promise((res, rej) => {
-        tableGenerator($scope, $http, -316800000);
-        res();
-    });
-    promise.then(() => {
-        tableGenerator($scope, $http, 288000000);
-    });
-});
-
-function indexOfObjectInArray(array, key) {
-    for (let i = 0; i < array.length; i++) {
-        if (array[i].room === key) {
-            return i;
-        }
-    }
-    return -1;
 }

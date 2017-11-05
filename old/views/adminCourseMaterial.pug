@@ -1,4 +1,4 @@
-extends htmlTemplate
+extends oldHtmlTemplate
 block head
     - var pageTitle="Course Material Management"
     link(rel="stylesheet" href="/css/courseMaterial.css")
@@ -54,7 +54,7 @@ block body
                             span.input-group-addon Local link
                             input#localLink.form-control(
                                 type="text"
-                                data-link="file:///"+config.courseMaterialPath+"CR"+config.year+"Q"+config.quarter+"/"
+                                data-link="file:///"+config.courseMaterialPath+quarter.name+"/"
                                 readonly
                             )
                             .input-group-btn
@@ -95,9 +95,9 @@ block body
             table.table.table-bubble
                 thead
                     tr
-                        th
-                        th
-                        - for(var i=1;i<=13;i++)
+                        th(colspan=2)
+                            +quarter-selector("adminCourseMaterial",protectedQuarter,quarter)
+                        - for(var i=1;i<=15;i++)
                             th.brown= i
                 tbody
                     - for(var i in course)
@@ -113,7 +113,7 @@ block body
                                     - for(var j in course[i].tutorNicknameEnArray)
                                         h4= course[i].tutorNicknameEnArray[j]
                             +course-link(course[i].courseName,course[i].day)(data-course-id=course[i].courseID)
-                            - for(var j=0;j<13;j++)
+                            - for(var j=0;j<15;j++)
                                 +cell(course[i].submission[j])(
                                     data-course-id=course[i].courseID
                                     data-number-of-sub=j+1

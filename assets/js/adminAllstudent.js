@@ -1,66 +1,207 @@
+var studentForSearch = [];
+
+/**
+ * Convert number grade to string grade
+ * @param grade in form for number
+ * @returns {string} grade letter
+ */
+const getLetterGrade = (grade) => {
+    if (grade <= 6) {
+        return "P" + grade;
+    } else {
+        return "S" + (grade - 6);
+    }
+};
+
 /**
  * Get short name of day
  * @param date int day 0 - 6
  * @returns {string} name of day
  */
-var studentForSearch = [];
 const getDateName = (date) => {
     let dateName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     return dateName[date];
 };
+$(function () {
+    getAllStudentContent()
+});
+function quarterChange() {
+    var quarter = document.getElementById("quarter");
+    writeCookie("monkeyWebSelectedQuarter", quarter.options[quarter.selectedIndex].value);
+    getAllStudentContent();
+}
+
+function registrationStateChange() {
+    var stage = document.getElementById("stage");
+    writeCookie("monkeyWebSelectedStage", stage.value);
+    getAllStudentContent();
+}
+
 
 /**
  * Get data for generating table by calling function generateStudentHtmlTable
  */
 function getAllStudentContent() {
-    "use strict";
-    allStudent().then((data) => {
-        if (data.err) {
-            log("[getAllStudentContent()] : post/allStudent => " + data.err);
-        } else {
-            log("[getAllStudentContent()] : post/allStudent => ");
-            log(data);
-            // for typeahead predict
-            for (let i = 0; i < data.student.length; i++) {
-                studentForSearch.push({
-                    name: data.student[i].nickname + " " + data.student[i].firstname,
-                    id: data.student[i].studentID,
-                })
-            }
-            log(studentForSearch);
-            $('.typeahead').typeahead({
-                source: studentForSearch,
-                autoSelect: true
-            });
-            $('.typeahead').change(function () {
-                let current = $('.typeahead').typeahead("getActive");
-                if (current) {
-                    log(current)
-                    writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
-                    self.location = "/adminStudentprofile";
+    getConfig().then(config => {
+        document.getElementById("currentStudentLabel").innerHTML = "Current Student: " + (config.nextStudentID - 1);
+        loadSelectedMenu(config);
+        studentForSearch = [];
+        allStudent().then((data) => {
+            if (data.err) {
+                log("[getAllStudentContent()] : post/allStudent => " + data.err);
+            } else {
+                log("[getAllStudentContent()] : post/allStudent => ");
+                log(data);
+
+                // for typeahead predict
+                for (let i = 0; i < data.student.length; i++) {
+                    studentForSearch.push({
+                        name: data.student[i].nickname + " " + data.student[i].firstname,
+                        id: data.student[i].studentID,
+                    })
                 }
-            })
-            // for generate table data
-            generateStudentHtmlTable(filterData(data.student));
-        }
-    })
+                $('.typeahead').typeahead({
+                    source: studentForSearch,
+                    autoSelect: true
+                });
+                $('.typeahead').change(function () {
+                    let current = $('.typeahead').typeahead("getActive");
+                    if (current) {
+                        writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
+                        self.location = "/adminStudentprofile";
+                    }
+                });
+
+                // for generate table data
+                position(getCookieDict().monkeyWebUser).then(quarterData => {
+                    var quaterStatus = "public";
+                    switch (quarterData.position) {
+                        case "tutor":
+                        case "admin":
+                            quaterStatus = "protected";
+                            break;
+                        case "dev":
+                            quaterStatus = "private";
+                            break;
+                    }
+                    listQuarter(quaterStatus).then(quarterList => {
+                        generateStudentHtmlTable(filterData(data.student, quarterList, config));
+                    });
+                });
+            }
+        })
+    });
 }
+
+function loadSelectedMenu(config) {
+    var stage = document.getElementById("stage");
+    var cookie = getCookieDict();
+    var stageList = [{
+        value: "all",
+        text: "No filter"
+    }, {
+        value: "allStage",
+        text: "All Stage"
+    }, {
+        value: "unregistered",
+        text: "Unregistered"
+    }, {
+        value: "untransferred",
+        text: "Untransferred"
+    }, {
+        value: "transferred",
+        text: "Transferred"
+    }, {
+        value: "approved",
+        text: "Approved"
+    }, {
+        value: "rejected",
+        text: "Rejected"
+    }, {
+        value: "pending",
+        text: "Pending"
+    }, {
+        value: "finished",
+        text: "Finished"
+    }];
+
+    stage.innerHTML = "";
+    for (let i = 0; i < stageList.length; i++) {
+        stage.innerHTML += "<option value = '" + stageList[i].value + "'>" + stageList[i].text + "</option>";
+    }
+
+    if (cookie.monkeyWebSelectedStage === undefined) {
+        stage.value = "all";
+    } else {
+        stage.value = cookie.monkeyWebSelectedStage;
+    }
+
+    var quarter = document.getElementById("quarter");
+    quarter.innerHTML = "";
+    let quaterStatus = "";
+    position(cookie.monkeyWebUser).then(data => {
+        switch (data.position) {
+            case "tutor":
+            case "admin":
+                quaterStatus = "protected"
+                break;
+            case "dev":
+                quaterStatus = "private"
+                break;
+        }
+        listQuarter(quaterStatus).then(data => {
+            for (let i = 0; i < data.quarter.length; i++) {
+                quarter.innerHTML += "<option value = '" + data.quarter[i].year + "-" + data.quarter[i].quarter + "'>" + data.quarter[i].name + "</option>";
+            }
+            if (cookie.monkeyWebSelectedQuarter === undefined) {
+                quarter.value = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
+            } else {
+                quarter.value = cookie.monkeyWebSelectedQuarter;
+            }
+        })
+    });
+}
+
 
 /**
  * Filter data from selected option
  * @param data array of student info
  * @returns {*} array of student to display in table
  */
-function filterData(data) {
+function filterData(data, quarterList, config) {
+    let quarter = document.getElementById("quarter");
     let status = document.getElementById("status");
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     let course = document.getElementById("course");
-    if (status.options[status.selectedIndex].value !== "all") {
-        data = data.filter(data => data.status === status.options[status.selectedIndex].value);
+    var cookie = getCookieDict();
+
+    if (cookie.monkeyWebSelectedQuarter === undefined) {
+        cookie.monkeyWebSelectedQuarter = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
     }
-    if (stage.options[stage.selectedIndex].value !== "all") {
-        data = data.filter(data => data.registrationState === stage.options[stage.selectedIndex].value);
+
+    let selectedYear = parseInt(cookie.monkeyWebSelectedQuarter.substring(0, cookie.monkeyWebSelectedQuarter.indexOf("-")));
+    let selectedQuarter = parseInt(cookie.monkeyWebSelectedQuarter.substring(cookie.monkeyWebSelectedQuarter.indexOf("-") + 1));
+    data = data.filter(data => {
+        if (stage.options[stage.selectedIndex].value !== "all") {
+            var registrationState = "unregistered";
+            for (let i = 0; i < data.quarter.length; i++) {
+                if (selectedYear = data.quarter[i].year && selectedQuarter === data.quarter[i].quarter) {
+                    registrationState = data.quarter[i].registrationState;
+                }
+            }
+            if (stage.options[stage.selectedIndex].value === "allStage" && registrationState !== "unregistered") {
+                return true;
+            }
+            return stage.options[stage.selectedIndex].value === registrationState;
+        }
+        return true;
+    });
+    if (status.options[status.selectedIndex].value !== "all") {
+        data = data.filter(data => {
+            return data.status === status.options[status.selectedIndex].value
+        }
+        );
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
         data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
@@ -112,19 +253,23 @@ function generateStudentHtmlTable(student) {
         let cell4 = row.insertCell(4);
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
+        // let cell7 = row.insertCell(7);
+        // let cell8 = row.insertCell(8);
         cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
-        cell2.innerHTML = "<td>" + student[i].nickname + "</td>";
-        cell3.innerHTML = "<td>" + student[i].firstname + "</td>";
-        cell4.innerHTML = "<td>" + student[i].lastname + "</td>";
-        cell5.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
-        cell6.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
+        cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
+        cell3.innerHTML = "<td>" + student[i].nickname + "</td>";
+        cell4.innerHTML = "<td>" + student[i].firstname + "</td>";
+        cell5.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell6.innerHTML = "<td>" + student[i].level + "</td>";
+        // cell7.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+        // cell8.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
             //noinspection SpellCheckingInspection
             writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
             //noinspection SpellCheckingInspection
-            self.location = "/adminStudentprofile";
+            self.location = "/adminStudentprofileQ4";
         };
         row.onclick = clickHandler(row);
     }
@@ -133,5 +278,24 @@ function generateStudentHtmlTable(student) {
 function scanStudentBarcode() {
     let inputBox = document.getElementById("studentID")
     writeCookie("monkeyWebAdminAllstudentSelectedUser", inputBox.value.substring(0, inputBox.value.length - 1));
-    self.location = "/adminStudentprofile";
+    self.location = "/adminStudentprofileQ4";
+}
+
+function createNewStudent() {
+    $.post("/post/addBlankStudent", {
+        number: 1
+    }).then(data => {
+        log(data);
+        document.getElementById("newStudentUsername").innerHTML = "Username: " + data.student[0].studentID;
+        document.getElementById("newStudentPassword").innerHTML = "Password: " + data.student[0].password;
+        $("#newStudentDialog").modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+}
+
+function closeNewStudentDialog() {
+    $("#newStudentDialog").modal("hide");
+    location.reload();
 }

@@ -1,8 +1,9 @@
-extends htmlTemplate
+extends oldHtmlTemplate
 block head
     -const pageTitle = "Student Profile"
     link(href="css/component.css", rel="stylesheet")
     script(src="js/student.min.js")
+    script(src="js/constRegisQuarter.js")
     script(src="js/studentProfile.min.js")
     style.
         .cr {
@@ -19,130 +20,126 @@ block head
         }
 block body
     .container
-        .col-sm-6.visible-xs
-            img(class="profilePic" src="images/noImage.svg" style="max-width: inherit;max-height: 20vh;width: auto;margin-bottom: 10px")
-        .col-sm-6
-            label.col-sm-2.col-xs-4 ID:
-            p#id
-            label.col-sm-2.col-xs-4 สถานะ:
-            p#status
-            label.col-sm-2.col-xs-4 ชื่อ:
-            p#name
-            p#nameE.col-sm-offset-2.col-xs-offset-4
-            label.col-sm-2.col-xs-4 ชั้น:
-            p#grade
-            label.col-sm-2.col-xs-4 เบอร์โทร:
-            p#parentTel
-            p#studentTel.col-sm-offset-2.col-xs-offset-4
-            label.col-sm-2.col-xs-4 E-mail:
-            p#email
-            p
-                kbd Course Detail
-            label.col-sm-2.col-xs-4 เริ่ม:
-            p#startCr
-            label.col-sm-2.col-xs-4 ปัจจุบัน:
-            p#nowCr
-            label.col-sm-2.col-xs-4 สิ้นสุด:
-            p#endCr
-            p
+        form
+            .row
+                .form-group.col-xs-4.col-sm-2
+                    label(for="Q") Quarter:
+                    select#qList.form-control
+        .row
+            .col-xs-8.visible-xs
+                img.profilePic.img-responsive(src="images/noImage.svg")
+        .row
+            .col-sm-8.col-xs-12
+                .row
+                    label.col-sm-3.col-xs-4 ID:
+                    p#id
+                .row
+                    label.col-sm-3.col-xs-4 ชื่อ:
+                    p#name
+                .row
+                    p#nameE.col-sm-offset-3.col-xs-offset-4
+                .row
+                    label.col-sm-3.col-xs-4 ชั้น:
+                    p#grade
+                .row
+                    label.col-sm-3.col-xs-4 เบอร์โทร:
+                    p#parentTel
+                .row
+                    p#studentTel.col-sm-offset-3.col-xs-offset-4
+                .row
+                    label.col-sm-3.col-xs-4 E-mail:
+                    p#email
+                .row
+                    label.col-sm-3.col-xs-4 สถานะ:
+                    p#status
+                //- .row
+                    label.col-sm-3.col-xs-4 สถานะ CR60OCT:
+                    p#status
+                //- .row
+                //-     p.col-sm-12.col-xs-12
+                //-         kbd Course Detail
+                //- .row
+                //-     label.col-sm-2.col-xs-4 เริ่ม:
+                //-     p#startCr
+                //- .row
+                //-     label.col-sm-2.col-xs-4 ปัจจุบัน:
+                //-     p#nowCr
+                //- .row
+                //-     label.col-sm-2.col-xs-4 สิ้นสุด:
+                //-     p#endCr
+                
+            .col-sm-4.hidden-xs(align="right")
+                img.profilePic.img-responsive(src="images/noImage.svg")
+        .row
+            p.col-sm-12.col-xs-12
                 kbd ตารางเรียน
-        .col-sm-6.hidden-xs(align="right")
-            img(class="profilePic" src="images/noImage.svg" style="max-width: inherit;max-height: 25vh;width: auto;margin-bottom: 10px")
-        .table-responsive.col-sm-12.hidden-xs
-            table.table.table-bordered
-                thead
-                    tr
-                        th
-                        th.text-center 8:00-10:00
-                        th.text-center 10:00-12:00
-                        th.text-center 13:00-15:00
-                        th.text-center 15:00-17:00
-                        th.text-center 17:00-19:00
-                tbody
-                    tr
-                        td.text-center TUE
-                        td
-                        td
-                        td
-                        td
-                        td
-                            button.col-sm-12(class="btn-tue 17.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                    tr
-                        td.text-center THU
-                        td
-                        td
-                        td
-                        td
-                        td
-                            button.col-sm-12(class="btn-thu 17.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                    tr
-                        td.text-center SAT
-                        td
-                            button.col-sm-12(class="btn-sat 8.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-                            button.col-sm-12(class="btn-sat 10.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-                            button.col-sm-12(class="btn-sat 13.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-                            button.col-sm-12(class="btn-sat 15.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-                    tr
-                        td.text-center SUN
-                        td
-                            button.col-sm-12(class="btn-sun 8.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-                            button.col-sm-12(class="btn-sun 10.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-                            button.col-sm-12(class="btn-sun 13.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-                            button.col-sm-12(class="btn-sun 15.1 btn btn-default disabled" type="button" onClick="this.blur()") -
-                        td
-        .table-responsive.col-sm-12.visible-xs
-            table.table.table-bordered
-                thead
-                    tr
-                        th
-                        th.text-center TUE
-                        th.text-center THU
-                tbody
-                    tr
-                        td.text-center 17-19
-                        td
-                            button(class="btn-tue 17.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                        td
-                            button(class="btn-thu 17.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-        .table-responsive.col-sm-12.visible-xs
-            table.table.table-bordered
-                thead
-                    tr
-                        th
-                        th.text-center SAT
-                        th.text-center SUN
-                tbody
-                    tr
-                        td.text-center 8-10
-                        td
-                            button(class="btn-sat 8.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                        td
-                            button(class="btn-sun 8.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                    tr
-                        td.text-center 10-12
-                        td
-                            button(class="btn-sat 10.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                        td
-                            button(class="btn-sun 10.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                    tr
-                        td.text-center 13-15
-                        td
-                            button(class="btn-sat 13.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                        td
-                            button(class="btn-sun 13.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                    tr
-                        td.text-center 15-17
-                        td
-                            button(class="btn-sat 15.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
-                        td
-                            button(class="btn-sun 15.1 btn btn-default disabled col-xs-12" style="width:30vw" type="button" onClick="this.blur()")
+        .collapse#crTable
+            .table-responsive
+                table.table.table-bordered
+                    thead
+                        tr
+                            th.col-xs-2
+                            th.col-xs-5.text-center TUE
+                            th.col-xs-5.text-center THU
+                    tbody
+                        tr
+                            td.text-center 17-19
+                            td
+                                button(class="btn-tue-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-thu-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+            .table-responsive
+                table.table.table-bordered
+                    thead
+                        tr
+                            th.col-xs-2
+                            th.col-xs-5.text-center SAT
+                            th.col-xs-5.text-center SUN
+                    tbody
+                        tr
+                            td.text-center 8-10
+                            td
+                                button(class="btn-sat-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 10-12
+                            td
+                                button(class="btn-sat-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 13-15
+                            td
+                                button(class="btn-sat-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 15-17
+                            td
+                                button(class="btn-sat-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                            td
+                                button(class="btn-sun-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+        .collapse#smTable
+            .table-responsive
+                table.table.table-bordered
+                    thead
+                        tr
+                            th.col-xs-4.text-center TIME
+                            th.col-xs-8.text-center COURSE
+                    tbody
+                        tr
+                            td.text-center 8-10
+                            td
+                                button(class="btn-mon-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 10-12
+                            td
+                                button(class="btn-mon-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
+                        tr
+                            td.text-center 13-15
+                            td
+                                button(class="btn-mon-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
         //- modal for upPic
         #profileModal.modal.fade(role="dialog")
             .modal-dialog
@@ -159,5 +156,5 @@ block body
                                     span เลือกรูป
                     .modal-footer
                         button.upload.btn.btn-primary(type="submit" onClick="upPic()") ตกลง
-                        button.btn.btn-default(type="button" data-dismiss="modal") ยกเลิก
+                        button.btn.btn-danger(type="button" data-dismiss="modal") ยกเลิก
         script(src="js/custom-file-input.js")

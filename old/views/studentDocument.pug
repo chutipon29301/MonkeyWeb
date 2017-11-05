@@ -3,7 +3,15 @@ block head
     -const pageTitle = "Student Document"
     script(src="js/student.min.js")
 block body
-    .container
-        h2: kbd Instruction
-        img.img-rounded.col-sm-6.col-xs-12(src="images/blue1.jpg")
-        img.img-rounded.col-sm-6.col-xs-12(src="images/blue2.jpg")
+    .container-fluid
+        .row
+            .col-12
+                h2
+                    kbd
+                        span.oi.oi-document
+                        |Instruction
+        .row
+            .col-6
+                img.rounded.img-fluid(src="images/blue1.jpg")
+            .col-6
+                img.rounded.img-fluid(src="images/blue2.jpg")

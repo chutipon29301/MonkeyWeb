@@ -1,17 +1,178 @@
-extends htmlTemplate
+extends oldHtmlTemplate
 block head
     - var pageTitle = "Student Attendance Modifier"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     script(src="js/admin.min.js")
+    script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker.min.js")
-    script(src="js/adminStudentAttendanceModifier.min.js")
-    
+    script(src="js/adminStudentAttendanceModifier.js")
 block body
     .container
-        .form-group
-            .input-group.date.datePicker#datetimepicker1
-                input.form-control(type='text')
-                span.input-group-addon
-                    i.glyphicon.glyphicon-calendar
-        #absentTable
-        #presentTable
+        ul.nav.nav-tabs
+            li.active: a(data-toggle="tab" href="#fhb") FHB
+            li: a(data-toggle="tab" href="#sm") SUMMER
+            li: a(data-toggle="tab" href="#addAttend") ADD
+        .tab-content
+            #fhb.tab-pane.fade.in.active
+                .row
+                    .col-sm-4
+                        .form-group
+                            label.control-label Day:
+                            input.form-control#datePicker(type="text")
+                    .col-sm-4
+                        .form-group
+                            label Time:
+                            select.form-control#crTimePick(type="text")
+                    .col-sm-4
+                        .form-group
+                            label Filter:
+                            select.form-control#filterPick(type="text")
+                                option ALL
+                                option FHB
+                                option HB
+                                option CR
+                .row
+                    .col-sm-8
+                        .table-responsive
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr: td.text-center.danger(colspan=7) ลา
+                                    tr
+                                        td.text-center Time
+                                        td.text-center ID
+                                        td.text-center Name
+                                        td.text-center Subject
+                                        td.text-center Tutor
+                                        td.text-center Reason
+                                        td.text-center ลบ
+                                tbody#crAbsentTable
+                    .col-sm-4
+                        .table-responsive
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr: td.text-center.success(colspan=4) เพิ่ม
+                                    tr
+                                        td.text-center ID
+                                        td.text-center Name
+                                        td.text-center Subject
+                                        td.text-center ลบ
+                                tbody#crPresentTable
+            #sm.tab-pane.fade
+                ul.breadcrumb
+                    li: a#aByName(href="#") By Name
+                    li: a#aByWeek(href="#") By Week
+                    li: a#aByCourse(href="#") By Course
+                #smByName.collapse
+                    .row
+                        form.col-sm-2
+                            .form-group
+                                label Input Name:
+                                input.form-control.typeahead(type='text' data-provide='typeahead' autofocus)
+                    .row
+                        .table-responsive.col-sm-9
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th.text-center.danger(colspan=4) ลา
+                                    tr
+                                        th.text-center.col-sm-6 Date
+                                        th.text-center.col-sm-2 8-10
+                                        th.text-center.col-sm-2 10-12
+                                        th.text-center.col-sm-2 13-15
+                                tbody#smAbsentBody
+                        .table-responsive.col-sm-3
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th.text-center.success(colspan=2) เพิ่ม
+                                    tr
+                                        th.text-center.col-sm-9 Date
+                                        th.text-center.col-sm-3 ลบ
+                                tbody#smPresentBody
+                #smByWeek.collapse
+                    .row
+                        form.col-sm-2
+                            .form-group
+                                label(for="weekSelect") Week:
+                                select.form-control#weekSelect
+                                    option(value="0") Select Week
+                                    option(value="9") 9-13
+                                    option(value="16") 16-20
+                                    option(value="23") 23-27
+                        form.col-sm-2
+                            .form-group
+                                label(for="typeSelect") Filter:
+                                select.form-control#typeSelect
+                                    option(value="0") No filter
+                                    option(value="1") ลา
+                                    option(value="2") เพิ่ม
+                    .table-responsive
+                        table.table.table-hover.table-bordered
+                            thead
+                                tr
+                                    th.text-center.col-sm-2 ID
+                                    th.text-center.col-sm-5 Name
+                                    th.text-center.col-sm-2 Date
+                                    th.text-center.col-sm-2 Time
+                                    th.text-center.col-sm-1 ลบ
+                            tbody#smWeekBody
+                #smByCourse.collapse
+                    .row
+                        form.col-sm-2
+                            .form-group
+                                label(for="crSelect") Course:
+                                select.form-control#smCrSelect
+                                    option(value="0") Select Course
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead
+                                tr
+                                    th.text-center.col-sm-4 Name
+                                    th.text-center 1
+                                    th.text-center 2
+                                    th.text-center 3
+                                    th.text-center 4
+                                    th.text-center 5
+                                    th.text-center 6
+                                    th.text-center 7
+                                    th.text-center 8
+                                    th.text-center 9
+                                    th.text-center 10
+                                    th.text-center 11
+                                    th.text-center 12
+                                    th.text-center 13
+                                    th.text-center 14
+                                    th.text-center 15
+                            tbody#smCrBody
+            #addAttend.tab-pane.fade
+                .row
+                    .col-sm-3
+                        .form-group
+                            label.control-label Day:
+                            input.form-control#addDatePicker(type="text")
+                    .col-sm-3
+                        .form-group
+                            label.control-label StudentID:
+                            input.form-control#addID(type="text")
+                    .col-sm-3
+                        .form-group
+                            label.control-label Sender:
+                            input.form-control#addSender(type="text")
+                    .col-sm-3
+                        .form-group
+                            label Type:
+                            select.form-control#addType(type="text")
+                                option ลา
+                                option เพิ่ม
+                .row
+                    .col-sm-6
+                        .form-group
+                            label.control-label Reason:
+                            input.form-control#addReason(type="text")
+                    .col-sm-3
+                        .form-group
+                            label Type:
+                            select.form-control#addSubj(type="text")
+                                option FHB:M
+                                option FHB:P
+                button.btn.btn-primary.col-sm-1.col-sm-offset-11#addNewAttend ADD NEW

@@ -77,6 +77,9 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     }
 
     var configDB=db.collection("config");
+    var courseDB=db.collection("course");
+    var courseSuggestionDB=db.collection("courseSuggestion");
+    var quarterDB=db.collection("quarter");
     var studentAttendanceModifierDB=db.collection("studentAttendanceModifier");
     var studentCommentDB=db.collection("studentComment");
     var userDB=db.collection("user");
@@ -88,9 +91,14 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     // userDB.updateOne({_id:99033},{$set:{position:"admin"},$setOnInsert:{password:"927eda538a92dd17d6775f37d3af2db8ab3dd811e71999401bc1b26c49a0a8dbb7c8471cb1fc806105138ed52e68224611fb67f150e7aa10f7c5516056a71130"}},{upsert:true});
     // userDB.deleteMany({position:"student"});
     // db.collection("CR60Q2").deleteOne({grade:[11,12]});
+    quarterDB.updateMany({status:{$exists:false}},{$set:{status:"active"}},function(){
+        quarterDB.updateMany({status:"active"},{$set:{status:"public"}});
+    });
+    courseDB.updateMany({subject:"Ph"},{$set:{subject:"P"}});
+    courseDB.updateMany({subject:"PH"},{$set:{subject:"P"}});
+    courseDB.updateMany({subject:"Ch"},{$set:{subject:"C"}});
+    courseDB.updateMany({subject:"SCI"},{$set:{subject:"Sci"}});
 
-    db.renameCollection("CR60Q3","course");
-    configDB.updateOne({_id:"config",studentCommentPicturePath:{$exists:false}},{$set:{studentCommentPicturePath:"studentCommentPicture"}});
     studentCommentDB.updateMany({isCleared:{$exists:false}},{$set:{isCleared:false}});
     studentCommentDB.dropIndexes();
     studentCommentDB.createIndex({studentID:1,priority:-1,timestamp:-1});
@@ -105,8 +113,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     //         console.log(result);
     //     });
     // },1000);
-
-    userDB.updateMany({position:"student"},{$unset:{"student.balance":""}});
 
     db.collection("user").updateOne({_id:99033},{
         $set:{
@@ -131,34 +137,41 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
 
     configDB.updateOne({_id:"config"},{
         $setOnInsert:{
-            year:60,quarter:3,
             courseMaterialPath:"courseMaterial/",
             receiptPath:"receipt/",
             nextStudentID:17001,nextTutorID:99035,
             profilePicturePath:"profilePicture/",
             studentSlideshowPath:"studentSlideshow/",
             studentCommentPicturePath:"studentCommentPicture/",
-            maxSeat:[8+6+12+6+6+2,27,12,10,16,12]
+            defaultQuarter:{year:60,quarter:3}
         }
     },{upsert:true},function(err,result){
         if(result.upsertedCount){
-            require("opn")("http://127.0.0.1/login");
+            require("opn")("http://127.0.0.1:8080/login");
             console.log(chalk.black.bgRed("[WARNING] Please update configurations"));
         }
-        configDB.findOne({},function(err,config){
-            console.log(config);
-            app.locals.post=function(method,input,callback){
-                app.locals.postFunction[method]({
-                    body:input
-                },{
-                    send:function(output){
-                        callback(output);
-                    }
-                });
-            };
-            app.locals.postFunction={};
-            require("./post.js")(app,db);
-            require("./webFlow.js")(app,db);
+        quarterDB.updateOne({_id:"201703"},{
+            $set:{year:2017,quarter:3},
+            $setOnInsert:{
+                name:"CR60Q3",maxSeat:[8+6+12+6+6+2,27,12,10,16,12],
+                week:[],status:"active"
+            }
+        },{upsert:true},function(err,result){
+            configDB.findOne({},function(err,config){
+                console.log(config);
+                app.locals.post=function(method,input,callback){
+                    app.locals.postFunction[method]({
+                        body:input
+                    },{
+                        send:function(output){
+                            callback(output);
+                        }
+                    });
+                };
+                app.locals.postFunction={};
+                require("./post.js")(app,db);
+                require("./webFlow.js")(app,db);
+            });
         });
     });
 });

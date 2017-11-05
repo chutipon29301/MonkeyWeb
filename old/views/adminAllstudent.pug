@@ -1,40 +1,38 @@
 extends htmlTemplate
 block head
     -const pageTitle = "All Student"
-    script(src="js/adminAllstudent.min.js")
+    link(rel="stylesheet", href="css/typeaheadjs.css")
+block script
     script(src="js/bootstrap3-typeahead.min.js")
-    script.
-        window.onload = getAllStudentContent();
+    script(src="js/adminAllstudent.min.js")
 block body
-    .container
+    .container-fluid
         .row
-            .col-sm-12
-                h1 Student
-        .row
-            .col-sm-8#formHead
-                .row
-                    .form-group.col-sm-3
-                        label Filter:
+            .col-3.col-xl-2.position-fixed
+                h1.mt-10 Student
+                form
+                    .form-group
+                        label
+                            span.oi.oi-grid-two-up &nbsp;
+                            |Quarter
+                        select.form-control#quarter(onChange="quarterChange()")
+                form
+                    .form-group
+                        label
+                            span.oi.oi-sort-ascending &nbsp;
+                            |Filter
                         select.form-control#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
                             option(value="active") Active
                             option(value="inactive") Inactive
                             option(value="dropped") Drop
                             option(value="terminated") Terminate
                             option(value="all") All
-                    .form-group.col-sm-3
-                        label &nbsp;
-                        select.form-control#stage(onChange="getAllStudentContent()" style="margin-bottom: 5px")
-                            option(value="all") All Stage
-                            option(value="finished") Finished
-                            option(value="registered") Registered
-                            option(value="rejected") Rejected
-                            option(value="pending") Pending
-                            option(value="transferred") Transferred
-                            option(value="untransferred") Untransferred
-                            option(value="unregistered") Unregistered
-                    .form-group.col-sm-3
-                        label &nbsp;
-                        select.form-control#grade(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                form
+                    .form-group
+                        select.form-control#stage(onChange="registrationStateChange()")
+                form
+                    .form-group
+                        select.form-control#grade(onChange="getAllStudentContent()")
                             option(value="all") All Grade
                             option(value="1") P1
                             option(value="2") P2
@@ -48,29 +46,48 @@ block body
                             option(value="10") S4
                             option(value="11") S5
                             option(value="12") S6
-                    .form-group.col-sm-3
-                        label &nbsp;
-                        select.form-control#course(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                form
+                    .form-group
+                        select.form-control#course(onChange="getAllStudentContent()")
                             option(value="all" ) CR &amp; FHB
                             option(value="cr") CR
                             option(value="hb") FHB
-            #search-box.col-sm-2
-                .form-group
-                    label Input Name:
-                    input.typeahead(type="text" placeholder="Name of Student" style="margin-top:4.5px")
-            form.form-group.col-sm-2(onsubmit="scanStudentBarcode(); return false;")
-                label Scan Barcode:
-                input.form-control(type="text" id="studentID" autofocus)
-        .row
-            .table-responsive.col-sm-12
-                table.table.table-hover(style="font-family:'Trirong',serif;")
-                    thead
-                        tr
-                            th.col-sm-1 No.
-                            th.col-sm-2 ID
-                            th.col-sm-2 Nickname
-                            th.col-sm-2 Name
-                            th.col-sm-2 Surname
-                            th.col-sm-1 CR
-                            th.col-sm-1 HB
-                    tbody#allStudentTable
+                form
+                    .form-group
+                        label
+                            span.oi.oi-magnifying-glass &nbsp;
+                            |Find student
+                        input.typeahead.form-control(type="text" data-provide='typeahead')
+                form(onsubmit="scanStudentBarcode(); return false;")
+                    .form-group
+                        label Barcode:
+                        input.form-control(type="number" id="studentID" autofocus)
+                label#currentStudentLabel 
+                button.btn.btn-outline-secondary.col-sm-12(onClick="createNewStudent()") Add Student
+            .col-9.offset-3.col-xl-10.offset-xl-2.p-0
+                .table-responsive
+                    table.table.table-hover
+                        thead
+                            tr
+                                th.w-10 No.
+                                th.w-15 ID
+                                th.w-10 Grade
+                                th.w-15 Nickname
+                                th.w-20 Name
+                                th.w-20 Surname
+                                th.w-10 Level
+                                //- th CR
+                                //- th HB
+                        tbody#allStudentTable
+        .modal.fade#newStudentDialog
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title New Student
+                        button.close(type="button" data-dismiss="modal" aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    .modal-body
+                        h6#newStudentUsername 
+                        h6#newStudentPassword 
+                    .modal-footer
+                        button.btn.btn-outline-secondary(onClick="closeNewStudentDialog()") Close

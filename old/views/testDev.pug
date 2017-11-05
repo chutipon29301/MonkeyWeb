@@ -1,4 +1,4 @@
-extends htmlTemplate
+extends oldHtmlTemplate
 block head
     - var pageTitle="Test Dev"
     script(src="/js/sha3.js")
@@ -6,6 +6,9 @@ block head
 block body
     include generalTemplate
     include inputTemplate
+    mixin optionalQuarter
+        +form-group("year"): +input-number("year")
+        +form-group("quarter"): +input-text("quarter")
     mixin form-horizontal-title(name)
         +form-horizontal(name)
             +form-title(name)
@@ -23,6 +26,10 @@ block body
         +select(name)&attributes(attributes)
             - for(var i in course)
                 +option(course[i].courseID,course[i].courseName+" : "+course[i].tutorNicknameEn+" ("+moment(course[i].day).format("dddHH")+")")
+    mixin select-tutor(name)
+        +select(name).input-int&attributes(attributes)
+            - for(var i in tutor)
+                +option(tutor[i]._id,"#"+tutor[i]._id+" : "+tutor[i].firstnameEn+" ("+tutor[i].nicknameEn+") "+tutor[i].lastnameEn)
     mixin input-grade-checkbox
         +input-checkbox-inline("grade",1,"P1")&attributes(attributes)
         +input-checkbox-inline("grade",2,"P2")&attributes(attributes)
@@ -42,6 +49,7 @@ block body
             +panel("List Course")#listCourse
             +panel("List Full Hybrid")#listFullHybrid
             +panel("List Course Suggestion")#listCourseSuggestion
+            +panel("List Quarter")#listQuarter
     #message.container
     .container
         .panel-group
@@ -78,10 +86,12 @@ block body
                         +submit("post/studentProfile")
                 +list-group-item
                     +form-horizontal-title("post/registrationState")
+                        +optionalQuarter
                         +form-group("studentID"): +input-number("studentID")(required)
                         +submit("post/registrationState")
                 +list-group-item
                     +form-horizontal-title("post/changeRegistrationState")
+                        +optionalQuarter
                         +form-group("studentID"): +input-number("studentID")(required)
                         +form-group("registrationState"): +select-registration-state()(required)
                         +submit("post/changeRegistrationState")
@@ -172,11 +182,11 @@ block body
                         +submit("post/addTutor")
                 +list-group-item
                     +form-horizontal-title("post/removeTutor")
-                        +form-group("studentID"): +input-number("studentID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +submit("post/removeTutor")
                 +list-group-item
                     +form-horizontal-title("post/editTutor")
-                        +form-group("tutorID"): +input-number("tutorID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +form-group("password"): +input-password("password")
                         +form-group("firstname"): +input-text("firstname")
                         +form-group("lastname"): +input-text("lastname")
@@ -189,22 +199,24 @@ block body
                         +submit("post/editTutor")
                 +list-group-item
                     +form-horizontal-title("post/addBlankStudent")
-                        +form-group("studentID (separate with space)"): +input-text("studentID")(required)
+                        +form-group("number"): +input-number("number")(required)
                         +submit("post/addBlankStudent")
                 +list-group-item
                     +form-horizontal-title("post/listRandomStudent")
                         +submit("post/listRandomStudent")
                 +list-group-item
                     +form-horizontal-title("post/changePosition")
-                        +form-group("tutorID"): +input-number("tutorID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +form-group("position"): +select-position()(required)
                         +submit("post/changePosition")
             +panel-list-group("Course")
                 +list-group-item
                     +form-horizontal-title("post/allCourse")
+                        +optionalQuarter
                         +submit("post/allCourse")
                 +list-group-item
                     +form-horizontal-title("post/gradeCourse")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +submit("post/gradeCourse")
                 +list-group-item
@@ -213,11 +225,13 @@ block body
                         +submit("post/courseInfo")
                 +list-group-item
                     +form-horizontal-title("post/listCourseSuggestion")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +submit("post/listCourseSuggestion")
                 +list-group-item
                     .loader.center-block
                     +form-horizontal-title("post/addCourseSuggestion")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +form-group("level"): +input-text("level")(required)
                         //-TODO array
@@ -226,6 +240,7 @@ block body
                 +list-group-item
                     .loader.center-block
                     +form-horizontal-title("post/removeCourseSuggestion")
+                        +optionalQuarter
                         +form-group("grade"): +select-grade()(required)
                         +form-group("level"): +input-text("level")(required)
                         //-TODO array
@@ -234,12 +249,13 @@ block body
                 +list-group-item
                     .loader.center-block
                     +form-horizontal-title("post/addCourse")
-                        +form-group("grade"): +select-course-subject()(required)
+                        +optionalQuarter
+                        +form-group("subject"): +select-course-subject()(required)
                         +form-group("grade"): +input-grade-checkbox().input-array.input-int
                         +form-group("level"): +input-text("level")(required)
                         +form-group("day"): +select-course-day()(required)
                         //-TODO array
-                        +form-group("tutor"): +input-number("tutor").input-array(required)
+                        +form-group("tutor"): +select-tutor("tutor").input-array(required)
                         +form-group("description"): +input-text("description")(required)
                         +form-group("room"): +select-room("room")(required)
                         +submit("post/addCourse")
@@ -256,13 +272,14 @@ block body
                         +form-group("level"): +input-text("level")
                         +form-group("day"): +select-course-day()
                         //-TODO array
-                        +form-group("tutor"): +input-number("tutor").input-array
+                        +form-group("tutor"): +select-tutor("tutor").input-array
                         +form-group("description"): +input-text("description")
                         +form-group("room"): +select-room("room")
                         +submit("post/editCourse")
             +panel-list-group("Room Management")
                 +list-group-item
                     +form-horizontal-title("post/roomInfo")
+                        +optionalQuarter
                         +form-group("day"): +select-course-day()(required)
                         +submit("post/roomInfo")
             +panel-list-group("File Uploading")
@@ -275,7 +292,7 @@ block body
                     .loader.center-block
                     +form-horizontal-title("post/addStudentComment")
                         +form-group("studentID"): +input-number("studentID")(required)
-                        +form-group("tutorID"): +input-number("tutorID")(required)
+                        +form-group("tutorID"): +select-tutor("tutorID")(required)
                         +form-group("message"): +input-text("message")(required)
                         +form-group("priority"): +input-number("priority")
                         +submit("post/addStudentComment")
@@ -320,7 +337,7 @@ block body
                     +form-horizontal-title("post/addStudentPresenceModifier")
                         +form-group("studentID"): +input-number("studentID")(required)
                         +form-group("day"): +input-number("day")(required)
-                        +form-group("subjectToAdd"): +input-text("subjectToAdd")(required)
+                        +form-group("subject"): +input-text("subject")(required)
                         +form-group("sender"): +input-text("sender")(required)
                         +submit("post/addStudentPresenceModifier")
                 +list-group-item
@@ -342,8 +359,10 @@ block body
                         +submit("post/getConfig")
                 +list-group-item
                     +form-horizontal-title("post/editConfig")
-                        +form-group("year"): +input-number("year")(required)
-                        +form-group("quarter"): +input-number("quarter")(required)
+                        +form-group("defaultQuarterYear"): +input-number("defaultQuarterYear")(required)
+                        +form-group("defaultQuarterQuarter"): +input-number("defaultQuarterQuarter")(required)
+                        +form-group("defaultSummerYear"): +input-number("defaultSummerYear")
+                        +form-group("defaultSummerQuarter"): +input-number("defaultSummerQuarter")
                         +form-group("courseMaterialPath")
                             +input-text("courseMaterialPath")(required)
                             span.help-block ex. //[PATH]/courseMaterial (+/CRXXQX)
@@ -361,14 +380,30 @@ block body
                         +form-group("studentCommentPicturePath")
                             +input-text("studentCommentPicturePath")(required)
                             span.help-block ex. D:/[PATH]/MonkeyWebData/studentCommentPicture (+/CommentID.jpg)
-                        +form-group("maxSeat (Hybrid)"): +input-number("maxSeat","Max Hybrid Seat").input-array(required)
-                        +form-group("maxSeat (Room 1)"): +input-number("maxSeat","Max Room 1 Seat").input-array(required)
-                        +form-group("maxSeat (Room 2)"): +input-number("maxSeat","Max Room 2 Seat").input-array(required)
-                        +form-group("maxSeat (Room 3)"): +input-number("maxSeat","Max Room 3 Seat").input-array(required)
-                        +form-group("maxSeat (Room 4)"): +input-number("maxSeat","Max Room 4 Seat").input-array(required)
-                        +form-group("maxSeat (Room 5)"): +input-number("maxSeat","Max Room 5 Seat").input-array(required)
+                        +form-group("documentPath")
+                            +input-text("documentPath")(required)
+                            span.help-block ex. D:/[PATH]/MonkeyWebData/document (+/file.*)
+                        //- +form-group("maxSeat (Hybrid)"): +input-number("maxSeat","Max Hybrid Seat").input-array(required)
+                        //- +form-group("maxSeat (Room 1)"): +input-number("maxSeat","Max Room 1 Seat").input-array(required)
+                        //- +form-group("maxSeat (Room 2)"): +input-number("maxSeat","Max Room 2 Seat").input-array(required)
+                        //- +form-group("maxSeat (Room 3)"): +input-number("maxSeat","Max Room 3 Seat").input-array(required)
+                        //- +form-group("maxSeat (Room 4)"): +input-number("maxSeat","Max Room 4 Seat").input-array(required)
+                        //- +form-group("maxSeat (Room 5)"): +input-number("maxSeat","Max Room 5 Seat").input-array(required)
                         +submit("post/editConfig")
                 +list-group-item
                     +form-horizontal-title("post/addStudentGrade")
                         +form-group("toAdd"): +input-number("toAdd")(required)
                         +submit("post/addStudentGrade")
+                +list-group-item
+                    .loader.center-block
+                    +form-horizontal-title("post/addQuarter")
+                        +form-group("year"): +input-number("year")(required)
+                        +form-group("quarter"): +input-number("quarter")(required)
+                        +form-group("name"): +input-text("name")(required)
+                        +form-group("status"): +input-text("status")(required)
+                        //- Room & Week
+                        +submit("post/addQuarter")
+                +list-group-item
+                    +form-horizontal-title("post/listQuarter")
+                        +form-group("status"): +input-text("status")(required)
+                        +submit("post/listQuarter")

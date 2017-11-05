@@ -1,17 +1,16 @@
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const passwordCheck = (userID, pwd) => $.post("/post/password", {
     userID: userID,
     password: pwd
 });
 
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const positionCheck = (userID) => $.post("/post/position", {
     userID: userID
 });
 
-//noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const registrationStateCheck = (studentID) => $.post("post/registrationState", {
-    studentID: studentID
+    studentID: studentID,
+    year: 2017,
+    quarter: 4
 });
 
 function loginSubmit() {
@@ -91,14 +90,20 @@ function studentLogin(studentID) {
         if (data.err) {
             log("[studentLogin()] : post/registrationState => " + data.err);
         } else {
-            log("[studentLogin()] : post/registrationState => ");
-            log(data);
-            //noinspection SpellCheckingInspection
-            if (data.registrationState === "untransferred" || data.registrationState === "rejected") {
-                self.location = "/registrationReceipt";
-            } else {
-                self.location = "/home";
-            }
+            $.post("post/studentProfile",{studentID:studentID},function(studentProf){
+                if(studentProf.status == "inactive"){
+                    self.location = "/registrationName"
+                }else{
+                    log("[studentLogin()] : post/registrationState => ");
+                    log(data);
+                        //noinspection SpellCheckingInspection
+                    if (data.registrationState === "untransferred" || data.registrationState === "rejected") {
+                        self.location = "/registrationReceipt";
+                    } else {
+                        self.location = "/home";
+                    }
+                }
+            })
         }
     });
 }
