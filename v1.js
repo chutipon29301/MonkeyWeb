@@ -48,5 +48,5 @@ module.exports = function (app, db, post) {
     require('./script/v1/timetable.js')(app, db, post, gradeBitToString);
     require('./script/v1/room.js')(app, db, post, gradeBitToString);
     require('./script/v1/document.js')(app, db, post);
-
+    require('./script/v1/tutor.js')(app, db, post);
 }
