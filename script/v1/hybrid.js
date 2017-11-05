@@ -245,9 +245,10 @@ module.exports = function (app, db, post) {
     /**
      * Post method for adding student to hybrid day on specific time
      * req.body = {
-     *      hybridID: miagjngoajew934jr3432e3
-     *      studentID: 15999
-     *      subject: 'M'
+     *      hybridID: miagjngoajew934jr3432e3,
+     *      studentID: 15999,
+     *      subject: 'M',
+     *      date: 91542545454
      * }
      * if not error
      * res.body = 'OK'
@@ -296,6 +297,32 @@ module.exports = function (app, db, post) {
             modifyHybridOnTime(response.insertedId, req.body.date, req.body.hybridID, req.body.studentID, '', MODE_REMOVE_HYBRID);
         });
         res.status(200).send('OK')
+    });
+
+    /**
+     * Post method for list time of student in hybrid day
+     * req.body = {}
+     * if not error
+     * res.body = [
+     *      {
+     *          pendingID: ,am-4wf9fk4wrfw4hoef8v4iwr
+     *          day: 43959400000
+     *          hybridID: 'kiq034krmif035g'
+     *          studentID: '15999',
+     *          mode: 'MODE_ADD_HYBRID'
+     *      }, 
+     *      ...
+     * ]
+     */
+    post('/post/v1/listPendingHybridStudent', function (req, res) {
+        hybridPendingDB.find({}).toArray().then(data => {
+            for (let i = 0; i < data.length; i++) {
+                data[i].pendingID = data[i]._id;
+                data[i].mode = data[i].mode === MODE_ADD_HYBRID ? 'MODE_ADD_HYBRID' : 'MODE_REMOVE_HYBRID'
+                delete data[i]._id;
+            }
+            res.status(200).send(data);
+        });
     });
 
     /**
