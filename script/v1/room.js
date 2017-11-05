@@ -7,7 +7,7 @@ module.exports = function (app, db, post, gradeBitToString) {
     var configDB = db.collection('config');
 
     /**
-     * Post method fot getting room info
+     * Post method for getting room info
      * req.body = {
      *      year 2017,
      *      quarter: 4

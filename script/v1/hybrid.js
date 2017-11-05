@@ -10,6 +10,10 @@ module.exports = function (app, db, post) {
     var studentHybridDB = db.collection('hybridStudent');
     var hybridPendingDB = db.collection('hybridPending');
 
+    /**
+     * Function for initialize when server start
+     * - Add all pending hybrid change request to run function
+     */
     hybridPendingDB.find({}).toArray().then(data => {
         console.log('[HYBRID] Load pending hybrid change request');
         console.log('         Remaining request: ' + data.length);
@@ -241,9 +245,10 @@ module.exports = function (app, db, post) {
     /**
      * Post method for adding student to hybrid day on specific time
      * req.body = {
-     *      hybridID: miagjngoajew934jr3432e3
-     *      studentID: 15999
-     *      subject: 'M'
+     *      hybridID: miagjngoajew934jr3432e3,
+     *      studentID: 15999,
+     *      subject: 'M',
+     *      date: 91542545454
      * }
      * if not error
      * res.body = 'OK'
@@ -294,6 +299,42 @@ module.exports = function (app, db, post) {
         res.status(200).send('OK')
     });
 
+    /**
+     * Post method for list time of student in hybrid day
+     * req.body = {}
+     * if not error
+     * res.body = [
+     *      {
+     *          pendingID: ,am-4wf9fk4wrfw4hoef8v4iwr
+     *          day: 43959400000
+     *          hybridID: 'kiq034krmif035g'
+     *          studentID: '15999',
+     *          mode: 'MODE_ADD_HYBRID'
+     *      }, 
+     *      ...
+     * ]
+     */
+    post('/post/v1/listPendingHybridStudent', function (req, res) {
+        hybridPendingDB.find({}).toArray().then(data => {
+            for (let i = 0; i < data.length; i++) {
+                data[i].pendingID = data[i]._id;
+                data[i].mode = data[i].mode === MODE_ADD_HYBRID ? 'MODE_ADD_HYBRID' : 'MODE_REMOVE_HYBRID'
+                delete data[i]._id;
+            }
+            res.status(200).send(data);
+        });
+    });
+
+    /**
+     * Function which execute when the input time is reached 
+     * Execute method has 2 mode add and remove selected by MODE_ADD_HYBRID, MODE_REMOVE_HYBRID
+     * @param {String} id ID of pending object
+     * @param {*} date For function to be execute
+     * @param {*} hybridID To be add or remove by selected mode
+     * @param {*} studentID To be modify
+     * @param {*} subject To be added
+     * @param {*} mode Select whether add or remove
+     */
     function modifyHybridOnTime(id, date, hybridID, studentID, subject, mode) {
         var executeDate = new Date(parseInt(date));
         var executeFunction;
