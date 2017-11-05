@@ -68,7 +68,7 @@ function getAllStudentContent() {
                     let current = $('.typeahead').typeahead("getActive");
                     if (current) {
                         writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
-                        self.location = "/adminStudentprofile";
+                        self.location = "/adminStudentprofileQ4";
                     }
                 });
 
