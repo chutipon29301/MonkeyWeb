@@ -1,104 +1,98 @@
 - if(!webUser)webUser={userID:12345,position:"dev",firstname:"ชื่อจริง",lastname:"นามสกุล"}
+mixin navLink(pageURL,pageName)
+    li.nav-item: a.nav-link(href=pageURL)=pageName
 doctype html
 html(lang="en")
     head
         meta(charset="utf-8")
-        meta(name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no")
+        meta(name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, shrink-to-fit=no")
         link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
-        link(rel="stylesheet" type="text/css" href="/css/bootstrap.min.css")
+        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous")
         link(rel="stylesheet" type="text/css" href="/css/style.min.css")
-        link(rel="stylesheet" href="/css/angular-material.min.css")
+        link(href="/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet")
         link(rel="apple-touch-icon" sizes="57x57" href="/images/ios_icon57x57.png")
         link(rel="apple-touch-icon" sizes="72x72" href="/images/ios_icon72x72.png")
         link(rel="apple-touch-icon" sizes="114x114" href="/images/ios_icon114x114.png")
         link(rel="apple-touch-icon" sizes="144x144" href="/images/ios_icon144x144.png")
-        script(src="/js/angular.min.js")
-        script(src="/js/angular-animate.min.js")
-        script(src="/js/jquery-3.2.1.min.js")
-        script(src="/js/bootstrap.min.js")
-        script(src="/js/ui-bootstrap-2.5.0.min.js")
-        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
-        script(type="text/javascript" src="/js/global-1.0.0.custom.js")
         block head
         title= pageTitle?pageTitle:"Monkey-Monkey Official Website"
     body
         block header
         if(!hideNavbar)
-            nav.navbar.navbar-default.navbar-fixed-top(style=removeNavbarBottomMargin?"margin-bottom:0px;":"")
-                .container-fluid
-                    .navbar-header
-                        button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#navbar")
-                            span.icon-bar
-                            span.icon-bar
-                            span.icon-bar
+            nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.sticky-top
+                if(webUser.position=="student")
+                    a.navbar-brand(href="home") MONKEY
+                else
+                    a.navbar-brand(href="adminHome") MONKEY
+                button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation")
+                    span.navbar-toggler-icon
+                .collapse.navbar-collapse#navbarContent
+                    ul.navbar-nav.mr-auto
                         if(webUser.position=="student")
-                            a.navbar-brand(href="home") Monkey
+                            //- li: a(href="#" onClick="loadRegistrationPage()") ลงทะเบียน CR60Q4
+                            //- li.dropdown
+                                a.dropdown-toggle(data-toggle="dropdown" href="#") อัปโหลดใบโอน 
+                                    span.caret
+                                ul.dropdown-menu
+                                    li: a(href="/registrationReceipt") CR60Q4
+                                    //- li: a(href="/summerReceipt") CR60OCT
+                            //- li.dropdown
+                                a.dropdown-toggle(data-toggle="dropdown" href="#") แบบฟอร์ม
+                                    span.caret
+                                ul.dropdown-menu
+                                    //- li: a(href="summerAbsentForm") ลาCR60OCT
+                                    li: a(href="absentForm") ลา CR&FHB
+                                    //- li: a(href="addForm") เพิ่ม FHB
+                            +navLink("absentForm","ลา CR&FHB")
+                            +navLink("addForm","เพิ่ม FHB")
+                            +navLink("permanentAdtendance","ลา/เพิ่มตลอดไป")
                         else
-                            a.navbar-brand(href="adminHome") Monkey
-                    #navbar.collapse.navbar-collapse
-                        ul.nav.navbar-nav
-                            if(webUser.position=="student")
-                                //- li: a(href="#" onClick="loadRegistrationPage()") ลงทะเบียน CR60Q4
-                                //- li.dropdown
-                                    a.dropdown-toggle(data-toggle="dropdown" href="#") อัปโหลดใบโอน 
-                                        span.caret
-                                    ul.dropdown-menu
-                                        li: a(href="/registrationReceipt") CR60Q4
-                                        //- li: a(href="/summerReceipt") CR60OCT
-                                //- li.dropdown
-                                    a.dropdown-toggle(data-toggle="dropdown" href="#") แบบฟอร์ม
-                                        span.caret
-                                    ul.dropdown-menu
-                                        //- li: a(href="summerAbsentForm") ลาCR60OCT
-                                        li: a(href="absentForm") ลา CR&FHB
-                                        //- li: a(href="addForm") เพิ่ม FHB
-                                li: a(href="/absentForm") ลา CR&FHB
-                                li: a(href="/addForm") เพิ่ม FHB
+                            if(webUser.position!="tutor")
+                                +navLink("adminAllStudent","All Student")
+                            if(webUser.position=="tutor")
+                                +navLink("adminAllCourse","My Course")
                             else
-                                if(webUser.position!="tutor")
-                                    li: a(href="/adminAllStudent") All Student
-                                li: a(href="/tutorCommentStudent") Comments
-                                 li: a(href="/adminConference") Conference
-                                if(webUser.position=="tutor")
-                                    li: a(href="/adminAllCourse") My Course
-                                else
-                                    li: a(href="/adminAllCourse") All Course
-                                li.dropdown
-                                    a.dropdown-toggle(data-toggle="dropdown" href="#") CR 
-                                        span.caret
-                                    ul.dropdown-menu
-                                        li: a(href="/tutorCourseMaterial") CR Material
-                                        if(webUser.position!="tutor")
-                                            li: a(href="/adminCourseMaterial") CR Tracking
-                                li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
-                                if(webUser.position!="tutor")
-                                    li: a(href="/adminCourseRoom") Room
-                                    //- li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
-                            li: a(href="studentDocument") เอกสาร
-                        ul.nav.navbar-nav.navbar-right
-                            if(webUser.position=="student")
-                                li: a(href="/studentProfile")
-                                    span.glyphicon.glyphicon-user
-                                    //- = " "+webUser.firstname+" "+webUser.lastname
-                                    = " "+webUser.firstname
-                            else if(webUser.position=="dev")
-                                li: a(href="/testDev")
-                                    span.glyphicon.glyphicon-user
-                                    //- = " "+webUser.firstname+" "+webUser.lastname
-                                    = " "+webUser.firstname
-                            else
-                                li: a(href="/tutorEditProfile")
-                                    span.glyphicon.glyphicon-user
-                                    //- = " "+webUser.firstname+" "+webUser.lastname
-                                    = " "+webUser.firstname
-                            li: a(href="/login")
-                                span.glyphicon.glyphicon-log-out
-                                |  Logout
-            div(style="margin-top:70px")
+                                +navLink("adminAllCourse","All Course")
+                            +navLink("tutorCommentStudent","Comments")
+                            li.nav-item.dropdown
+                                a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") CR 
+                                .dropdown-menu(aria-labelledby="navbarDropdown")
+                                    a.dropdown-item(href="/tutorCourseMaterial") CR Material
+                                    if(webUser.position!="tutor")
+                                        a.dropdown-item(href="/adminCourseMaterial") CR Tracking
+                            +navLink("adminStudentAttendanceModifier","ลา/เพิ่ม")
+                            if(webUser.position!="tutor")
+                                +navLink("adminCourseRoom","Room")
+                            +navLink("adminConference","Conference")
+                        +navLink("studentDocument","เอกสาร")
+                    ul.navbar-nav
+                        if(webUser.position=="student")
+                            li.nav-item: a.nav-link(href="/studentProfile")
+                                span.oi.oi-person
+                                //- = " "+webUser.firstname+" "+webUser.lastname
+                                = " "+webUser.firstname
+                        else if(webUser.position=="dev")
+                            li.nav-item: a.nav-link(href="/testDev")
+                                span.oi.oi-person
+                                //- = " "+webUser.firstname+" "+webUser.lastname
+                                = " "+webUser.firstname
+                        else
+                            li.nav-item: a.nav-link(href="/tutorEditProfile")
+                                span.oi.oi-person
+                                //- = " "+webUser.firstname+" "+webUser.lastname
+                                = " "+webUser.firstname
+                        li.nav-item: a.nav-link(href="/login")
+                            span.oi.oi-account-logout
+                            |  Logout
         block body
-        block footer
         if(!hideFooter)
             footer.footer
                 .text-center.center-block
                     h4 Powered by MonkeyIT
                     p Copyright &copy; 2017 &middot; All Rights Reserved
+        script(src="/js/jquery-3.2.1.min.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js")
+        script(type="text/javascript" src="/js/global-1.0.0.custom.js")
+        block script

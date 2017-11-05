@@ -11,7 +11,7 @@ $(document).ready(function () {
                 student.push(data.student[i].nickname + " " + data.student[i].firstname + "(" + data.student[i].studentID + ")");
             }
         }
-        $('#search-box .typeahead').typeahead({
+        $('.typeahead').typeahead({
             source: student,
         });
     });
@@ -20,7 +20,7 @@ $(document).ready(function () {
         $("#uploadModal").modal();
     });
     $("#postButton").click(function () {
-        let comm = $('#search-box .typeahead').typeahead("getActive");
+        let comm = $('.typeahead').typeahead("getActive");
         let ufile = $('#file-1');
         let ext = ufile.val().split('.').pop().toLowerCase();
         if (comm !== undefined) {
@@ -83,21 +83,21 @@ $(document).ready(function () {
 function showComment(pos, commIndex) {
     writeCookie('commIndex', commIndex);
     $.post('post/listStudentCommentByIndex', { start: commIndex, limit: 20 }).then((cm) => {
+        // chk error on pagination overflow
+        genPagination(commIndex / 20 + 1);
         $('#commentList').empty();
         // hide next button on last page
         if (cm.comment.length < 20) {
-            $(".next").hide();
+            $(".next").addClass("disabled");
         } else if (cm.comment.length === 20) {
             $.post('post/listStudentCommentByIndex', { start: commIndex + 20, limit: 1 }).then((ckcm) => {
-                (ckcm.comment.length === 0) ? $(".next").hide() : $(".next").show();
+                (ckcm.comment.length === 0) ? $(".next").addClass("disabled") : $(".next").removeClass("disabled");
             })
-        } else $(".next").show();
+        } else $(".next").removeClass("disabled");
         // hide previous button on 1st page
         if (parseInt(commIndex) === 0) {
-            $(".previous").hide();
-        } else $(".previous").show();
-        // chk error on pagination overflow
-        genPagination(commIndex / 20 + 1);
+            $(".previous").addClass("disabled");
+        } else $(".previous").removeClass("disabled");
         if (cm.comment.length === 0) {
             showComment(pos, commIndex - 20);
         }
@@ -111,11 +111,11 @@ function getName(cm, i) {
         // get student name
         $.post('post/name', { userID: cm.comment[i].studentID }).then((sname) => {
             let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
-            let str = "<h4>"
-                + "<span class='glyphicon glyphicon-pushpin'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "></span>"
-                + "<span class='glyphicon glyphicon-ok'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "></span>"
+            let str = "<h6>"
+                + "<span class='oi oi-pin'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "></span>"
+                + "<span class='oi oi-check'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "></span>"
                 + tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day + ") "
-                + "</h4>"
+                + "</h6>"
             $('#commentList').append(str);
             $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
             if (cm.comment[i].hasAttachment) {
@@ -123,15 +123,15 @@ function getName(cm, i) {
                     let path = config.studentCommentPicturePath;
                     path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
                     $.get(path + ".jpg").done(function (result) {
-                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
+                        $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpg" + "' class='img-fluid rounded mb-3'></div></div>");
                         if (i < cm.comment.length - 1) getName(cm, i + 1);
                     }).fail(function () {
                         $.get(path + ".jpeg").done(function (result) {
-                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+                            $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpeg" + "' class='img-fluid rounded mb-3'></div></div>");
                             if (i < cm.comment.length - 1) getName(cm, i + 1);
                         }).fail(function () {
                             $.get(path + ".png").done(function (result) {
-                                $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                                $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".png" + "' class='img-fluid rounded mb-3'></div></div>");
                                 if (i < cm.comment.length - 1) getName(cm, i + 1);
                             }).fail(function () {
                                 if (i < cm.comment.length - 1) getName(cm, i + 1);
@@ -151,12 +151,12 @@ function getNameAdmin(cm, i) {
         // get student name
         $.post('post/name', { userID: cm.comment[i].studentID }).then((sname) => {
             let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
-            let str = "<h4>"
-                + "<span class='glyphicon glyphicon-pushpin'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "onClick='pin(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].priority > 0 ? 0 : 1) + ");'></span>"
-                + "<span class='glyphicon glyphicon-ok'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "onClick='clearComm(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].isCleared ? 0 : 1) + ");'></span>"
+            let str = "<h6>"
+                + "<span class='oi oi-pin'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "onClick='pin(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].priority > 0 ? 0 : 1) + ");'></span>"
+                + "<span class='oi oi-check'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "onClick='clearComm(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].isCleared ? 0 : 1) + ");'></span>"
                 + tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day + ") "
-                + "<span class='glyphicon glyphicon-trash' style='color:red' onClick='rmComm(\"" + cm.comment[i].commentID + "\");'></span>"
-                + "</h4>"
+                + "<span class='oi oi-trash' style='color:red' onClick='rmComm(\"" + cm.comment[i].commentID + "\");'></span>"
+                + "</h6>"
             $('#commentList').append(str);
             $('#commentList').append("<p>" + cm.comment[i].message + "</p>");
             if (cm.comment[i].hasAttachment) {
@@ -164,15 +164,15 @@ function getNameAdmin(cm, i) {
                     let path = config.studentCommentPicturePath;
                     path = path.slice(path.search("MonkeyWebData") + 14) + cm.comment[i].commentID;
                     $.get(path + ".jpg").done(function (result) {
-                        $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpg" + "' class='img-thumbnail'></div>");
+                        $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpg" + "' class='img-fluid rounded mb-3'></div></div>");
                         if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                     }).fail(function () {
                         $.get(path + ".jpeg").done(function (result) {
-                            $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".jpeg" + "' class='img-thumbnail'></div>");
+                            $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".jpeg" + "' class='img-fluid rounded mb-3'></div></div>");
                             if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                         }).fail(function () {
                             $.get(path + ".png").done(function (result) {
-                                $('#commentList').append("<div class='row'><img class='col-sm-4 col-xs-10' src='" + path + ".png" + "' class='img-thumbnail'></div>");
+                                $('#commentList').append("<div class='row'><div class='col-xl-4 col-10'><img src='" + path + ".png" + "' class='img-fluid rounded mb-3'></div></div>");
                                 if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
                             }).fail(function () {
                                 if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
@@ -184,30 +184,6 @@ function getNameAdmin(cm, i) {
             else if (i < cm.comment.length - 1) getNameAdmin(cm, i + 1)
         })
     })
-}
-// for first button
-function commFirst(){
-    let cookie = getCookieDict();
-    let pos = cookie.pos;
-    showComment(pos, 0);
-}
-// for last button
-function commLast(){
-    alert("This function can't use now")
-}
-// for next and previous button
-function commPosition(type) {
-    let cookie = getCookieDict();
-    let commIndex;
-    if (type > 0) {
-        commIndex = parseInt(cookie.commIndex) + 20;
-        // writeCookie('commIndex', commIndex);
-    } else {
-        commIndex = parseInt(cookie.commIndex) - 20;
-        // writeCookie('commIndex', commIndex);
-    }
-    let pos = cookie.pos;
-    showComment(pos, commIndex);
 }
 // for clear/unclear comment
 function clearComm(commID, val) {
@@ -241,14 +217,42 @@ function genPagination(start) {
     $(".pagination").empty();
     let cookie = getCookieDict();
     let pos = cookie.pos;
+    $(".pagination").append("<li class='page-item previous'><a class='page-link' onClick='commFirst()'>First</a></li>")
+    $(".pagination").append("<li class='page-item previous'><a class='page-link' onClick='commPosition(0)'>Previous</a></li>")
     if (start <= 3) {
         for (let i = 1; i < 6; i++) {
-            $(".pagination").append("<li id='page" + i + "'><a onClick=\"showComment('" + pos + "'," + ((i - 1) * 20) + ")\">" + i + "</a></li>");
+            $(".pagination").append("<li class='page-item' id='page" + i + "'><a class='page-link' onClick=\"showComment('" + pos + "'," + ((i - 1) * 20) + ")\">" + i + "</a></li>");
         }
     } else {
         for (let i = start - 2; i < start + 3; i++) {
-            $(".pagination").append("<li id='page" + i + "'><a onClick=\"showComment('" + pos + "'," + ((i - 1) * 20) + ")\">" + i + "</a></li>");
+            $(".pagination").append("<li class='page-item' id='page" + i + "'><a class='page-link' onClick=\"showComment('" + pos + "'," + ((i - 1) * 20) + ")\">" + i + "</a></li>");
         }
     }
+    $(".pagination").append("<li class='page-item next'><a class='page-link' onClick='commPosition(1)'>Next</a></li>")
+    $(".pagination").append("<li class='page-item next'><a class='page-link' onClick='commLast()'>Last</a></li>")
     $("#page" + start).addClass("active");
+}
+// for first button
+function commFirst() {
+    let cookie = getCookieDict();
+    let pos = cookie.pos;
+    showComment(pos, 0);
+}
+// for last button
+function commLast() {
+    alert("This function can't use now")
+}
+// for next and previous button
+function commPosition(type) {
+    let cookie = getCookieDict();
+    let commIndex;
+    if (type > 0) {
+        commIndex = parseInt(cookie.commIndex) + 20;
+        // writeCookie('commIndex', commIndex);
+    } else {
+        commIndex = parseInt(cookie.commIndex) - 20;
+        // writeCookie('commIndex', commIndex);
+    }
+    let pos = cookie.pos;
+    showComment(pos, commIndex);
 }

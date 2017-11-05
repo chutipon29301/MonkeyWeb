@@ -1,48 +1,44 @@
 extends htmlTemplate
 block head
     -const pageTitle = "Comments"
+    link(rel="stylesheet", href="css/typeaheadjs.css")
     link(href="css/component.css", rel="stylesheet")
+block script
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/tutorCommentStudent.min.js")
-    style.
-        #commentList p{
-            margin-bottom:20px;
-            white-space:pre-line;
-        }
 block body
     .container
-        .page-header
+        div
             h2 Comments
-            p Add comments on students.
-        #search-box
-            input.typeahead(type="text" placeholder="Name of Student")
-        br
         form
             .form-group
-                label(for="comment") Comment:
+                label
+                    span.oi.oi-people &nbsp;
+                    |Input student name
+                input.typeahead.form-control(type="text" data-provide='typeahead' placeholder="Name of Student")
+        form
+            .form-group
+                label(for="comment")
+                    span.oi.oi-text &nbsp;
+                    |Comment
                 textarea.form-control#comment(rows="5")
-        button#uploadButton.btn.btn-default.col-sm-1.col-sm-offset-10.col-xs-3.col-xs-offset-6 UPLOAD
-        button#postButton.btn.btn-default.col-sm-1.col-xs-3 SUBMIT
+        .btn-group.d-flex.justify-content-end
+            button#uploadButton.btn.btn-primary UPLOAD
+            button#postButton.btn.btn-primary SUBMIT
     .container
         hr
-        h2(style="margin-bottom:30px") Recent comments
-        #commentList.row.col-sm-12.col-xs-12
-        ul.pager(style='margin:0')
-            li.previous: a(onClick="commFirst()"): span.glyphicon.glyphicon-fast-backward   First
-            li.previous: a(onClick="commPosition(0)"): span.glyphicon.glyphicon-step-backward Previous
-            li.next: a(onClick="commLast()") Last 
-                span.glyphicon.glyphicon-fast-forward
-            li.next: a(onClick="commPosition(1)") Next
-                span.glyphicon.glyphicon-step-forward
-    div.text-center(style='margin:0')
-        ul.pagination(style='margin:0')
+        h2 Recent comments
+        #commentList
+        div.d-flex.justify-content-center
+            ul.pagination
     //- Modal for uploadPic
     .container
-        #uploadModal.modal.fade(role="dialog")
+        #uploadModal.modal.fade
             .modal-dialog
                 .modal-content
                     .modal-header
-                        h4 Upload Picture
+                        h4.modal-title Upload Picture
+                        button.close(type="button" data-dismiss="modal") &times;
                     .modal-body.form-group
                         .box(align="center")
                             input#file-1.inputfile.inputfile-1(

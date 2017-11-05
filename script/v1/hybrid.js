@@ -267,7 +267,7 @@ module.exports = function (app, db, post) {
             subject: req.body.subject,
             mode: MODE_ADD_HYBRID
         }, function (err, response) {
-            modifyHybridOnTime(response.insertedId, req.body.date, req.body.hybridID, req.body.studentID, req.body.subject, MODE_REMOVE_HYBRID);
+            modifyHybridOnTime(response.insertedId, req.body.date, req.body.hybridID, req.body.studentID, req.body.subject, MODE_ADD_HYBRID);
         });
         res.status(200).send('OK')
     });
