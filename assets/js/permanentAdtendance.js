@@ -180,7 +180,7 @@ function sendRequest(ID) {
             let str2 = $(".btn-success").html();
             pickDate.hour(str2.slice(0, str2.indexOf("-")));
             let subj = $("#subjInput").val();
-            str += "\n" + "ต้องการลาตลอดไป:" + "\n" + $("#subjInput").html() + " - ";
+            str += "\n" + "ต้องการลาตลอดไป:" + "\n" + "FHB:" + $("#subjInput").val() + " - ";
             let date = pickDate;
             str += date.format("ddd DD/MM/YYYY HH:00");
             str += "\n" + "ผู้แจ้ง:" + $("#senderInput").val();
