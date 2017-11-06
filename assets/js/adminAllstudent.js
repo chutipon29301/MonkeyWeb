@@ -23,6 +23,10 @@ const getDateName = (date) => {
     return dateName[date];
 };
 $(function () {
+    log($(document).width())
+    if ($(document).width() > 767) {
+        $("#filterPanel").addClass("position-fixed");
+    }
     getAllStudentContent()
 });
 function quarterChange() {

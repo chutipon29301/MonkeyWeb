@@ -19,6 +19,9 @@ const getRoom = (roomNo) => {
     }
 }
 $(document).ready(function () {
+    if ($(document).width() > 767) {
+        $("#filterPanel").addClass("position-fixed");
+    }
     let cookie = getCookieDict();
     getConfig().then(config => {
         position(cookie.monkeyWebUser).then(pos => {
