@@ -8,7 +8,7 @@ block script
 block body
     .container-fluid
         .row
-            .col-3.col-xl-2.position-fixed
+            .col-12.col-md-3.col-xl-2#filterPanel
                 h1.mt-10 Student
                 form
                     .form-group
@@ -64,7 +64,7 @@ block body
                         input.form-control(type="number" id="studentID" autofocus)
                 label#currentStudentLabel 
                 button.btn.btn-outline-secondary.col-sm-12(onClick="createNewStudent()") Add Student
-            .col-9.offset-3.col-xl-10.offset-xl-2.p-0
+            .col-12.col-md-9.offset-md-3.col-xl-10.offset-xl-2.p-0
                 .table-responsive
                     table.table.table-hover
                         thead
