@@ -8,8 +8,8 @@ html(lang="en")
         meta(name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, shrink-to-fit=no")
         link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Athiti|Chonburi|Itim|Kanit|Maitree|Mitr|Oxygen|Pattaya|Pridi|Prompt|Sriracha|Taviraj|Trirong")
         link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous")
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
         link(rel="stylesheet" type="text/css" href="/css/style.min.css")
-        link(href="/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet")
         link(rel="apple-touch-icon" sizes="57x57" href="/images/ios_icon57x57.png")
         link(rel="apple-touch-icon" sizes="72x72" href="/images/ios_icon72x72.png")
         link(rel="apple-touch-icon" sizes="114x114" href="/images/ios_icon114x114.png")
@@ -68,21 +68,21 @@ html(lang="en")
                     ul.navbar-nav
                         if(webUser.position=="student")
                             li.nav-item: a.nav-link(href="/studentProfile")
-                                span.oi.oi-person
+                                span.fa.fa-lg.fa-user-circle
                                 //- = " "+webUser.firstname+" "+webUser.lastname
                                 = " "+webUser.firstname
                         else if(webUser.position=="dev")
                             li.nav-item: a.nav-link(href="/testDev")
-                                span.oi.oi-person
+                                span.fa.fa-lg.fa-user-circle
                                 //- = " "+webUser.firstname+" "+webUser.lastname
                                 = " "+webUser.firstname
                         else
                             li.nav-item: a.nav-link(href="/tutorEditProfile")
-                                span.oi.oi-person
+                                span.fa.fa-lg.fa-user-circle
                                 //- = " "+webUser.firstname+" "+webUser.lastname
                                 = " "+webUser.firstname
                         li.nav-item: a.nav-link(href="/login")
-                            span.oi.oi-account-logout
+                            span.fa.fa-sign-out.fa-lg
                             |  Logout
         block body
         if(!hideFooter)
