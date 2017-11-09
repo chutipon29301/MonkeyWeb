@@ -112,8 +112,8 @@ function getName(cm, i) {
         $.post('post/name', { userID: cm.comment[i].studentID }).then((sname) => {
             let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
             let str = "<h6>"
-                + "<span class='oi oi-pin'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "></span>"
-                + "<span class='oi oi-check'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "></span>"
+                + "<span class='fa fa-thumb-tack'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "></span>"
+                + "<span class='fa fa-check-circle'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "></span>"
                 + tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day + ") "
                 + "</h6>"
             $('#commentList').append(str);
@@ -152,10 +152,10 @@ function getNameAdmin(cm, i) {
         $.post('post/name', { userID: cm.comment[i].studentID }).then((sname) => {
             let day = moment(cm.comment[i].timestamp, "x").format("DD MMM");
             let str = "<h6>"
-                + "<span class='oi oi-pin'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "onClick='pin(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].priority > 0 ? 0 : 1) + ");'></span>"
-                + "<span class='oi oi-check'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "onClick='clearComm(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].isCleared ? 0 : 1) + ");'></span>"
+                + "<span class='fa fa-thumb-tack'" + (cm.comment[i].priority > 0 ? "style='color:red'" : "style='color:silver'") + "onClick='pin(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].priority > 0 ? 0 : 1) + ");'></span>"
+                + "<span class='fa fa-check-circle'" + (cm.comment[i].isCleared ? "style='color:green'" : "style='color:silver'") + "onClick='clearComm(\"" + cm.comment[i].commentID + "\"," + (cm.comment[i].isCleared ? 0 : 1) + ");'></span>"
                 + tname.nickname + " -> " + sname.nickname + " " + sname.firstname + " (" + day + ") "
-                + "<span class='oi oi-trash' style='color:red' onClick='rmComm(\"" + cm.comment[i].commentID + "\");'></span>"
+                + "<span class='fa fa-trash-o' style='color:red' onClick='rmComm(\"" + cm.comment[i].commentID + "\");'></span>"
                 + "</h6>"
             $('#commentList').append(str);
             $('#commentList').append("<p>" + cm.comment[i].message + "</p>");

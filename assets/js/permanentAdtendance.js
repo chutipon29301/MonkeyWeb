@@ -164,7 +164,7 @@ function sendRequest(ID) {
         $("#loaderModal").modal();
         let pickDate = $('#datePicker').data('DateTimePicker').date();
         if ($("#typeInput").val() === "0") {
-            str += "\n" + "ต้องการเพิ่มตลอดไป:" + "\n" + $(".btn-success").html() + " - ";
+            str += "\n" + "ต้องการลาตลอดไป:" + "\n" + $(".btn-success").html() + " - ";
             let hbID = $(".btn-success").attr("id");
             let date = $('#datePicker').data('DateTimePicker').date().hour(7);
             str += date.format("ddd DD/MM/YYYY");
@@ -180,7 +180,7 @@ function sendRequest(ID) {
             let str2 = $(".btn-success").html();
             pickDate.hour(str2.slice(0, str2.indexOf("-")));
             let subj = $("#subjInput").val();
-            str += "\n" + "ต้องการลาตลอดไป:" + "\n" + "FHB:" + $("#subjInput").val() + " - ";
+            str += "\n" + "ต้องการเพิ่มตลอดไป:" + "\n" + "FHB:" + $("#subjInput").val() + " - ";
             let date = pickDate;
             str += date.format("ddd DD/MM/YYYY HH:00");
             str += "\n" + "ผู้แจ้ง:" + $("#senderInput").val();
