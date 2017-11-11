@@ -18,7 +18,9 @@ module.exports = function (app, db, post) {
             if (err) {
                 return res.status(202).send(err);
             }
-            res.status(201).send('OK');
+            res.status(201).send({
+                msg: 'OK'
+            });
         });
     });
 
@@ -34,9 +36,11 @@ module.exports = function (app, db, post) {
             _id: parseInt(req.body.tutorID)
         }).then(data => {
             if (!data) {
-                return res.status(404).send('Not Found');
+                return res.status(404).send({
+                    err: 404,
+                    msg: 'Not Found'
+                });
             }
-            data.pendingID = data._id;
             delete data._id;
             res.status(200).send(data);
         });
