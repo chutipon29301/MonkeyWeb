@@ -47,7 +47,7 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/tutorCheckOut', function (req, res) {
-        if (!req.body.pendingID || !req.body.slot0 || !req.body.slot1 || !req.body.slot2 || !req.body.slot3 || !req.body.slot4 || !req.body.slot5) {
+        if (!req.body.tutorID || !req.body.slot0 || !req.body.slot1 || !req.body.slot2 || !req.body.slot3 || !req.body.slot4 || !req.body.slot5) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -62,7 +62,7 @@ module.exports = function (app, db, post) {
         parseInt(req.body.slot5)];
 
         tutorCheckPendingDB.findOne({
-            _id: parseInt(req.body.pendingID)
+            _id: parseInt(req.body.tutorID)
         }).then(data => {
             if (data == null) {
                 return res.status(404).send({
@@ -79,10 +79,12 @@ module.exports = function (app, db, post) {
                 if (err) {
                     return res.status(202).send(err);
                 }
-                res.status(200).send('OK');
+                res.status(200).send({
+                    msg: 'OK'
+                });
             });
             tutorCheckPendingDB.remove({
-                _id: parseInt(req.body.pendingID)
+                _id: parseInt(req.body.tutorID)
             })
         });
     });
