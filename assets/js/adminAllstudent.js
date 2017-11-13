@@ -1,4 +1,4 @@
-var studentForSearch = [];
+let studentForSearch = [];
 
 /**
  * Convert number grade to string grade
@@ -23,20 +23,21 @@ const getDateName = (date) => {
     return dateName[date];
 };
 $(function () {
-    log($(document).width())
+    log($(document).width());
     if ($(document).width() > 767) {
         $("#filterPanel").addClass("position-fixed");
     }
-    getAllStudentContent()
+    getAllStudentContent();
 });
+
 function quarterChange() {
-    var quarter = document.getElementById("quarter");
+    const quarter = document.getElementById("quarter");
     writeCookie("monkeyWebSelectedQuarter", quarter.options[quarter.selectedIndex].value);
     getAllStudentContent();
 }
 
 function registrationStateChange() {
-    var stage = document.getElementById("stage");
+    const stage = document.getElementById("stage");
     writeCookie("monkeyWebSelectedStage", stage.value);
     getAllStudentContent();
 }
@@ -64,12 +65,13 @@ function getAllStudentContent() {
                         id: data.student[i].studentID,
                     })
                 }
-                $('.typeahead').typeahead({
+                const $typeahead = $('.typeahead');
+                $typeahead.typeahead({
                     source: studentForSearch,
                     autoSelect: true
                 });
-                $('.typeahead').change(function () {
-                    let current = $('.typeahead').typeahead("getActive");
+                $typeahead.change(function () {
+                    let current = $typeahead.typeahead("getActive");
                     if (current) {
                         writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
                         self.location = "/adminStudentprofileQ4";
@@ -78,7 +80,7 @@ function getAllStudentContent() {
 
                 // for generate table data
                 position(getCookieDict().monkeyWebUser).then(quarterData => {
-                    var quaterStatus = "public";
+                    let quaterStatus = "public";
                     switch (quarterData.position) {
                         case "tutor":
                         case "admin":
@@ -98,9 +100,9 @@ function getAllStudentContent() {
 }
 
 function loadSelectedMenu(config) {
-    var stage = document.getElementById("stage");
-    var cookie = getCookieDict();
-    var stageList = [{
+    const stage = document.getElementById("stage");
+    let cookie = getCookieDict();
+    let stageList = [{
         value: "all",
         text: "No filter"
     }, {
@@ -140,17 +142,17 @@ function loadSelectedMenu(config) {
         stage.value = cookie.monkeyWebSelectedStage;
     }
 
-    var quarter = document.getElementById("quarter");
+    const quarter = document.getElementById("quarter");
     quarter.innerHTML = "";
     let quaterStatus = "";
     position(cookie.monkeyWebUser).then(data => {
         switch (data.position) {
             case "tutor":
             case "admin":
-                quaterStatus = "protected"
+                quaterStatus = "protected";
                 break;
             case "dev":
-                quaterStatus = "private"
+                quaterStatus = "private";
                 break;
         }
         listQuarter(quaterStatus).then(data => {
@@ -170,6 +172,8 @@ function loadSelectedMenu(config) {
 /**
  * Filter data from selected option
  * @param data array of student info
+ * @param quarterList
+ * @param config
  * @returns {*} array of student to display in table
  */
 function filterData(data, quarterList, config) {
@@ -178,7 +182,7 @@ function filterData(data, quarterList, config) {
     let stage = document.getElementById("stage");
     let grade = document.getElementById("grade");
     let course = document.getElementById("course");
-    var cookie = getCookieDict();
+    let cookie = getCookieDict();
 
     if (cookie.monkeyWebSelectedQuarter === undefined) {
         cookie.monkeyWebSelectedQuarter = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
@@ -188,7 +192,7 @@ function filterData(data, quarterList, config) {
     let selectedQuarter = parseInt(cookie.monkeyWebSelectedQuarter.substring(cookie.monkeyWebSelectedQuarter.indexOf("-") + 1));
     data = data.filter(data => {
         if (stage.options[stage.selectedIndex].value !== "all") {
-            var registrationState = "unregistered";
+            let registrationState = "unregistered";
             for (let i = 0; i < data.quarter.length; i++) {
                 if (selectedYear = data.quarter[i].year && selectedQuarter === data.quarter[i].quarter) {
                     registrationState = data.quarter[i].registrationState;
@@ -203,8 +207,8 @@ function filterData(data, quarterList, config) {
     });
     if (status.options[status.selectedIndex].value !== "all") {
         data = data.filter(data => {
-            return data.status === status.options[status.selectedIndex].value
-        }
+                return data.status === status.options[status.selectedIndex].value
+            }
         );
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
@@ -238,17 +242,17 @@ function generateStudentHtmlTable(student) {
         let stage = student[i].registrationState;
         switch (status) {
             case 'terminated':
-                row.setAttribute("class", "danger");
+                row.setAttribute("class", "table-danger");
                 break;
             case 'dropped':
-                row.setAttribute("class", "warning");
+                row.setAttribute("class", "table-warning");
                 break;
             case 'inactive':
-                row.setAttribute("class", "info");
+                row.setAttribute("class", "table-info");
                 break;
         }
         if (stage === "finished") {
-            row.setAttribute("class", "success");
+            row.setAttribute("class", "table-success");
         }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
@@ -280,7 +284,7 @@ function generateStudentHtmlTable(student) {
 }
 
 function scanStudentBarcode() {
-    let inputBox = document.getElementById("studentID")
+    let inputBox = document.getElementById("studentID");
     writeCookie("monkeyWebAdminAllstudentSelectedUser", inputBox.value.substring(0, inputBox.value.length - 1));
     self.location = "/adminStudentprofileQ4";
 }
