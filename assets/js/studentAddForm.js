@@ -158,28 +158,30 @@ function sendData(ID) {
 }
 // func for send absent to server
 function sendAbsentModifier(ID, pickDate) {
-    let absent = [];
-    let str = "\n" + nickname + " " + firstname + "\n" + "ต้องการเพิ่ม:";
-    if (pickDate.day() == 2 || pickDate.day() == 4) {
-        for (let i = 0; i < $(".btn-success").length; i++) {
-            absent.push(pickDate.hour(17).minute(0).second(0).millisecond(0).valueOf());
-            str += ("\n" + $("#subjInput").val().slice(0, 5));
-            str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
+    if (confirm("ยืนยันการเพิ่ม")) {
+        $("#loaderModal").modal();
+        let absent = [];
+        let str = "\n" + nickname + " " + firstname + "\n" + "ต้องการเพิ่ม:";
+        if (pickDate.day() == 2 || pickDate.day() == 4) {
+            for (let i = 0; i < $(".btn-success").length; i++) {
+                absent.push(pickDate.hour(17).minute(0).second(0).millisecond(0).valueOf());
+                str += ("\n" + $("#subjInput").val().slice(0, 5));
+                str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
+            }
+        } else {
+            for (let i = 0; i < $(".btn-success").length; i++) {
+                let hour = $($(".btn-success")[i]).attr("id").slice(3);
+                absent.push(pickDate.hour($($(".btn-success")[i]).attr("id").slice(3)).minute(0).second(0).millisecond(0).valueOf());
+                str += ("\n" + $("#subjInput").val().slice(0, 5));
+                str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
+            }
         }
-    } else {
-        for (let i = 0; i < $(".btn-success").length; i++) {
-            let hour = $($(".btn-success")[i]).attr("id").slice(3);
-            absent.push(pickDate.hour($($(".btn-success")[i]).attr("id").slice(3)).minute(0).second(0).millisecond(0).valueOf());
-            str += ("\n" + $("#subjInput").val().slice(0, 5));
-            str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
-        }
-    }
-    // log(absent)
-    $.post("post/addStudentAbsenceModifier", { studentID: ID, day: absent, reason: "add" + $("#subjInput").val().slice(0, 5), sender: $("#senderInput").val() }, (data) => {
-        if (confirm("ยืนยันการเพิ่ม")) {
+        // log(absent)
+        $.post("post/addStudentAbsenceModifier", { studentID: ID, day: absent, reason: "add" + $("#subjInput").val().slice(0, 5), sender: $("#senderInput").val() }, (data) => {
             $.post("post/lineNotify", { recipient: "MonkeyAdmin", message: str }, () => {
                 location.reload();
             })
-        }
-    })
+
+        })
+    }
 }

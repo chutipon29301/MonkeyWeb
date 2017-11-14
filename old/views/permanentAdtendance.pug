@@ -9,10 +9,13 @@ block head
         .btn-default, .btn-success{
             margin-bottom:25px;
         }
-        .loader {
+        .jumbotron{
+            background-color:#bef6f7 !important
+        }
+        .loading {
             border: 16px solid #f3f3f3;
             border-radius: 50%;
-            border-top: 16px solid #3498db;
+            border-top: 16px solid #e88719;
             width: 120px;
             height: 120px;
             -webkit-animation: spin 2s linear infinite;
@@ -27,9 +30,6 @@ block head
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-        .jumbotron{
-            background-color:#bef6f7 !important
         }
 block body
     .jumbotron
@@ -74,7 +74,6 @@ block body
         .modal.fade#loaderModal(role='dialog')
             .modal-dialog.modal-sm
                 .modal-content
-                    .modal-header
-                        h3.modal-title Loading please wait...
                     .modal-body
-                        .loader.center-block
+                        .loading.center-block
+                        h3 Uploading please wait...
