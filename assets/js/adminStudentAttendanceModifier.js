@@ -286,7 +286,7 @@ function genPnTable() {
 }
 // For activity
 function genActivityTable() {
-    let date = new Date();
+    let date = new Date().setHours(6);
     $.post("post/listAllStudentAttendanceModifier", { start: date.getTime() }).then(data => {
         let promise = [];
         for (let i in data.modifier) {
