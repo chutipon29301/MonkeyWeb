@@ -85,9 +85,9 @@ function fillButt(cr, fhb) {
     let pickDate = $('#datePicker').data('DateTimePicker').date();
     if (pickDate.day() == 2 || pickDate.day() == 4) {
         $("#btn8").html("17-19");
-        $("#btn10").html("&nbsp;");
-        $("#btn13").html("&nbsp;");
-        $("#btn15").html("&nbsp;");
+        $("#btn10").html("&nbsp;").addClass("disabled");
+        $("#btn13").html("&nbsp;").addClass("disabled");
+        $("#btn15").html("&nbsp;").addClass("disabled");
         for (let i in fhb) {
             if (moment(fhb[i].day).day() == pickDate.day()) {
                 $("#btn8").html("FHB:" + fhb[i].subject.slice(0, 1)).addClass("disabled");
