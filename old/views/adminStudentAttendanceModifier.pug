@@ -12,6 +12,8 @@ block body
     //- tabs bar
     ul.nav.nav-tabs.nav-justified
         li.nav-item: a.nav-link.active(data-toggle="tab" href="#fhb") MAIN
+        li.nav-item: a.nav-link(data-toggle="tab" href="#permanent") PERMANENT
+        li.nav-item: a.nav-link#acLink(data-toggle="tab" href="#activity") ACTIVITY
         li.nav-item: a.nav-link(data-toggle="tab" href="#sm") SUMMER
         li.nav-item: a.nav-link(data-toggle="tab" href="#addAttend") ADD
     //- tabs content
@@ -40,28 +42,67 @@ block body
                     .table-responsive
                         table.table.table-bordered.table-hover
                             thead
-                                tr: td.text-center.table-danger(colspan=7) ลา
+                                tr: th.text-center.table-danger(colspan=6) ลา
                                 tr
-                                    td.text-center Time
-                                    td.text-center ID
-                                    td.text-center Name
-                                    td.text-center Subject
-                                    td.text-center Tutor
-                                    td.text-center Reason
-                                    td.text-center ลบ
+                                    th.text-center Time
+                                    th.text-center Name
+                                    th.text-center Subject
+                                    th.text-center Tutor
+                                    th.text-center Reason
+                                    th.text-center ลบ
                             tbody#crAbsentTable
                 .col-12.col-md-5
                     .table-responsive
                         table.table.table-bordered.table-hover
                             thead
-                                tr: td.text-center.table-success(colspan=5) เพิ่ม
+                                tr: td.text-center.table-success(colspan=4) เพิ่ม
                                 tr
                                     td.text-center Time
-                                    td.text-center ID
                                     td.text-center Name
                                     td.text-center Subject
                                     td.text-center ลบ
                             tbody#crPresentTable
+        //- permanent tabs content
+        #permanent.tab-pane.container-fluid
+            br
+            .row
+                .col-12.col-md-6
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead
+                                tr: th.text-center.table-danger(colspan=3) ลาตลอดไป
+                                tr
+                                    th.text-center Time
+                                    th.text-center Name
+                                    th.text-center Subject
+                            tbody#pnAbsentTable
+                .col-12.col-md-6
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead
+                                tr: td.text-center.table-success(colspan=3) เพิ่มตลอดไป
+                                tr
+                                    td.text-center Time
+                                    td.text-center Name
+                                    td.text-center Subject
+                            tbody#pnPresentTable
+        //- activity tabs content
+        #activity.tab-pane.container-fluid
+            br
+            .col-12
+                .table-responsive
+                    table.table.table-bordered.table-hover
+                        thead.thead-light
+                            tr
+                                th.text-center Timestamp
+                                th.text-center Name
+                                th.text-center Subject
+                                th.text-center Time
+                                th.text-center Reason
+                                th.text-center Sender
+                                th.text-center ลบ
+                        tbody#acTableBody
+            
         //- sm tabs content
         #sm.tab-pane.container-fluid
             nav(aria-label="breadcrumb" role="navigation")
@@ -71,7 +112,7 @@ block body
                     li.breadcrumb-item: a#aByCourse(href="#") By Course
             #smByName.collapse
                 .row
-                    form.col-3.col-md-2
+                    form.col-12.col-md-2
                         .form-group
                             label Input Name:
                             input.form-control.typeahead(type='text' data-provide='typeahead' autofocus)
@@ -98,7 +139,7 @@ block body
                             tbody#smPresentBody
             #smByWeek.collapse
                 .row
-                    form.col-md-2.col-3
+                    form.col-md-2.col-12
                         .form-group
                             label(for="weekSelect") Week:
                             select.form-control#weekSelect
@@ -106,7 +147,7 @@ block body
                                 option(value="9") 9-13
                                 option(value="16") 16-20
                                 option(value="23") 23-27
-                    form.col-md-2.col-3
+                    form.col-md-2.col-12
                         .form-group
                             label(for="typeSelect") Filter:
                             select.form-control#typeSelect
@@ -115,7 +156,7 @@ block body
                                 option(value="2") เพิ่ม
                 .table-responsive
                     table.table.table-hover.table-bordered
-                        thead
+                        thead.thead-light
                             tr
                                 th.text-center.col-md-2 ID
                                 th.text-center.col-md-5 Name
@@ -125,14 +166,14 @@ block body
                         tbody#smWeekBody
             #smByCourse.collapse
                 .row
-                    form.col-md-2
+                    form.col-md-2.col-12
                         .form-group
                             label(for="crSelect") Course:
                             select.form-control#smCrSelect
                                 option(value="0") Select Course
                 .table-responsive
                     table.table.table-bordered.table-hover
-                        thead
+                        thead.thead-light
                             tr
                                 th.text-center.col-4 Name
                                 th.text-center 1
@@ -183,4 +224,4 @@ block body
                         select.form-control#addSubj(type="text")
                             option FHB:M
                             option FHB:P
-            button.btn.btn-primary.col-md-1.col-3.offset-md-11.offset-9#addNewAttend ADD NEW
+            button.btn.btn-primary.col-md-1.col-4.offset-md-11.offset-8#addNewAttend ADD NEW

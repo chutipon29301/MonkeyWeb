@@ -1565,6 +1565,54 @@ module.exports=function(app,db){
             });
         });
     });
+    // Add by tao
+    post("/post/listAllStudentAttendanceModifier",function(req,res){
+        var start=parseInt(req.body.start);
+        var output=[];
+        studentAttendanceModifierDB.find({day:{$gte:start}}).sort({timestamp:-1}).toArray(function(err,result){
+            for(var i=0;i<result.length;i++){
+                if(result[i].type=="absence"){
+                    if(result[i].reason!="ลา"){
+                        if(result[i].reason!="เพิ่ม"){
+                            output.push({
+                                modifierID:result[i]._id,
+                                studentID:result[i].studentID,
+                                day:result[i].day,
+                                reason:result[i].reason,
+                                subject:result[i].subject,
+                                timestamp:result[i].timestamp,
+                                sender:result[i].sender,
+                            });
+                        }
+                    }
+                }
+            }
+            callbackLoop(output.length,function(i,continueLoop){
+                getCourseDB(function(courseDB){
+                    var momentDay=moment(output[i].day);
+                    var generalizedDay=[
+                        moment(0).day(momentDay.day()?momentDay.day():7).hour(momentDay.hour()).valueOf(),
+                        moment(0).day(momentDay.day()).hour(momentDay.hour()).valueOf()
+                    ];
+                    courseDB.findOne({
+                        day:{$in:generalizedDay},student:output[i].studentID,quarter:4,year:2017
+                    },function(err,result){
+                        if(result){
+                            output[i].subject=result._id;
+                            continueLoop();
+                        }
+                        else{
+                            output[i].subject="No timetable";
+                            console.log(chalk.black.bgRed("[ERROR] No timetable"));
+                            continueLoop();
+                        }
+                    });
+                });
+            },function(){
+                res.send({modifier:output});
+            });
+        });
+    });
     //OK {studentID,start} return {[modifier]->modifierID,day,type,reason,subject,timestamp,sender,absentSubject}
     post("/post/listStudentAttendanceModifierByStudent",function(req,res){
         var studentID=parseInt(req.body.studentID);
