@@ -7,18 +7,18 @@ block script
 block body
     .container-fluid
         .row
-            div(class=webUser.position === "tutor" ? "hidden" : "col-3 col-xl-2 position-fixed")
+            div#filterPanel(class=webUser.position === "tutor" ? "hidden" : "col-12 col-md-3 col-xl-2")
                 h1.mt-10 Course
                 form
                     .form-group
                         label
-                            span.oi.oi-grid-two-up &nbsp;
+                            span.fa.fa-lg.fa-th-large &nbsp;
                             |Quarter
                         select.form-control#quarter(onChange="quarterChange()")
                 form
                     .form-group
                         label
-                            span.oi.oi-sort-ascending &nbsp;
+                            span.fa.fa-lg.fa-filter &nbsp;
                             |Filter
                         select.form-control#subject(onChange="getAllCourseContent()")
                             option(value="all") All Subject
@@ -77,9 +77,9 @@ block body
                             option(value="280800000") Sun 13
                             option(value="288000000") Sun 15
                 a(href="adminCourseTable" class=webUser.position === "tutor" ? "hidden" : "btn btn-link col")
-                    span.oi.oi-book
+                    span.fa.fa-lg.fa-book
                     |คัมภีร์เทวดา
-            div(class=webUser.position === "tutor" ? "col" : "col-9 offset-3 col-xl-10 offset-xl-2 p-0")
+            div(class=webUser.position === "tutor" ? "col" : "col-12 col-md-9 offset-md-3 col-xl-10 offset-xl-2 p-0")
                 .table-responsive
                     table.table.table-hover
                         thead

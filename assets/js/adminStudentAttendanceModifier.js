@@ -3,6 +3,7 @@ const summerMonth = 9;
 const summerYear = 2017;
 const crYear = 2017;
 const crQuarter = 4;
+let hybridDay = [];
 $(document).ready(function () {
     // for cr&fhb
     $("#datePicker").datetimepicker({
@@ -20,6 +21,15 @@ $(document).ready(function () {
     });
     $("#filterPick").change(function () {
         filterTable();
+    });
+    // for permamnent
+    genPnTable();
+    // for activity
+    $("#acLink").click(function () {
+        if (!($("#acLink").hasClass("clicked"))) {
+            $("#acLink").addClass("clicked");
+            genActivityTable();
+        }
     });
     // for summer
     genSmCrPick();
@@ -57,7 +67,8 @@ $(document).ready(function () {
     })
     // for add new attendance
     $("#addDatePicker").datetimepicker({
-        format: "DD/MM/YYYY HH"
+        format: "DD/MM/YYYY HH",
+        daysOfWeekDisabled: [1, 3, 5],
     });
     $("#addNewAttend").click(function () {
         if (!($("#addDatePicker").val())) {
@@ -122,23 +133,22 @@ function genCrTable() {
                 if (data.absence[i].reason.slice(0, 3) == "add") {
                     $("#crPresentTable").append(
                         "<tr>" +
-                        "<td class='text-center'>" + data.absence[i].studentID + "</td>" +
+                        "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY HH:mm") + "</td>" +
                         "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center'>" + data.absence[i].reason.slice(3) + "</td>" +
-                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
                     )
                 } else {
                     // log("pending");
                     $("#crAbsentTable").append(
-                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "warning" : "") + " row" + i + "'>" +
-                        "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY") + "</td>" +
-                        "<td class='text-center'>" + data.absence[i].studentID + "</td>" +
+                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "table-warning" : "") + " row" + i + "'>" +
+                        "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY HH:mm") + "</td>" +
                         "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center absentSubject" + i + "'></td>" +
                         "<td class='text-center absentTutor" + i + "'></td>" +
                         "<td class='text-center'>" + data.absence[i].reason + "</td>" +
-                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
                     )
                     myFHB(dt[0][i].courseID, dt[1][i], dataDate, i);
@@ -233,6 +243,94 @@ function removeAttend(id) {
         })
     }
 }
+// For permanent
+function genPnTable() {
+    $.post("post/v1/listPendingHybridStudent").then(pendingData => {
+        let promise = [];
+        for (let i in pendingData) {
+            promise.push(name(pendingData[i].studentID));
+        }
+        $.post("post/v1/listHybridDayInQuarter", { year: crYear, quarter: crQuarter }).then(hb => {
+            for (let i in hb) {
+                hybridDay.push(hb[i]);
+            }
+            Promise.all(promise).then(name => {
+                for (let i in pendingData) {
+                    for (let j in hb) {
+                        if (pendingData[i].hybridID === hb[j].hybridID) {
+                            let hbTime = moment(parseInt(hb[j].day));
+                            let time = moment(parseInt(pendingData[i].date)).hour(hbTime.hour());
+                            if (pendingData[i].mode === "MODE_ADD_HYBRID") {
+                                $("#pnPresentTable").append(
+                                    "<tr>" +
+                                    "<td class='text-center'>" + time.format("DD/MM/YYYY HH:00") + "</td>" +
+                                    "<td class='text-center'>" + name[i].nickname + " " + name[i].firstname + "</td>" +
+                                    "<td class='text-center'>" + "FHB:" + pendingData[i].subject + "</td>" +
+                                    "</tr>"
+                                )
+                            } else {
+                                $("#pnAbsentTable").append(
+                                    "<tr>" +
+                                    "<td class='text-center'>" + time.format("DD/MM/YYYY HH:00") + "</td>" +
+                                    "<td class='text-center'>" + name[i].nickname + " " + name[i].firstname + "</td>" +
+                                    "<td class='text-center'>" + "FHB:" + pendingData[i].subject + "</td>" +
+                                    "</tr>"
+                                )
+                            }
+                        }
+                    }
+                }
+            })
+        })
+    })
+}
+// For activity
+function genActivityTable() {
+    let date = new Date();
+    date.setHours(6);
+    $.post("post/listAllStudentAttendanceModifier", { start: date.getTime() }).then(data => {
+        let promise = [];
+        for (let i in data.modifier) {
+            promise.push(name(data.modifier[i].studentID));
+            promise.push($.post('post/courseInfo', { courseID: data.modifier[i].subject }));
+        }
+        Promise.all(promise).then(dt => {
+            for (let i in data.modifier) {
+                let modTime = moment(parseInt(data.modifier[i].day));
+                if (data.modifier[i].subject === "No timetable") {
+                    for (let j in hybridDay) {
+                        let hbTime = moment(hybridDay[j].day);
+                        if (modTime.day() == hbTime.day() && modTime.hour() == hbTime.hour()) {
+                            $("#acTableBody").append(
+                                "<tr class=" + (data.modifier[i].reason.slice(0, 3) === "add" ? 'table-info' : 'table-danger') + ">" +
+                                "<td>" + moment(parseInt(data.modifier[i].timestamp)).format("DD/MM/YYYY HH:mm") + "</td>" +
+                                "<td>" + dt[2 * i].nickname + " " + dt[2 * i].firstname + "</td>" +
+                                "<td>FHB</td>" +
+                                "<td>" + modTime.format("DD/MM/YYYY HH:mm") + "</td>" +
+                                "<td>" + (data.modifier[i].reason.slice(0, 3) === "add" ? '-' : data.modifier[i].reason) + "</td>" +
+                                "<td>" + data.modifier[i].sender + "</td>" +
+                                "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
+                                "</tr>"
+                            )
+                        }
+                    }
+                } else {
+                    $("#acTableBody").append(
+                        "<tr class=" + (data.modifier[i].reason.slice(0, 3) === "add" ? 'table-primary' : 'table-danger') + ">" +
+                        "<td>" + moment(parseInt(data.modifier[i].timestamp)).format("DD/MM/YYYY HH:mm") + "</td>" +
+                        "<td>" + dt[2 * i].nickname + " " + dt[2 * i].firstname + "</td>" +
+                        "<td>CR:" + dt[2 * i + 1].courseName + "</td>" +
+                        "<td>" + modTime.format("DD/MM/YYYY HH:mm") + "</td>" +
+                        "<td>" + (data.modifier[i].reason.slice(0, 3) === "add" ? '-' : data.modifier[i].reason) + "</td>" +
+                        "<td>" + data.modifier[i].sender + "</td>" +
+                        "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
+                        "</tr>"
+                    )
+                }
+            }
+        })
+    })
+}
 // For summer
 function genTableByName() {
     let allStudent = [];
@@ -273,7 +371,7 @@ function genPickedTable(ID) {
                 $("#smPresentBody").append(
                     "<tr>" +
                     "<td class='text-center'>" + moment(data.modifier[i].day).format("DD/MM/YYYY") + "</td>" +
-                    "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                    "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
                     "</tr>"
                 );
             } else if (data.modifier[i].reason === "ลา") {
@@ -322,22 +420,22 @@ function genTableByWeek() {
             for (let j in data[i].absence) {
                 if (data[i].absence[j].reason == "ลา") {
                     $("#smWeekBody").append(
-                        "<tr class='danger smAbsentRow'>" +
+                        "<tr class='table-danger smAbsentRow'>" +
                         "<td class='text-center'>" + data[i].absence[j].studentID + "</td>" +
                         "<td id='name" + i + j + "'></td>" +
                         "<td class='text-center'>" + data[i + 1].format("DD/MM/YYYY") + "</td>" +
                         "<td class='text-center'>" + data[i + 1].format("HH:mm") + "</td>" +
-                        "<td class='text-center'><button id='" + data[i].absence[j].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                        "<td class='text-center'><button id='" + data[i].absence[j].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
                     );
                 } else if (data[i].absence[j].reason == "เพิ่ม") {
                     $("#smWeekBody").append(
-                        "<tr class='success smPresentRow'>" +
+                        "<tr class='table-success smPresentRow'>" +
                         "<td class='text-center'>" + data[i].absence[j].studentID + "</td>" +
                         "<td id='name" + i + j + "'></td>" +
                         "<td class='text-center'>" + data[i + 1].format("DD/MM/YYYY") + "</td>" +
                         "<td class='text-center'>" + data[i + 1].format("HH:mm") + "</td>" +
-                        "<td class='text-center'><button id='" + data[i].absence[j].modifierID + "' onClick='removeAttend(this.id);'><span class='glyphicon glyphicon-trash'></span></button></td>" +
+                        "<td class='text-center'><button id='" + data[i].absence[j].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
                     );
                 }
@@ -414,9 +512,9 @@ function genSmTableByCr() {
                 for (let j in smCrData[i + 1].modifier) {
                     let day = moment(smCrData[i + 1].modifier[j].day).date();
                     if (smCrData[i + 1].modifier[j].reason == "ลา") {
-                        $("#smCrAbsentCell" + i + day).addClass("danger");
+                        $("#smCrAbsentCell" + i + day).addClass("table-danger");
                     } else if (smCrData[i + 1].modifier[j].reason == "เพิ่ม") {
-                        $("#smCrPresentCell" + i + day).addClass("success");
+                        $("#smCrPresentCell" + i + day).addClass("table-success");
                     }
                 }
             }

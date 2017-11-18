@@ -164,7 +164,7 @@ function sendRequest(ID) {
         $("#loaderModal").modal();
         let pickDate = $('#datePicker').data('DateTimePicker').date();
         if ($("#typeInput").val() === "0") {
-            str += "\n" + "ต้องการเพิ่มตลอดไป:" + "\n" + $(".btn-success").html() + " - ";
+            str += "\n" + "ต้องการลาตลอดไป:" + "\n" + $(".btn-success").html() + " - ";
             let hbID = $(".btn-success").attr("id");
             let date = $('#datePicker').data('DateTimePicker').date().hour(7);
             str += date.format("ddd DD/MM/YYYY");
@@ -178,13 +178,13 @@ function sendRequest(ID) {
             })
         } else {
             let str2 = $(".btn-success").html();
-            pickDate.hour(str2.slice(0, str2.indexOf("-")));
+            pickDate.hour(str2.slice(0, str2.indexOf("-"))).minute(0).second(0);
             let subj = $("#subjInput").val();
-            str += "\n" + "ต้องการลาตลอดไป:" + "\n" + $("#subjInput").html() + " - ";
+            str += "\n" + "ต้องการเพิ่มตลอดไป:" + "\n" + "FHB:" + $("#subjInput").val() + " - ";
             let date = pickDate;
             str += date.format("ddd DD/MM/YYYY HH:00");
             str += "\n" + "ผู้แจ้ง:" + $("#senderInput").val();
-            date = date.minute(date.minute() + 2)
+            // date = date.minute(date.minute() + 2)
             $.post('post/v1/listHybridDayInQuarter', { year: year, quarter: presentQuarter }).then(hb => {
                 for (let i in hb) {
                     if (moment(hb[i].day).day() === pickDate.day() && moment(hb[i].day).hour() === pickDate.hour()) {
