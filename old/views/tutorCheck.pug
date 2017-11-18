@@ -1,0 +1,46 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Tutor Check"
+block script
+    script(src="js/tutorCheck.js")
+block body
+    .container-fluid
+        .row
+            .h3 Tutor Check In / Check Out
+        .row
+            .col-12.col-md-6
+                .col-12.btn.btn-success(onclick="checkIn()") Check In
+            .col-12.col-md-6
+                .col-12.btn.btn-danger(onclick="checkOut()") Check Out
+    #checkInModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Check In
+                    button.close(type='button', data-dismiss='modal') ×
+                #checkInResponse.modal-body
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+    #checkOutModal.modal.fade
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h4.modal-title Check Out
+                    button.close(type='button', data-dismiss='modal') ×
+                #checkOutResponse.modal-body
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+    #checkOutSummaryModal.modal.fade
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h4.modal-title Check Out Summary
+                    button.close(type='button', data-dismiss='modal') ×
+                #checkOutResponse.modal-body
+                    table#checkOutTable.table.table-hover
+                .modal-footer
+                    button.btn.btn-primary(onclick="checkOutSubmit()") Check Out
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
+
+
+
