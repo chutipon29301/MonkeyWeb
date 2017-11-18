@@ -3,23 +3,41 @@ module.exports = function (app, db, post) {
     var tutorCheckHistoryDB = db.collection('tutorCheckHistory');
     var tutorCheckPendingDB = db.collection('tutorCheckPending');
 
+    function isLocal(req) {
+        var index = req.ip.match(/\d/);
+        var ipAddress = req.ip.substring(index.index, req.ip.length);
+        if (ipAddress.substring(0, 7) === '192.168' || ipAddress === '125.25.54.23') {
+            return false;
+        }
+        return true;
+    }
+
     post('/post/v1/tutorCheckIn', function (req, res) {
         if (!req.body.tutorID) {
-            return res.status(400).send({
+            return res.status(401).send({
                 err: -1,
                 msg: 'Bad Request'
             });
         }
-
+        if (isLocal(req)) {
+            return res.status(401).send({
+                err: 0,
+                msg: 'Unauthorize network'
+            });
+        }
+        var checkInDate = new Date();
         tutorCheckPendingDB.insertOne({
             _id: parseInt(req.body.tutorID),
-            checkIn: new Date()
+            checkIn: checkInDate
         }, function (err, result) {
             if (err) {
-                return res.status(202).send(err);
+                return res.status(202).send({
+                    err: err
+                });
             }
             res.status(201).send({
-                msg: 'OK'
+                msg: 'OK',
+                timestamp: checkInDate
             });
         });
     });
@@ -29,6 +47,12 @@ module.exports = function (app, db, post) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
+            });
+        }
+        if (isLocal(req)) {
+            return res.status(401).send({
+                err: 0,
+                msg: 'Unauthorize network'
             });
         }
 
@@ -53,13 +77,20 @@ module.exports = function (app, db, post) {
                 msg: 'Bad Request'
             });
         }
+        if (isLocal(req)) {
+            return res.status(400).send({
+                err: 0,
+                msg: 'Unauthorize network'
+            });
+        }
 
         var slot = [parseInt(req.body.slot0),
-        parseInt(req.body.slot1),
-        parseInt(req.body.slot2),
-        parseInt(req.body.slot3),
-        parseInt(req.body.slot4),
-        parseInt(req.body.slot5)];
+            parseInt(req.body.slot1),
+            parseInt(req.body.slot2),
+            parseInt(req.body.slot3),
+            parseInt(req.body.slot4),
+            parseInt(req.body.slot5)
+        ];
 
         tutorCheckPendingDB.findOne({
             _id: parseInt(req.body.tutorID)
