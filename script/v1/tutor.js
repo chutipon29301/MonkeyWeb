@@ -3,14 +3,28 @@ module.exports = function (app, db, post) {
     var tutorCheckHistoryDB = db.collection('tutorCheckHistory');
     var tutorCheckPendingDB = db.collection('tutorCheckPending');
 
+    function isLocal(req) {
+        var index = req.ip.match(/\d/);
+        var ipAddress = req.ip.substring(index.index, req.ip.length);
+        if (ipAddress.substring(0, 7) === '192.168' || ipAddress === '125.25.54.23') {
+            return true;
+        }
+        return false;
+    }
+
     post('/post/v1/tutorCheckIn', function (req, res) {
         if (!req.body.tutorID) {
-            return res.status(400).send({
+            return res.status(401).send({
                 err: -1,
                 msg: 'Bad Request'
             });
         }
-
+        if (isLocal(req)) {
+            return res.status(401).send({
+                err: 0,
+                msg: 'Unauthorize network'
+            });
+        }
         tutorCheckPendingDB.insertOne({
             _id: parseInt(req.body.tutorID),
             checkIn: new Date()
@@ -29,6 +43,12 @@ module.exports = function (app, db, post) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
+            });
+        }
+        if (isLocal(req)) {
+            return res.status(401).send({
+                err: 0,
+                msg: 'Unauthorize network'
             });
         }
 
@@ -51,6 +71,12 @@ module.exports = function (app, db, post) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
+            });
+        }
+        if (isLocal(req)) {
+            return res.status(400).send({
+                err: 0,
+                msg: 'Unauthorize network'
             });
         }
 
