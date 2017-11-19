@@ -2,8 +2,12 @@ module.exports = function (app, db, post) {
     var ObjectID = require('mongodb').ObjectID;
     var tutorCheckHistoryDB = db.collection('tutorCheckHistory');
     var tutorCheckPendingDB = db.collection('tutorCheckPending');
+    var tutorCheckIntervalDB = db.collection('tutorCheckInterval');
     var schedule = require('node-schedule');
 
+    /**
+     * Function to clear pending check in which will be execute at midnight
+     */
     var clearTutorCheckPendingOnMidNight = schedule.scheduleJob('0 0 * * *', function () {
         console.log('[TUTOR] Check pending watcher execute');
         tutorCheckPendingDB.find({}).toArray().then(pendingList => {
@@ -21,6 +25,10 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for checking request ip address if the request send from local network
+     * @param {request} req request information containing ip address
+     */
     function isLocal(req) {
         var index = req.ip.match(/\d/);
         var ipAddress = req.ip.substring(index.index, req.ip.length);
@@ -30,6 +38,33 @@ module.exports = function (app, db, post) {
         return true;
     }
 
+    /**
+     * Method for tutor to check in
+     * req.body = {
+     *      tutorID: 99000
+     * }
+     * 
+     * status 401:
+     *  If not request in local network
+     * res.body = {
+     *      err: 0,
+     *      msg: 'Unauthorize network'
+     * }
+     * 
+     * status 200:
+     *  If check in successfully execute
+     * res.body = {
+     *      msg: 'OK',
+     *      timestamp: new Date()
+     * }
+     * 
+     * status 201:
+     *  If already check in
+     * res.body = {
+     *      msg: 'OK',
+     *      timestamp: new Date()
+     * }
+     */
     post('/post/v1/tutorCheckIn', function (req, res) {
         if (!req.body.tutorID) {
             return res.status(400).send({
@@ -60,6 +95,32 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for get pending check in of specific tutor
+     * req.body = {
+     *      tutorID: 99000
+     * }
+     * 
+     * status 401:
+     *  If not request in local network
+     * res.body = {
+     *      err: 0,
+     *      msg: 'Unauthorize network'
+     * }
+     * 
+     * status 404:
+     *  If not request in local network
+     * res.body = {
+     *      err: 404,
+     *      msg: 'Not Found'
+     * }
+     * 
+     * status 200:
+     *   If check in history found
+     * res.body = {
+     *      checkIn: 2017-11-11T03:41:36.261Z
+     * }
+     */
     post('/post/v1/getPendingTutorCheckIn', function (req, res) {
         if (!req.body.tutorID) {
             return res.status(400).send({
@@ -88,6 +149,37 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for tutor to check in
+     * req.body = {
+     *      tutorID: 99000,
+     *      slot0: 0,
+     *      slot1: 0,
+     *      slot2: 0,
+     *      slot3: 0,
+     *      slot4: 0,
+     *      slot5: 0
+     * }
+     * 
+     * status 401:
+     *  If not request in local network
+     * res.body = {
+     *      err: 0,
+     *      msg: 'Unauthorize network'
+     * }
+     * 
+     * status 404:
+     *   If no check in history found
+     * res.body = {
+     *      err: 404,
+     *      msg: 'No check in history found'
+     * }
+     * 
+     * status 200:
+     * res.body = {
+     *      msg: 'OK'
+     * }
+     */
     post('/post/v1/tutorCheckOut', function (req, res) {
         if (!req.body.tutorID || !req.body.slot0 || !req.body.slot1 || !req.body.slot2 || !req.body.slot3 || !req.body.slot4 || !req.body.slot5) {
             return res.status(400).send({
@@ -96,7 +188,7 @@ module.exports = function (app, db, post) {
             });
         }
         if (isLocal(req)) {
-            return res.status(400).send({
+            return res.status(401).send({
                 err: 0,
                 msg: 'Unauthorize network'
             });
@@ -115,7 +207,7 @@ module.exports = function (app, db, post) {
         }).then(data => {
             if (data == null) {
                 return res.status(404).send({
-                    err: 0,
+                    err: 404,
                     msg: 'No check in history found'
                 });
             }
@@ -138,6 +230,52 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for listing check in history
+     * 
+     * case 1:
+     *  List by person
+     * req.body = {
+     *      tutorID: 99000,
+     *      startDate: 13020100000,
+     *      endDate: 142003000000,
+     * }
+     * 
+     * res.body = {
+     *      detail: [
+     *          {
+     *              checkIn: 1510976682728,
+     *              checkOut: 1510986065378,
+     *              detail: [
+     *                  '-', 'Admin', 'Com', '-', '-', '-'
+     *              ],
+     *              historyID: 5a0fd1516885947e13a34d72
+     *              sum: 3.4234235143
+     *          },
+     *          ...
+     *      ],
+     *      totalSum: 231.425452343
+     * }
+     * 
+     * case 2:
+     *  List persent person in day
+     * req.body = {
+     *      date: 13743000000
+     * }
+     * 
+     * res.body = [
+     *      {
+     *          checkIn: 1510976682728,
+     *          checkOut: 1510986065378,
+     *          detail: [
+     *              '-', 'Admin', 'Com', '-', '-', '-'
+     *          ],
+     *          historyID: 5a0fd1516885947e13a34d72
+     *          sum: 3.4234235143
+     *      },
+     *      ...
+     *  ]
+     */
     post('/post/v1/listCheckInHistory', function (req, res) {
         if ((!req.body.tutorID || !req.body.startDate || !req.body.endDate) && (!req.body.date)) {
             return res.status(400).send({
@@ -197,11 +335,23 @@ module.exports = function (app, db, post) {
                     for (let j = 0; j < result[i].detail.length; j++) {
                         if (j === startIndex && j === endIndex) {
                             var date1 = new Date(result[i].checkIn);
+                            if (date1.getHours() < 8) {
+                                date1.setHours(8);
+                                date1.setMinutes(0);
+                                date1.setSeconds(0);
+                                date1.setMilliseconds(0);
+                            }
                             var date2 = new Date(result[i].checkOut);
                             var diff = date2 - date1;
                             sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         } else if (j === startIndex) {
                             var date1 = new Date(result[i].checkIn);
+                            if (date1.getHours() < 8) {
+                                date1.setHours(8);
+                                date1.setMinutes(0);
+                                date1.setSeconds(0);
+                                date1.setMilliseconds(0);
+                             }
                             var date2 = new Date(result[i].checkIn);
                             date2.setHours(timeRange[startIndex + 1]);
                             date2.setMinutes(0);
