@@ -429,7 +429,7 @@ module.exports = function (app, db, post) {
     // });
 
     post('/post/v1/addCheckInterval', function (req, res) {
-        if(!(req.body.startDate && req.body.endDate)){
+        if (!(req.body.startDate && req.body.endDate)) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -443,9 +443,13 @@ module.exports = function (app, db, post) {
         });
     });
 
-    post('/post/v1/listInterval', function(req,res){
-        tutorCheckIntervalDB.find({}).toArray().then(result => {
-            for(let i = 0; i < result.length; i++){
+    post('/post/v1/listInterval', function (req, res) {
+        tutorCheckIntervalDB.find({}, {
+            sort: {
+                startDate: -1
+            }
+        }).toArray().then(result => {
+            for (let i = 0; i < result.length; i++) {
                 result[i].intervalID = result[i]._id;
                 result[i].startDate = new Date(result[i].startDate).valueOf()
                 result[i].endDate = new Date(result[i].endDate).valueOf()
