@@ -3,7 +3,32 @@ module.exports = function (app, db, post) {
     var tutorCheckHistoryDB = db.collection('tutorCheckHistory');
     var tutorCheckPendingDB = db.collection('tutorCheckPending');
     var tutorCheckIntervalDB = db.collection('tutorCheckInterval');
+    var userDB = db.collection('user');
     var schedule = require('node-schedule');
+
+    var timeRange = [8, 10, 13, 15, 17, 19];
+    var description = [{
+        name: '-',
+        point: 0
+    }, {
+        name: 'Hybrid',
+        point: 2
+    }, {
+        name: 'Admin',
+        point: 1.5
+    }, {
+        name: 'Sheet',
+        point: 1
+    }, {
+        name: 'Com',
+        point: 2
+    }, {
+        name: 'Reading',
+        point: 0
+    }, {
+        name: 'Course',
+        point: 0
+    }];
 
     /**
      * Function to clear pending check in which will be execute at midnight
@@ -283,29 +308,6 @@ module.exports = function (app, db, post) {
                 msg: 'Bad Request'
             });
         }
-        var timeRange = [8, 10, 13, 15, 17, 19];
-        var description = [{
-            name: '-',
-            point: 0
-        }, {
-            name: 'Hybrid',
-            point: 2
-        }, {
-            name: 'Admin',
-            point: 1.5
-        }, {
-            name: 'Sheet',
-            point: 1
-        }, {
-            name: 'Com',
-            point: 2
-        }, {
-            name: 'Reading',
-            point: 0
-        }, {
-            name: 'Course',
-            point: 0
-        }];
         if (req.body.tutorID && req.body.startDate && req.body.endDate) {
             tutorCheckHistoryDB.find({
                 tutorID: parseInt(req.body.tutorID),
@@ -351,7 +353,7 @@ module.exports = function (app, db, post) {
                                 date1.setMinutes(0);
                                 date1.setSeconds(0);
                                 date1.setMilliseconds(0);
-                             }
+                            }
                             var date2 = new Date(result[i].checkIn);
                             date2.setHours(timeRange[startIndex + 1]);
                             date2.setMinutes(0);
@@ -416,4 +418,38 @@ module.exports = function (app, db, post) {
             });
         }
     });
+
+    // post('/post/v1/listAllCheckInHistory', function (req, res) {
+    //     if (!req.body.startDate || !req.body.endDate) {
+    //         return res.status(400).send({
+    //             err: -1,
+    //             msg: 'Bad Request'
+    //         });
+    //     }
+    // });
+
+    post('/post/v1/addCheckInterval', function (req, res) {
+        if(!(req.body.startDate && req.body.endDate)){
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckIntervalDB.insertOne({
+            startDate: new Date(parseInt(req.body.startDate)),
+            endDate: new Date(parseInt(req.body.endDate))
+        }, result => {
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/listInterval', function(req,res){
+        tutorCheckIntervalDB.find({}).toArray().then(result => {
+            for(let i = 0; i < result.length; i++){
+                result[i].intervalID = result[i]._id;
+                delete result._id;
+            }
+            res.status(200).send(result);
+        });
+    })
 }
