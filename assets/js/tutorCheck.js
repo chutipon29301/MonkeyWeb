@@ -62,12 +62,14 @@ async function checkOut() {
         var pendingResponse = await $.post('/post/v1/getPendingTutorCheckIn', {
             tutorID: cookie.monkeyWebUser
         });
-        if (pendingResponse.err) {} else {
+        if (pendingResponse.err) { } else {
             checkInDate = new Date(pendingResponse.checkIn);
             checkOutDate = new Date();
             currentSlot = getSlot(checkInDate);
             $('#checkOutResponse').empty();
             $('#checkOutResponse').append(checkOutButton());
+            $(".modal-btn").css({ "height": "15vh", "padding-top": "1.5vh" });
+            $(".modal-btn").addClass("m-1");
             $('#checkOutModal').modal('show');
         }
     } catch (error) {
@@ -148,13 +150,15 @@ function next(detail) {
         currentSlot++;
         $('#checkOutResponse').empty();
         $('#checkOutResponse').append(checkOutButton());
+        $(".modal-btn").css({ "height": "15vh", "padding-top": "1.5vh" });
+        $(".modal-btn").addClass("m-1");
     } else {
         $('#checkOutModal').modal('hide');
         $('#checkOutTable').empty();
         $('#checkOutTable').append(
             '<thead>' +
-            '<td>Time</td>'+
-            '<td>Detail</td>'+
+            '<td>Time</td>' +
+            '<td>Detail</td>' +
             '</thead>');
         $(function () {
             $.each(tableInfo, function (i, item) {
@@ -180,7 +184,7 @@ function getSlot(date) {
 
 function getSlotLabel() {
     var startHour = ['08', '10', '13', '15', '17'];
-    var endHour = ['10', '12', '15', '17', '19'];
+    var endHour = ['10', '13', '15', '17', '19'];
     if (currentSlot === getSlot(checkInDate) && currentSlot === getSlot(checkOutDate)) {
         return moment(checkInDate).format("HH:mm:ss") + ' - ' + moment(checkOutDate).format("HH:mm:ss");
     } else if (currentSlot === getSlot(checkInDate)) {
@@ -193,30 +197,30 @@ function getSlotLabel() {
 }
 
 function checkOutButton() {
-    return '<row id="lable">' +
+    return '<div class="row" id="lable"><div class="col text-center">' +
         'Time: ' + getSlotLabel() +
-        '</row>' +
+        '</div></div>' +
         '<br>' +
-        '<row>' +
-        '<button class="col-4 btn btn-primary" onclick="next(0)">' +
+        '<div class="row">' +
+        '<button class="col btn btn-primary modal-btn" onclick="next(0)">' +
         'Hybrid' +
         '</button>' +
-        '<button class="col-4 btn btn-primary" onclick="next(1)">' +
+        '<button class="col btn btn-primary modal-btn" onclick="next(1)">' +
         'Admin' +
         '</button>' +
-        '<button class="col-4 btn btn-primary" onclick="next(2)">' +
+        '<button class="col btn btn-primary modal-btn" onclick="next(2)">' +
         'Sheet' +
         '</button>' +
-        '</row>' +
-        '<row>' +
-        '<button class="col-4 btn btn-primary" onclick="next(3)">' +
+        '</div>' +
+        '<div class="row">' +
+        '<button class="col btn btn-primary modal-btn" onclick="next(3)">' +
         'Com' +
         '</button>' +
-        '<button class="col-4 btn btn-primary" onclick="next(4)">' +
+        '<button class="col btn btn-primary modal-btn" onclick="next(4)">' +
         'Reading' +
         '</button>' +
-        '<button class="col-4 btn btn-primary" onclick="next(5)">' +
+        '<button class="col btn btn-primary modal-btn" onclick="next(5)">' +
         'Course' +
         '</button>' +
-        '</row>';
+        '</div>';
 }
