@@ -447,6 +447,8 @@ module.exports = function (app, db, post) {
         tutorCheckIntervalDB.find({}).toArray().then(result => {
             for(let i = 0; i < result.length; i++){
                 result[i].intervalID = result[i]._id;
+                result[i].startDate = new Date(result[i].startDate).valueOf()
+                result[i].endDate = new Date(result[i].endDate).valueOf()
                 delete result._id;
             }
             res.status(200).send(result);
