@@ -449,7 +449,7 @@ module.exports = function (app, db, post) {
                 result[i].intervalID = result[i]._id;
                 result[i].startDate = new Date(result[i].startDate).valueOf()
                 result[i].endDate = new Date(result[i].endDate).valueOf()
-                delete result._id;
+                delete result[i]._id;
             }
             res.status(200).send(result);
         });
