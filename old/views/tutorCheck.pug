@@ -2,7 +2,7 @@ extends htmlTemplate
 block head
     -const pageTitle = "Tutor Check"
 block script
-    script(src="js/tutorCheck.js")
+    script(src="js/tutorCheck.min.js")
 block body
     .container-fluid
         .row
@@ -42,6 +42,3 @@ block body
                 .modal-footer
                     button.btn.btn-primary(onclick="checkOutSubmit()") Check Out
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-
-
-

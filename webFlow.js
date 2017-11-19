@@ -210,6 +210,7 @@ module.exports=function(app,db){
         addPugPage("tutorCommentStudent",options);
         addPugPage("tutorEditProfile",options);
         addPugPage("adminStudentAttendanceModifier",options);
+        addPugPage("tutorCheckInHistory",options);
         addPugPage("tutorCheck",options);
         addPugPage("tutorCourseMaterial",options,function(callback,req,res){
             var local={moment:moment};

@@ -1,0 +1,8 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Check I/O history"
+block script
+    script(src="js/tutorCheckInHistory.js")
+block body
+    .container-fluid
+        h3: kbd Check in/out history

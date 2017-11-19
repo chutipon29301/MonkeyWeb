@@ -277,7 +277,7 @@ module.exports = function (app, db, post) {
      *  ]
      */
     post('/post/v1/listCheckInHistory', function (req, res) {
-        if ((!req.body.tutorID || !req.body.startDate || !req.body.endDate) && (!req.body.date)) {
+        if (!((req.body.tutorID && req.body.startDate && req.body.endDate) || (req.body.date))) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'

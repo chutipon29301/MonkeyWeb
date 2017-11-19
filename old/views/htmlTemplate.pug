@@ -61,7 +61,11 @@ html(lang="en")
                                     if(webUser.position!="tutor")
                                         a.dropdown-item(href="/adminCourseMaterial") CR Tracking
                             +navLink("adminStudentAttendanceModifier","ลา/เพิ่ม")
-                            +navLink("tutorCheck","Tutor Check")
+                            li.nav-item.dropdown
+                                a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") Tutor Check
+                                .dropdown-menu(aria-labelledby="navbarDropdown")
+                                    a.dropdown-item(href="/tutorCheck") Check in/out
+                                    a.dropdown-item(href="/tutorCheckInHistory") History
                             if(webUser.position!="tutor")
                                 +navLink("adminCourseRoom","Room")
                             +navLink("adminConference","Conference")

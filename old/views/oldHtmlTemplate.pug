@@ -71,7 +71,12 @@ html(lang="en")
                                         if(webUser.position!="tutor")
                                             li: a(href="/adminCourseMaterial") CR Tracking
                                 li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
-                                li: a(href="/tutorCheck") Tutor Check
+                                li.dropdown
+                                    a.dropdown-toggle(data-toggle="dropdown" href="#") Tutor Check
+                                        span.caret
+                                    ul.dropdown-menu
+                                        li: a(href="/tutorCheck") Check in/out
+                                        li: a(href="/tutorCheckInHistory") History
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminCourseRoom") Room
                                 li: a(href="/adminConference") Conference
