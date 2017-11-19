@@ -2,6 +2,24 @@ module.exports = function (app, db, post) {
     var ObjectID = require('mongodb').ObjectID;
     var tutorCheckHistoryDB = db.collection('tutorCheckHistory');
     var tutorCheckPendingDB = db.collection('tutorCheckPending');
+    var schedule = require('node-schedule');
+
+    var clearTutorCheckPendingOnMidNight = schedule.scheduleJob('0 0 * * *', function () {
+        console.log('[TUTOR] Check pending watcher execute');
+        tutorCheckPendingDB.find({}).toArray().then(pendingList => {
+            for (let i = 0; i < pendingList.length; i++) {
+                tutorCheckHistoryDB.insertOne({
+                    tutorID: pendingList._id,
+                    checkIn: pendingList.checkIn,
+                    checkOut: new Date(),
+                    detail: [-1, -1, -1, -1, -1, -1]
+                });
+                tutorCheckPendingDB.remove({
+                    _id: pendingList._id
+                })
+            }
+        });
+    });
 
     function isLocal(req) {
         var index = req.ip.match(/\d/);
@@ -14,7 +32,7 @@ module.exports = function (app, db, post) {
 
     post('/post/v1/tutorCheckIn', function (req, res) {
         if (!req.body.tutorID) {
-            return res.status(401).send({
+            return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
             });
@@ -118,5 +136,134 @@ module.exports = function (app, db, post) {
                 _id: parseInt(req.body.tutorID)
             })
         });
+    });
+
+    post('/post/v1/listCheckInHistory', function (req, res) {
+        if ((!req.body.tutorID || !req.body.startDate || !req.body.endDate) && (!req.body.date)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var timeRange = [8, 10, 13, 15, 17, 19];
+        var description = [{
+            name: '-',
+            point: 0
+        }, {
+            name: 'Hybrid',
+            point: 2
+        }, {
+            name: 'Admin',
+            point: 1.5
+        }, {
+            name: 'Sheet',
+            point: 1
+        }, {
+            name: 'Com',
+            point: 2
+        }, {
+            name: 'Reading',
+            point: 0
+        }, {
+            name: 'Course',
+            point: 0
+        }];
+        if (req.body.tutorID && req.body.startDate && req.body.endDate) {
+            tutorCheckHistoryDB.find({
+                tutorID: parseInt(req.body.tutorID),
+                checkIn: {
+                    $gte: new Date(parseInt(req.body.startDate)),
+                    $lte: new Date(parseInt(req.body.endDate))
+                }
+            }, {
+                sort: {
+                    checkIn: -1
+                }
+            }).toArray().then(result => {
+                result.reverse();
+                var totalSum = 0;
+                for (let i = 0; i < result.length; i++) {
+                    result[i].historyID = result[i]._id;
+                    result[i].checkIn = new Date(result[i].checkIn).valueOf();
+                    result[i].checkOut = new Date(result[i].checkOut).valueOf();
+                    var startIndex = -1,
+                        endIndex = -1;
+                    for (let j = 0; j < result[i].detail.length; j++) {
+                        if (startIndex == -1 && result[i].detail[j] != -1) startIndex = j;
+                        if (endIndex == -1 && result[i].detail[result[i].detail.length - j - 1] != -1) endIndex = result[i].detail.length - j - 1;
+                    }
+
+                    var sum = 0;
+                    for (let j = 0; j < result[i].detail.length; j++) {
+                        if (j === startIndex && j === endIndex) {
+                            var date1 = new Date(result[i].checkIn);
+                            var date2 = new Date(result[i].checkOut);
+                            var diff = date2 - date1;
+                            sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        } else if (j === startIndex) {
+                            var date1 = new Date(result[i].checkIn);
+                            var date2 = new Date(result[i].checkIn);
+                            date2.setHours(timeRange[startIndex + 1]);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                            var diff = date2 - date1;
+                            sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        } else if (j === endIndex) {
+                            var date1 = new Date(result[i].checkOut);
+                            var date2 = new Date(result[i].checkOut);
+                            date1.setHours(timeRange[endIndex]);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                            var diff = date2 - date1;
+                            sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        } else {
+                            sum += description[result[i].detail[j] + 1].point;
+                        }
+                        result[i].detail[j] = description[result[i].detail[j] + 1].name;
+                    }
+                    result[i].sum = sum;
+                    totalSum += sum
+                    delete result[i].tutorID;
+                    delete result[i]._id;
+                }
+                var response = {};
+                response.detail = result;
+                response.totalSum = totalSum
+                return res.status(200).send(response);
+            });
+        } else if (req.body.date) {
+            var requestDate = new Date(parseInt(req.body.date));
+            var startQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate());
+            var endQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate() + 1);
+            var querySlot = 'detail.' + timeRange.indexOf(requestDate.getHours());
+            var queryObject = {
+                checkIn: {
+                    $gte: startQueryDate,
+                    $lt: endQueryDate
+                }
+            }
+            queryObject[querySlot] = {
+                $ne: -1
+            };
+            tutorCheckHistoryDB.find(queryObject, {
+                sort: {
+                    checkIn: -1
+                }
+            }).toArray().then(result => {
+                result.reverse();
+                for (let i = 0; i < result.length; i++) {
+                    result[i].historyID = result[i]._id;
+                    result[i].checkIn = new Date(result[i].checkIn).valueOf();
+                    result[i].checkOut = new Date(result[i].checkOut).valueOf();
+                    for (let j = 0; j < result[i].detail.length; j++) {
+                        result[i].detail[j] = description[result[i].detail[j] + 1].name;
+                    }
+                    delete result[i]._id;
+                }
+                return res.status(200).send(result);
+            });
+        }
     });
 }
