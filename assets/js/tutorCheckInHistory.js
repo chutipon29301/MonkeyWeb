@@ -52,7 +52,7 @@ function fillTableData(history) {
 function genDetailButt(detail) {
     let str = "";
     for (let i in detail) {
-        str += "<button class='col mx-1 btn " + detail[i] + "'>" + detail[i] + "</button>"
+        str += "<div class='col-12 col-md-2 px-1'><button class='col-12 btn " + detail[i] + "'>" + detail[i] + "</button></div>"
     }
     return "<div class='row'>" + str + "</div>";
 }
