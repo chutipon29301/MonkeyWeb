@@ -120,7 +120,9 @@ const getConfig = () => $.post("post/getConfig", {});
 const listQuarter = (status) => $.post("post/listQuarter", {
     status: status
 });
-
+const logMoment = (moment) => {
+    log(moment.format("DD/MM/YYYY HH:mm:ss"));
+}
 /**
  * Use to log text to console
  * @param text text to be log in console

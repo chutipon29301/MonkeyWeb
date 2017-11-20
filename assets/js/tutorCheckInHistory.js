@@ -1,13 +1,10 @@
-const logMoment = (moment) => {
-    log(moment.format("DD/MM/YYYY HH:mm:ss"));
-}
-
+log("This is tempotary func");
+console.log("You can add period by call %caddTutorCheckPeriod( 'startDateString' , 'endDateString' )","color:red;");
+log("Date string on form:DD/MM/YYYY");
 genIntervalSelect();
-
 $("#intervalSelect").change(function () {
     genTable();
 })
-
 async function genIntervalSelect() {
     let interval = await $.post("post/v1/listInterval");
     $("#intervalSelect").empty();
@@ -20,7 +17,6 @@ async function genIntervalSelect() {
     }
     genTable();
 }
-
 async function genTable() {
     let cookie = getCookieDict();
     let intervalVal = $("#intervalSelect").val();
@@ -34,7 +30,6 @@ async function genTable() {
     }
     fillTableData(history.detail);
 }
-
 function fillTableData(history) {
     $("#tableBody").empty();
     for (let i in history) {
@@ -48,11 +43,20 @@ function fillTableData(history) {
         );
     }
 }
-
 function genDetailButt(detail) {
     let str = "";
     for (let i in detail) {
         str += "<div class='col-12 col-md-2 px-1'><button class='col-12 btn " + detail[i] + "'>" + detail[i] + "</button></div>"
     }
     return "<div class='row'>" + str + "</div>";
+}
+function addTutorCheckPeriod(start, end) {
+    let startDate = moment(start, "DD/MM/YYYY");
+    startDate.hour(0).minute(0).second(0).millisecond(0);
+    let endDate = moment(end, "DD/MM/YYYY");
+    endDate.hour(0).minute(0).second(0).millisecond(0);
+    logMoment(startDate);
+    logMoment(endDate);
+    $.post("post/v1/addCheckInterval", { startDate: startDate.valueOf(), endDate: endDate.valueOf() }).then(log("Finished to add period"));
+    location.reload();
 }
