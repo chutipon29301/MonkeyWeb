@@ -175,6 +175,42 @@ module.exports = function (app, db, post) {
     });
 
     /**
+     * Method for get all pending check in of tutor
+     * req.body = {
+     * }
+     * 
+     * status 401:
+     *  If not request in local network
+     * res.body = {
+     *      err: 0,
+     *      msg: 'Unauthorize network'
+     * }
+     * 
+     * status 404:
+     *  If not request in local network
+     * res.body = {
+     *      err: 404,
+     *      msg: 'Not Found'
+     * }
+     * 
+     * status 200:
+     * res.body = [
+     *      tutorID: 99000
+     *      checkIn: 2017-11-11T03:41:36.261Z
+     * ]
+     */
+    post('/post/v1/listPendingTutorCheckIn', function (req, res) {
+        tutorCheckPendingDB.find({
+        }).toArray().then(result => {
+            for(let i = 0; i < result.length; i++){
+                result[i].tutorID = result[i]._id;
+                delete result[i]._id
+            }
+            res.status(200).send(result);
+        });
+    });
+
+    /**
      * Method for tutor to check in
      * req.body = {
      *      tutorID: 99000,
