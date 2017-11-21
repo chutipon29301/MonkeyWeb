@@ -338,7 +338,7 @@ module.exports = function (app, db, post) {
      *  ]
      */
     post('/post/v1/listCheckInHistory', function (req, res) {
-        if ((!req.body.tutorID || !req.body.startDate || !req.body.endDate) && (!req.body.date)) {
+        if (!((req.body.tutorID && req.body.startDate && req.body.endDate) || (req.body.date))) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -489,7 +489,7 @@ module.exports = function (app, db, post) {
                 result[i].intervalID = result[i]._id;
                 result[i].startDate = new Date(result[i].startDate).valueOf()
                 result[i].endDate = new Date(result[i].endDate).valueOf()
-                delete result._id;
+                delete result[i]._id;
             }
             res.status(200).send(result);
         });

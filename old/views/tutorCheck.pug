@@ -2,16 +2,17 @@ extends htmlTemplate
 block head
     -const pageTitle = "Tutor Check"
 block script
-    script(src="js/tutorCheck.js")
+    script(src="js/tutorCheck.min.js")
 block body
     .container-fluid
         .row
-            .h3 Tutor Check In / Check Out
+            .col-12
+                .h3.mt-1: kbd Check In/Check Out
         .row
+            .col-12.col-md-6.mb-3
+                .col-12.btn.btn-success(onclick="checkIn()" style="height:35vh;padding-top:12vh;font-size:3em") Check In
             .col-12.col-md-6
-                .col-12.btn.btn-success(onclick="checkIn()") Check In
-            .col-12.col-md-6
-                .col-12.btn.btn-danger(onclick="checkOut()") Check Out
+                .col-12.btn.btn-danger(onclick="checkOut()" style="height:35vh;padding-top:12vh;font-size:3em") Check Out
     #checkInModal.modal.fade
         .modal-dialog
             .modal-content
@@ -41,6 +42,3 @@ block body
                 .modal-footer
                     button.btn.btn-primary(onclick="checkOutSubmit()") Check Out
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-
-
-

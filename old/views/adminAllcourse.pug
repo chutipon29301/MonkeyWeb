@@ -7,7 +7,7 @@ block script
 block body
     .container-fluid
         .row
-            div#filterPanel(class=webUser.position === "tutor" ? "hidden" : "col-12 col-md-3 col-xl-2")
+            div#filterPanel(class=webUser.position === "tutor" ? "invisible" : "col-12 col-md-3 col-xl-2")
                 h1.mt-10 Course
                 form
                     .form-group
@@ -45,25 +45,22 @@ block body
                 form
                     .form-group
                         select.form-control#name(onChange="getAllCourseContent()")
-                            if(webUser.position === "tutor")
-                                option(value=webUser.userID)
-                            else
-                                option(value="all") All Tutor
-                                option(value="Anne") Anne
-                                option(value="Atom") Atom
-                                option(value="Bam") Bam
-                                option(value="BB") BB
-                                option(value="Beng") Beng
-                                option(value="Chote") Chote
-                                option(value="Gag") Gag
-                                option(value="Hybrid") Hybrid
-                                option(value="Paan") Paan
-                                option(value="Pele") Pele
-                                option(value="Pre") Pre
-                                option(value="Tao") Tao
-                                option(value="Ten") Ten
-                                option(value="Third") Third
-                                option(value="Ya") Ya
+                            option(value="all") All Tutor
+                            option(value="Anne") Anne
+                            option(value="Atom") Atom
+                            option(value="Bam") Bam
+                            option(value="BB") BB
+                            option(value="Beng") Beng
+                            option(value="Chote") Chote
+                            option(value="Gag") Gag
+                            option(value="Hybrid") Hybrid
+                            option(value="Paan") Paan
+                            option(value="Pele") Pele
+                            option(value="Pre") Pre
+                            option(value="Tao") Tao
+                            option(value="Ten") Ten
+                            option(value="Third") Third
+                            option(value="Ya") Ya
                 form
                     .form-group
                         select.form-control#time(onChange="getAllCourseContent()")
@@ -76,7 +73,7 @@ block body
                             option(value="270000000") Sun 10
                             option(value="280800000") Sun 13
                             option(value="288000000") Sun 15
-                a(href="adminCourseTable" class=webUser.position === "tutor" ? "hidden" : "btn btn-link col")
+                a(href="adminCourseTable" class=webUser.position === "tutor" ? "invisible" : "btn btn-link col")
                     span.fa.fa-lg.fa-book
                     |คัมภีร์เทวดา
             div(class=webUser.position === "tutor" ? "col" : "col-12 col-md-9 offset-md-3 col-xl-10 offset-xl-2 p-0")
