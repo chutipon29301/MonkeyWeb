@@ -173,7 +173,7 @@ function next(detail) {
 }
 
 function getSlot(date) {
-    var hour = [10, 13, 15, 17, 19];
+    var hour = [10, 13, 15, 17, 24];
     for (let i = 0; i < hour.length; i++) {
         if (date.getHours() < hour[i]) {
             return i;
@@ -184,7 +184,7 @@ function getSlot(date) {
 
 function getSlotLabel() {
     var startHour = ['08', '10', '13', '15', '17'];
-    var endHour = ['10', '13', '15', '17', '19'];
+    var endHour = ['10', '12', '15', '17', '24'];
     if (currentSlot === getSlot(checkInDate) && currentSlot === getSlot(checkOutDate)) {
         return moment(checkInDate).format("HH:mm:ss") + ' - ' + moment(checkOutDate).format("HH:mm:ss");
     } else if (currentSlot === getSlot(checkInDate)) {
