@@ -18,11 +18,16 @@ const getRoom = (roomNo) => {
             break;
     }
 }
+let userPosition = "";
+let userName = "";
 $(document).ready(function () {
     if ($(document).width() > 767) {
         $("#filterPanel").addClass("position-fixed");
     }
     let cookie = getCookieDict();
+    name(cookie.monkeyWebUser).then(name => {
+        userName = name.nicknameEn;
+    });
     getConfig().then(config => {
         position(cookie.monkeyWebUser).then(pos => {
             let quarterStatus = "";
@@ -35,6 +40,7 @@ $(document).ready(function () {
                     quarterStatus = "private"
                     break;
             }
+            userPosition = pos.position;
             listQuarter(quarterStatus).then(data => {
                 for (let i = 0; i < data.quarter.length; i++) {
                     quarter.innerHTML += "<option value = '" + data.quarter[i].year + "-" + data.quarter[i].quarter + "'>" + data.quarter[i].name + "</option>";
@@ -69,20 +75,24 @@ function filterCourseData(data) {
     let time = document.getElementById("time");
     let quarter = document.getElementById("quarter");
     let cookie = getCookieDict();
-
-    if (subject.options[subject.selectedIndex].value !== "all") {
-        data = data.filter(data => data.courseName.slice(0, 1) === subject.options[subject.selectedIndex].value);
+    if (userPosition === "tutor") {
+        data = data.filter(data => data.tutorName.indexOf(userName) !== -1);
+        return data
+    } else {
+        if (subject.options[subject.selectedIndex].value !== "all") {
+            data = data.filter(data => data.courseName.slice(0, 1) === subject.options[subject.selectedIndex].value);
+        }
+        if (grade.options[grade.selectedIndex].value !== "all") {
+            data = data.filter(data => data.grade.indexOf(parseInt(grade.options[grade.selectedIndex].value)) !== -1);
+        }
+        if (name.options[name.selectedIndex].value !== "all") {
+            data = data.filter(data => data.tutorName.indexOf(name.options[name.selectedIndex].value) !== -1);
+        }
+        if (time.options[time.selectedIndex].value !== "all") {
+            data = data.filter(data => data.day === parseInt(time.options[time.selectedIndex].value));
+        }
+        return data
     }
-    if (grade.options[grade.selectedIndex].value !== "all") {
-        data = data.filter(data => data.grade.indexOf(parseInt(grade.options[grade.selectedIndex].value)) !== -1);
-    }
-    if (name.options[name.selectedIndex].value !== "all") {
-        data = data.filter(data => data.tutorName.indexOf(name.options[name.selectedIndex].value) !== -1);
-    }
-    if (time.options[time.selectedIndex].value !== "all") {
-        data = data.filter(data => data.day === parseInt(time.options[time.selectedIndex].value));
-    }
-    return data
 }
 function generateCourseHtmlTable(course) {
     let table = document.getElementById("allCourseTable");
