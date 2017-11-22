@@ -62,17 +62,17 @@ const changeRegistrationState = (studentID, registrationState, quarter) => {
 }
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const addSkillDay = (studentID, day) => $.post("post/addSkillDay", {
+const addSkillStudent = (skillID, studentID, subject) => $.post("post/v1/addSkillStudent", {
+    skillID: skillID,
     studentID: studentID,
-    subject: "M",
-    day: day
+    subject: subject
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const addHybridDay = (studentID, subject, day) => $.post("post/addHybridDay", {
+const addHybridStudent = (hybridID, studentID, subject) => $.post("post/v1/addHybridStudent", {
+    hybridID: hybridID,
     studentID: studentID,
-    subject: subject,
-    day: day
+    subject: subject
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
@@ -88,15 +88,15 @@ const removeStudentCourse = (studentID, courseID) => $.post("post/removeStudentC
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const removeHybridDay = (studentID, day) => $.post("post/removeHybridDay", {
+const removeHybridStudent = (studentID, hybridID) => $.post("post/v1/removeHybridStudent", {
     studentID: studentID,
-    day: day
+    hybridID: hybridID
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
-const removeSkillDay = (studentID, day) => $.post("post/removeSkillDay", {
+const removeSkillStudent = (studentID, skillID) => $.post("post/v1/removeSkillStudent", {
     studentID: studentID,
-    day: day
+    skillID: skillID
 });
 
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
@@ -180,7 +180,7 @@ function logout() {
 /**
  * Set student name to navigation bar
  */
-function setStudentNavName() {
+/* function setStudentNavName() {
     "use strict";
     let cookie = getCookieDict();
     //noinspection JSUnresolvedVariable
@@ -194,7 +194,7 @@ function setStudentNavName() {
             log("[setStudentNavName()] => Set student name in navigation bar to : " + data.firstname);
         }
     });
-}
+} */
 
 /**
  * Delete all cookies in browser
