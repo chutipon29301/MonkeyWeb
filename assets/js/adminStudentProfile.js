@@ -45,6 +45,33 @@ $("#uploadPicButt").click(function () {
     }
 });
 
+// add event when click student info
+$("#studentProfileContent").click(function () {
+    $("#changeStudentInfoModal").modal('show');
+});
+$("#changeStudentInfoButt").click(function () {
+    changeStudentInfo();
+});
+
+// add event when click view comment butt
+$("#commentViewButt").click(function () {
+    genCommentViewBody();
+    $("#viewCommentModal").modal('show');
+});
+
+// add event when click download butt
+$("#mathCoverDownloadButt").click(function () {
+    if (!($(this).hasClass('disabled'))) {
+        genCover(0);
+    }
+});
+$("#phyCoverDownloadButt").click(function () {
+    if (!($(this).hasClass('disabled'))) {
+        genCover(1);
+    }
+});
+
+// load profileImg function
 async function loadProfileImg() {
     let config = await getConfig();
     let path = config.profilePicturePath.slice(config.profilePicturePath.search("MonkeyWebData") + 14) + ID;
@@ -63,6 +90,7 @@ async function loadProfileImg() {
     });
 }
 
+// load reciept function
 async function loadRecieptImg() {
     let config = await getConfig();
     let quarterName = $("#quarterSelect option:selected").text();
@@ -82,6 +110,7 @@ async function loadRecieptImg() {
     });
 }
 
+// gen quater select function
 async function genQuarterSelect() {
     let quarter = await listQuarter("private");
     for (let i in quarter.quarter) {
@@ -102,6 +131,7 @@ async function genQuarterSelect() {
     loadRecieptImg();
 }
 
+// gen student info function
 async function genStudentData() {
     let str = $("#quarterSelect").val();
     writeCookie("courseQuarter", str);
@@ -119,8 +149,8 @@ async function genStudentData() {
     );
     genStatusPanel(studentData.status, studentData.quarter);
     genStudentTable();
+    genChangeInfoModal(studentData);
 }
-
 async function genStatusPanel(status, quarter) {
     let cookie = getCookieDict();
     let $statusButt = $("#statusButton");
@@ -188,8 +218,9 @@ async function genStatusPanel(status, quarter) {
         genStatusPanel(status, quarter);
     }
 }
-
 async function genStudentTable() {
+    let fhbHasMath = false;
+    let fhbHasPhy = false;
     let str = $("#quarterSelect").val();
     $(".selector").html("ADD SUBJ").removeClass("cr hb sk");
     if (parseInt(str.slice(5)) > 4) {
@@ -203,10 +234,18 @@ async function genStudentTable() {
     for (let i in timeTable.course) {
         let time = moment(timeTable.course[i].day);
         $(".btn" + time.day() + time.hour()).html("CR:" + timeTable.course[i].courseName).addClass("cr").attr("id", timeTable.course[i].courseID);
+        if (timeTable.course[i].tutorName == "Hybrid") {
+            if (timeTable.course[i].courseName.slice(0, 1) == "P") {
+                fhbHasPhy = true;
+            } else fhbHasMath = true;
+        }
     }
     for (let i in timeTable.hybrid) {
         let time = moment(timeTable.hybrid[i].day);
         $(".btn" + time.day() + time.hour()).html("FHB:" + timeTable.hybrid[i].subject).addClass("hb").attr("id", timeTable.hybrid[i].hybridID);
+        if (timeTable.hybrid[i].subject == "P") {
+            fhbHasPhy = true;
+        } else fhbHasMath = true;
     }
     for (let i in timeTable.skill) {
         let time = moment(timeTable.skill[i].day);
@@ -215,6 +254,164 @@ async function genStudentTable() {
         if (time.hour() == 14) time.hour(13);
         $(".btn" + time.day() + time.hour()).html("SKILL:" + timeTable.skill[i].subject).addClass("sk").attr("id", timeTable.skill[i].skillID);
     }
+    genBarcode();
+    genTableTemplate(fhbHasMath, fhbHasPhy);
+}
+function genChangeInfoModal(studentData) {
+    $("#nicknameInput").attr("placeholder", studentData.nickname);
+    $("#firstnameInput").attr("placeholder", studentData.firstname);
+    $("#lastnameInput").attr("placeholder", studentData.lastname);
+    $("#nicknameEInput").attr("placeholder", studentData.nicknameEn);
+    $("#firstnameEInput").attr("placeholder", studentData.firstnameEn);
+    $("#lastnameEInput").attr("placeholder", studentData.lastnameEn);
+    $("#gradeInput").val(studentData.grade);
+    $("#levelInput").attr("placeholder", studentData.level);
+    $("#emailInput").attr("placeholder", studentData.email);
+    $("#phoneInput").attr("placeholder", studentData.phone);
+    $("#parentPhoneInput").attr("placeholder", studentData.phoneParent);
+}
+
+// gen cover template
+async function genBarcode() {
+    JsBarcode("#mathBarcode", ID + '1', {
+        lineColor: "black",
+        width: 3.4,
+        height: 68,
+        displayValue: false
+    });
+    JsBarcode("#phyBarcode", ID + '2', {
+        lineColor: "black",
+        width: 3.4,
+        height: 68,
+        displayValue: false
+    });
+}
+async function genTableTemplate(hasMath, hasPhy) {
+    let studentData = await studentProfile(ID);
+    let state = (studentData.grade > 6) ? 'h' : 'j';
+    if (hasMath && hasPhy) {
+        $("#tableTemplate").attr("src", "images/mp" + state + ".png");
+    } else if (hasMath) {
+        $("#tableTemplate").attr("src", "images/m" + state + ".png");
+        $("#phyCoverDownloadButt").addClass("disabled");
+    } else if (hasPhy) {
+        $("#tableTemplate").attr("src", "images/p" + state + ".png");
+        $("#mathCoverDownloadButt").addClass("disabled");
+    }
+}
+
+// generate and download cover function
+async function genCover(type) {
+    let str = $("#quarterSelect").val();
+    let [profile, timeTable] = await Promise.all([studentProfile(ID), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
+    if (type == 0) {
+        var coverCanvas = document.getElementById('mathCover');
+        var barcode = document.getElementById('mathBarcode');
+    } else {
+        var coverCanvas = document.getElementById('phyCover');
+        var barcode = document.getElementById('phyBarcode');
+    }
+    let ctx = coverCanvas.getContext('2d');
+    let template = document.getElementById('tableTemplate');
+    ctx.drawImage(template, 0, 0, 1654, 1170);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "bold 150px Cordia New";
+    ctx.fillText((profile.grade > 6) ? 'S' + (profile.grade - 6) : 'P' + profile.grade, 112, 88);
+    let profileImg = document.getElementById('profileImg');
+    let picH = 184;
+    let picW = profileImg.width * picH / profileImg.height;
+    ctx.drawImage(profileImg, 205, 30, picW, picH);
+    ctx.font = "bold 80px Cordia New";
+    ctx.fillText('ID: ' + ID, 560, 63);
+    ctx.drawImage(barcode, 435, 115);
+    ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 930, 80);
+    ctx.fillText(profile.lastname, 930, 170);
+    let w = [327, 566, 811, 1050];
+    let h = [380, 510, 637, 767, 900];
+    let mw = [1335, 1416, 1498, 1580];
+    let mh = [140, 215, 290, 365, 440];
+    ctx.font = "bold 60px Cordia New";
+    for (let i in timeTable.course) {
+        ctx.fillText("CR: " + timeTable.course[i].courseName, w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)]);
+        ctx.fillText((timeTable.course[i].tutorName == "Hybrid" ? "HB" : timeTable.course[i].tutorName), w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)] + 60);
+        if (timeTable.course[i].tutorName == "Hybrid") {
+            if (type == 0 && timeTable.course[i].courseName.slice(0, 1) == "M") {
+                ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
+            } else if (type == 1 && timeTable.course[i].courseName.slice(0, 1) == "P") {
+                ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
+            }
+        }
+    }
+    for (let i in timeTable.hybrid) {
+        ctx.fillText("FHB: " + timeTable.hybrid[i].subject, w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)]);
+        ctx.fillText("HB", w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)] + 60);
+        if (type == 0 && timeTable.hybrid[i].subject == "M") {
+            ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
+        } else if (type == 1 && timeTable.hybrid[i].subject == "P") {
+            ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
+        }
+    }
+    for (let i in timeTable.skill) {
+        let time = moment(timeTable.skill[i].day);
+        if (timeTable.skill[i].subject == "ME") {
+            ctx.fillText("SK: M " + time.format("H:00"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)]);
+            ctx.fillText("SK: E " + time.format("H:30"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 60);
+        } else {
+            if (time.hour() == 9 || time.hour() == 11 || time.hour() == 14 || time.hour() == 16) {
+                ctx.fillText("SK: " + timeTable.skill[i].subject + " " + time.format("H:mm"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 60);
+            } else {
+                ctx.fillText("SK: " + timeTable.skill[i].subject + " " + time.format("H:mm"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)]);
+            }
+        }
+    }
+    downloadCanvas(type);
+}
+const dayIndex = (day) => {
+    switch (moment(day).day()) {
+        case 2:
+            return 0;
+        case 4:
+            return 1;
+        case 6:
+            return 2;
+        case 0:
+            return 3;
+    }
+}
+const hourIndex = (day) => {
+    switch (moment(day).hour()) {
+        case 8:
+        case 9:
+            return 0;
+        case 10:
+        case 11:
+            return 1;
+        case 13:
+        case 14:
+            return 2;
+        case 15:
+        case 16:
+            return 3;
+        case 17:
+            return 4;
+    }
+}
+function downloadCanvas(type) {
+    let text = ""
+    if (type == 0) {
+        var canvas = document.getElementById('mathCover');
+        text += ID + "1.png";
+    } else {
+        var canvas = document.getElementById('phyCover');
+        text += ID + "2.png";
+    }
+    let dlImg = canvas.toDataURL();
+    let aref = document.createElement('a');
+    aref.href = dlImg;
+    aref.download = text;
+    document.body.appendChild(aref);
+    aref.click();
 }
 
 // change status function
@@ -355,4 +552,95 @@ function uploadImg(type) {
             }
         });
     }
+}
+
+// change student info function
+async function changeStudentInfo() {
+    let studentInfo = {
+        studentID: parseInt(ID)
+    }
+    if ($("#nicknameInput").val() != "") studentInfo.nickname = $("#nicknameInput").val();
+    if ($("#firstnameInput").val() != "") studentInfo.firstname = $("#firstnameInput").val();
+    if ($("#lastnameInput").val() != "") studentInfo.lastname = $("#lastnameInput").val();
+    if ($("#nicknameEInput").val() != "") studentInfo.nicknameEn = $("#nicknameEInput").val();
+    if ($("#firstnameEInput").val() != "") studentInfo.firstnameEn = $("#firstnameEInput").val();
+    if ($("#lastnameEInput").val() != "") studentInfo.lastnameEn = $("#lastnameEInput").val();
+    studentInfo.grade = parseInt($("#gradeInput").val());
+    if ($("#levelInput").val() != "") studentInfo.level = $("#levelInput").val();
+    if ($("#emailInput").val() != "") studentInfo.email = $("#emailInput").val();
+    if ($("#phoneInput").val() != "") studentInfo.phone = $("#phoneInput").val();
+    if ($("#parentPhoneInput").val() != "") studentInfo.phoneParent = $("#parentPhoneInput").val();
+    await $.post("post/editStudent", studentInfo)
+    log("Complete to change student info");
+    location.reload();
+}
+
+// gen comment view function
+async function genCommentViewBody() {
+    $commentContentBody = $("#commentContentBody");
+    $commentContentBody.empty();
+    let comment = await $.post("post/listStudentCommentByStudent", { studentID: ID });
+    if (comment.comment.length == 0) {
+        $commentContentBody.append("<h5>No comment</h5>");
+    } else {
+        let commentPromise = [];
+        for (let i in comment.comment) {
+            commentPromise.push(name(comment.comment[i].tutorID));
+        }
+        let tutorComment = await Promise.all(commentPromise);
+        for (let i in tutorComment) {
+            $commentContentBody.append(
+                "<div id=" + comment.comment[i].commentID + ">" +
+                "<h5>" +
+                "<span class='fa fa-thumb-tack' style=" + ((comment.comment[i].priority > 0) ? 'color:red' : 'color:silver') + " onclick=\"editComment(\'1\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].priority + "\');\"></span> " +
+                "<span class='fa fa-check-circle' style=" + ((comment.comment[i].isCleared) ? 'color:green' : 'color:silver') + " onclick=\"editComment(\'2\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].isCleared + "\');\"></span> " +
+                tutorComment[i].nickname + " (" + moment(comment.comment[i].timestamp).format('DD MMM') + ") " +
+                "<span class='fa fa-trash' style='color:red' onclick=\"editComment(\'3\',\'" + comment.comment[i].commentID + "\','');\"></span>" +
+                "</h5>" +
+                "<p>" + comment.comment[i].message + "</p>" +
+                "</div>"
+            );
+            if (comment.comment[i].hasAttachment) {
+                let config = await getConfig();
+                let path = config.studentCommentPicturePath.slice(config.receiptPath.search("MonkeyWebData") + 14) + "/" + comment.comment[i].commentID;
+                $.get(path + ".jpg").done(() => {
+                    $("#" + comment.comment[i].commentID).append(
+                        "<img class='img-fluid col-12 col-md-6' src='" + path + ".jpg'>"
+                    );
+                }).fail(() => {
+                    $.get(path + ".png").done(() => {
+                        $("#" + comment.comment[i].commentID).append(
+                            "<img class='img-fluid col-12 col-md-6' src='" + path + ".png'>"
+                        );
+                    }).fail(() => {
+                        $.get(path + ".jpeg").done(() => {
+                            $("#" + comment.comment[i].commentID).append(
+                                "<img class='img-fluid col-12 col-md-6' src='" + path + ".jpeg'>"
+                            );
+                        }).fail(() => {
+                            log("can't find picture");
+                        });
+                    });
+                });
+            }
+        }
+    }
+}
+function editComment(type, commentID, param) {
+    switch (type) {
+        case "1":
+            $.post("post/changeStudentCommentPriority", { commentID: commentID, priority: (param > 0) ? 0 : 1 });
+            break;
+        case "2":
+            $.post("post/clearStudentComment", { commentID: commentID, isCleared: (param == "true") ? false : true });
+            break;
+        case "3":
+            if (confirm("ต้องการลบ comment นี้?")) {
+                $.post("post/removeStudentComment", { commentID: commentID });
+            }
+            break;
+        default:
+            break;
+    }
+    genCommentViewBody();
 }
