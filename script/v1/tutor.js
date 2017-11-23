@@ -38,14 +38,15 @@ module.exports = function (app, db, post) {
         tutorCheckPendingDB.find({}).toArray().then(pendingList => {
             for (let i = 0; i < pendingList.length; i++) {
                 tutorCheckHistoryDB.insertOne({
-                    tutorID: pendingList._id,
-                    checkIn: pendingList.checkIn,
+                    tutorID: pendingList[i]._id,
+                    checkIn: pendingList[i].checkIn,
                     checkOut: new Date(),
                     detail: [-1, -1, -1, -1, -1, -1]
                 });
                 tutorCheckPendingDB.remove({
-                    _id: pendingList._id
-                })
+                    _id: pendingList[i]._id
+                });
+                console.log('[TUTOR] User ' + pendingList[i]._id + 'was removed from pending list');
             }
         });
     });
