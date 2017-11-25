@@ -13,8 +13,9 @@ $(document).ready(function () {
         event.preventDefault();
         let cookie = getCookieDict();
         let tutorID = cookie.monkeyWebUser;
-        if (confirm("Change Email to " + $('#tutorPwd').val())) {
-            $.post('post/editTutor', { tutorID: tutorID, password: $('#tutorPwd').val() }).then((data) => {
+        let psd = CryptoJS.SHA3($('#tutorPwd').val()).toString()
+        if (confirm("Change password to " + $('#tutorPwd').val())) {
+            $.post('post/editTutor', { tutorID: tutorID, password: psd }).then((data) => {
                 location.reload();
             });
         }
