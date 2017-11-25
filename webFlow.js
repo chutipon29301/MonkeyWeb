@@ -232,7 +232,7 @@ module.exports=function(app,db){
                 }
             });
         });
-        options.middlewareOptions.position={$in:["admin","dev"]};
+        options.middlewareOptions.position={$in:["admin","dev","mel"]};
         addPugPage("adminAllstudent",options);
         addPugPage("adminStudentProfileQ4",options);
         addPugPage("adminConference",options);
@@ -258,6 +258,8 @@ module.exports=function(app,db){
                 }
             });
         });
+        options.middlewareOptions.position={$in:["mel"]};
+        addPugPage("checkInSummary",options);
     addPage("testadmin",{middlewareOptions:{login:true,position:"dev"}});
     addPugPage("testDev",{middlewareOptions:{login:true,position:"dev"}},function(callback){
         var local={moment:moment};
