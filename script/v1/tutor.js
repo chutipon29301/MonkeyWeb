@@ -389,6 +389,12 @@ module.exports = function (app, db, post) {
                                 date1.setSeconds(0);
                                 date1.setMilliseconds(0);
                             }
+                            if (date2.getHours() < 13 && date2.getHours() > 12) {
+                                date2.setHours(12);
+                                date2.setMinutes(0);
+                                date2.setSeconds(0);
+                                date2.setMilliseconds(0);
+                            }
                             if (date2.getHours() > 19) {
                                 date2.setHours(19);
                                 date2.setMinutes(0);
@@ -427,6 +433,12 @@ module.exports = function (app, db, post) {
                             var date2 = new Date(result[i].checkOut);
                             if (date2.getHours() > 19) {
                                 date2.setHours(19);
+                                date2.setMinutes(0);
+                                date2.setSeconds(0);
+                                date2.setMilliseconds(0);
+                            }
+                            if (date2.getHours() < 13 && date2.getHours() > 12) {
+                                date2.setHours(12);
                                 date2.setMinutes(0);
                                 date2.setSeconds(0);
                                 date2.setMilliseconds(0);
@@ -486,6 +498,138 @@ module.exports = function (app, db, post) {
                 return res.status(200).send(result);
             });
         }
+    });
+
+    post('/post/v1/listAllCheckInHistory', function (req, res) {
+        if (!(req.body.startDate && req.body.endDate)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckHistoryDB.find({
+            checkIn: {
+                $gte: new Date(parseInt(req.body.startDate)),
+                $lte: new Date(parseInt(req.body.endDate))
+            }
+        }, {
+            sort: {
+                checkIn: -1
+            }
+        }).toArray().then(result => {
+            result.reverse();
+            var totalSum = 0;
+            var response = {};
+            for (let i = 0; i < result.length; i++) {
+                if(response[result[i].tutorID] === undefined){
+                    response[result[i].tutorID] = {};
+                    response[result[i].tutorID].detail = {};
+                    response[result[i].tutorID].detail.summary = [0, 0, 0, 0, 0, 0, 0];
+                    response[result[i].tutorID].detail.hour = [0, 0, 0, 0, 0, 0, 0];
+                }
+                result[i].historyID = result[i]._id;
+                result[i].checkIn = new Date(result[i].checkIn).valueOf();
+                result[i].checkOut = new Date(result[i].checkOut).valueOf();
+                var startIndex = -1,
+                    endIndex = -1;
+                for (let j = 0; j < result[i].detail.length; j++) {
+                    if (startIndex == -1 && result[i].detail[j] != -1) startIndex = j;
+                    if (endIndex == -1 && result[i].detail[result[i].detail.length - j - 1] != -1) endIndex = result[i].detail.length - j - 1;
+                }
+                var sum = 0;
+                for (let j = 0; j < result[i].detail.length; j++) {
+                    if (j === startIndex && j === endIndex) {
+                        var date1 = new Date(result[i].checkIn);
+                        var date2 = new Date(result[i].checkOut);
+                        if (date1.getHours() < 8) {
+                            date1.setHours(8);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        if (date1.getHours() < 13 && date1.getHours() > 12) {
+                            date1.setHours(13);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        if (date2.getHours() < 13 && date2.getHours() > 12) {
+                            date2.setHours(13);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        if (date2.getHours() > 19) {
+                            date2.setHours(19);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        var diff = date2 - date1;
+                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] += diff;
+                        sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                    } else if (j === startIndex) {
+                        var date1 = new Date(result[i].checkIn);
+                        var date2 = new Date(result[i].checkIn);
+                        if (date1.getHours() < 8) {
+                            date1.setHours(8);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        if (date1.getHours() < 13 && date1.getHours() > 12) {
+                            date1.setHours(13);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        date2.setHours(timeRangeEnd[startIndex + 1]);
+                        date2.setMinutes(0);
+                        date2.setSeconds(0);
+                        date2.setMilliseconds(0);
+                        var diff = date2 - date1;
+                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] += diff;
+                        sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                    } else if (j === endIndex) {
+                        var date1 = new Date(result[i].checkOut);
+                        var date2 = new Date(result[i].checkOut);
+                        if (date2.getHours() > 19) {
+                            date2.setHours(19);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        if (date2.getHours() < 13 && date2.getHours() > 12) {
+                            date2.setHours(12);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        date1.setHours(timeRangeStart[endIndex]);
+                        date1.setMinutes(0);
+                        date1.setSeconds(0);
+                        date1.setMilliseconds(0);
+                        var diff = date2 - date1;
+                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] += diff;
+                        sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                    } else {
+                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point;
+                        sum += description[result[i].detail[j] + 1].point;
+                    }
+                    result[i].detail[j] = description[result[i].detail[j] + 1].name;
+                }
+                result[i].sum = sum;
+                totalSum += sum
+                response[result[i].tutorID].detail.body = result;
+                response[result[i].tutorID].detail.totalSum = totalSum
+                delete result[i].tutorID;
+                delete result[i]._id;
+            }
+            return res.status(200).send(response);
+        });
     });
 
     post('/post/v1/addCheckInterval', function (req, res) {
