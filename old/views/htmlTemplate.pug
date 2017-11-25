@@ -66,6 +66,7 @@ html(lang="en")
                                 .dropdown-menu(aria-labelledby="navbarDropdown")
                                     a.dropdown-item(href="/tutorCheck") Check in/out
                                     a.dropdown-item(href="/tutorCheckInHistory") History
+                                    a.dropdown-item(href="/tutorCheckInActivity") Activity
                             if(webUser.position!="tutor")
                                 +navLink("adminCourseRoom","Room")
                             +navLink("adminConference","Conference")
