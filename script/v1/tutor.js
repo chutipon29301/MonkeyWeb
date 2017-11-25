@@ -6,7 +6,8 @@ module.exports = function (app, db, post) {
     var userDB = db.collection('user');
     var schedule = require('node-schedule');
 
-    var timeRange = [8, 10, 13, 15, 17, 19];
+    var timeRangeStart = [8, 10, 13, 15, 17, 19];
+    var timeRangeEnd = [8, 10, 12, 15, 17, 19];
     var description = [{
         name: '-',
         point: 0
@@ -201,9 +202,8 @@ module.exports = function (app, db, post) {
      * ]
      */
     post('/post/v1/listPendingTutorCheckIn', function (req, res) {
-        tutorCheckPendingDB.find({
-        }).toArray().then(result => {
-            for(let i = 0; i < result.length; i++){
+        tutorCheckPendingDB.find({}).toArray().then(result => {
+            for (let i = 0; i < result.length; i++) {
                 result[i].tutorID = result[i]._id;
                 delete result[i]._id
             }
@@ -369,30 +369,47 @@ module.exports = function (app, db, post) {
                         if (startIndex == -1 && result[i].detail[j] != -1) startIndex = j;
                         if (endIndex == -1 && result[i].detail[result[i].detail.length - j - 1] != -1) endIndex = result[i].detail.length - j - 1;
                     }
-
                     var sum = 0;
                     for (let j = 0; j < result[i].detail.length; j++) {
                         if (j === startIndex && j === endIndex) {
                             var date1 = new Date(result[i].checkIn);
+                            var date2 = new Date(result[i].checkOut);
                             if (date1.getHours() < 8) {
                                 date1.setHours(8);
                                 date1.setMinutes(0);
                                 date1.setSeconds(0);
                                 date1.setMilliseconds(0);
                             }
-                            var date2 = new Date(result[i].checkOut);
+                            if (date1.getHours() < 13 && date1.getHours() > 12) {
+                                date1.setHours(13);
+                                date1.setMinutes(0);
+                                date1.setSeconds(0);
+                                date1.setMilliseconds(0);
+                            }
+                            if (date2.getHours() > 19) {
+                                date2.setHours(19);
+                                date2.setMinutes(0);
+                                date2.setSeconds(0);
+                                date2.setMilliseconds(0);
+                            }
                             var diff = date2 - date1;
                             sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         } else if (j === startIndex) {
                             var date1 = new Date(result[i].checkIn);
+                            var date2 = new Date(result[i].checkIn);
                             if (date1.getHours() < 8) {
                                 date1.setHours(8);
                                 date1.setMinutes(0);
                                 date1.setSeconds(0);
                                 date1.setMilliseconds(0);
                             }
-                            var date2 = new Date(result[i].checkIn);
-                            date2.setHours(timeRange[startIndex + 1]);
+                            if (date1.getHours() < 13 && date1.getHours() > 12) {
+                                date1.setHours(13);
+                                date1.setMinutes(0);
+                                date1.setSeconds(0);
+                                date1.setMilliseconds(0);
+                            }
+                            date2.setHours(timeRangeEnd[startIndex + 1]);
                             date2.setMinutes(0);
                             date2.setSeconds(0);
                             date2.setMilliseconds(0);
@@ -401,7 +418,13 @@ module.exports = function (app, db, post) {
                         } else if (j === endIndex) {
                             var date1 = new Date(result[i].checkOut);
                             var date2 = new Date(result[i].checkOut);
-                            date1.setHours(timeRange[endIndex]);
+                            if (date2.getHours() > 19) {
+                                date2.setHours(19);
+                                date2.setMinutes(0);
+                                date2.setSeconds(0);
+                                date2.setMilliseconds(0);
+                            }
+                            date1.setHours(timeRangeStart[endIndex]);
                             date1.setMinutes(0);
                             date1.setSeconds(0);
                             date1.setMilliseconds(0);
@@ -426,7 +449,7 @@ module.exports = function (app, db, post) {
             var requestDate = new Date(parseInt(req.body.date));
             var startQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate());
             var endQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate() + 1);
-            var querySlot = 'detail.' + timeRange.indexOf(requestDate.getHours());
+            var querySlot = 'detail.' + timeRangeStart.indexOf(requestDate.getHours());
             var queryObject = {
                 checkIn: {
                     $gte: startQueryDate,
