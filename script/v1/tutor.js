@@ -738,6 +738,16 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for create interval to save range of time
+     * 
+     * req.body = {
+     *      startDate: 1434000000,
+     *      endDate: 41300040000,
+     * }
+     * 
+     * res.body = 'OK'
+     */
     post('/post/v1/addCheckInterval', function (req, res) {
         if (!(req.body.startDate && req.body.endDate)) {
             return res.status(400).send({
@@ -753,6 +763,20 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for list all interval
+     * 
+     * req.body = {
+     * }
+     * 
+     * res.body = {
+     *      [
+     *          intervalID: n7934ygh329uhf32f32fefewf,
+     *          startDate: 423450000000,
+     *          endDate: 524535000000
+     *      ], ...
+     * }
+     */
     post('/post/v1/listInterval', function (req, res) {
         tutorCheckIntervalDB.find({}, {
             sort: {
@@ -767,5 +791,41 @@ module.exports = function (app, db, post) {
             }
             res.status(200).send(result);
         });
-    })
+    });
+
+    /**
+     * Method for edit interval object
+     * req.body = {
+     *      intervalID: ma3894thgna3u4pg4t3,
+     *      startDate: 45324300000,
+     *      endDate: 235724200000
+     * }
+     * 
+     * res.body = 'OK'
+     */
+    post('/post/v1/editInterval', function (req, res) {
+        if (!(req.body.intervalID && (req.body.startDate || req.body.endDate))) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var newValue = {
+            $set: {}
+        };
+        if (req.body.startDate) {
+            newValue.$set.startDate = new Date(parseInt(req.body.startDate));
+        }
+        if (req.body.endDate) {
+            newValue.$set.endDate = new Date(parseInt(req.body.endDate));
+        }
+        tutorCheckIntervalDB.updateOne({
+            _id: ObjectID(req.body.intervalID)
+        }, newValue, (err, db) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
 }
