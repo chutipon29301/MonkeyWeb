@@ -804,7 +804,7 @@ module.exports = function (app, db, post) {
      * res.body = 'OK'
      */
     post('/post/v1/editInterval', function (req, res) {
-        if (!(req.body.intervalID && (req.body.startDate || req.body.endDate))) {
+        if (!(req.body.intervalID && (req.body.startDate || req.body.endDate || req.body.multiplier))) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -818,6 +818,9 @@ module.exports = function (app, db, post) {
         }
         if (req.body.endDate) {
             newValue.$set.endDate = new Date(parseInt(req.body.endDate));
+        }
+        if (req.body.multiplier) {
+            newValue.$set.multiplier = req.body.multiplier;
         }
         tutorCheckIntervalDB.updateOne({
             _id: ObjectID(req.body.intervalID)
