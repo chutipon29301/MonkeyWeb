@@ -337,6 +337,32 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for delete checkout history
+     * 
+     * req.body = {
+     *      historyID: 3j9w8tghq4n394tfunvt49h
+     * }
+     * 
+     * res.body = 'OK'
+     */
+    post('/post/v1/deleteCheckOutHistory', function (req, res) {
+        if (!req.body.historyID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+
+        tutorCheckHistoryDB.deleteOne({
+            _id: ObjectID(req.body.historyID)
+        }, (err, result) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
 
     /**
      * Method for add checkout history
