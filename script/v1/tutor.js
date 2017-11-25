@@ -293,6 +293,51 @@ module.exports = function (app, db, post) {
     });
 
     /**
+     * Method for edit checkout history
+     * 
+     * req.body = {
+     *      historyID: 3j9w8tghq4n394tfunvt49h,
+     *      checkIn: 37413400000,
+     *      checkOut: 32642340000,
+     *      slot: [
+     *          1,2,1,4,2,3
+     *      ]
+     * }
+     * 
+     * res.body = 'OK'
+     */
+    post('/post/v1/editCheckOutHistory', function (req, res) {
+        if (!(req.body.historyID && (req.body.checkIn || req.body.checkOut || req.body.slot))) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var newValue = {
+            $set: {}
+        };
+
+        if (req.body.checkIn) {
+            newValue.$set.checkIn = new Date(parseInt(req.body.checkIn));
+        }
+        if (req.body.checkOut) {
+            newValue.$set.checkOut = new Date(parseInt(req.body.checkOut));
+        }
+        if (req.body.slot) {
+            newValue.$set.detail = slot;
+        }
+
+        tutorCheckHistoryDB.updateOne({
+            _id: ObjectID(req.body.historyID)
+        }, newValue, (err, db) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    /**
      * Method for listing check in history
      * 
      * case 1:
@@ -521,7 +566,7 @@ module.exports = function (app, db, post) {
             var totalSum = 0;
             var response = {};
             for (let i = 0; i < result.length; i++) {
-                if(response[result[i].tutorID] === undefined){
+                if (response[result[i].tutorID] === undefined) {
                     response[result[i].tutorID] = {};
                     response[result[i].tutorID].detail = {};
                     response[result[i].tutorID].detail.summary = [0, 0, 0, 0, 0, 0, 0];
