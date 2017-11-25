@@ -337,6 +337,21 @@ module.exports = function (app, db, post) {
         });
     });
 
+
+    /**
+     * Method for add checkout history
+     * 
+     * req.body = {
+     *      tutorID: 99000,
+     *      checkIn: 37413400000,
+     *      checkOut: 32642340000,
+     *      slot: [
+     *          1,2,1,4,2,3
+     *      ]
+     * }
+     * 
+     * res.body = 'OK'
+     */
     post('/post/v1/addCheckOutHistory', function (req, res) {
         if (!(req.body.tutorID && req.body.checkIn && req.body.checkOut && req.body.slot)) {
             return res.status(400).send({
