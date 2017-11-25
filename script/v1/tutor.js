@@ -337,6 +337,26 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/addCheckOutHistory', function (req, res) {
+        if (!(req.body.tutorID && req.body.checkIn && req.body.checkOut && req.body.slot)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckHistoryDB.insertOne({
+            tutorID: parseInt(req.body.tutorID),
+            checkIn: new Date(parseInt(req.body.checkIn)),
+            checkOut: new Date(parseInt(req.body.checkOut)),
+            detail: req.body.slot
+        }, (err, db) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
+
     /**
      * Method for listing check in history
      * 
