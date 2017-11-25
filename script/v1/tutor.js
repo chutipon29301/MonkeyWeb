@@ -359,6 +359,9 @@ module.exports = function (app, db, post) {
             }).toArray().then(result => {
                 result.reverse();
                 var totalSum = 0;
+                var response = {};
+                response.summary = [0, 0, 0, 0, 0, 0, 0];
+                response.hour = [0, 0, 0, 0, 0, 0, 0];
                 for (let i = 0; i < result.length; i++) {
                     result[i].historyID = result[i]._id;
                     result[i].checkIn = new Date(result[i].checkIn).valueOf();
@@ -393,6 +396,8 @@ module.exports = function (app, db, post) {
                                 date2.setMilliseconds(0);
                             }
                             var diff = date2 - date1;
+                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                            response.hour[result[i].detail[j] + 1] += diff;
                             sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         } else if (j === startIndex) {
                             var date1 = new Date(result[i].checkIn);
@@ -414,6 +419,8 @@ module.exports = function (app, db, post) {
                             date2.setSeconds(0);
                             date2.setMilliseconds(0);
                             var diff = date2 - date1;
+                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                            response.hour[result[i].detail[j] + 1] += diff;
                             sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         } else if (j === endIndex) {
                             var date1 = new Date(result[i].checkOut);
@@ -429,8 +436,11 @@ module.exports = function (app, db, post) {
                             date1.setSeconds(0);
                             date1.setMilliseconds(0);
                             var diff = date2 - date1;
+                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                            response.hour[result[i].detail[j] + 1] += diff;
                             sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         } else {
+                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point;
                             sum += description[result[i].detail[j] + 1].point;
                         }
                         result[i].detail[j] = description[result[i].detail[j] + 1].name;
@@ -440,7 +450,6 @@ module.exports = function (app, db, post) {
                     delete result[i].tutorID;
                     delete result[i]._id;
                 }
-                var response = {};
                 response.detail = result;
                 response.totalSum = totalSum
                 return res.status(200).send(response);
@@ -478,15 +487,6 @@ module.exports = function (app, db, post) {
             });
         }
     });
-
-    // post('/post/v1/listAllCheckInHistory', function (req, res) {
-    //     if (!req.body.startDate || !req.body.endDate) {
-    //         return res.status(400).send({
-    //             err: -1,
-    //             msg: 'Bad Request'
-    //         });
-    //     }
-    // });
 
     post('/post/v1/addCheckInterval', function (req, res) {
         if (!(req.body.startDate && req.body.endDate)) {
