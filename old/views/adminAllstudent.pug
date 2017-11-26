@@ -4,7 +4,7 @@ block head
     link(rel="stylesheet", href="css/typeaheadjs.css")
 block script
     script(src="js/bootstrap3-typeahead.min.js")
-    script(src="js/adminAllstudent.min.js")
+    script(src="js/adminAllstudent.js")
 block body
     .container-fluid
         .row
@@ -26,6 +26,7 @@ block body
                             option(value="inactive") Inactive
                             option(value="dropped") Drop
                             option(value="terminated") Terminate
+                            option(value="default") Default
                             option(value="all") All
                 form
                     .form-group
