@@ -206,10 +206,15 @@ function filterData(data, quarterList, config) {
         return true;
     });
     if (status.options[status.selectedIndex].value !== "all") {
-        data = data.filter(data => {
+        if (status.options[status.selectedIndex].value === "default") {
+            data = data.filter(data => {
+                return data.status === "active" || data.status === "dropped"
+            });
+        } else {
+            data = data.filter(data => {
                 return data.status === status.options[status.selectedIndex].value
-            }
-        );
+            });
+        }
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
         data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
