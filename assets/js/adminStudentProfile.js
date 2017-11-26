@@ -233,7 +233,8 @@ async function genStudentTable() {
     let timeTable = await $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) });
     for (let i in timeTable.course) {
         let time = moment(timeTable.course[i].day);
-        $(".btn" + time.day() + time.hour()).html("CR:" + timeTable.course[i].courseName).addClass("cr").attr("id", timeTable.course[i].courseID);
+        let tutorName = (timeTable.course[i].tutorName == "Hybrid") ? "HB" : timeTable.course[i].tutorName;
+        $(".btn" + time.day() + time.hour()).html("CR:" + timeTable.course[i].courseName + " - " + tutorName).addClass("cr").attr("id", timeTable.course[i].courseID);
         if (timeTable.course[i].tutorName == "Hybrid") {
             if (timeTable.course[i].courseName.slice(0, 1) == "P") {
                 fhbHasPhy = true;
@@ -416,20 +417,24 @@ function downloadCanvas(type) {
 
 // change status function
 function changeStudentStatus(status) {
-    $.post("post/changeStatus", { userID: ID, status: status }).then(() => {
-        log("OK:Change student status complete");
-        genStatusPanel(status);
-    });
+    if (confirm("ต้องการเปลี่ยน status?")) {
+        $.post("post/changeStatus", { userID: ID, status: status }).then(() => {
+            log("OK:Change student status complete");
+            genStatusPanel(status);
+        });
+    }
 }
 
 // change state function
 function changeStudentState(state) {
     let cookie = getCookieDict();
     let str = cookie.courseQuarter;
-    changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {
-        log("OK:Change student state complete");
-        genStatusPanel('active');
-    });
+    if (confirm("ต้องการเปลี่ยน state?")) {
+        changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {
+            log("OK:Change student state complete");
+            genStatusPanel('active');
+        });
+    }
 }
 
 // remove timeTable function
