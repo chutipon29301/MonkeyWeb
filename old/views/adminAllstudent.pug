@@ -22,11 +22,11 @@ block body
                             span.fa.fa-lg.fa-filter &nbsp;
                             |Filter
                         select.form-control#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                            option(value="default") Default
                             option(value="active") Active
                             option(value="inactive") Inactive
                             option(value="dropped") Drop
                             option(value="terminated") Terminate
-                            option(value="default") Default
                             option(value="all") All
                 form
                     .form-group
