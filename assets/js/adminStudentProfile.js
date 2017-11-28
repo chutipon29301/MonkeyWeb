@@ -105,6 +105,7 @@ async function loadRecieptImg() {
                 $("#recieptImg").attr("src", path + ".jpeg");
             }).fail(() => {
                 log("can't find picture");
+                $("#recieptImg").attr("src", "images/noImage.svg");
             });
         });
     });
