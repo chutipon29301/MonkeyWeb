@@ -845,7 +845,9 @@ module.exports=function(app,db){
                         res.send({
                             courseName:courseName,day:result.day,
                             tutor:result.tutor,student:result.student,
-                            year:result.year,quarter:result.quarter
+                            year:result.year,quarter:result.quarter,
+                            description:result.description,level:result.level,
+                            room:result.room
                         });
                     });
                 }
