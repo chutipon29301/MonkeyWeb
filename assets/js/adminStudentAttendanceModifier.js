@@ -137,23 +137,23 @@ function genCrTable() {
             for (let i in data.absence) {
                 if (data.absence[i].reason.slice(0, 3) == "add") {
                     $("#crPresentTable").append(
-                        "<tr onclick='relocate(" + data.absence[i].studentID + ")'>" +
+                        "<tr>" +
                         "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY HH:mm") + "</td>" +
-                        "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
+                        "<td class='text-center' onclick='relocate(" + data.absence[i].studentID + ")'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center'>" + data.absence[i].reason.slice(3) + "</td>" +
-                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
+                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);' class='btn btn-light col-12'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
                     )
                 } else {
                     // log("pending");
                     $("#crAbsentTable").append(
-                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "table-warning" : "") + " row" + i + "' onclick='relocate(" + data.absence[i].studentID + ")'>" +
+                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "table-warning" : "") + " row" + i + ">" +
                         "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY HH:mm") + "</td>" +
-                        "<td class='text-center'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
+                        "<td class='text-center' onclick='relocate(" + data.absence[i].studentID + ")'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center absentSubject" + i + "'></td>" +
                         "<td class='text-center absentTutor" + i + "'></td>" +
                         "<td class='text-center'>" + data.absence[i].reason + "</td>" +
-                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
+                        "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);' class='btn btn-light col-12'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
                     )
                     myFHB(dt[0][i].courseID, dt[1][i], dataDate, i);
@@ -307,28 +307,28 @@ function genActivityTable() {
                         let hbTime = moment(hybridDay[j].day);
                         if (modTime.day() == hbTime.day() && modTime.hour() == hbTime.hour()) {
                             $("#acTableBody").append(
-                                "<tr class=" + (data.modifier[i].reason.slice(0, 3) === "add" ? 'table-info' : 'table-danger') + " onclick='relocate(" + data.modifier[i].studentID + ")'>" +
+                                "<tr class=" + (data.modifier[i].reason.slice(0, 3) === "add" ? 'table-info' : 'table-danger') + ">" +
                                 "<td>" + moment(parseInt(data.modifier[i].timestamp)).format("DD/MM/YYYY HH:mm") + "</td>" +
-                                "<td>" + dt[2 * i].nickname + " " + dt[2 * i].firstname + "</td>" +
+                                "<td onclick='relocate(" + data.modifier[i].studentID + ")'>" + dt[2 * i].nickname + " " + dt[2 * i].firstname + "</td>" +
                                 "<td>FHB</td>" +
                                 "<td>" + modTime.format("DD/MM/YYYY HH:mm") + "</td>" +
                                 "<td>" + (data.modifier[i].reason.slice(0, 3) === "add" ? '-' : data.modifier[i].reason) + "</td>" +
                                 "<td>" + data.modifier[i].sender + "</td>" +
-                                "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
+                                "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);' class='btn btn-light col-12'><span class='fa fa-trash'></span></button></td>" +
                                 "</tr>"
                             )
                         }
                     }
                 } else {
                     $("#acTableBody").append(
-                        "<tr class=" + (data.modifier[i].reason.slice(0, 3) === "add" ? 'table-primary' : 'table-danger') + " onclick='relocate(" + data.modifier[i].studentID + ")'>" +
+                        "<tr class=" + (data.modifier[i].reason.slice(0, 3) === "add" ? 'table-primary' : 'table-danger') + ">" +
                         "<td>" + moment(parseInt(data.modifier[i].timestamp)).format("DD/MM/YYYY HH:mm") + "</td>" +
-                        "<td>" + dt[2 * i].nickname + " " + dt[2 * i].firstname + "</td>" +
+                        "<td onclick='relocate(" + data.modifier[i].studentID + ")'>" + dt[2 * i].nickname + " " + dt[2 * i].firstname + "</td>" +
                         "<td>CR:" + dt[2 * i + 1].courseName + "</td>" +
                         "<td>" + modTime.format("DD/MM/YYYY HH:mm") + "</td>" +
                         "<td>" + (data.modifier[i].reason.slice(0, 3) === "add" ? '-' : data.modifier[i].reason) + "</td>" +
                         "<td>" + data.modifier[i].sender + "</td>" +
-                        "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);'><span class='fa fa-trash'></span></button></td>" +
+                        "<td class='text-center'><button id='" + data.modifier[i].modifierID + "' onClick='removeAttend(this.id);' class='btn btn-light col-12'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
                     )
                 }
