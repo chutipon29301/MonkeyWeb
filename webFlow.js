@@ -189,12 +189,13 @@ module.exports=function(app,db){
                 addPugPage("absentForm",options);
                 addPugPage("addForm",options);
                 addPugPage("permanentAdtendance",options);
-            options.middlewareOptions.quarter={quarter : 4 , year : 2017 , registrationState:["unregistered","rejected"]};
+            options.middlewareOptions.quarter={quarter : 1 , year : 2018 , registrationState:["unregistered","rejected"]};
+                addPugPage("regisPage",options);
                 addPugPage("registrationCourse",options);
                 addPugPage("registrationHybrid",options);
                 addPugPage("registrationSkill",options);
                 addPugPage("submit",options);
-            options.middlewareOptions.quarter={quarter:4 , year : 2017 , registrationState:"untransferred"};
+            options.middlewareOptions.quarter={quarter:1 , year : 2018 , registrationState:"untransferred"};
                 addPugPage("registrationReceipt",options);
             options.middlewareOptions.quarter={quarter:"summer",registrationState:["unregistered","rejected"]};
                 addPugPage("registrationSummer",options);
