@@ -822,7 +822,8 @@ module.exports=function(app,db){
                             getCourseName(result[i]._id,function(courseName){
                                 output.push({
                                     courseID:result[i]._id,courseName:courseName,
-                                    day:result[i].day,tutor:result[i].tutor
+                                    day:result[i].day,tutor:result[i].tutor,
+                                    description:result[i].description,
                                 });
                                 continueLoop();
                             });

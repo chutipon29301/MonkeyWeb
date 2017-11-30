@@ -214,7 +214,7 @@ function clearAllCookie() {
  */
 function loadRegistrationPage() {
     let cookie = getCookieDict();
-    registrationState(cookie.monkeyWebUser, 4, 2017).then((data) => {
+    registrationState(cookie.monkeyWebUser, 1, 2018).then((data) => {
         if (data.err) {
             log("[loadRegistrationPage()] : post/registrationState => " + data.err);
         } else {
@@ -223,7 +223,7 @@ function loadRegistrationPage() {
             switch (data.registrationState) {
                 case "unregistered":
                     log("[loadRegistrationPage()] : redirection to registrationCourse");
-                    self.location = "/registrationCourse";
+                    self.location = "/regisPage";
                     break;
                 case "untransferred":
                 case "rejected":
