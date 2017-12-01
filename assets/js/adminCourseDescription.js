@@ -41,7 +41,7 @@ if (crCookie === undefined) {
         $("#desInput").attr("placeholder", crInfo.description);
         $("#dayInput").val(crInfo.day);
         $("#roomInput").val(crInfo.room);
-        genTutorOption()
+        genTutorOption(crInfo.tutor[0]);
     });
 }
 $("#allStudentInCourseTable").on("click", ".std-row", function () {
@@ -58,23 +58,20 @@ $("#changeCrInfoButt").click(function () {
 });
 
 // gen tutor option func
-async function genTutorOption() {
-    let allUser = await $.post("post/listRandomStudent");
-    let allTutor = [];
-    let promise = [];
-    for (let i in allUser.student) {
-        let str = allUser.student[i].studentID + "";
+async function genTutorOption(tutorID) {
+    let allUser = await $.post("debug/listUser");
+    allUser.sort(function (a, b) {
+        return a._id - b._id;
+    });
+    for (let i in allUser) {
+        let str = allUser[i]._id + "";
         if (str.indexOf("990") >= 0) {
-            allTutor.push(allUser.student[i].studentID);
-            promise.push(name(allUser.student[i].studentID));
+            $("#tutorInput").append(
+                "<option value=" + allUser[i]._id + ">" + allUser[i]._id + " - " + allUser[i].nicknameEn + "</option>"
+            );
         }
     }
-    let tutorName = await Promise.all(promise);
-    for (let i in allTutor) {
-        $("#tutorInput").append(
-            "<option value=" + allTutor[i] + ">" + allTutor[i] + " - " + tutorName[i].nicknameEn + "</option>"
-        );
-    }
+    $("#tutorInput").val(tutorID);
 }
 
 // send edit profile function
