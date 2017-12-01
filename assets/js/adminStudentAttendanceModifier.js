@@ -147,7 +147,7 @@ function genCrTable() {
                 } else {
                     // log("pending");
                     $("#crAbsentTable").append(
-                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "table-warning" : "") + " row" + i + ">" +
+                        "<tr class='" + (emergencyCheck(dataDate, moment(data.absence[i].timestamp)) ? "table-warning" : "") + " row" + i + "'>" +
                         "<td class='text-center'>" + moment(data.absence[i].timestamp).format("DD/MM/YYYY HH:mm") + "</td>" +
                         "<td class='text-center' onclick='relocate(" + data.absence[i].studentID + ")'>" + dt[0][i].nickname + " " + dt[0][i].firstname + "</td>" +
                         "<td class='text-center absentSubject" + i + "'></td>" +
@@ -155,7 +155,7 @@ function genCrTable() {
                         "<td class='text-center'>" + data.absence[i].reason + "</td>" +
                         "<td class='text-center'><button id='" + data.absence[i].modifierID + "' onClick='removeAttend(this.id);' class='btn btn-light col-12'><span class='fa fa-trash'></span></button></td>" +
                         "</tr>"
-                    )
+                    );
                     myFHB(dt[0][i].courseID, dt[1][i], dataDate, i);
                 }
             }
