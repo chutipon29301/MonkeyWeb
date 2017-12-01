@@ -302,7 +302,7 @@ async function genSkSelect() {
 
 // add event when click sk-select
 $(".sk-select").click(async function () {
-    if ($(this).hasClass("btn-light")) {
+    if ($(this).hasClass("btn-light") && $(this).siblings().hasClass("btn-light")) {
         $("#skillTime").empty();
         var str = this.className
         str = str.slice(str.indexOf("skl"));
@@ -326,25 +326,34 @@ $(".sk-select").click(async function () {
 function toggleThat(butt, mod) {
     if (butt.slice(-1) == "1") {
         $("." + butt).html("SKILL:M " + mod.innerHTML).toggleClass("btn-light btn-success");
+        $("." + butt).siblings().html("SKILL:E " + mod.innerHTML);
     } else {
         $("." + butt).html("SKILL:E " + mod.innerHTML).toggleClass("btn-light btn-success");
+        $("." + butt).siblings().html("SKILL:M " + mod.innerHTML)
     }
-    $("." + butt).attr("id", mod.id);
-    if ($("." + butt).hasClass("btn-success")) {
-        $("." + butt).siblings().removeClass("btn-success").addClass("btn-light");
-    }
+    $("." + butt).attr("id", mod.id + "1");
+    $("." + butt).siblings().attr("id", mod.id + "2");
+    // if ($("." + butt).hasClass("btn-success")) {
+    //     $("." + butt).siblings().removeClass("btn-success").addClass("btn-light");
+    // }
     $("#skillModal").modal('hide');
 }
 
 // gen data for submit function
 function genSubmitData() {
     $("#submit-table .sk").hide();
+    let oldSk = "";
     for (let i = 0; i < $("#skRegis .btn-success").length; i++) {
         let str = $("#skRegis .btn-success")[i].className;
         str = str.slice(str.indexOf("skl"));
         str = str.slice(0, str.indexOf(" "));
         str = str.slice(0, str.lastIndexOf("-"));
-        $(".sk" + str.slice(3)).html($("#skRegis .btn-success")[i].innerHTML).show();
+        let str2 = $("#skRegis .btn-success")[i].innerHTML;
+        $(".sk" + str.slice(3)).html(str2).show();
+        if (str == oldSk) {
+            $(".sk" + str.slice(3)).html("SKILL:ME " + str2.slice(str2.indexOf(" "))).show();
+        }
+        oldSk = str;
     }
 }
 
@@ -361,10 +370,22 @@ async function submitData() {
         fhbPromise.push(addHybridStudent(str.slice(0, -3), ID, str.slice(-2, -1)));
     }
     let skPromise = [];
+    let oldSkPromise = "";
+    let skSubj = "";
     for (let i = 0; i < $("#skRegis .btn-success").length; i++) {
-        let skId = $("#skRegis .btn-success")[i].id;
-        let skSubj = $("#skRegis .btn-success")[i].innerHTML.slice(6, 7);
-        skPromise.push(addSkillStudent(skId, ID, skSubj));
+        if ($("#skRegis .btn-success")[i].id.slice(0, -1) == oldSkPromise) {
+            skSubj = "ME";
+            let skId = $("#skRegis .btn-success")[i].id.slice(0, -1);
+            skPromise.push(addSkillStudent(skId, ID, skSubj));
+        }
+        oldSkPromise = $("#skRegis .btn-success")[i].id.slice(0, -1);
+    }
+    if (skSubj != "ME") {
+        for (let i = 0; i < $("#skRegis .btn-success").length; i++) {
+            let skId = $("#skRegis .btn-success")[i].id.slice(0, -1);
+            skSubj = $("#skRegis .btn-success")[i].innerHTML.slice(6, 7);
+            skPromise.push(addSkillStudent(skId, ID, skSubj));
+        }
     }
     let crRes = await addStudentCourse(ID, crPromise);
     let fhbRes = await Promise.all(fhbPromise);
