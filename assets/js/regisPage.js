@@ -382,7 +382,7 @@ async function submitData() {
     }
     if (skSubj != "ME") {
         for (let i = 0; i < $("#skRegis .btn-success").length; i++) {
-            let skId = $("#skRegis .btn-success")[i].id;
+            let skId = $("#skRegis .btn-success")[i].id.slice(0, -1);
             skSubj = $("#skRegis .btn-success")[i].innerHTML.slice(6, 7);
             skPromise.push(addSkillStudent(skId, ID, skSubj));
         }
