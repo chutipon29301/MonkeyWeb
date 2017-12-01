@@ -23,10 +23,18 @@ $("#nextButt").click(function () {
 // change page function
 function changePage(value) {
     if (pageIndex == 1) {
-        if ($("#crRegis-table .btn-success").length < 2) {
-            alert("ต้องลงอย่างน้อย 2 คอร์ส")
+        if (parseInt(realGrade) == 12) {
+            if ($("#crRegis-table .btn-success").length < 3) {
+                alert("ต้องลงอย่างน้อย 2 คอร์ส")
+            } else {
+                pageIndex = pageIndex + value;
+            }
         } else {
-            pageIndex = pageIndex + value;
+            if ($("#crRegis-table .btn-success").length < 2) {
+                alert("ต้องลงอย่างน้อย 2 คอร์ส")
+            } else {
+                pageIndex = pageIndex + value;
+            }
         }
     } else if (pageIndex == 3) {
         let skMC = 0;
