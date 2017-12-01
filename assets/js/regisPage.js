@@ -1,6 +1,11 @@
 let pageIndex = 1;
 let cookie = getCookieDict();
-let ID = cookie.monkeyWebUser;
+let ID = "";
+if (cookie.monkeyWebUser == undefined) {
+    self.location = "/login";
+} else {
+    ID = cookie.monkeyWebUser;
+}
 $("#fhbRegis-table").hide();
 $("#skRegis").hide();
 $("#submit-table").hide();
