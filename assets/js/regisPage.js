@@ -116,7 +116,6 @@ async function genCrTable() {
         $(".btn" + time.day() + "-" + time.hour() + "-" + crIndex[index]).html(gradeCourse.course[i].courseName + (gradeCourse.course[i].tutor[0] == "99000" ? "(HB)" : ""));
         $(".btn" + time.day() + "-" + time.hour() + "-" + crIndex[index]).removeClass("disabled").attr("id", gradeCourse.course[i].courseID);
         crIndex[index] = crIndex[index] + 1;
-        log(gradeCourse.course[i].description)
         if (gradeCourse.course[i].description != "" && gradeCourse.course[i].description != "-") {
             $("#crDescription").append(
                 "<p>" + gradeCourse.course[i].courseName + " คือ " + gradeCourse.course[i].description + "</p>"
