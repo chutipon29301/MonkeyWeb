@@ -177,10 +177,22 @@ $(".cr-select").click(function () {
             } else if (this.id == "5a1d0c0242ec5e1710ea9e92") {
                 if (realLevel == "c") {
                     $("#5a1d0c0242ec5e1710ea9e92").toggleClass("btn-light btn-success");
-                    $("#5a1d0b3742ec5e1710ea9e8b").toggleClass("btn-light btn-success");
+                    if ($(this).hasClass("btn-success")) {
+                        $("#5a1d0b3742ec5e1710ea9e8b").addClass("btn-success").removeClass("btn-light");
+                        $("#5a1d0b2e42ec5e1710ea9e8a").removeClass("btn-success").addClass("btn-light");
+                    } else {
+                        $("#5a1d0b3742ec5e1710ea9e8b").removeClass("btn-success").addClass("btn-light");
+                        $("#5a1d0b2e42ec5e1710ea9e8a").removeClass("btn-success").addClass("btn-light");
+                    }
                 } else {
                     $("#5a1d0c0242ec5e1710ea9e92").toggleClass("btn-light btn-success");
-                    $("#5a1d0b2e42ec5e1710ea9e8a").toggleClass("btn-light btn-success");
+                    if ($(this).hasClass("btn-success")) {
+                        $("#5a1d0b3742ec5e1710ea9e8b").removeClass("btn-success").addClass("btn-light");
+                        $("#5a1d0b2e42ec5e1710ea9e8a").addClass("btn-success").removeClass("btn-light");
+                    } else {
+                        $("#5a1d0b3742ec5e1710ea9e8b").removeClass("btn-success").addClass("btn-light");
+                        $("#5a1d0b2e42ec5e1710ea9e8a").removeClass("btn-success").addClass("btn-light");
+                    }
                 }
             } else {
                 $(this).toggleClass("btn-light btn-success");
@@ -204,10 +216,10 @@ $(".cr-select").click(function () {
                     $("#5a1d0b8f42ec5e1710ea9e8f").removeClass("btn-success").addClass("btn-light");
                     $("#5a1d0cda42ec5e1710ea9e9c").removeClass("btn-success").addClass("btn-light");
                 } else if ($(this).siblings()[0].id == "5a1d0b2e42ec5e1710ea9e8a") {
-                    $("#5a1d0c0242ec5e1710ea9e92").removeClass("btn-success").addClass("btn-light");
+                    $("#5a1d0c0242ec5e1710ea9e92").addClass("btn-success").removeClass("btn-light");
                     $("#5a1d0b2e42ec5e1710ea9e8a").removeClass("btn-success").addClass("btn-light");
                 } else if ($(this).siblings()[0].id == "5a1d0b3742ec5e1710ea9e8b") {
-                    $("#5a1d0c0242ec5e1710ea9e92").removeClass("btn-success").addClass("btn-light");
+                    $("#5a1d0c0242ec5e1710ea9e92").addClass("btn-success").removeClass("btn-light");
                     $("#5a1d0b3742ec5e1710ea9e8b").removeClass("btn-success").addClass("btn-light");
                 } else if ($(this).siblings()[0].id == "5a1d0c0242ec5e1710ea9e92") {
                     if (realLevel == "c") {
