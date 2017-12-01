@@ -23,6 +23,8 @@ $("#nextButt").click(function () {
 // change page function
 function changePage(value) {
     if (pageIndex == 1) {
+        let level = $("#levelCard").html().slice(6);
+        let realGrade = level.slice(0, -1);
         if (parseInt(realGrade) == 12) {
             if ($("#crRegis-table .btn-success").length < 3) {
                 alert("ต้องลงอย่างน้อย 2 คอร์ส")
