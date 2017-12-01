@@ -34,11 +34,11 @@ mixin submitButt(value)
     button.col.btn.disabled.hb(class="fhb"+value) -
     button.col.btn.disabled.sk(class="sk"+value) -
 block body
-    .container
-        .row
+    .container-fluid
+        .row.position-fixed.w-100(style="z-index:2")
             .progress.w-100(style="height:30px")
                 .progress-bar.progress-bar-striped.progress-bar-animated#progressBar(style="width:30%") ลงทะเบียน Course
-        .row
+        .row(style="padding-top:30px")
             .card.w-100.mb-2
                 .card-header
                     span.fa.fa-user
