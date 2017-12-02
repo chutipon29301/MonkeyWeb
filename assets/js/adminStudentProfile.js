@@ -382,7 +382,7 @@ async function genCover(type) {
         ctx2.globalAlpha = 0.5;
         ctx2.drawImage(appRejTemplate, 0, 0, 1654, 1170);
         ctx2.globalAlpha = 1;
-        ctx2.font = "bold 500px Cordia New";
+        ctx2.font = "bold 400px Cordia New";
         ctx2.rotate(Math.PI / 6);
         if (type == 2) {
             ctx2.fillStyle = "red";
