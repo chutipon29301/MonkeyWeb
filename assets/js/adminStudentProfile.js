@@ -166,11 +166,11 @@ async function genStatusPanel(status, quarter) {
             $statusSubButton.append(
                 "<button class='col-12 btn btn-light subButt-unregistered' onclick=\"changeStudentState(\'unregistered\')\">UNREGISTER</button>" +
                 "<button class='col-12 btn btn-light subButt-untransferred' onclick=\"changeStudentState(\'untransferred\')\">UNTRANSFER</button>" +
-                "<button class='col-12 btn btn-light subButt-rejected' onclick=\"changeStudentState(\'rejected\')\">REJECT</button>" +
+                "<button class='col-12 btn btn-light subButt-rejected' onclick=\"changeStudentState(\'rejected\');genCover(2);\">REJECT</button>" +
                 "<button class='col-12 btn btn-light subButt-transferred' onclick=\"changeStudentState(\'transferred\')\">TRANSFER</button>" +
                 "<button class='col-12 btn btn-light subButt-approved' onclick=\"changeStudentState(\'approved\')\">APPROVE</button>" +
                 "<button class='col-12 btn btn-light subButt-pending' onclick=\"changeStudentState(\'pending\')\">PENDING</button>" +
-                "<button class='col-12 btn btn-light subButt-finished' onclick=\"changeStudentState(\'finished\')\">FINISH</button>"
+                "<button class='col-12 btn btn-light subButt-finished' onclick=\"changeStudentState(\'finished\');genCover(3);\">FINISH</button>"
             );
             break;
         case "inactive":
@@ -367,7 +367,34 @@ async function genCover(type) {
             }
         }
     }
-    downloadCanvas(type);
+    if (type == 2 || type == 3) {
+        if (type == 2) {
+            var appRejCanvas = document.getElementById('appRejCover1');
+        } else {
+            var appRejCanvas = document.getElementById('appRejCover2');
+        }
+        let ctx2 = appRejCanvas.getContext('2d');
+        let receipt = document.getElementById('recieptImg');
+        let picRcW = 1654;
+        let picRcH = receipt.height * picRcW / receipt.width;
+        ctx2.drawImage(receipt, 0, 0, picRcW, picRcH);
+        let appRejTemplate = document.getElementById('phyCover');
+        ctx2.globalAlpha = 0.5;
+        ctx2.drawImage(appRejTemplate, 0, 0, 1654, 1170);
+        ctx2.globalAlpha = 1;
+        ctx2.font = "bold 500px Cordia New";
+        ctx2.rotate(Math.PI / 6);
+        if (type == 2) {
+            ctx2.fillStyle = "red";
+            ctx2.fillText("REJECT", 350, 200);
+        } else {
+            ctx2.fillStyle = "green";
+            ctx2.fillText("FINISHED", 350, 200);
+        }
+        downloadCanvas(type);
+    } else {
+        downloadCanvas(type);
+    }
 }
 const dayIndex = (day) => {
     switch (moment(day).day()) {
@@ -404,9 +431,15 @@ function downloadCanvas(type) {
     if (type == 0) {
         var canvas = document.getElementById('mathCover');
         text += ID + "1.png";
-    } else {
+    } else if (type == 1) {
         var canvas = document.getElementById('phyCover');
         text += ID + "2.png";
+    } else if (type == 2) {
+        var canvas = document.getElementById('appRejCover1');
+        text += ID + ".png";
+    } else if (type == 3) {
+        var canvas = document.getElementById('appRejCover2');
+        text += ID + ".png";
     }
     let dlImg = canvas.toDataURL();
     let aref = document.createElement('a');
