@@ -818,18 +818,20 @@ module.exports=function(app,db){
             else{
                 getCourseDB(function(courseDB){
                     courseDB.find({grade:{$bitsAllSet:[grade-1]},year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
-                        callbackLoop(result.length,function(i,continueLoop){
-                            getCourseName(result[i]._id,function(courseName){
-                                output.push({
-                                    courseID:result[i]._id,courseName:courseName,
-                                    day:result[i].day,tutor:result[i].tutor,
-                                    description:result[i].description,
+                        if(result!=undefined){
+                            callbackLoop(result.length,function(i,continueLoop){
+                                getCourseName(result[i]._id,function(courseName){
+                                    output.push({
+                                        courseID:result[i]._id,courseName:courseName,
+                                        day:result[i].day,tutor:result[i].tutor,
+                                        description:result[i].description,
+                                    });
+                                    continueLoop();
                                 });
-                                continueLoop();
+                            },function(){
+                                res.send({course:output});
                             });
-                        },function(){
-                            res.send({course:output});
-                        });
+                        }else res.send("Have some problem in grade course");
                     });
                 });
             }
@@ -874,7 +876,7 @@ module.exports=function(app,db){
                                     };
                                 }
                                 res.send({course:output});
-                            }else res.send({course:output});
+                            }else res.send("Have some problem in listCourseSuggestion");
                         }
                         else res.send({course:output});
                     }
