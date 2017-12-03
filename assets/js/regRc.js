@@ -17,8 +17,9 @@ $("#submit").click(function () {
     if ($("#preview").attr("src") == "images/noImage.svg") {
         alert("กรุณา Upload ใบโอน");
     } else {
-        changeRegistrationState(ID, "transferred", { year: year, quarter: quarter });
-        self.location = "/studentProfile";
+        changeRegistrationState(ID, "transferred", { year: year, quarter: quarter }).then((data) => {
+            self.location = "/studentProfile";
+        });
     }
 });
 
