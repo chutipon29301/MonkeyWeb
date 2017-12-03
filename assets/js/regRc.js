@@ -1,5 +1,10 @@
 let cookie = getCookieDict();
-let ID = cookie.monkeyWebUser;
+let ID = "";
+if (cookie.monkeyWebUser == undefined) {
+    self.location = "/login";
+} else {
+    ID = cookie.monkeyWebUser;
+}
 let path = '';
 genHeader();
 genCost();
@@ -9,8 +14,12 @@ $("#file-1").change(function () {
 });
 
 $("#submit").click(function () {
-    changeRegistrationState(ID, "transferred", { year: year, quarter: quarter });
-    self.location = "/studentProfile";
+    if ($("#preview").attr("src") == "images/noImage.svg") {
+        alert("กรุณา Upload ใบโอน");
+    } else {
+        changeRegistrationState(ID, "transferred", { year: year, quarter: quarter });
+        self.location = "/studentProfile";
+    }
 });
 
 async function genHeader() {
