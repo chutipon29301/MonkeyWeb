@@ -863,16 +863,19 @@ module.exports=function(app,db){
             if(err)res.send(err);
             else{
                 courseSuggestionDB.find({grade:grade,year:quarter.year,quarter:quarter.quarter}).sort({level:1}).toArray(function(err,result){
-                    if(result){
-                        for(var i=0;i<result.length;i++){
-                            output[i]={
-                                level:result[i].level,
-                                courseID:result[i].courseID
-                            };
+                    if(err) res.send(err);
+                    else{
+                        if(result){
+                            for(var i=0;i<result.length;i++){
+                                output[i]={
+                                    level:result[i].level,
+                                    courseID:result[i].courseID
+                                };
+                            }
+                            res.send({course:output});
                         }
-                        res.send({course:output});
+                        else res.send({course:output});
                     }
-                    else res.send({course:output});
                 });
             }
         });
