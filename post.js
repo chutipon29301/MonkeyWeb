@@ -866,13 +866,15 @@ module.exports=function(app,db){
                     if(err) res.send(err);
                     else{
                         if(result){
-                            for(var i=0;i<result.length;i++){
-                                output[i]={
-                                    level:result[i].level,
-                                    courseID:result[i].courseID
-                                };
-                            }
-                            res.send({course:output});
+                            if(result!=undefined){
+                                for(var i=0;i<result.length;i++){
+                                    output[i]={
+                                        level:result[i].level,
+                                        courseID:result[i].courseID
+                                    };
+                                }
+                                res.send({course:output});
+                            }else res.send({course:output});
                         }
                         else res.send({course:output});
                     }
