@@ -494,7 +494,7 @@ function changeStudentState(state) {
 
 // change sub state function
 async function changeSubState() {
-    let str = cookie.courseQuarter;
+    let str = $("#quarterSelect").val();
     let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
     await $.post("post/v1/updateStudentRegistrationState", { studentID: ID, registrationState: studentFullState.registrationState, subRegistrationState: $("#subState").val(), quarter: str.slice(5), year: str.slice(0, 4) });
     location.reload();
