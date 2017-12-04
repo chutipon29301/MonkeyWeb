@@ -222,17 +222,17 @@ function loadRegistrationPage() {
             log(data);
             switch (data.registrationState) {
                 case "unregistered":
+                case "rejected":
                     log("[loadRegistrationPage()] : redirection to registrationCourse");
                     self.location = "/regisPage";
                     break;
                 case "untransferred":
-                case "approved":
-                case "rejected":
                     log("[loadRegistrationPage()] : redirection to registrationReceipt");
                     self.location = "/registrationReceipt";
                     break;
-                case "transferred":
                 case "pending":
+                case "approved":
+                case "transferred":
                 case "registered":
                     log("[loadRegistrationPage()] : redirection to studentProfile");
                     self.location = "/studentProfile";
