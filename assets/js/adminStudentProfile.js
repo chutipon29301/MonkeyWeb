@@ -59,6 +59,14 @@ $("#commentViewButt").click(function () {
     $("#viewCommentModal").modal('show');
 });
 
+// add event when click addSubRegisStateButt
+$("#addSubRegisStateButt").click(function () {
+    $("#addSubStateModal").modal("show");
+});
+$("#addSubStateButt").click(function () {
+    changeSubState();
+});
+
 // add event when click download butt
 $("#mathCoverDownloadButt").click(function () {
     if (!($(this).hasClass('disabled'))) {
@@ -201,6 +209,7 @@ async function genStatusPanel(status, quarter) {
         "<a class='dropdown-item' onclick=\"changeStudentStatus(\'dropped\')\">DROP</a>"
         // "<a class='dropdown-item' onclick=\"changeStudentStatus(\'terminated\')\">TERMINATE</a>"
     );
+    genSubRegisState();
     let str = cookie.courseQuarter;
     if (quarter != undefined) {
         let iden = true;
@@ -218,6 +227,12 @@ async function genStatusPanel(status, quarter) {
         quarter = data.quarter;
         genStatusPanel(status, quarter);
     }
+}
+async function genSubRegisState() {
+    let str = cookie.courseQuarter;
+    let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
+    let oldHtml = $(".subButt-" + studentFullState.registrationState).html();
+    $(".subButt-" + studentFullState.registrationState).html(oldHtml + "<br>" + studentFullState.subRegistrationState + "</br>");
 }
 async function genStudentTable() {
     let fhbHasMath = false;
@@ -475,6 +490,14 @@ function changeStudentState(state) {
             genStatusPanel('active');
         });
     }
+}
+
+// change sub state function
+async function changeSubState() {
+    let str = cookie.courseQuarter;
+    let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
+    await $.post("post/v1/updateStudentRegistrationState", { studentID: ID, registrationState: studentFullState.registrationState, subRegistrationState: $("#subState").val(), quarter: str.slice(5), year: str.slice(0, 4) });
+    location.reload();
 }
 
 // remove timeTable function
