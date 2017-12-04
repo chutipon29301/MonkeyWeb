@@ -231,7 +231,7 @@ async function genStatusPanel(status, quarter) {
 async function genSubRegisState() {
     let str = cookie.courseQuarter;
     let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
-    if (studentFullState.subRegistrationState != undefined) {
+    if (studentFullState.subRegistrationState != undefined && studentFullState.subRegistrationState != "-") {
         let oldHtml = $(".subButt-" + studentFullState.registrationState).html();
         $(".subButt-" + studentFullState.registrationState).html(oldHtml + "<br>" + studentFullState.subRegistrationState + "</br>");
     }
