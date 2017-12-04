@@ -292,7 +292,7 @@ async function generateStudentHtmlTable(student) {
     }
     let description = await Promise.all(promise);
     for (let i = 0; i < description.length; i++) {
-        if (description[i].subRegistrationState != undefined) {
+        if (description[i].subRegistrationState != undefined && description[i].subRegistrationState != "-") {
             $("#cell7-" + i).html(description[i].subRegistrationState);
         }
     }
