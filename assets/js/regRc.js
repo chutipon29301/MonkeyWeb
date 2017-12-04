@@ -6,6 +6,7 @@ if (cookie.monkeyWebUser == undefined) {
     ID = cookie.monkeyWebUser;
 }
 let path = '';
+let state = '';
 genHeader();
 genCost();
 
@@ -17,9 +18,13 @@ $("#submit").click(function () {
     if ($("#preview").attr("src") == "images/noImage.svg") {
         alert("กรุณา Upload ใบโอน");
     } else {
-        changeRegistrationState(ID, "transferred", { year: year, quarter: quarter }).then((data) => {
+        if (state == "pending") {
             self.location = "/studentProfile";
-        });
+        } else {
+            changeRegistrationState(ID, "transferred", { year: year, quarter: quarter }).then((data) => {
+                self.location = "/studentProfile";
+            });
+        }
     }
 });
 
@@ -35,6 +40,11 @@ async function genHeader() {
 }
 async function genCost() {
     let stdInfo = await studentProfile(ID);
+    for (let i in stdInfo.quarter) {
+        if (stdInfo.quarter[i].year == year && stdInfo.quarter[i].quarter == quarter) {
+            state = stdInfo.quarter[i].registrationState
+        }
+    }
     let promise = [];
     for (let i in stdInfo.courseID) {
         promise.push(courseInfo(stdInfo.courseID[i]));
