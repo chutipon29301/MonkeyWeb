@@ -1,5 +1,7 @@
 if ($(document).width() > 767) {
     $("#statusSidebar").addClass("position-fixed");
+    $("#profileImg").css("max-height", "50vh");
+    $("#recieptImg").css("max-height", "80vh");
 }
 
 let cookie = getCookieDict();
