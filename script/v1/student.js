@@ -155,12 +155,17 @@ module.exports = function (app, db, post) {
         userDB.findOne({
             _id: parseInt(req.body.studentID)
         }).then(data => {
+            if (data === null) {
+                return res.status(400).send({
+                    err: -1,
+                    msg: 'StudentID not found'
+                });
+            }
             let index = data.student.quarter.findIndex(x => x.year === parseInt(req.body.year) && x.quarter === parseInt(req.body.quarter));
             if (index === -1) {
                 return res.status(200).send({
-                    // err: 404,
-                    // msg: 'Year or quarter not found'
-                    registrationState: "unregistered"
+                    registrationState: 'unregistered',
+                    subRegistrationState: '-'
                 });
             }
             var object = data.student.quarter[index];
