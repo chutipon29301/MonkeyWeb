@@ -238,9 +238,11 @@ function filterData(data, quarterList, config) {
  * Generate Html element from data
  * @param student information to fill in table
  */
-function generateStudentHtmlTable(student) {
+async function generateStudentHtmlTable(student) {
     let table = document.getElementById("allStudentTable");
     table.innerHTML = "";
+    let selectedQ = $("#quarter").val();
+    let promise = [];
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let status = student[i].status;
@@ -264,18 +266,20 @@ function generateStudentHtmlTable(student) {
         let cell2 = row.insertCell(2);
         let cell3 = row.insertCell(3);
         let cell4 = row.insertCell(4);
+        // let cell5 = row.insertCell(5);
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
-        // let cell7 = row.insertCell(7);
         // let cell8 = row.insertCell(8);
         cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
         cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
         cell3.innerHTML = "<td>" + student[i].nickname + "</td>";
         cell4.innerHTML = "<td>" + student[i].firstname + "</td>";
-        cell5.innerHTML = "<td>" + student[i].lastname + "</td>";
-        cell6.innerHTML = "<td>" + student[i].level + "</td>";
-        // cell7.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+        // cell5.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell5.innerHTML = "<td>" + student[i].level + "</td>";
+        promise.push($.post("post/v1/getRegistrationState", { studentID: student[i].studentID, year: selectedQ.slice(0, 4), quarter: selectedQ.slice(5) }));
+        cell6.innerHTML = "<td>-</td>";
+        cell6.id = "cell7-" + i
         // cell8.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
@@ -285,6 +289,12 @@ function generateStudentHtmlTable(student) {
             self.location = "/adminStudentprofile";
         };
         row.onclick = clickHandler(row);
+    }
+    let description = await Promise.all(promise);
+    for (let i = 0; i < description.length; i++) {
+        if (description[i].subRegistrationState != undefined) {
+            $("#cell7-" + i).html(description[i].subRegistrationState);
+        }
     }
 }
 
