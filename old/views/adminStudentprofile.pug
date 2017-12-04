@@ -107,6 +107,7 @@ block body
                         button.btn.btn-outline-info#mathCoverDownloadButt(type='button') Math cover
                         button.btn.btn-outline-info#phyCoverDownloadButt(type='button') Physic cover
                         button.btn.btn-outline-info#commentViewButt(type='button') Comment
+                        button.btn.btn-outline-info#addSubRegisStateButt(type='button') Add state description
                 .row
                     .col
                         canvas#mathCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
@@ -132,6 +133,20 @@ block body
                             select.form-control#subjSelect
                     .modal-footer
                         button.btn.btn-success#addSubjButt(type="button") Add
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
+        //- Modal for add sub state
+        #addSubStateModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Add state description
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .form-group
+                            label.sr-only &nbsp;
+                            input.form-control#subState(type="text")
+                    .modal-footer
+                        button.btn.btn-success#addSubStateButt(type="button") Add
                         button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
         //- Modal for Upload Pic
         #uploadPicModal.modal.fade
