@@ -92,17 +92,17 @@ module.exports = function (app, db, post) {
                     $lte: new Date(parseInt(req.body.endDate))
                 }
             }, {
-                sort: {
-                    timestamp: -1
-                }
-            }).toArray().then(result => {
-                for (let i = 0; i < result.lenght; i++) {
-                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                    result[i].attendanceID = result[i]._id;
-                    result[i].date = new Date(result[i].date).valueOf();
-                    delete result[i]._id;
-                }
-            });
+                    sort: {
+                        timestamp: -1
+                    }
+                }).toArray().then(result => {
+                    for (let i = 0; i < result.lenght; i++) {
+                        result[i].timestamp = new Date(result[i].timestamp).valueOf();
+                        result[i].attendanceID = result[i]._id;
+                        result[i].date = new Date(result[i].date).valueOf();
+                        delete result[i]._id;
+                    }
+                });
         } else if (req.body.date) {
             // attendanceDB.find({
 
@@ -135,12 +135,12 @@ module.exports = function (app, db, post) {
             userDB.updateOne({
                 _id: parseInt(req.body.studentID)
             }, {
-                $set: {
-                    'student.quarter': stateObject
-                }
-            }).then(result => {
-                return res.status(200).send('OK');
-            });
+                    $set: {
+                        'student.quarter': stateObject
+                    }
+                }).then(result => {
+                    return res.status(200).send('OK');
+                });
         });
     });
 
@@ -157,9 +157,10 @@ module.exports = function (app, db, post) {
         }).then(data => {
             let index = data.student.quarter.findIndex(x => x.year === parseInt(req.body.year) && x.quarter === parseInt(req.body.quarter));
             if (index === -1) {
-                return res.status(404).send({
-                    err: 404,
-                    msg: 'Year or quarter not found'
+                return res.status(200).send({
+                    // err: 404,
+                    // msg: 'Year or quarter not found'
+                    registrationState: "unregistered"
                 });
             }
             var object = data.student.quarter[index];
