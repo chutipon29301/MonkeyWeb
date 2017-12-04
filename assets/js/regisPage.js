@@ -22,87 +22,89 @@ $("#nextButt").click(function () {
 
 // change page function
 function changePage(value) {
-    if (pageIndex == 1) {
-        let level = $("#levelCard").html().slice(6);
-        let realGrade = level.slice(0, -1);
-        if (parseInt(realGrade) == 12) {
-            if ($("#crRegis-table .btn-success").length < 3) {
-                alert("ต้องลงอย่างน้อย 2 คอร์ส")
+    if (confirm("ต้องการไปหน้าต่อไป")) {
+        if (pageIndex == 1) {
+            let level = $("#levelCard").html().slice(6);
+            let realGrade = level.slice(0, -1);
+            if (parseInt(realGrade) == 12) {
+                if ($("#crRegis-table .btn-success").length < 3) {
+                    alert("ต้องลงอย่างน้อย 2 คอร์ส")
+                } else {
+                    pageIndex = pageIndex + value;
+                }
             } else {
-                pageIndex = pageIndex + value;
+                if ($("#crRegis-table .btn-success").length < 2) {
+                    alert("ต้องลงอย่างน้อย 2 คอร์ส")
+                } else {
+                    pageIndex = pageIndex + value;
+                }
             }
+        } else if (pageIndex == 3) {
+            let skMC = 0;
+            let skEC = 0;
+            for (let i = 0; i < $("#skRegis .btn-success").length; i++) {
+                let str = $("#skRegis .btn-success")[i].innerHTML;
+                if (str.indexOf("SKILL:M") >= 0) {
+                    skMC += 1;
+                } else {
+                    skEC += 1;
+                }
+            }
+            if (skMC > 1 || skEC > 1) {
+                alert("ห้ามลง skill วิชาเดียวกันหลายเวลา")
+            } else pageIndex = pageIndex + value;
         } else {
-            if ($("#crRegis-table .btn-success").length < 2) {
-                alert("ต้องลงอย่างน้อย 2 คอร์ส")
-            } else {
-                pageIndex = pageIndex + value;
-            }
+            pageIndex = pageIndex + value;
         }
-    } else if (pageIndex == 3) {
-        let skMC = 0;
-        let skEC = 0;
-        for (let i = 0; i < $("#skRegis .btn-success").length; i++) {
-            let str = $("#skRegis .btn-success")[i].innerHTML;
-            if (str.indexOf("SKILL:M") >= 0) {
-                skMC += 1;
-            } else {
-                skEC += 1;
-            }
+        let $backButt = $("#backButt");
+        let $progressBar = $("#progressBar");
+        switch (pageIndex) {
+            case 1:
+                $("#fhbRegis-table").hide();
+                $("#crRegis-table").show();
+                $("#crFeeBox").show();
+                $backButt.hide();
+                $progressBar.css("width", "30%").html("ลงทะเบียนCourse");
+                break;
+            case 2:
+                genFhbTable();
+                $("#crRegis-table").hide();
+                $("#crFeeBox").hide();
+                $("#skRegis").hide();
+                $("#fhbRegis-table").show();
+                $backButt.show();
+                $progressBar.css("width", "50%").html("ลงทะเบียนHybrid");
+                break;
+            case 3:
+                genSkSelect();
+                $("#submit-table").hide();
+                $("#fhbRegis-table").hide();
+                $("#skRegis").show();
+                $backButt.show();
+                $progressBar.css("width", "75%").html("ลงทะเบียนSkill");
+                $("#backButt").html("Back");
+                $("#nextButt").html("Next");
+                break;
+            case 4:
+                genSubmitData();
+                $("#skRegis").hide();
+                $("#crFeeBox").show();
+                $("#submit-table").show();
+                $backButt.show();
+                $progressBar.css("width", "100%").html("ตรวจสอบความถูกต้อง");
+                $("#backButt").html("แก้ไข");
+                $("#nextButt").html("ยืนยัน");
+                break;
+            case 5:
+                if (confirm("ยืนยันการลงทะเบียน")) {
+                    submitData();
+                } else {
+                    changePage(-1);
+                }
+                break;
+            default:
+                break;
         }
-        if (skMC > 1 || skEC > 1) {
-            alert("ห้ามลง skill วิชาเดียวกันหลายเวลา")
-        } else pageIndex = pageIndex + value;
-    } else {
-        pageIndex = pageIndex + value;
-    }
-    let $backButt = $("#backButt");
-    let $progressBar = $("#progressBar");
-    switch (pageIndex) {
-        case 1:
-            $("#fhbRegis-table").hide();
-            $("#crRegis-table").show();
-            $("#crFeeBox").show();
-            $backButt.hide();
-            $progressBar.css("width", "30%").html("ลงทะเบียนCourse");
-            break;
-        case 2:
-            genFhbTable();
-            $("#crRegis-table").hide();
-            $("#crFeeBox").hide();
-            $("#skRegis").hide();
-            $("#fhbRegis-table").show();
-            $backButt.show();
-            $progressBar.css("width", "50%").html("ลงทะเบียนHybrid");
-            break;
-        case 3:
-            genSkSelect();
-            $("#submit-table").hide();
-            $("#fhbRegis-table").hide();
-            $("#skRegis").show();
-            $backButt.show();
-            $progressBar.css("width", "75%").html("ลงทะเบียนSkill");
-            $("#backButt").html("Back");
-            $("#nextButt").html("Next");
-            break;
-        case 4:
-            genSubmitData();
-            $("#skRegis").hide();
-            $("#crFeeBox").show();
-            $("#submit-table").show();
-            $backButt.show();
-            $progressBar.css("width", "100%").html("ตรวจสอบความถูกต้อง");
-            $("#backButt").html("แก้ไข");
-            $("#nextButt").html("ยืนยัน");
-            break;
-        case 5:
-            if (confirm("ยืนยันการลงทะเบียน")) {
-                submitData();
-            } else {
-                changePage(-1);
-            }
-            break;
-        default:
-            break;
     }
 }
 

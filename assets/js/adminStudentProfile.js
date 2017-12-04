@@ -166,11 +166,11 @@ async function genStatusPanel(status, quarter) {
             $statusSubButton.append(
                 "<button class='col-12 btn btn-light subButt-unregistered' onclick=\"changeStudentState(\'unregistered\')\">UNREGISTER</button>" +
                 "<button class='col-12 btn btn-light subButt-untransferred' onclick=\"changeStudentState(\'untransferred\')\">UNTRANSFER</button>" +
-                "<button class='col-12 btn btn-light subButt-rejected' onclick=\"changeStudentState(\'rejected\');genCover(2);\">REJECT</button>" +
+                "<button class='col-12 btn btn-light subButt-rejected' onclick=\"changeStudentState(\'rejected\');\">REJECT</button>" +
                 "<button class='col-12 btn btn-light subButt-transferred' onclick=\"changeStudentState(\'transferred\')\">TRANSFER</button>" +
                 "<button class='col-12 btn btn-light subButt-approved' onclick=\"changeStudentState(\'approved\')\">APPROVE</button>" +
                 "<button class='col-12 btn btn-light subButt-pending' onclick=\"changeStudentState(\'pending\')\">PENDING</button>" +
-                "<button class='col-12 btn btn-light subButt-finished' onclick=\"changeStudentState(\'finished\');genCover(3);\">FINISH</button>"
+                "<button class='col-12 btn btn-light subButt-finished' onclick=\"changeStudentState(\'finished\');\">FINISH</button>"
             );
             break;
         case "inactive":
@@ -464,6 +464,12 @@ function changeStudentState(state) {
     let cookie = getCookieDict();
     let str = cookie.courseQuarter;
     if (confirm("ต้องการเปลี่ยน state?")) {
+        if (state == "rejected") {
+            genCover(2);
+            removeAllTimeTable();
+        } else if (state == "finished") {
+            genCover(3);
+        }
         changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {
             log("OK:Change student state complete");
             genStatusPanel('active');
@@ -496,6 +502,31 @@ function removeSkill(skID) {
             location.reload();
         })
     }
+}
+async function removeAllTimeTable() {
+    let crPromise = [];
+    let fhbPromise = [];
+    let skPromise = [];
+    if ($(".cr").length > 0) {
+        for (let i = 0; i < $(".cr").length; i++) {
+            crPromise.push($(".cr")[i].id);
+        }
+        await removeStudentCourse(ID, crPromise);
+    }
+    if ($(".hb").length > 0) {
+        for (let i = 0; i < $(".hb").length; i++) {
+            fhbPromise.push(removeHybridStudent(ID, $(".hb")[i].id));
+        }
+        await Promise.all(fhbPromise);
+    }
+    if ($(".sk").length > 0) {
+        for (let i = 0; i < $(".sk").length; i++) {
+            skPromise.push(removeSkillStudent(ID, $(".sk")[i].id));
+        }
+        await Promise.all(skPromise);
+    }
+    log("Finish to delete all data");
+    genStudentData();
 }
 
 // add timeTable function
