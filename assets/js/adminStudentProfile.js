@@ -231,7 +231,7 @@ async function genStatusPanel(status, quarter) {
     }
 }
 async function genSubRegisState() {
-    let str = cookie.courseQuarter;
+    let str = $("#quarterSelect").val();
     let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
     if (studentFullState.subRegistrationState != undefined && studentFullState.subRegistrationState != "-") {
         let oldHtml = $(".subButt-" + studentFullState.registrationState).html();
@@ -489,7 +489,7 @@ function changeStudentState(state) {
         } else if (state == "finished") {
             genCover(3);
         }
-        changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {
+        $.post("post/v1/updateStudentRegistrationState", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5), registrationState: state, subRegistrationState: "-" }).then(() => {
             log("OK:Change student state complete");
             genStatusPanel('active');
         });
@@ -499,8 +499,18 @@ function changeStudentState(state) {
 // change sub state function
 async function changeSubState() {
     let str = $("#quarterSelect").val();
+    let cookie = getCookieDict();
+    let tutorName = "";
+    if (cookie.monkeyWebUser == "99001") {
+        tutorName = "Mel";
+    } else if (cookie.monkeyWebUser == "99002") {
+        tutorName = "GG";
+    } else {
+        tutorName = await name(cookie.monkeyWebUser);
+        tutorName = tutorName.nicknameEn;
+    }
     let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
-    await $.post("post/v1/updateStudentRegistrationState", { studentID: ID, registrationState: studentFullState.registrationState, subRegistrationState: $("#subState").val(), quarter: str.slice(5), year: str.slice(0, 4) });
+    await $.post("post/v1/updateStudentRegistrationState", { studentID: ID, registrationState: studentFullState.registrationState, subRegistrationState: tutorName + "-" + $("#subState").val(), quarter: str.slice(5), year: str.slice(0, 4) });
     location.reload();
 }
 
