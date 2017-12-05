@@ -103,11 +103,13 @@ block body
                                     +tdButt("selector btn110")
                                     +tdButt("selector btn113")
                 .row
-                    .col.btn-group
-                        button.btn.btn-outline-info#mathCoverDownloadButt(type='button') Math cover
-                        button.btn.btn-outline-info#phyCoverDownloadButt(type='button') Physic cover
-                        button.btn.btn-outline-info#commentViewButt(type='button') Comment
-                        button.btn.btn-outline-info#addSubRegisStateButt(type='button') Description
+                    .col-12.col-md-6
+                        button.col-6.btn.btn-outline-info#mathCoverDownloadButt(type='button') Math cover 
+                        button.col-6.btn.btn-outline-info#phyCoverDownloadButt(type='button') Physic cover
+                    .col-6.col-md-3
+                        button.col.btn.btn-outline-info#commentViewButt(type='button') Comment
+                    .col-6.col-md-3
+                        button.col.btn.btn-outline-info#addSubRegisStateButt(type='button') Description
                 .row
                     .col
                         canvas#mathCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
