@@ -43,11 +43,11 @@ html(lang="en")
                                     //- li: a(href="summerAbsentForm") ลาCR60OCT
                                     li: a(href="absentForm") ลา CR&FHB
                                     //- li: a(href="addForm") เพิ่ม FHB
-                            -var startTime = new Date(1512212400000)
-                            -var endTime = new Date(1512471660000)
-                            -var nowTime = new Date()
-                            if nowTime.getTime() > startTime.getTime() && nowTime.getTime() < endTime.getTime()
-                                li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
+                            //- -var startTime = new Date(1512212400000)
+                            //- -var endTime = new Date(1512471660000)
+                            //- -var nowTime = new Date()
+                            //- if nowTime.getTime() > startTime.getTime() && nowTime.getTime() < endTime.getTime()
+                            //-     li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
                             +navLink("absentForm","ลา CR&FHB")
                             +navLink("addForm","เพิ่ม FHB")
                             +navLink("permanentAdtendance","ลา/เพิ่มตลอดไป")
