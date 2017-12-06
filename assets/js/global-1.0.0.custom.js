@@ -61,6 +61,11 @@ const changeRegistrationState = (studentID, registrationState, quarter) => {
     }
 }
 
+const lineNotify = (recipient, message) => $.post("post/lineNotify", {
+    recipient: recipient,
+    message: message
+});
+
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const addSkillStudent = (skillID, studentID, subject) => $.post("post/v1/addSkillStudent", {
     skillID: skillID,
