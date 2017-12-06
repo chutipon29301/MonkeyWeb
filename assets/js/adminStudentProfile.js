@@ -488,10 +488,14 @@ function changeStudentState(state) {
         } else if (state == "finished") {
             genCover(3);
         }
-        $.post("post/v1/updateStudentRegistrationState", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5), registrationState: state, subRegistrationState: "-" }).then(() => {
-            log("OK:Change student state complete");
-            genStatusPanel('active');
-        });
+        if ($($("#statusSubButton .btn-success")).html() == "UNREGISTER") {
+            changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) });
+        } else {
+            $.post("post/v1/updateStudentRegistrationState", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5), registrationState: state, subRegistrationState: "-" }).then(() => {
+                log("OK:Change student state complete");
+                genStatusPanel('active');
+            });
+        }
     }
 }
 
