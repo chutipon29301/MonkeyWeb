@@ -489,7 +489,10 @@ function changeStudentState(state) {
             genCover(3);
         }
         if ($($("#statusSubButton .btn-success")).html() == "UNREGISTER") {
-            changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) });
+            changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {
+                log("OK:Change student state complete");
+                genStatusPanel('active');
+            });
         } else {
             $.post("post/v1/updateStudentRegistrationState", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5), registrationState: state, subRegistrationState: "-" }).then(() => {
                 log("OK:Change student state complete");
