@@ -480,8 +480,7 @@ function changeStudentStatus(status) {
 
 // change state function
 function changeStudentState(state) {
-    let cookie = getCookieDict();
-    let str = cookie.courseQuarter;
+    let str = $("#quarterSelect").val();
     if (confirm("ต้องการเปลี่ยน state?")) {
         if (state == "rejected") {
             genCover(2);
