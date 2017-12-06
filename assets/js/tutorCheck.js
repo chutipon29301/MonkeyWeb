@@ -33,6 +33,7 @@ async function checkIn() {
                 'TimeStamp: ' + moment(date).format("DD/MM/YY HH:mm:ss") +
                 '</div>'
             );
+            await lineNotify("MonkeyStaff", tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
             $('#checkInModal').modal('show');
         }
     } catch (error) {
@@ -111,6 +112,7 @@ async function checkOutSubmit() {
             slot4: slot[4],
             slot5: slot[5]
         });
+        await lineNotify("MonkeyStaff", tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
         $('#checkOutSummaryModal').modal('hide');
     } catch (error) {
         $('#checkOutSummaryModal').modal('hide');
