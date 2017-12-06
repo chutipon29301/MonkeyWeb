@@ -76,6 +76,7 @@ function redirectLocation(user) {
                     break;
                 case "admin":
                 case "dev":
+                case "mel":
                     self.location = "/adminAllstudent";
                     break;
                 default:

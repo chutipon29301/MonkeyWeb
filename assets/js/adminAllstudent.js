@@ -152,6 +152,7 @@ function loadSelectedMenu(config) {
                 quaterStatus = "protected";
                 break;
             case "dev":
+            case "mel":
                 quaterStatus = "private";
                 break;
         }
