@@ -50,11 +50,11 @@ html(lang="en")
                                         //- li: a(href="summerAbsentForm") ลาCR60OCT
                                         li: a(href="absentForm") ลา CR&FHB
                                         //- li: a(href="addForm") เพิ่ม FHB
-                                //- -var startTime = new Date(1512212400000)
-                                //- -var endTime = new Date(1512471660000)
-                                //- -var nowTime = new Date()
-                                //- if nowTime.getTime() > startTime.getTime() && nowTime.getTime() < endTime.getTime()
-                                //-     li: a(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
+                                -var startTime = new Date(1512558000000)
+                                -var endTime = new Date(1512568800000)
+                                -var nowTime = new Date()
+                                if nowTime.getTime() > startTime.getTime() && nowTime.getTime() < endTime.getTime()
+                                    li: a(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
                                 li: a(href="/absentForm") ลา CR&FHB
                                 li: a(href="/addForm") เพิ่ม FHB
                                 li: a(href="/permanentAdtendance") ลา/เพิ่มตลอดไป
@@ -81,9 +81,11 @@ html(lang="en")
                                         li: a(href="/tutorCheck") Check in/out
                                         li: a(href="/tutorCheckInHistory") History
                                         li: a(href="/tutorCheckInActivity") Activity
+                                        if(webUser.position=="mel")
+                                            li: a(href="/checkInSummary") Manage
                                 if(webUser.position!="tutor")
                                     li: a(href="/adminCourseRoom") Room
-                                li: a(href="/adminConference") Conference
+                                //- li: a(href="/adminConference") Conference
                                     //- li: a(href="/adminStudentAttendanceModifier") ลา/เพิ่ม
                             li: a(href="studentDocument") เอกสาร
                         ul.nav.navbar-nav.navbar-right
