@@ -112,7 +112,7 @@ async function checkOutSubmit() {
             slot4: slot[4],
             slot5: slot[5]
         });
-        await lineNotify("MonkeyStaff", tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
+        await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
         $('#checkOutSummaryModal').modal('hide');
     } catch (error) {
         $('#checkOutSummaryModal').modal('hide');
@@ -175,7 +175,7 @@ function next(detail) {
 }
 
 function getSlot(date) {
-    var hour = [10, 13, 15, 17, 24];
+    var hour = [10, 13, 15, 17, 19, 24];
     for (let i = 0; i < hour.length; i++) {
         if (date.getHours() < hour[i]) {
             return i;
@@ -185,8 +185,8 @@ function getSlot(date) {
 }
 
 function getSlotLabel() {
-    var startHour = ['08', '10', '13', '15', '17'];
-    var endHour = ['10', '12', '15', '17', '24'];
+    var startHour = ['08', '10', '13', '15', '17', '19'];
+    var endHour = ['10', '12', '15', '17', '19', '24'];
     if (currentSlot === getSlot(checkInDate) && currentSlot === getSlot(checkOutDate)) {
         return moment(checkInDate).format("HH:mm:ss") + ' - ' + moment(checkOutDate).format("HH:mm:ss");
     } else if (currentSlot === getSlot(checkInDate)) {
