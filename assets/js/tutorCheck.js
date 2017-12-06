@@ -33,7 +33,7 @@ async function checkIn() {
                 'TimeStamp: ' + moment(date).format("DD/MM/YY HH:mm:ss") +
                 '</div>'
             );
-            await lineNotify("MonkeyStaff", tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
+            await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
             $('#checkInModal').modal('show');
         }
     } catch (error) {
