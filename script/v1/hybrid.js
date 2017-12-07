@@ -325,7 +325,7 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/checkStudentHybrid', function (req, res) {
-        if (!req.body.studentID) {
+        if (!(req.body.studentID && req.body.subject)) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -347,7 +347,8 @@ module.exports = function (app, db, post) {
                 quarterID: quarterID,
                 student: {
                     $elemMatch: {
-                        studentID: parseInt(req.body.studentID)
+                        studentID: parseInt(req.body.studentID),
+                        subject: req.body.subject
                     }
                 }
             }).toArray().then(data => {
