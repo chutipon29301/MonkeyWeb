@@ -344,7 +344,11 @@ async function genCover(type) {
     let picW = profileImg.width * picH / profileImg.height;
     ctx.drawImage(profileImg, 205, 30, picW, picH);
     ctx.font = "bold 80px Cordia New";
-    ctx.fillText('ID: ' + ID, 560, 63);
+    if (type == 0) {
+        ctx.fillText('ID: ' + ID + '1', 550, 63);
+    }else{
+        ctx.fillText('ID: ' + ID + '2', 550, 63);
+    }
     ctx.drawImage(barcode, 435, 115);
     ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 930, 80);
     ctx.fillText(profile.lastname, 930, 170);
