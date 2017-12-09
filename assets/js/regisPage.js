@@ -125,7 +125,7 @@ async function genCrTable() {
     let crIndex = [1, 1, 1, 1, 1, 1, 1, 1];
     $(".cr-select").html("-").addClass("disabled");
     if (descriptionTitle[parseInt(realGrade) - 1] != "") {
-        $("#descriptionTitle").html("Description: " + descriptionTitle[parseInt(realGrade) - 1]);
+        $("#description-title").html("Description: " + descriptionTitle[parseInt(realGrade) - 1]);
     }
     let [gradeCourse, courseSuggest] = await Promise.all([$.post("post/gradeCourse", { year: year, quarter: quarter, grade: realGrade }), $.post("post/listCourseSuggestion", { year: year, quarter: quarter, grade: realGrade })]);
     for (let i in gradeCourse.course) {
