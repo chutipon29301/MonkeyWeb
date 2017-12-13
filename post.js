@@ -758,7 +758,7 @@ module.exports=function(app,db){
     post("/post/changePosition",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
         var position=req.body.position;
-        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+        findUser(res,tutorID,{position:["tutor","admin","dev","mel"]},function(result){
             userDB.updateOne({_id:tutorID},{
                 $set:{position:position}
             },function(){
