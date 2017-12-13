@@ -197,6 +197,8 @@ $("#editTutorHistoryOut").datetimepicker({
 function editCheckIO(historyID, date) {
     writeCookie("tempHistoryID", historyID);
     writeCookie("tempHistoryDate", date);
+    $("#editTutorHistoryIn").val("");
+    $("#editTutorHistoryOut").val("");
     $("#checkIOTimeHistoryModal").modal('show');
 }
 
