@@ -324,7 +324,7 @@ module.exports = function (app, db, post) {
             newValue.$set.checkOut = new Date(parseInt(req.body.checkOut));
         }
         if (req.body.slot) {
-            newValue.$set.detail = slot;
+            newValue.$set.detail = req.body.slot.map(Number);
         }
 
         tutorCheckHistoryDB.updateOne({
@@ -385,11 +385,12 @@ module.exports = function (app, db, post) {
                 msg: 'Bad Request'
             });
         }
+        var slot = req.body.slot.map(Number);
         tutorCheckHistoryDB.insertOne({
             tutorID: parseInt(req.body.tutorID),
             checkIn: new Date(parseInt(req.body.checkIn)),
             checkOut: new Date(parseInt(req.body.checkOut)),
-            detail: req.body.slot
+            detail: slot
         }, (err, db) => {
             if (err) {
                 return res.status(400).send(err);
