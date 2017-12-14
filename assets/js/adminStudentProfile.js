@@ -1,5 +1,7 @@
 if ($(document).width() > 767) {
     $("#statusSidebar").addClass("position-fixed");
+    $("#profileImg").css("max-height", "50vh");
+    $("#recieptImg").css("max-height", "80vh");
 }
 
 let cookie = getCookieDict();
@@ -59,6 +61,14 @@ $("#commentViewButt").click(function () {
     $("#viewCommentModal").modal('show');
 });
 
+// add event when click addSubRegisStateButt
+$("#addSubRegisStateButt").click(function () {
+    $("#addSubStateModal").modal("show");
+});
+$("#addSubStateButt").click(function () {
+    changeSubState();
+});
+
 // add event when click download butt
 $("#mathCoverDownloadButt").click(function () {
     if (!($(this).hasClass('disabled'))) {
@@ -105,6 +115,7 @@ async function loadRecieptImg() {
                 $("#recieptImg").attr("src", path + ".jpeg");
             }).fail(() => {
                 log("can't find picture");
+                $("#recieptImg").attr("src", "images/noImage.svg");
             });
         });
     });
@@ -165,11 +176,11 @@ async function genStatusPanel(status, quarter) {
             $statusSubButton.append(
                 "<button class='col-12 btn btn-light subButt-unregistered' onclick=\"changeStudentState(\'unregistered\')\">UNREGISTER</button>" +
                 "<button class='col-12 btn btn-light subButt-untransferred' onclick=\"changeStudentState(\'untransferred\')\">UNTRANSFER</button>" +
-                "<button class='col-12 btn btn-light subButt-rejected' onclick=\"changeStudentState(\'rejected\')\">REJECT</button>" +
+                "<button class='col-12 btn btn-light subButt-rejected' onclick=\"changeStudentState(\'rejected\');\">REJECT</button>" +
                 "<button class='col-12 btn btn-light subButt-transferred' onclick=\"changeStudentState(\'transferred\')\">TRANSFER</button>" +
                 "<button class='col-12 btn btn-light subButt-approved' onclick=\"changeStudentState(\'approved\')\">APPROVE</button>" +
                 "<button class='col-12 btn btn-light subButt-pending' onclick=\"changeStudentState(\'pending\')\">PENDING</button>" +
-                "<button class='col-12 btn btn-light subButt-finished' onclick=\"changeStudentState(\'finished\')\">FINISH</button>"
+                "<button class='col-12 btn btn-light subButt-finished' onclick=\"changeStudentState(\'finished\');\">FINISH</button>"
             );
             break;
         case "inactive":
@@ -200,6 +211,7 @@ async function genStatusPanel(status, quarter) {
         "<a class='dropdown-item' onclick=\"changeStudentStatus(\'dropped\')\">DROP</a>"
         // "<a class='dropdown-item' onclick=\"changeStudentStatus(\'terminated\')\">TERMINATE</a>"
     );
+    genSubRegisState();
     let str = cookie.courseQuarter;
     if (quarter != undefined) {
         let iden = true;
@@ -218,6 +230,14 @@ async function genStatusPanel(status, quarter) {
         genStatusPanel(status, quarter);
     }
 }
+async function genSubRegisState() {
+    let str = $("#quarterSelect").val();
+    let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
+    if (studentFullState.subRegistrationState != undefined && studentFullState.subRegistrationState != "-") {
+        let oldHtml = $(".subButt-" + studentFullState.registrationState).html();
+        $(".subButt-" + studentFullState.registrationState).html(oldHtml + "<br>" + studentFullState.subRegistrationState + "</br>");
+    }
+}
 async function genStudentTable() {
     let fhbHasMath = false;
     let fhbHasPhy = false;
@@ -233,7 +253,8 @@ async function genStudentTable() {
     let timeTable = await $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) });
     for (let i in timeTable.course) {
         let time = moment(timeTable.course[i].day);
-        $(".btn" + time.day() + time.hour()).html("CR:" + timeTable.course[i].courseName).addClass("cr").attr("id", timeTable.course[i].courseID);
+        let tutorName = (timeTable.course[i].tutorName == "Hybrid") ? "HB" : timeTable.course[i].tutorName;
+        $(".btn" + time.day() + time.hour()).html("CR:" + timeTable.course[i].courseName + " - " + tutorName).addClass("cr").attr("id", timeTable.course[i].courseID);
         if (timeTable.course[i].tutorName == "Hybrid") {
             if (timeTable.course[i].courseName.slice(0, 1) == "P") {
                 fhbHasPhy = true;
@@ -323,7 +344,11 @@ async function genCover(type) {
     let picW = profileImg.width * picH / profileImg.height;
     ctx.drawImage(profileImg, 205, 30, picW, picH);
     ctx.font = "bold 80px Cordia New";
-    ctx.fillText('ID: ' + ID, 560, 63);
+    if (type == 0) {
+        ctx.fillText('ID: ' + ID + '1', 550, 63);
+    }else{
+        ctx.fillText('ID: ' + ID + '2', 550, 63);
+    }
     ctx.drawImage(barcode, 435, 115);
     ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 930, 80);
     ctx.fillText(profile.lastname, 930, 170);
@@ -365,7 +390,34 @@ async function genCover(type) {
             }
         }
     }
-    downloadCanvas(type);
+    if (type == 2 || type == 3) {
+        if (type == 2) {
+            var appRejCanvas = document.getElementById('appRejCover1');
+        } else {
+            var appRejCanvas = document.getElementById('appRejCover2');
+        }
+        let ctx2 = appRejCanvas.getContext('2d');
+        let receipt = document.getElementById('recieptImg');
+        let picRcW = 1654;
+        let picRcH = receipt.height * picRcW / receipt.width;
+        ctx2.drawImage(receipt, 0, 0, picRcW, picRcH);
+        let appRejTemplate = document.getElementById('phyCover');
+        ctx2.globalAlpha = 0.5;
+        ctx2.drawImage(appRejTemplate, 0, 0, 1654, 1170);
+        ctx2.globalAlpha = 1;
+        ctx2.font = "bold 400px Cordia New";
+        ctx2.rotate(Math.PI / 6);
+        if (type == 2) {
+            ctx2.fillStyle = "red";
+            ctx2.fillText("REJECT", 350, 200);
+        } else {
+            ctx2.fillStyle = "green";
+            ctx2.fillText("FINISHED", 350, 200);
+        }
+        downloadCanvas(type);
+    } else {
+        downloadCanvas(type);
+    }
 }
 const dayIndex = (day) => {
     switch (moment(day).day()) {
@@ -402,9 +454,15 @@ function downloadCanvas(type) {
     if (type == 0) {
         var canvas = document.getElementById('mathCover');
         text += ID + "1.png";
-    } else {
+    } else if (type == 1) {
         var canvas = document.getElementById('phyCover');
         text += ID + "2.png";
+    } else if (type == 2) {
+        var canvas = document.getElementById('appRejCover1');
+        text += ID + ".png";
+    } else if (type == 3) {
+        var canvas = document.getElementById('appRejCover2');
+        text += ID + ".png";
     }
     let dlImg = canvas.toDataURL();
     let aref = document.createElement('a');
@@ -416,20 +474,54 @@ function downloadCanvas(type) {
 
 // change status function
 function changeStudentStatus(status) {
-    $.post("post/changeStatus", { userID: ID, status: status }).then(() => {
-        log("OK:Change student status complete");
-        genStatusPanel(status);
-    });
+    if (confirm("ต้องการเปลี่ยน status?")) {
+        $.post("post/changeStatus", { userID: ID, status: status }).then(() => {
+            log("OK:Change student status complete");
+            genStatusPanel(status);
+        });
+    }
 }
 
 // change state function
 function changeStudentState(state) {
+    let str = $("#quarterSelect").val();
+    if (confirm("ต้องการเปลี่ยน state?")) {
+        if (state == "rejected") {
+            genCover(2);
+            removeAllTimeTable();
+        } else if (state == "finished") {
+            genCover(3);
+        }
+        if ($($("#statusSubButton .btn-success")).html() == "UNREGISTER") {
+            changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {
+                log("OK:Change student state complete");
+                genStatusPanel('active');
+            });
+        } else {
+            $.post("post/v1/updateStudentRegistrationState", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5), registrationState: state, subRegistrationState: "-" }).then(() => {
+                log("OK:Change student state complete");
+                genStatusPanel('active');
+            });
+        }
+    }
+}
+
+// change sub state function
+async function changeSubState() {
+    let str = $("#quarterSelect").val();
     let cookie = getCookieDict();
-    let str = cookie.courseQuarter;
-    changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {
-        log("OK:Change student state complete");
-        genStatusPanel('active');
-    });
+    let tutorName = "";
+    if (cookie.monkeyWebUser == "99001") {
+        tutorName = "Mel";
+    } else if (cookie.monkeyWebUser == "99002") {
+        tutorName = "GG";
+    } else {
+        tutorName = await name(cookie.monkeyWebUser);
+        tutorName = tutorName.nicknameEn;
+    }
+    let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
+    await $.post("post/v1/updateStudentRegistrationState", { studentID: ID, registrationState: studentFullState.registrationState, subRegistrationState: tutorName + "-" + $("#subState").val(), quarter: str.slice(5), year: str.slice(0, 4) });
+    location.reload();
 }
 
 // remove timeTable function
@@ -457,6 +549,31 @@ function removeSkill(skID) {
             location.reload();
         })
     }
+}
+async function removeAllTimeTable() {
+    let crPromise = [];
+    let fhbPromise = [];
+    let skPromise = [];
+    if ($(".cr").length > 0) {
+        for (let i = 0; i < $(".cr").length; i++) {
+            crPromise.push($(".cr")[i].id);
+        }
+        await removeStudentCourse(ID, crPromise);
+    }
+    if ($(".hb").length > 0) {
+        for (let i = 0; i < $(".hb").length; i++) {
+            fhbPromise.push(removeHybridStudent(ID, $(".hb")[i].id));
+        }
+        await Promise.all(fhbPromise);
+    }
+    if ($(".sk").length > 0) {
+        for (let i = 0; i < $(".sk").length; i++) {
+            skPromise.push(removeSkillStudent(ID, $(".sk")[i].id));
+        }
+        await Promise.all(skPromise);
+    }
+    log("Finish to delete all data");
+    genStudentData();
 }
 
 // add timeTable function

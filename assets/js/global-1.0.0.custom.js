@@ -61,6 +61,11 @@ const changeRegistrationState = (studentID, registrationState, quarter) => {
     }
 }
 
+const lineNotify = (recipient, message) => $.post("post/lineNotify", {
+    recipient: recipient,
+    message: message
+});
+
 //noinspection ES6ModulesDependencies,NodeModulesDependencies,JSUnresolvedFunction
 const addSkillStudent = (skillID, studentID, subject) => $.post("post/v1/addSkillStudent", {
     skillID: skillID,
@@ -214,7 +219,7 @@ function clearAllCookie() {
  */
 function loadRegistrationPage() {
     let cookie = getCookieDict();
-    registrationState(cookie.monkeyWebUser, 4, 2017).then((data) => {
+    registrationState(cookie.monkeyWebUser, 1, 2018).then((data) => {
         if (data.err) {
             log("[loadRegistrationPage()] : post/registrationState => " + data.err);
         } else {
@@ -222,16 +227,17 @@ function loadRegistrationPage() {
             log(data);
             switch (data.registrationState) {
                 case "unregistered":
+                case "rejected":
                     log("[loadRegistrationPage()] : redirection to registrationCourse");
-                    self.location = "/registrationCourse";
+                    self.location = "/regisPage";
                     break;
                 case "untransferred":
-                case "rejected":
                     log("[loadRegistrationPage()] : redirection to registrationReceipt");
                     self.location = "/registrationReceipt";
                     break;
-                case "transferred":
                 case "pending":
+                case "approved":
+                case "transferred":
                 case "registered":
                     log("[loadRegistrationPage()] : redirection to studentProfile");
                     self.location = "/studentProfile";

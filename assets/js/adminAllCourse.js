@@ -37,6 +37,7 @@ $(document).ready(function () {
                     quarterStatus = "protected"
                     break;
                 case "dev":
+                case "mel":
                     quarterStatus = "private"
                     break;
             }

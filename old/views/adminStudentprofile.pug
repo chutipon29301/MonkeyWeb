@@ -45,7 +45,7 @@ block body
                         .row
                             .col-12#studentProfileContent
                     .col-12.col-md-7
-                        img.img-fluid.img-thumbnail#recieptImg(src="images/noImage.svg")
+                        img.img-fluid.img-thumbnail.float-right#recieptImg(src="images/noImage.svg")
                 .row
                     .col-12.collapse#mainTable
                         .table-responsive
@@ -103,14 +103,19 @@ block body
                                     +tdButt("selector btn110")
                                     +tdButt("selector btn113")
                 .row
-                    .col.btn-group
-                        button.btn.btn-outline-info#mathCoverDownloadButt(type='button') Math cover
-                        button.btn.btn-outline-info#phyCoverDownloadButt(type='button') Physic cover
-                        button.btn.btn-outline-info#commentViewButt(type='button') Comment
+                    .col-12.col-md-6
+                        button.col-6.btn.btn-outline-info#mathCoverDownloadButt(type='button') Math cover 
+                        button.col-6.btn.btn-outline-info#phyCoverDownloadButt(type='button') Physic cover
+                    .col-6.col-md-3
+                        button.col.btn.btn-outline-info#commentViewButt(type='button') Comment
+                    .col-6.col-md-3
+                        button.col.btn.btn-outline-info#addSubRegisStateButt(type='button') Description
                 .row
                     .col
                         canvas#mathCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#phyCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
+                        canvas#appRejCover1(style="border:1px solid black" width="1654" height="1170" hidden='true')
+                        canvas#appRejCover2(style="border:1px solid black" width="1654" height="1170" hidden='true')
             .col-12.offset-md-9.col-md-3.offset-xl-10.col-xl-2.p-0#statusSidebar
                 .dropdown
                     button.col-12.btn.dropdown-toggle#statusButton(type="button" data-toggle="dropdown") STATUS
@@ -130,6 +135,20 @@ block body
                             select.form-control#subjSelect
                     .modal-footer
                         button.btn.btn-success#addSubjButt(type="button") Add
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
+        //- Modal for add sub state
+        #addSubStateModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Add state description
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .form-group
+                            label.sr-only &nbsp;
+                            input.form-control#subState(type="text")
+                    .modal-footer
+                        button.btn.btn-success#addSubStateButt(type="button") Add
                         button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
         //- Modal for Upload Pic
         #uploadPicModal.modal.fade

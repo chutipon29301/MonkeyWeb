@@ -43,6 +43,11 @@ html(lang="en")
                                     //- li: a(href="summerAbsentForm") ลาCR60OCT
                                     li: a(href="absentForm") ลา CR&FHB
                                     //- li: a(href="addForm") เพิ่ม FHB
+                            -var startTime = new Date(1512558000000)
+                            -var endTime = new Date(1512568800000)
+                            -var nowTime = new Date()
+                            if nowTime.getTime() > startTime.getTime() && nowTime.getTime() < endTime.getTime()
+                                li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
                             +navLink("absentForm","ลา CR&FHB")
                             +navLink("addForm","เพิ่ม FHB")
                             +navLink("permanentAdtendance","ลา/เพิ่มตลอดไป")
@@ -67,9 +72,11 @@ html(lang="en")
                                     a.dropdown-item(href="/tutorCheck") Check in/out
                                     a.dropdown-item(href="/tutorCheckInHistory") History
                                     a.dropdown-item(href="/tutorCheckInActivity") Activity
+                                    if(webUser.position=="mel")
+                                        a.dropdown-item(href="/checkInSummary") Manage
                             if(webUser.position!="tutor")
                                 +navLink("adminCourseRoom","Room")
-                            +navLink("adminConference","Conference")
+                            //- +navLink("adminConference","Conference")
                         +navLink("studentDocument","เอกสาร")
                     ul.navbar-nav
                         if(webUser.position=="student")

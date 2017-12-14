@@ -758,7 +758,7 @@ module.exports=function(app,db){
     post("/post/changePosition",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
         var position=req.body.position;
-        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+        findUser(res,tutorID,{position:["tutor","admin","dev","mel"]},function(result){
             userDB.updateOne({_id:tutorID},{
                 $set:{position:position}
             },function(){
@@ -818,17 +818,20 @@ module.exports=function(app,db){
             else{
                 getCourseDB(function(courseDB){
                     courseDB.find({grade:{$bitsAllSet:[grade-1]},year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
-                        callbackLoop(result.length,function(i,continueLoop){
-                            getCourseName(result[i]._id,function(courseName){
-                                output.push({
-                                    courseID:result[i]._id,courseName:courseName,
-                                    day:result[i].day,tutor:result[i].tutor
+                        if(result!=undefined){
+                            callbackLoop(result.length,function(i,continueLoop){
+                                getCourseName(result[i]._id,function(courseName){
+                                    output.push({
+                                        courseID:result[i]._id,courseName:courseName,
+                                        day:result[i].day,tutor:result[i].tutor,
+                                        description:result[i].description,
+                                    });
+                                    continueLoop();
                                 });
-                                continueLoop();
+                            },function(){
+                                res.send({course:output});
                             });
-                        },function(){
-                            res.send({course:output});
-                        });
+                        }else res.send("Have some problem in grade course");
                     });
                 });
             }
@@ -845,7 +848,9 @@ module.exports=function(app,db){
                         res.send({
                             courseName:courseName,day:result.day,
                             tutor:result.tutor,student:result.student,
-                            year:result.year,quarter:result.quarter
+                            year:result.year,quarter:result.quarter,
+                            description:result.description,level:result.level,
+                            room:result.room
                         });
                     });
                 }
@@ -860,16 +865,21 @@ module.exports=function(app,db){
             if(err)res.send(err);
             else{
                 courseSuggestionDB.find({grade:grade,year:quarter.year,quarter:quarter.quarter}).sort({level:1}).toArray(function(err,result){
-                    if(result){
-                        for(var i=0;i<result.length;i++){
-                            output[i]={
-                                level:result[i].level,
-                                courseID:result[i].courseID
-                            };
+                    if(err) res.send(err);
+                    else{
+                        if(result){
+                            if(result!=undefined){
+                                for(var i=0;i<result.length;i++){
+                                    output[i]={
+                                        level:result[i].level,
+                                        courseID:result[i].courseID
+                                    };
+                                }
+                                res.send({course:output});
+                            }else res.send("Have some problem in listCourseSuggestion");
                         }
-                        res.send({course:output});
+                        else res.send({course:output});
                     }
-                    else res.send({course:output});
                 });
             }
         });
