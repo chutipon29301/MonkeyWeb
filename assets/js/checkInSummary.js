@@ -146,6 +146,7 @@ function showTutorHistory(tutorID) {
             let checkOut = moment(historyData.detail[i].checkOut);
             $table.append(
                 "<tr>" +
+                "<td class='text-center'>" + checkIn.format("ddd") + "</td>" +
                 "<td class='text-center'>" + checkIn.format("DD MMM YYYY") + "</td>" +
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkIn.format("HH:mm") + "</td>" +
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkOut.format("HH:mm") + "</td>" +
@@ -161,12 +162,12 @@ function showTutorHistory(tutorID) {
 
 const detailButton = (detail, historyID) => {
     let str = "";
-    str += "<button class='btn btn-outline-dark col-2' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "0" + ")'>" + buttonMinText(detail[0]) + "</button>";
-    str += "<button class='btn btn-outline-dark col-2' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "1" + ")'>" + buttonMinText(detail[1]) + "</button>";
-    str += "<button class='btn btn-outline-dark col-2' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "2" + ")'>" + buttonMinText(detail[2]) + "</button>";
-    str += "<button class='btn btn-outline-dark col-2' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "3" + ")'>" + buttonMinText(detail[3]) + "</button>";
-    str += "<button class='btn btn-outline-dark col-2' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "4" + ")'>" + buttonMinText(detail[4]) + "</button>";
-    str += "<button class='btn btn-outline-dark col-2' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "5" + ")'>" + buttonMinText(detail[5]) + "</button>";
+    str += "<button class='btn btn-light col-2 btn-" + buttonMinText(detail[0]) + "' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "0" + ")'>" + buttonMinText(detail[0]) + "</button>";
+    str += "<button class='btn btn-light col-2 btn-" + buttonMinText(detail[1]) + "' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "1" + ")'>" + buttonMinText(detail[1]) + "</button>";
+    str += "<button class='btn btn-light col-2 btn-" + buttonMinText(detail[2]) + "' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "2" + ")'>" + buttonMinText(detail[2]) + "</button>";
+    str += "<button class='btn btn-light col-2 btn-" + buttonMinText(detail[3]) + "' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "3" + ")'>" + buttonMinText(detail[3]) + "</button>";
+    str += "<button class='btn btn-light col-2 btn-" + buttonMinText(detail[4]) + "' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "4" + ")'>" + buttonMinText(detail[4]) + "</button>";
+    str += "<button class='btn btn-light col-2 btn-" + buttonMinText(detail[5]) + "' onclick='editIOHistorySlot(\"" + historyID + "\",\"" + detail + "\"," + "5" + ")'>" + buttonMinText(detail[5]) + "</button>";
     return str;
 };
 const buttonMinText = (str) => {

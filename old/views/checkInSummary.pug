@@ -2,6 +2,44 @@ extends htmlTemplate
 block head
     - var pageTitle = "Check I/O summary"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
+    style.
+        #tutorHistoryModal .modal-lg {
+            max-width: 85%;
+        }
+
+        .btn-- {
+            background-color: white;
+        }
+
+        .btn-HB {
+            background-color: #F06292;
+            color: white;
+        }
+
+        .btn-Admin {
+            background-color: #afb42b;
+            color: white;
+        }
+
+        .btn-Sheet {
+            background-color: #FFC107;
+            color: white;
+        }
+
+        .btn-Com {
+            background-color: #4DD0E1;
+            color: white;
+        }
+
+        .btn-Read {
+            background-color: #A1887F;
+            color: white;
+        }
+
+        .btn-Course {
+            background-color: #FF8F00;
+            color: white;
+        }
 block script
     script(src="js/bootstrap-datetimepicker4.min.js")
     script(src="js/checkInSummary.min.js")
@@ -22,11 +60,11 @@ block body
             .col-6.col-md-2.pr-0
                 button#addIntervalButt.col-12.btn.btn-outline-info(type="button")
                     span.fa.fa-plus-circle
-                    |&nbsp;Add new
+                    | &nbsp;Add new
             .col-6.col-md-2.pl-0
                 button#editIntervalButt.col-12.btn.btn-outline-info(type="button")
                     span.fa.fa-cogs
-                    |&nbsp;Edit
+                    | &nbsp;Edit
         .row
             .col-12.table-responsive
                 table.table.table-hover
