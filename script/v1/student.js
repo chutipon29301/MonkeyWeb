@@ -149,6 +149,23 @@ module.exports = function (app, db, post) {
         }
     });
 
+    post('/post/v1/deleteAttendance', function (req, res) {
+        if (!req.body.attendanceID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        attendanceDB.deleteOne({
+            _id: ObjectID(req.body.attendanceID)
+        }, (err, result) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
+
     post('/post/v1/updateStudentRegistrationState', function (req, res) {
         if (!(req.body.studentID && req.body.quarter && req.body.year && req.body.registrationState && req.body.subRegistrationState)) {
             return res.status(400).send({
