@@ -825,7 +825,11 @@ module.exports = function (app, db, post) {
      * req.body = {
      *      intervalID: ma3894thgna3u4pg4t3,
      *      startDate: 45324300000,
-     *      endDate: 235724200000
+     *      endDate: 235724200000,
+     *      multiplier: {
+     *          tutorID: 99000,
+     *          value:  153
+     *      }
      * }
      * 
      * res.body = 'OK'
@@ -840,22 +844,33 @@ module.exports = function (app, db, post) {
         var newValue = {
             $set: {}
         };
-        if (req.body.startDate) {
-            newValue.$set.startDate = new Date(parseInt(req.body.startDate));
-        }
-        if (req.body.endDate) {
-            newValue.$set.endDate = new Date(parseInt(req.body.endDate));
-        }
-        if (req.body.multiplier) {
-            newValue.$set.multiplier = req.body.multiplier;
-        }
-        tutorCheckIntervalDB.updateOne({
+        tutorCheckIntervalDB.findOne({
             _id: ObjectID(req.body.intervalID)
-        }, newValue, (err, db) => {
-            if (err) {
-                return res.status(400).send(err);
+        }).then(result => {
+            if (req.body.startDate) {
+                newValue.$set.startDate = new Date(parseInt(req.body.startDate));
             }
-            res.status(200).send('OK');
+            if (req.body.endDate) {
+                newValue.$set.endDate = new Date(parseInt(req.body.endDate));
+            }
+            if (req.body.multiplier) {
+                if (!(req.body.multiplier.tutorID && req.body.multiplier.value)) {
+                    return res.status(400).send({
+                        err: -1,
+                        msg: 'Bad Request'
+                    });
+                }
+                newValue.$set.multiplier = result.multiplier
+                newValue.$set.multiplier[req.body.multiplier.tutorID] = parseInt(req.body.multiplier.value);
+            }
+            tutorCheckIntervalDB.updateOne({
+                _id: ObjectID(req.body.intervalID)
+            }, newValue, (err, db) => {
+                if (err) {
+                    return res.status(400).send(err);
+                }
+                res.status(200).send('OK');
+            });
         });
     });
 
