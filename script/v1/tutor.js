@@ -876,14 +876,15 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/addExtra', function (req, res) {
-        if (!(req.body.intervalID && req.body.value && req.body.reason)) {
+        if (!(req.body.intervalID && req.body.tutorID && req.body.value && req.body.reason)) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
             });
         }
         tutorCheckExtraDB.insertOne({
-            intervalID: intervalID,
+            intervalID: req.body.intervalID,
+            tutorID: req.body.tutorID,
             value: parseInt(req.body.value),
             reason: req.body.reason
         }, (err, result) => {
@@ -895,7 +896,7 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/editExtra', function (req, res) {
-        if (!(req.body.intervalID && (req.body.value || req.body.reason))) {
+        if (!(req.body.intervalID && (req.body.tutorID || req.body.value || req.body.reason))) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -904,6 +905,9 @@ module.exports = function (app, db, post) {
         var newValue = {
             $set: {}
         };
+        if (req.body.tutorID) {
+            newValue.$set.tutorID = req.body.tutorID;
+        }
         if (req.body.value) {
             newValue.$set.value = parseInt(req.body.value);
         }
@@ -935,6 +939,25 @@ module.exports = function (app, db, post) {
             }
             res.status(200).send('OK');
         });
+    });
+
+    post('/post/v1/listExtra', function (req, res) {
+        if (!(req.body.intervalID && req.body.tutorID)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckExtraDB.find({
+            intervalID: req.body.intervalID,
+            tutorID: req.body.tutorID
+        }).toArray().then(result => {
+            for (let i = 0; i < result.length; i++) {
+                result[i].extraID = result[i]._id;
+                delete result[i]._id;
+            }
+            res.status(200).send(result);
+        })
     });
 
     function getSlotFromHour(hour) {
