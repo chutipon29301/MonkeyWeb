@@ -875,6 +875,15 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for add extra
+     * req.body = {
+     *      intervalID: gjhq034bwcav4ht90q34t,
+     *      tutorID: 99000,
+     *      value: -1123,
+     *      reason: 'Hello World'
+     * }
+     */
     post('/post/v1/addExtra', function (req, res) {
         if (!(req.body.intervalID && req.body.tutorID && req.body.value && req.body.reason)) {
             return res.status(400).send({
@@ -895,8 +904,17 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for editExtra
+     * req.body = {
+     *      extraID: rgmeansi4ut0hwafiw4g4,
+     *      tutorID: 99000
+     *      value: 234895,
+     *      reason: 'Hello World'
+     * }
+     */
     post('/post/v1/editExtra', function (req, res) {
-        if (!(req.body.intervalID && (req.body.tutorID || req.body.value || req.body.reason))) {
+        if (!(req.body.extraID && (req.body.tutorID || req.body.value || req.body.reason))) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -915,7 +933,7 @@ module.exports = function (app, db, post) {
             newValue.$set.reason = req.body.reason;
         }
         tutorCheckExtraDB.updateOne({
-            _id: ObjectID(req.body.intervalID)
+            _id: ObjectID(req.body.extraID)
         }, newValue, (err, db) => {
             if (err) {
                 return res.status(400).send(err);
@@ -924,15 +942,21 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for remove extra
+     * req.body = {
+     *      extraID: aeuy4a0hawu3rftw94t4
+     * }
+     */
     post('/post/v1/removeExtra', function (req, res) {
-        if (!req.body.intervalID) {
+        if (!req.body.extraID) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
             });
         }
         tutorCheckExtraDB.deleteOne({
-            _id: ObjectID(req.body.intervalID)
+            _id: ObjectID(req.body.extraID)
         }, (err, result) => {
             if (err) {
                 return res.status(400).send(err);
@@ -941,6 +965,13 @@ module.exports = function (app, db, post) {
         });
     });
 
+    /**
+     * Method for list extra
+     * req.body = {
+     *      intervalID: tn24u9wnf3g4rr3,
+     *      tutorID: 99000
+     * }
+     */
     post('/post/v1/listExtra', function (req, res) {
         if (!(req.body.intervalID && req.body.tutorID)) {
             return res.status(400).send({
