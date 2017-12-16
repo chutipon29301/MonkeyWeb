@@ -92,23 +92,60 @@ module.exports = function (app, db, post) {
                     $lte: new Date(parseInt(req.body.endDate))
                 }
             }, {
-                    sort: {
-                        timestamp: -1
-                    }
-                }).toArray().then(result => {
-                    for (let i = 0; i < result.lenght; i++) {
-                        result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                        result[i].attendanceID = result[i]._id;
-                        result[i].date = new Date(result[i].date).valueOf();
-                        delete result[i]._id;
-                    }
-                });
+                sort: {
+                    timestamp: -1
+                }
+            }).toArray().then(result => {
+                for (let i = 0; i < result.lenght; i++) {
+                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
+                    result[i].attendanceID = result[i]._id;
+                    result[i].date = new Date(result[i].date).valueOf();
+                    delete result[i]._id;
+                }
+                return res.status(200).send(result);
+            });
         } else if (req.body.date) {
-            // attendanceDB.find({
-
-            // })
+            var requestDate = new Date(parseInt(req.body.date));
+            var startQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate());
+            var endQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate() + 1);
+            attendanceDB.find({
+                timestamp: {
+                    $gte: startQueryDate,
+                    $lte: endQueryDate
+                }
+            }, {
+                sort: {
+                    timestamp: -1
+                }
+            }).toArray().then(result => {
+                for (let i = 0; i < result.lenght; i++) {
+                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
+                    result[i].attendanceID = result[i]._id;
+                    result[i].date = new Date(result[i].date).valueOf();
+                    delete result[i]._id;
+                }
+                return res.status(200).send(result);
+            });
         } else if (req.body.studentStartDate && req.body.studentEndDate && req.body.studentID) {
-
+            attendanceDB.find({
+                timestamp: {
+                    $gte: new Date(parseInt(req.body.studentStartDate)),
+                    $lte: new Date(parseInt(req.body.studentEndDate))
+                },
+                userID: req.body.studentID
+            }, {
+                sort: {
+                    timestamp: -1
+                }
+            }).toArray().then(result => {
+                for (let i = 0; i < result.lenght; i++) {
+                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
+                    result[i].attendanceID = result[i]._id;
+                    result[i].date = new Date(result[i].date).valueOf();
+                    delete result[i]._id;
+                }
+                return res.status(200).send(result);
+            });
         }
     });
 
@@ -135,12 +172,12 @@ module.exports = function (app, db, post) {
             userDB.updateOne({
                 _id: parseInt(req.body.studentID)
             }, {
-                    $set: {
-                        'student.quarter': stateObject
-                    }
-                }).then(result => {
-                    return res.status(200).send('OK');
-                });
+                $set: {
+                    'student.quarter': stateObject
+                }
+            }).then(result => {
+                return res.status(200).send('OK');
+            });
         });
     });
 
