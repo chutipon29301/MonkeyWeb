@@ -3,6 +3,7 @@ module.exports = function (app, db, post) {
     var tutorCheckHistoryDB = db.collection('tutorCheckHistory');
     var tutorCheckPendingDB = db.collection('tutorCheckPending');
     var tutorCheckIntervalDB = db.collection('tutorCheckInterval');
+    var tutorCheckExtraDB = db.collection('tutorCheckExtra');
     var userDB = db.collection('user');
     var schedule = require('node-schedule');
 
@@ -871,6 +872,68 @@ module.exports = function (app, db, post) {
                 }
                 res.status(200).send('OK');
             });
+        });
+    });
+
+    post('/post/v1/addExtra', function (req, res) {
+        if (!(req.body.intervalID && req.body.value && req.body.reason)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckExtraDB.insertOne({
+            intervalID: intervalID,
+            value: parseInt(req.body.value),
+            reason: req.body.reason
+        }, (err, result) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/editExtra', function (req, res) {
+        if (!(req.body.intervalID && (req.body.value || req.body.reason))) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var newValue = {
+            $set: {}
+        };
+        if (req.body.value) {
+            newValue.$set.value = parseInt(req.body.value);
+        }
+        if (req.body.reason) {
+            newValue.$set.reason = req.body.reason;
+        }
+        tutorCheckExtraDB.updateOne({
+            _id: ObjectID(req.body.intervalID)
+        }, newValue, (err, db) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/removeExtra', function (req, res) {
+        if (!req.body.intervalID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckExtraDB.deleteOne({
+            _id: ObjectID(req.body.intervalID)
+        }, (err, result) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
         });
     });
 
