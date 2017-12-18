@@ -3,19 +3,14 @@ genIntervalSelectOption();
 /* function for genIntervalSelect */
 function genIntervalSelectOption() {
     $.post("post/v1/listInterval").then((allInterval) => {
+        log(allInterval)
         let $intervalSelect = $("#interval-select");
         for (let i in allInterval) {
             let startTime = moment(allInterval[i].startDate);
             let endTime = moment(allInterval[i].endDate);
-            if (allInterval[i].multiplier !== undefined) {
-                $intervalSelect.append(
-                    "<option id=" + allInterval[i].intervalID + ">" + startTime.format("DD MMM YY") + " - " + endTime.format("DD MMM YY") + " (" + allInterval[i].multiplier + ")" + "</option>"
-                );
-            } else {
-                $intervalSelect.append(
-                    "<option id=" + allInterval[i].intervalID + ">" + startTime.format("DD MMM YY") + " - " + endTime.format("DD MMM YY") + "</option>"
-                );
-            }
+            $intervalSelect.append(
+                "<option id=" + allInterval[i].intervalID + ">" + startTime.format("DD MMM YY") + " - " + endTime.format("DD MMM YY") + "</option>"
+            );
         }
         genTableData();
     });
@@ -82,7 +77,7 @@ function submitEditIntervalData() {
     let body = {intervalID: intervalID};
     if ($("#editIntervalStart").val() !== "") body.startDate = $("#editIntervalStart").data('DateTimePicker').date().hour(0).minute(0).second(0).millisecond(0).valueOf();
     if ($("#editIntervalEnd").val() !== "") body.endDate = $("#editIntervalEnd").data('DateTimePicker').date().hour(23).minute(59).second(59).millisecond(0).valueOf();
-    if ($("#editIntervalMultiplier").val() !== "") body.multiplier = $("#editIntervalMultiplier").val();
+    // if ($("#editIntervalMultiplier").val() !== "") body.multiplier = $("#editIntervalMultiplier").val();
     $.post("post/v1/editInterval", body).then((callbackData) => {
         log(callbackData);
         location.reload();
@@ -96,31 +91,50 @@ $("#interval-select").change(function () {
 
 //function for gen table
 async function genTableData() {
-    let multiplier;
+    // let multiplier;
     let $intervalSelect = $("#interval-select");
-    if ($intervalSelect.val().indexOf("(") >= 0) {
-        multiplier = parseInt($intervalSelect.val().slice($intervalSelect.val().indexOf("(") + 1, $intervalSelect.val().indexOf(")")));
-    } else {
-        multiplier = 1;
-    }
+    let intervalID = $("#interval-select option:selected").attr("id");
+    // if ($intervalSelect.val().indexOf("(") >= 0) {
+    //     multiplier = parseInt($intervalSelect.val().slice($intervalSelect.val().indexOf("(") + 1, $intervalSelect.val().indexOf(")")));
+    // } else {
+    //     multiplier = 1;
+    // }
     let startDate = moment($intervalSelect.val().slice(0, 9), "DD MMM YY").hour(0).minute(0).second(0).millisecond(0).valueOf();
     let endDate = moment($intervalSelect.val().slice(12, 21), "DD MMM YY").hour(23).minute(59).second(59).millisecond(0).valueOf();
     let allData = await $.post("post/v1/listAllCheckInHistory", {startDate: startDate, endDate: endDate});
+    log(allData);
     let $mainTableBody = $("#mainTableBody");
     $mainTableBody.empty();
     let allStaff = [];
+    let promise = [];
     for (let i in allData) {
         allStaff.push(name(i));
+        promise.push($.post("post/v1/listExtra", {intervalID: intervalID, tutorID: i}));
     }
     let allStaffName = await Promise.all(allStaff);
+    let allExtra = await Promise.all(promise);
     let index = 0;
     for (let i in allData) {
+        let wh = 0;
+        for (let j in allData[i].detail.hour) {
+            wh = wh + allData[i].detail.hour[j]
+        }
+        wh = wh / 1800000;
+        let extra = allExtra[index];
+        let realExtra = 0;
+        if (extra[0] !== undefined) {
+            realExtra = extra[0].value;
+        }
         $mainTableBody.append(
             "<tr onclick='showTutorHistory(" + i + ")'>" +
             "<td class='text-center'>" + i + "</td>" +
             "<td class='text-center'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
-            "<td class='text-center'>" + allData[i].detail.totalSum.toFixed(0) + "</td>" +
-            "<td class='text-center'>" + (allData[i].detail.totalSum * multiplier).toFixed(0) + "</td>" +
+            "<td class='text-center'>" + wh.toFixed(0) + "</td>" +
+            "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
+            "<td class='text-center'>1000</td>" +
+            "<td class='text-center'>" + (allData[i].totalSum * 1000).toFixed(0) + "</td>" +
+            "<td class='text-center'>" + realExtra + "</td>" +
+            "<td class='text-center'>" + (parseInt((allData[i].totalSum * 1000).toFixed(0)) + realExtra) + "</td>" +
             "</tr>"
         );
         index += 1;
@@ -158,6 +172,7 @@ function showTutorHistory(tutorID) {
         $title.html(tutorID);
         $modal.modal('show');
     });
+    showExtra(tutorID);
 }
 
 const detailButton = (detail, historyID) => {
@@ -186,6 +201,61 @@ const buttonMinText = (str) => {
 const trashButton = (tutorID, str) => {
     return "<button type='button' class='col btn btn-light' onclick='removeIOHistory(\"" + tutorID + "\",\"" + str + "\")'><span class='fa fa-lg fa-trash-o' style='color: red'></span></button>";
 };
+
+//function for extra
+function addExtra() {
+    $("#addExtraModal").modal('show');
+}
+
+function showExtra(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    $.post("post/v1/listExtra", {tutorID: tutorID, intervalID: intervalID}).then((allExtra) => {
+        $("#independentExtra").empty();
+        if (allExtra.length !== 0) {
+            $("#independentExtra").append("<h4 onclick='addExtra()'>Extra</h4>");
+            for (let i in allExtra) {
+                $("#independentExtra").append(
+                    "<h4>" + allExtra[i].reason + " : " + allExtra[i].value +
+                    " <span class='fa fa-trash' style='color:red' onclick='removeExtra(\"" +
+                    allExtra[i].extraID + "\")'></span></h4>"
+                );
+            }
+        } else {
+            $("#independentExtra").append("<button class='btn btn-light' onclick='addExtra()'>+ Add extra</button>");
+        }
+    });
+}
+
+function removeExtra(extraID) {
+    if (confirm("ต้องการลบ Extra นี้?")) {
+        let tutorID = $("#tutorHistoryModalTitle").html();
+        $.post("post/v1/removeExtra", {extraID: extraID}).then((cb) => {
+            log("Complete to remove extra => " + cb);
+            showTutorHistory(tutorID);
+        });
+    }
+}
+
+$("#addExtraSubmitButt").click(function () {
+    if ($("#addExtraValue").val() === "") {
+        alert("กรุณาใส่ตัวเลข");
+    } else if ($("#addExtraReason").val() === "") {
+        alert("กรุณาใส่เหตุผล");
+    } else {
+        let intervalID = $("#interval-select option:selected").attr("id");
+        let tutorID = $("#tutorHistoryModalTitle").html();
+        $.post("post/v1/addExtra", {
+            intervalID: intervalID,
+            tutorID: tutorID,
+            value: $("#addExtraValue").val(),
+            reason: $("#addExtraReason").val()
+        }).then((cb) => {
+            log("Complete to add extra => " + cb);
+            $("#addExtraModal").modal('hide');
+            showTutorHistory(tutorID);
+        });
+    }
+});
 
 //function for edit history
 $("#editTutorHistoryIn").datetimepicker({
