@@ -72,6 +72,7 @@ block body
                         tr
                             th.text-center ID
                             th.text-center Name
+                            th.text-center Done
                             th.text-center WH
                             th.text-center Credits
                             th.text-center Gain
@@ -131,6 +132,24 @@ block body
                     .modal-footer
                         button.btn.btn-info#addHistoryButt(type="button") Add
                         button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+        //Modal for add First page reason
+        #fpReasonModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Add reason
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .row
+                            .col-12
+                                .form-group
+                                    label Input:
+                                    input#fpReasonAdd.form-control(type='text')
+                    .modal-footer
+                        button.btn.btn-success#fpReasonAddSubmitButt(type="button") Add
+                        button.btn.btn-warning#fpReasonRmSubmitButt(type="button") Remove
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
 
         //Modal for add Extra
         #addExtraModal.modal.fade

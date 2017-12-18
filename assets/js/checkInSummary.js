@@ -115,21 +115,23 @@ async function genTableData() {
     let allExtra = await Promise.all(promise);
     let index = 0;
     for (let i in allData) {
-        let wh = 0;
-        for (let j in allData[i].detail.hour) {
-            wh = wh + allData[i].detail.hour[j]
-        }
-        wh = wh / 1800000;
         let extra = allExtra[index];
         let realExtra = 0;
-        if (extra[0] !== undefined) {
-            realExtra = extra[0].value;
+        let reason = "";
+        let reasonID = "";
+        for (let j = 0; j < extra.length; j++) {
+            realExtra = realExtra + extra[j].value;
+            if (extra[j].reason.indexOf("FPGG") >= 0) {
+                reason = extra[j].reason.slice(4);
+                reasonID = extra[j].extraID;
+            }
         }
         $mainTableBody.append(
-            "<tr onclick='showTutorHistory(" + i + ")'>" +
+            "<tr>" +
             "<td class='text-center'>" + i + "</td>" +
-            "<td class='text-center'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
-            "<td class='text-center'>" + wh.toFixed(0) + "</td>" +
+            "<td class='text-center' onclick='showTutorHistory(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+            "<td class='text-center' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
+            "<td class='text-center'>" + allData[i].hourSum.toFixed(1) + "</td>" +
             "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
             "<td class='text-center'>1000</td>" +
             "<td class='text-center'>" + (allData[i].totalSum * 1000).toFixed(0) + "</td>" +
@@ -140,6 +142,67 @@ async function genTableData() {
         index += 1;
     }
 }
+
+//function for manage firstpage reason
+function manageFirstpage(extraID, tutorID) {
+    writeCookie("tempFpID", extraID);
+    writeCookie("tempttID", tutorID);
+    $("#fpReasonModal").modal('show');
+}
+
+$("#fpReasonAddSubmitButt").click(function () {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    let cookies = getCookieDict();
+    if (cookies.tempFpID !== undefined) {
+        if ($("#fpReasonAdd").val() === "") {
+            alert("กรุณากรอกข้อมูล");
+        } else {
+            if (cookies.tempFpID !== "") {
+                $.post("post/v1/removeExtra", {extraID: cookies.tempFpID}).then((cb) => {
+                    log("Complete to remove extra => " + cb);
+                    $.post("post/v1/addExtra", {
+                        intervalID: intervalID,
+                        tutorID: cookies.tempttID,
+                        value: 0,
+                        reason: "FPGG" + $("#fpReasonAdd").val()
+                    }).then((cb2) => {
+                        $("#fpReasonModal").modal('hide');
+                        log("Complete to add extra => " + cb2);
+                        deleteCookie("tempFpID");
+                        deleteCookie("tempttID");
+                        genTableData();
+                    });
+                });
+            } else {
+                $.post("post/v1/addExtra", {
+                    intervalID: intervalID,
+                    tutorID: cookies.tempttID,
+                    value: 0,
+                    reason: "FPGG" + $("#fpReasonAdd").val()
+                }).then((cb2) => {
+                    $("#fpReasonModal").modal('hide');
+                    log("Complete to add extra => " + cb2);
+                    deleteCookie("tempFpID");
+                    deleteCookie("tempttID");
+                    genTableData();
+                });
+            }
+        }
+    }
+});
+$("#fpReasonRmSubmitButt").click(function () {
+    let cookies = getCookieDict();
+    if (cookies.tempFpID !== "") {
+        $.post("post/v1/removeExtra", {extraID: cookies.tempFpID}).then((cb) => {
+            deleteCookie("tempFpID");
+            $("#fpReasonModal").modal('hide');
+            log("Complete to remove extra => " + cb);
+            genTableData();
+        });
+    } else {
+        alert("ไม่มีข้อมูลในเซลล์นี้");
+    }
+});
 
 //function for show independent summary
 function showTutorHistory(tutorID) {
@@ -214,11 +277,13 @@ function showExtra(tutorID) {
         if (allExtra.length !== 0) {
             $("#independentExtra").append("<h4 onclick='addExtra()'>Extra</h4>");
             for (let i in allExtra) {
-                $("#independentExtra").append(
-                    "<h4>" + allExtra[i].reason + " : " + allExtra[i].value +
-                    " <span class='fa fa-trash' style='color:red' onclick='removeExtra(\"" +
-                    allExtra[i].extraID + "\")'></span></h4>"
-                );
+                if (allExtra[i].reason.indexOf("FPGG") < 0) {
+                    $("#independentExtra").append(
+                        "<h4>" + allExtra[i].reason + " : " + allExtra[i].value +
+                        " <span class='fa fa-trash' style='color:red' onclick='removeExtra(\"" +
+                        allExtra[i].extraID + "\")'></span></h4>"
+                    );
+                }
             }
         } else {
             $("#independentExtra").append("<button class='btn btn-light' onclick='addExtra()'>+ Add extra</button>");
