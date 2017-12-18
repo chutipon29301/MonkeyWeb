@@ -636,9 +636,11 @@ module.exports = function (app, db, post) {
                     response[result[i].tutorID].detail.hour = [0, 0, 0, 0, 0, 0, 0];
                     response[result[i].tutorID].body = [];
                     response[result[i].tutorID].totalSum = 0;
+                    response[result[i].tutorID].hourSum = 0;
                 }
                 var checkInDate = new Date(result[i].checkIn);
                 var checkOutDate = new Date(result[i].checkOut);
+                response[result[i].tutorID].hourSum = response[result[i].tutorID].hourSum + ((checkOutDate.getTime() - checkInDate.getTime()) / 3600000);
                 var dateDetail = {
                     historyID: result[i]._id,
                     checkIn: checkInDate.valueOf(),
