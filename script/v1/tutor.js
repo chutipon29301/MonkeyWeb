@@ -877,6 +877,23 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/deleteInterval', function(req,res){
+        if(!res.body.intervalID){
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckIntervalDB.deleteOne({
+            _id: ObjectID(req.body.intervalID)
+        },(err, result) => {
+            if (err) {
+                return res.status(400).send(err);
+            }
+            res.status(200).send('OK');
+        });
+    });
+
     /**
      * Method for add extra
      * req.body = {
