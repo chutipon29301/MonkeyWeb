@@ -42,7 +42,7 @@ block head
         }
 block script
     script(src="js/bootstrap-datetimepicker4.min.js")
-    script(src="js/checkInSummary.min.js")
+    script(src="js/checkInSummary.js")
 mixin checkoutOption
     option(value=-1) -
     option(value=0) Hybrid
@@ -115,6 +115,7 @@ block body
                             //input#editIntervalMultiplier.form-control(type='number')
                     .modal-footer
                         button#editIntervalSubmitButt.btn.btn-info(type="button") Edit
+                        button#editIntervalRemoveButt.btn.btn-warning(type="button") Remove
                         button.btn.btn-danger(type="button" data-dismiss="modal") Close
 
         //Modal for show independent history
