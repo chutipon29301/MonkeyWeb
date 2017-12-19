@@ -145,11 +145,11 @@ async function genTableData() {
         $mainTableBody.append(
             "<tr>" +
             "<td class='text-center'>" + i + "</td>" +
-            "<td class='text-center' onclick='showTutorHistory(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
-            "<td class='text-center' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
+            "<td class='text-center table-info' onclick='showTutorHistory(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+            "<td class='text-center table-primary' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
             "<td class='text-center'>" + allData[i].hourSum.toFixed(1) + "</td>" +
             "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
-            "<td class='text-center' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
+            "<td class='text-center table-info' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
             "<td class='text-center'>" + (allData[i].totalSum * displayMultiply).toFixed(0) + "</td>" +
             "<td class='text-center'>" + realExtra + "</td>" +
             "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
@@ -264,6 +264,11 @@ function showTutorHistory(tutorID) {
         for (let i in historyData.detail) {
             let checkIn = moment(historyData.detail[i].checkIn);
             let checkOut = moment(historyData.detail[i].checkOut);
+            let sum = 0;
+            let diffHour = (checkOut.hour() - checkIn.hour()) + ((checkOut.minute() - checkIn.minute()) / 60);
+            if (historyData.detail[i].sum >= 0) {
+                sum = historyData.detail[i].sum;
+            }
             $table.append(
                 "<tr>" +
                 "<td class='text-center'>" + checkIn.format("ddd") + "</td>" +
@@ -271,6 +276,8 @@ function showTutorHistory(tutorID) {
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkIn.format("HH:mm") + "</td>" +
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkOut.format("HH:mm") + "</td>" +
                 "<td>" + detailButton(historyData.detail[i].detail, historyData.detail[i].historyID) + "</td>" +
+                "<td class='text-center'>" + sum.toFixed(1) + "</td>" +
+                "<td class='text-center'>" + diffHour.toFixed(1) + "</td>" +
                 "<td>" + trashButton(tutorID + "", historyData.detail[i].historyID) + "</td>" +
                 "</tr>"
             );
@@ -340,6 +347,7 @@ function removeExtra(extraID) {
         $.post("post/v1/removeExtra", {extraID: extraID}).then((cb) => {
             log("Complete to remove extra => " + cb);
             showTutorHistory(tutorID);
+            genTableData();
         });
     }
 }
@@ -361,6 +369,7 @@ $("#addExtraSubmitButt").click(function () {
             log("Complete to add extra => " + cb);
             $("#addExtraModal").modal('hide');
             showTutorHistory(tutorID);
+            genTableData();
         });
     }
 });
