@@ -70,6 +70,15 @@ $("#editIntervalEnd").datetimepicker({
 $("#editIntervalSubmitButt").click(function () {
     submitEditIntervalData();
 });
+$("#editIntervalRemoveButt").click(function () {
+    if (confirm("ต้องการลบช่วงเวลานี้?")) {
+        let intervalID = $("#interval-select option:selected").attr("id");
+        $.post("post/v1/deleteInterval", {intervalID: intervalID}).then((cb) => {
+            log("Complete to remove interval => " + cb);
+            location.reload();
+        });
+    }
+});
 
 function submitEditIntervalData() {
     let $intervalSelect = $("#interval-select");
