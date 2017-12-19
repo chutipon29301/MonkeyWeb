@@ -864,6 +864,9 @@ module.exports = function (app, db, post) {
                     });
                 }
                 newValue.$set.multiplier = result.multiplier
+                if(!result.multiplier) {
+                    newValue.$set.multiplier = {}
+                }
                 newValue.$set.multiplier[req.body.multiplier.tutorID] = parseInt(req.body.multiplier.value);
             }
             tutorCheckIntervalDB.updateOne({
@@ -878,7 +881,7 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/deleteInterval', function(req,res){
-        if(!res.body.intervalID){
+        if(!req.body.intervalID){
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
