@@ -3,7 +3,6 @@ genIntervalSelectOption();
 /* function for genIntervalSelect */
 function genIntervalSelectOption() {
     $.post("post/v1/listInterval").then((allInterval) => {
-        log(allInterval)
         let $intervalSelect = $("#interval-select");
         for (let i in allInterval) {
             let startTime = moment(allInterval[i].startDate);
@@ -100,18 +99,20 @@ $("#interval-select").change(function () {
 
 //function for gen table
 async function genTableData() {
-    // let multiplier;
+    let multiplier;
     let $intervalSelect = $("#interval-select");
     let intervalID = $("#interval-select option:selected").attr("id");
-    // if ($intervalSelect.val().indexOf("(") >= 0) {
-    //     multiplier = parseInt($intervalSelect.val().slice($intervalSelect.val().indexOf("(") + 1, $intervalSelect.val().indexOf(")")));
-    // } else {
-    //     multiplier = 1;
-    // }
     let startDate = moment($intervalSelect.val().slice(0, 9), "DD MMM YY").hour(0).minute(0).second(0).millisecond(0).valueOf();
     let endDate = moment($intervalSelect.val().slice(12, 21), "DD MMM YY").hour(23).minute(59).second(59).millisecond(0).valueOf();
-    let allData = await $.post("post/v1/listAllCheckInHistory", {startDate: startDate, endDate: endDate});
-    log(allData);
+    let [allInterval, allData] = await Promise.all([$.post("post/v1/listInterval"), $.post("post/v1/listAllCheckInHistory", {
+        startDate: startDate,
+        endDate: endDate
+    })]);
+    for (let i in allInterval) {
+        if (allInterval[i].intervalID === intervalID) {
+            multiplier = allInterval[i].multiplier;
+        }
+    }
     let $mainTableBody = $("#mainTableBody");
     $mainTableBody.empty();
     let allStaff = [];
@@ -124,6 +125,12 @@ async function genTableData() {
     let allExtra = await Promise.all(promise);
     let index = 0;
     for (let i in allData) {
+        let displayMultiply = 1;
+        if (multiplier !== undefined) {
+            if (multiplier[i] !== undefined) {
+                displayMultiply = multiplier[i];
+            }
+        }
         let extra = allExtra[index];
         let realExtra = 0;
         let reason = "";
@@ -142,13 +149,40 @@ async function genTableData() {
             "<td class='text-center' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
             "<td class='text-center'>" + allData[i].hourSum.toFixed(1) + "</td>" +
             "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
-            "<td class='text-center'>1000</td>" +
-            "<td class='text-center'>" + (allData[i].totalSum * 1000).toFixed(0) + "</td>" +
+            "<td class='text-center' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
+            "<td class='text-center'>" + (allData[i].totalSum * displayMultiply).toFixed(0) + "</td>" +
             "<td class='text-center'>" + realExtra + "</td>" +
-            "<td class='text-center'>" + (parseInt((allData[i].totalSum * 1000).toFixed(0)) + realExtra) + "</td>" +
+            "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
             "</tr>"
         );
         index += 1;
+    }
+}
+
+//function for edit gain
+function callEditGainModal(tutorID) {
+    $("#editGainModalTitle").html("Edit " + tutorID + " gain");
+    $("#editGainModal").modal('show');
+}
+
+$("#editGainSubmitButt").click(function () {
+    editGain();
+});
+
+function editGain() {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    let tutorID = $("#editGainModalTitle").html().slice(5, 10);
+    if ($("#editGainValue").val() !== "") {
+        $.post("post/v1/editInterval", {
+            intervalID: intervalID,
+            multiplier: {tutorID: tutorID, value: $("#editGainValue").val()}
+        }).then((cb) => {
+            log("Complete to edit multiplier => " + cb);
+            genTableData();
+            $("#editGainModal").modal('hide');
+        });
+    } else {
+        alert("กรุณากรอกข้อมูล");
     }
 }
 

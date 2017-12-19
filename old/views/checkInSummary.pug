@@ -42,7 +42,7 @@ block head
         }
 block script
     script(src="js/bootstrap-datetimepicker4.min.js")
-    script(src="js/checkInSummary.js")
+    script(src="js/checkInSummary.min.js")
 mixin checkoutOption
     option(value=-1) -
     option(value=0) Hybrid
@@ -117,6 +117,23 @@ block body
                         button#editIntervalSubmitButt.btn.btn-info(type="button") Edit
                         button#editIntervalRemoveButt.btn.btn-warning(type="button") Remove
                         button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+        //Modal for edit gain
+        #editGainModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title#editGainModalTitle
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .row
+                            .col-12
+                                .form-group
+                                    label Input:
+                                    input#editGainValue.form-control(type='number')
+                    .modal-footer
+                        button.btn.btn-success#editGainSubmitButt(type="button") Edit
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
 
         //Modal for show independent history
         #tutorHistoryModal.modal.fade
