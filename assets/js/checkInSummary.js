@@ -276,8 +276,8 @@ function showTutorHistory(tutorID) {
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkIn.format("HH:mm") + "</td>" +
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkOut.format("HH:mm") + "</td>" +
                 "<td>" + detailButton(historyData.detail[i].detail, historyData.detail[i].historyID) + "</td>" +
-                "<td class='text-center'>" + sum.toFixed(1) + "</td>" +
                 "<td class='text-center'>" + diffHour.toFixed(1) + "</td>" +
+                "<td class='text-center'>" + sum.toFixed(1) + "</td>" +
                 "<td>" + trashButton(tutorID + "", historyData.detail[i].historyID) + "</td>" +
                 "</tr>"
             );
