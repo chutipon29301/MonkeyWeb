@@ -72,7 +72,7 @@ $("#editIntervalSubmitButt").click(function () {
 $("#editIntervalRemoveButt").click(function () {
     if (confirm("ต้องการลบช่วงเวลานี้?")) {
         let intervalID = $("#interval-select option:selected").attr("id");
-        $.post("post/v1/deleteInterval", {intervalID: intervalID}).then((cb) => {
+        $.post("post/v1/deleteInterval", { intervalID: intervalID }).then((cb) => {
             log("Complete to remove interval => " + cb);
             location.reload();
         });
@@ -82,7 +82,7 @@ $("#editIntervalRemoveButt").click(function () {
 function submitEditIntervalData() {
     let $intervalSelect = $("#interval-select");
     let intervalID = $intervalSelect.find(":selected").attr("id");
-    let body = {intervalID: intervalID};
+    let body = { intervalID: intervalID };
     if ($("#editIntervalStart").val() !== "") body.startDate = $("#editIntervalStart").data('DateTimePicker').date().hour(0).minute(0).second(0).millisecond(0).valueOf();
     if ($("#editIntervalEnd").val() !== "") body.endDate = $("#editIntervalEnd").data('DateTimePicker').date().hour(23).minute(59).second(59).millisecond(0).valueOf();
     // if ($("#editIntervalMultiplier").val() !== "") body.multiplier = $("#editIntervalMultiplier").val();
@@ -119,7 +119,7 @@ async function genTableData() {
     let promise = [];
     for (let i in allData) {
         allStaff.push(name(i));
-        promise.push($.post("post/v1/listExtra", {intervalID: intervalID, tutorID: i}));
+        promise.push($.post("post/v1/listExtra", { intervalID: intervalID, tutorID: i }));
     }
     let allStaffName = await Promise.all(allStaff);
     let allExtra = await Promise.all(promise);
@@ -175,7 +175,7 @@ function editGain() {
     if ($("#editGainValue").val() !== "") {
         $.post("post/v1/editInterval", {
             intervalID: intervalID,
-            multiplier: {tutorID: tutorID, value: $("#editGainValue").val()}
+            multiplier: { tutorID: tutorID, value: $("#editGainValue").val() }
         }).then((cb) => {
             log("Complete to edit multiplier => " + cb);
             genTableData();
@@ -201,7 +201,7 @@ $("#fpReasonAddSubmitButt").click(function () {
             alert("กรุณากรอกข้อมูล");
         } else {
             if (cookies.tempFpID !== "") {
-                $.post("post/v1/removeExtra", {extraID: cookies.tempFpID}).then((cb) => {
+                $.post("post/v1/removeExtra", { extraID: cookies.tempFpID }).then((cb) => {
                     log("Complete to remove extra => " + cb);
                     $.post("post/v1/addExtra", {
                         intervalID: intervalID,
@@ -236,7 +236,7 @@ $("#fpReasonAddSubmitButt").click(function () {
 $("#fpReasonRmSubmitButt").click(function () {
     let cookies = getCookieDict();
     if (cookies.tempFpID !== "") {
-        $.post("post/v1/removeExtra", {extraID: cookies.tempFpID}).then((cb) => {
+        $.post("post/v1/removeExtra", { extraID: cookies.tempFpID }).then((cb) => {
             deleteCookie("tempFpID");
             $("#fpReasonModal").modal('hide');
             log("Complete to remove extra => " + cb);
@@ -270,7 +270,7 @@ function showTutorHistory(tutorID) {
                 sum = historyData.detail[i].sum;
             }
             $table.append(
-                "<tr>" +
+                "<tr class='" + ((diffHour < 0) ? "table-warning" : "") + "'>" +
                 "<td class='text-center'>" + checkIn.format("ddd") + "</td>" +
                 "<td class='text-center'>" + checkIn.format("DD MMM YYYY") + "</td>" +
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkIn.format("HH:mm") + "</td>" +
@@ -322,7 +322,7 @@ function addExtra() {
 
 function showExtra(tutorID) {
     let intervalID = $("#interval-select option:selected").attr("id");
-    $.post("post/v1/listExtra", {tutorID: tutorID, intervalID: intervalID}).then((allExtra) => {
+    $.post("post/v1/listExtra", { tutorID: tutorID, intervalID: intervalID }).then((allExtra) => {
         $("#independentExtra").empty();
         if (allExtra.length !== 0) {
             $("#independentExtra").append("<h4 onclick='addExtra()'>Extra</h4>");
@@ -344,7 +344,7 @@ function showExtra(tutorID) {
 function removeExtra(extraID) {
     if (confirm("ต้องการลบ Extra นี้?")) {
         let tutorID = $("#tutorHistoryModalTitle").html();
-        $.post("post/v1/removeExtra", {extraID: extraID}).then((cb) => {
+        $.post("post/v1/removeExtra", { extraID: extraID }).then((cb) => {
             log("Complete to remove extra => " + cb);
             showTutorHistory(tutorID);
             genTableData();
@@ -496,7 +496,7 @@ function removeIOHistory(tutorID, historyID) {
     let $table = $("#tutorHistoryModalTable");
     $table.modal('hide');
     if (confirm("ต้องการลบประวัตินี้?")) {
-        $.post("post/v1/deleteCheckOutHistory", {historyID: historyID}).then((cb) => {
+        $.post("post/v1/deleteCheckOutHistory", { historyID: historyID }).then((cb) => {
             log("Complete to delete history=>" + cb);
             showTutorHistory(tutorID)
         });
