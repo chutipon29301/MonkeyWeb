@@ -153,6 +153,16 @@ module.exports=function(app,db){
             });
         });
     };
+    // app.post('*',(req,res)=> {
+    //     res.status(200).send('OK');
+    // })
+    // app.get('*',(req,res) => {
+    //     console.log(req);
+    //     // res.status(200).send('OK');
+    //     var page = 'login';
+    //     var outputPath=path.join(__dirname,"old/"+page+".html");
+    //     res.status(200).sendFile(outputPath);
+    // });
     var addPage=function(page,options){
         if(options==undefined)options={};
         var url=options.url;
@@ -160,11 +170,12 @@ module.exports=function(app,db){
         var outputPath=path.join(__dirname,"old/"+page+".html");
         var middlewareOptions=options.middlewareOptions;
         if(middlewareOptions==undefined)middlewareOptions={};
-        app.get(url,checkAuth(middlewareOptions),function(req,res){
+        app.get(url,function(req,res){
             logPosition(req.cookies,function(positionColor){
                 console.log(chalk.black.bgGreen("[PAGE REQUEST]"),page,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
-                res.status(200).sendFile(outputPath);
+                
             });
+            res.status(200).sendFile(outputPath);
         });
     };
     var return404=function(req,res){
