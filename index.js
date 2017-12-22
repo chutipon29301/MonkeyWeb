@@ -8,7 +8,9 @@ var fs=require("fs-extra");
 var MongoClient=require("mongodb").MongoClient;
 var multer=require("multer");
 var path=require("path");
-
+var passport = require('passport')
+var session = require('express-session');
+var flash = require('connect-flash');
 var app=express();
 // Accept object notation in POST method
 app.use(bodyParser.urlencoded({extended:true}));
@@ -61,6 +63,13 @@ if(fs.existsSync(recipientTokenPath)){
     );
 }
 else app.locals.recipientToken={};
+
+// Initialize passport
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 console.log(chalk.black.bgBlack("Black"));
 console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
@@ -169,8 +178,11 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
                     });
                 };
                 app.locals.postFunction={};
-                require("./post.js")(app,db);
-                require("./webFlow.js")(app,db);
+
+
+                require("./config/passport.js")(passport,db);
+                require("./post.js")(app,db,passport);
+                require("./webFlow.js")(app,db,passport);
             });
         });
     });

@@ -1,5 +1,5 @@
 console.log("[START] webFlow.js");
-module.exports=function(app,db){
+module.exports=function(app,db,pasport){
     var chalk=require("chalk");
     var moment=require("moment");
     var path=require("path");
@@ -138,7 +138,7 @@ module.exports=function(app,db){
         var middlewareOptions=options.middlewareOptions;
         if(middlewareOptions==undefined)middlewareOptions={};
         if(callback==undefined)callback=function(x){x({});};
-        app.get(url,checkAuth(middlewareOptions),function(req,res){
+        app.get(url,isLoggedIn,function(req,res){
             logPosition(req.cookies,function(positionColor){
                 console.log(chalk.black.bgGreen("[PAGE REQUEST]"),page,"FROM",req.ip,positionColor("#"+req.cookies.monkeyWebUser),moment().format("@ dddDDMMMYYYY HH:mm:ss"));
                 callback(function(local){
@@ -188,6 +188,7 @@ module.exports=function(app,db){
 
     addPage("login");
     addPage("login",{url:"/"});
+    addPage("test");
     addPugPage("studentDocument");
     var options={middlewareOptions:{login:true,position:"student"}};
         options.middlewareOptions.studentStatus="inactive";
@@ -285,4 +286,15 @@ module.exports=function(app,db){
     });
     // addPage("firstConfig",{backendDir:true});
     app.all("*",return404);
+}
+
+
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on 
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/');
 }
