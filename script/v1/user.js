@@ -23,4 +23,28 @@ module.exports = function (app, db, post) {
             res.status(200).send(result);
         });
     });
+
+    post('/post/v1/changePassword', function (req, res) {
+        if (!(req.body.userID && req.body.password)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        userDB.updateOne({
+            _id: parseInt(req.body.userID)
+        }, {
+            $set: {
+                password: req.body.password
+            }
+        }, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: 0,
+                    msg: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
 }
