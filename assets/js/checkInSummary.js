@@ -115,6 +115,8 @@ async function genTableData() {
     }
     let $mainTableBody = $("#mainTableBody");
     $mainTableBody.empty();
+    let $summaryTableBody = $("#summaryTableBody");
+    $summaryTableBody.empty();
     let allStaff = [];
     let promise = [];
     for (let i in allData) {
@@ -124,8 +126,12 @@ async function genTableData() {
     let allStaffName = await Promise.all(allStaff);
     let allExtra = await Promise.all(promise);
     let index = 0;
+    let sumWH = 0;
+    let sumCredit = 0;
+    let sumAmout = 0;
+    let lastTotal = 0;
     for (let i in allData) {
-        let displayMultiply = 1;
+        let displayMultiply = 100;
         if (multiplier !== undefined) {
             if (multiplier[i] !== undefined) {
                 displayMultiply = multiplier[i];
@@ -142,6 +148,10 @@ async function genTableData() {
                 reasonID = extra[j].extraID;
             }
         }
+        sumWH = sumWH + parseInt(allData[i].hourSum.toFixed(1));
+        sumCredit = sumCredit + parseInt(allData[i].totalSum.toFixed(1));
+        sumAmout = sumAmout + parseInt((allData[i].totalSum * displayMultiply).toFixed(0));
+        lastTotal = lastTotal + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra);
         $mainTableBody.append(
             "<tr>" +
             "<td class='text-center'>" + i + "</td>" +
@@ -155,9 +165,31 @@ async function genTableData() {
             "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
             "</tr>"
         );
+        $summaryTableBody.append(
+            "<tr>" +
+            "<td class='text-center'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+            "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
+            "</tr>"
+        );
         index += 1;
     }
+    $mainTableBody.append(
+        "<tr>" +
+        "<td class='text-center table-dark' colspan='3'>Total</td>" +
+        "<td class='text-center'>" + sumWH + "</td>" +
+        "<td class='text-center'>" + sumCredit + "</td>" +
+        "<td class='text-center'>100</td>" +
+        "<td class='text-center'>" + sumAmout + "</td>" +
+        "<td class='text-center'>0</td>" +
+        "<td class='text-center'>" + lastTotal + "</td>" +
+        "</tr>"
+    );
 }
+
+// function for show summary table
+$("#summaryTableButt").click(function () {
+    $("#summaryTableModal").modal('show');
+});
 
 //function for edit gain
 function callEditGainModal(tutorID) {
@@ -261,6 +293,8 @@ function showTutorHistory(tutorID) {
         endDate: endDate
     }).then((historyData) => {
         $table.empty();
+        let sumHour = 0;
+        let sumCredit = 0;
         for (let i in historyData.detail) {
             let checkIn = moment(historyData.detail[i].checkIn);
             let checkOut = moment(historyData.detail[i].checkOut);
@@ -269,6 +303,8 @@ function showTutorHistory(tutorID) {
             if (historyData.detail[i].sum >= 0) {
                 sum = historyData.detail[i].sum;
             }
+            sumHour = sumHour + parseInt(diffHour.toFixed(1));
+            sumCredit = sumCredit + parseInt(sum.toFixed(1));
             $table.append(
                 "<tr class='" + ((diffHour < 0) ? "table-warning" : "") + "'>" +
                 "<td class='text-center'>" + checkIn.format("ddd") + "</td>" +
@@ -282,6 +318,14 @@ function showTutorHistory(tutorID) {
                 "</tr>"
             );
         }
+        $table.append(
+            "<tr>" +
+            "<td class='text-center table-dark' colspan='5'>Total</td>" +
+            "<td class='text-center'>" + sumHour + "</td>" +
+            "<td class='text-center'>" + sumCredit + "</td>" +
+            "<td class='text-center'> - </td>" +
+            "</tr>"
+        );
         $title.html(tutorID);
         $modal.modal('show');
     });

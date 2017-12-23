@@ -65,6 +65,8 @@ block body
                 button#editIntervalButt.col-12.btn.btn-outline-info(type="button")
                     span.fa.fa-cogs
                     | &nbsp;Edit
+            .col-12.col-md-2
+                button#summaryTableButt.col-12.btn.btn-outline-info(type="button") Summary
         .row
             .col-12.table-responsive
                 table.table.table-hover
@@ -134,6 +136,24 @@ block body
                     .modal-footer
                         button.btn.btn-success#editGainSubmitButt(type="button") Edit
                         button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
+
+        //Modal for show summary table
+        #summaryTableModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Summary
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body.p-0
+                        .table-responsive
+                            table.table.table-hover.table-striped.mb-0
+                                thead.thead-dark
+                                    tr
+                                        th.text-center Name
+                                        th.text-center Total
+                                tbody#summaryTableBody
+                    .modal-footer
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Close
 
         //Modal for show independent history
         #tutorHistoryModal.modal.fade
