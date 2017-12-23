@@ -697,7 +697,7 @@ module.exports=function(app,db){
         addField("nicknameEn");
         addField("email");
         addField("phone");
-        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+        findUser(res,tutorID,{position:["tutor","admin","dev","mel"]},function(result){
             userDB.updateOne({_id:tutorID},{$set:input},function(){
                 res.send({});
             });
