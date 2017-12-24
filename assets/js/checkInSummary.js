@@ -100,6 +100,7 @@ $("#interval-select").change(function () {
 //function for gen table
 async function genTableData() {
     let multiplier;
+    let doneTutorID;
     let $intervalSelect = $("#interval-select");
     let intervalID = $("#interval-select option:selected").attr("id");
     let startDate = moment($intervalSelect.val().slice(0, 9), "DD MMM YY").hour(0).minute(0).second(0).millisecond(0).valueOf();
@@ -111,6 +112,7 @@ async function genTableData() {
     for (let i in allInterval) {
         if (allInterval[i].intervalID === intervalID) {
             multiplier = allInterval[i].multiplier;
+            doneTutorID = allInterval[i].done;
         }
     }
     let $mainTableBody = $("#mainTableBody");
@@ -120,7 +122,7 @@ async function genTableData() {
     let allStaff = [];
     let promise = [];
     for (let i in allData) {
-        allStaff.push(name(i));
+        allStaff.push($.post("post/v1/userInfo", { userID: i }));
         promise.push($.post("post/v1/listExtra", { intervalID: intervalID, tutorID: i }));
     }
     let allStaffName = await Promise.all(allStaff);
@@ -141,12 +143,16 @@ async function genTableData() {
         let realExtra = 0;
         let reason = "";
         let reasonID = "";
+        let subPos = "-";
         for (let j = 0; j < extra.length; j++) {
             realExtra = realExtra + extra[j].value;
             if (extra[j].reason.indexOf("FPGG") >= 0) {
                 reason = extra[j].reason.slice(4);
                 reasonID = extra[j].extraID;
             }
+        }
+        if (allStaffName[index].subPosition !== undefined) {
+            subPos = allStaffName[index].subPosition;
         }
         sumWH = sumWH + parseInt(allData[i].hourSum.toFixed(1));
         sumCredit = sumCredit + parseInt(allData[i].totalSum.toFixed(1));
@@ -156,19 +162,29 @@ async function genTableData() {
             "<tr>" +
             "<td class='text-center'>" + i + "</td>" +
             "<td class='text-center table-info' onclick='showTutorHistory(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
-            "<td class='text-center table-primary' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
+            "<td class='text-center table-primary' onclick='changeSubPos(" + i + ")'>" + subPos + "</td>" +
+            "<td class='text-center table-info' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
             "<td class='text-center'>" + allData[i].hourSum.toFixed(1) + "</td>" +
             "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
-            "<td class='text-center table-info' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
-            "<td class='text-center'>" + (allData[i].totalSum * displayMultiply).toFixed(0) + "</td>" +
+            "<td class='text-center table-primary' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
+            "<td id='" + "amout" + i + "' class='text-center'>" + (allData[i].totalSum * displayMultiply).toFixed(0) + "</td>" +
             "<td class='text-center'>" + realExtra + "</td>" +
-            "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
+            "<td id='" + "total" + i + "' class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
             "</tr>"
         );
+        let doneStatus = "<span class='fa fa-times' style='color:red' onclick='addIntervalDone(\"" + i + "\")'></span>";
+        let doneClass = "";
+        if (doneTutorID !== undefined) {
+            if ($.inArray(parseInt(i), doneTutorID) > -1) {
+                doneClass = "table-success";
+                doneStatus = "<span class='fa fa-check' style='color:green' onclick='deleteIntervalDone(\"" + i + "\")'></span>"
+            }
+        }
         $summaryTableBody.append(
-            "<tr>" +
-            "<td class='text-center'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+            "<tr class=" + doneClass + ">" +
+            "<td class='text-center' onclick='showSummaryCover(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
             "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
+            "<td class='text-center'>" + doneStatus + "</td>" +
             "</tr>"
         );
         index += 1;
@@ -190,6 +206,31 @@ async function genTableData() {
 $("#summaryTableButt").click(function () {
     $("#summaryTableModal").modal('show');
 });
+
+// function for show summary cover
+async function showSummaryCover(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    let [userInfo, extra] = await Promise.all([$.post("post/v1/userInfo", { userID: tutorID }), $.post("post/v1/listExtra", { tutorID: tutorID, intervalID: intervalID })]);
+    let extraStr = "";
+    for (let i in extra) {
+        if (extra[i].reason.indexOf("FPGG") < 0) {
+            if (extra[i].value >= 0) {
+                extraStr += "<p class='ml-4'>" + extra[i].reason + ": + " + extra[i].value + "</p>";
+            } else {
+                extraStr += "<p class='ml-4'>" + extra[i].reason + ": - " + extra[i].value + "</p>";
+            }
+        }
+    }
+    $("#summaryCoverTitle").html(userInfo.nickname + " " + userInfo.firstname);
+    $("#summerCoverBody").empty();
+    $("#summerCoverBody").append(
+        "<p>Sub position : " + userInfo.subPosition + "</p>" +
+        "<p>Amout : " + $("#amout" + tutorID).html() + "</p>" +
+        extraStr +
+        "<p>Total : " + $("#total" + tutorID).html() + "</p>"
+    );
+    $("#summaryCoverModal").modal('show');
+}
 
 //function for edit gain
 function callEditGainModal(tutorID) {
@@ -215,6 +256,47 @@ function editGain() {
         });
     } else {
         alert("กรุณากรอกข้อมูล");
+    }
+}
+
+// function for change sub position
+function changeSubPos(tutorID) {
+    writeCookie("tempttID", tutorID);
+    $("#changeSunPosModal").modal('show');
+}
+$("#changeSubPosSubmitButt").click(function () {
+    let cookies = getCookieDict();
+    if ($("#changeSunPosInput").val() === "") {
+        alert("กรุณาใส่ sub position");
+    } else {
+        if (confirm("ต้องการเปลี่ยน sub position?")) {
+            $.post("post/v1/changeSubPosition", { userID: cookies.tempttID, subPosition: $("#changeSunPosInput").val() }).then((cb) => {
+                log("Complete to change sub position = > " + cb);
+                genTableData();
+                $("#changeSunPosModal").modal('hide');
+                deleteCookie("tempttID");
+            });
+        }
+    }
+});
+
+// function for change done status
+function addIntervalDone(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    if (confirm("ต้องการเปลี่ยนสถานะเป็น done?")) {
+        $.post("post/v1/addIntervalDone", { intervalID: intervalID, userID: tutorID }).then(cb => {
+            log("Complete to add done => " + cb);
+            genTableData();
+        });
+    }
+}
+function deleteIntervalDone(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    if (confirm("ต้องการเปลี่ยนสถานะเป็น undone?")) {
+        $.post("post/v1/deleteIntervalDone", { intervalID: intervalID, userID: tutorID }).then(cb => {
+            log("Complete to delete done => " + cb);
+            genTableData();
+        });
     }
 }
 
