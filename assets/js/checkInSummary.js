@@ -195,7 +195,7 @@ async function genTableData() {
     }
     $mainTableBody.append(
         "<tr>" +
-        "<td class='text-center table-dark' colspan='3'>Total</td>" +
+        "<td class='text-center table-dark' colspan='4'>Total</td>" +
         "<td class='text-center'>" + sumWH + "</td>" +
         "<td class='text-center'>" + sumCredit + "</td>" +
         "<td class='text-center'>100</td>" +
@@ -238,8 +238,11 @@ async function showSummaryCover(tutorID) {
 }
 $("#summaryCoverCloseButt").click(function () {
     $("#summaryCoverModal").modal('hide');
+});
+$("#summaryCoverModal").on('hidden.bs.modal', function () {
     $("#summaryTableModal").modal('show');
 });
+
 
 //function for edit gain
 function callEditGainModal(tutorID) {
@@ -508,6 +511,9 @@ $("#addExtraSubmitButt").click(function () {
         });
     }
 });
+$("#addExtraModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
+});
 
 //function for edit history
 $("#editTutorHistoryIn").datetimepicker({
@@ -562,6 +568,9 @@ function editIOHistoryTime() {
         }
     }
 }
+$("#checkIOTimeHistoryModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
+});
 
 function editIOHistorySlot(historyID, detail, index) {
     writeCookie("tempEditHistoryID", historyID);
@@ -590,7 +599,10 @@ $("#checkIOSlotModal .selector").click(function () {
         deleteCookie("tempEditHistoryID");
         deleteCookie("tempEditDetail");
         deleteCookie("tempEditIndex");
-    })
+    });
+});
+$("#checkIOSlotModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
 });
 const getSlotValue = (str) => {
     let type = -1;
@@ -633,7 +645,7 @@ function removeIOHistory(tutorID, historyID) {
     if (confirm("ต้องการลบประวัตินี้?")) {
         $.post("post/v1/deleteCheckOutHistory", { historyID: historyID }).then((cb) => {
             log("Complete to delete history=>" + cb);
-            showTutorHistory(tutorID)
+            showTutorHistory(tutorID);
         });
     }
 }
@@ -658,6 +670,9 @@ $("#addTutorHistorySubmitButt").click(function () {
         addIOHistory();
         $("#addHistoryModal").modal('hide');
     }
+});
+$("#addHistoryModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
 });
 
 function addIOHistory() {
