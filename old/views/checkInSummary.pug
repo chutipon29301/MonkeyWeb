@@ -160,13 +160,13 @@ block body
         //Modal for show summary cover
         #summaryCoverModal.modal.fade
             .modal-dialog
-                .modal-content
+                .modal-content(style="background-color:lightblue")
                     .modal-header
                         h4.modal-title#summaryCoverTitle
                         button.close(type="button" data-dismiss="modal") &times;
                     .modal-body#summerCoverBody
                     .modal-footer
-                        button.btn.btn-danger(type="button" data-dismiss="modal") Close
+                        button.btn.btn-danger#summaryCoverCloseButt(type="button" data-dismiss="modal") Close
 
         //Modal for show independent history
         #tutorHistoryModal.modal.fade
