@@ -47,4 +47,28 @@ module.exports = function (app, db, post) {
             res.status(200).send('OK');
         });
     });
+
+    post('/post/v1/changeSubPosition', function (req, res) {
+        if (!(req.body.userID && req.body.subPosition)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        userDB.updateOne({
+            _id: parseInt(req.body.userID)
+        }, {
+            $set: {
+                subPosition: req.body.subPosition
+            }
+        }, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: 0,
+                    msg: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
 }
