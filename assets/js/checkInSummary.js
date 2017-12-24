@@ -1,3 +1,7 @@
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 genIntervalSelectOption();
 
 /* function for genIntervalSelect */
@@ -215,22 +219,27 @@ async function showSummaryCover(tutorID) {
     for (let i in extra) {
         if (extra[i].reason.indexOf("FPGG") < 0) {
             if (extra[i].value >= 0) {
-                extraStr += "<p class='ml-4'>" + extra[i].reason + ": + " + extra[i].value + "</p>";
+                extraStr += "<h5 class='ml-4'>" + extra[i].reason + ": + " + numberWithCommas(extra[i].value) + "</h5>";
             } else {
-                extraStr += "<p class='ml-4'>" + extra[i].reason + ": - " + extra[i].value + "</p>";
+                extraStr += "<h5 class='ml-4'>" + extra[i].reason + ": - " + numberWithCommas(extra[i].value) + "</h5>";
             }
         }
     }
     $("#summaryCoverTitle").html(userInfo.nickname + " " + userInfo.firstname);
     $("#summerCoverBody").empty();
     $("#summerCoverBody").append(
-        "<p>Sub position : " + userInfo.subPosition + "</p>" +
-        "<p>Amout : " + $("#amout" + tutorID).html() + "</p>" +
+        "<h5>Sub position : " + userInfo.subPosition + "</h5>" +
+        "<h5>Salary : " + numberWithCommas($("#amout" + tutorID).html()) + "</h5>" +
         extraStr +
-        "<p>Total : " + $("#total" + tutorID).html() + "</p>"
+        "<h5>Total : " + numberWithCommas($("#total" + tutorID).html()) + "</h5>"
     );
+    $("#summaryTableModal").modal('hide');
     $("#summaryCoverModal").modal('show');
 }
+$("#summaryCoverCloseButt").click(function () {
+    $("#summaryCoverModal").modal('hide');
+    $("#summaryTableModal").modal('show');
+});
 
 //function for edit gain
 function callEditGainModal(tutorID) {
