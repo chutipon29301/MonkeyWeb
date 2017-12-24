@@ -169,7 +169,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
                     });
                 };
                 app.locals.postFunction={};
-                require("./post.js")(app,db);
+                require("./post.js")(app,db,fs);
                 require("./webFlow.js")(app,db);
             });
         });

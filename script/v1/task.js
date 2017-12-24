@@ -41,6 +41,7 @@ module.exports = function (app, db, post) {
                 msg: 'Bad Request'
             });
         }
+        
         res.status(200).send('OK');
     });
 
