@@ -96,7 +96,7 @@ module.exports = function (app, db, post) {
                     timestamp: -1
                 }
             }).toArray().then(result => {
-                for (let i = 0; i < result.lenght; i++) {
+                for (let i = 0; i < result.length; i++) {
                     result[i].timestamp = new Date(result[i].timestamp).valueOf();
                     result[i].attendanceID = result[i]._id;
                     result[i].date = new Date(result[i].date).valueOf();
@@ -118,7 +118,7 @@ module.exports = function (app, db, post) {
                     timestamp: -1
                 }
             }).toArray().then(result => {
-                for (let i = 0; i < result.lenght; i++) {
+                for (let i = 0; i < result.length; i++) {
                     result[i].timestamp = new Date(result[i].timestamp).valueOf();
                     result[i].attendanceID = result[i]._id;
                     result[i].date = new Date(result[i].date).valueOf();
@@ -138,7 +138,7 @@ module.exports = function (app, db, post) {
                     timestamp: -1
                 }
             }).toArray().then(result => {
-                for (let i = 0; i < result.lenght; i++) {
+                for (let i = 0; i < result.length; i++) {
                     result[i].timestamp = new Date(result[i].timestamp).valueOf();
                     result[i].attendanceID = result[i]._id;
                     result[i].date = new Date(result[i].date).valueOf();
@@ -228,4 +228,5 @@ module.exports = function (app, db, post) {
             res.status(200).send(object);
         });
     });
+
 }

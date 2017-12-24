@@ -2093,7 +2093,7 @@ module.exports=function(app,db){
         });
     });
 
-    var postV1 = require("./v1.js")(app, db, post);
+    var postV1 = require("./v1.js")(app, db, post,fs);
 }
 
 /**
