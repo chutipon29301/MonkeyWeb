@@ -48,6 +48,21 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/userInfo', function (req, res) {
+        if (!req.body.userID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        userDB.findOne({
+            _id: parseInt(req.body.userID)
+        }).then(user => {
+            delete user._id;
+            res.status(200).send(user);
+        });
+    });
+
     post('/post/v1/changeSubPosition', function (req, res) {
         if (!(req.body.userID && req.body.subPosition)) {
             return res.status(400).send({
