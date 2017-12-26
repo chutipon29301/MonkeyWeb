@@ -7,7 +7,7 @@ var isDevelopOnMac = !/^win/.test(process.platform);
 /**
  * Edit system path here
  */
-const destinationConst = (isDevelopOnMac) ? '/Volumes/VDO/' : 'file://monkeycloud/VDO';
+const destinationConst = (isDevelopOnMac) ? '/Volumes/VDO/' : 'X:\\';
 /**
  * End editing path
  */
