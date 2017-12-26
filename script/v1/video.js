@@ -1,10 +1,20 @@
 var ObjectID = require('mongodb').ObjectID;
 var CryptoJS = require('crypto-js');
-const destinationConst = '/Volumes/VDO/';
 const AES_PASSWORD = 'monkey';
+
+
+var isDevelopOnMac = !/^win/.test(process.platform);
+/**
+ * Edit system path here
+ */
+const destinationConst = (isDevelopOnMac) ? '/Volumes/VDO/' : 'file://monkeycloud/VDO';
+/**
+ * End editing path
+ */
 
 module.exports = function (app, db, post, fs) {
     post('/post/v1/getStudentVdoList', function (req, res) {
+        console.log(isDevelopOnMac);
         if (!req.body.studentCode) {
             return res.status(400).send({
                 err: -1,
@@ -12,6 +22,7 @@ module.exports = function (app, db, post, fs) {
             });
         }
         var destination = destinationConst + req.body.studentCode + '/';
+        console.log(destination);
         fs.readdir(destination, (err, files) => {
             if (err) {
                 return res.status(500).send({
@@ -24,11 +35,13 @@ module.exports = function (app, db, post, fs) {
                     remove(files, i);
                 }
             }
+            console.log(files);
             res.status(200).send({
                 files: files
             });
         });
     });
+
     post('/post/v1/encryptRequest', function (req, res) {
         if (!req.body.body) {
             return res.status(400).send({
