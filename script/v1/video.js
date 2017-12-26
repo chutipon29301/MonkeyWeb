@@ -90,7 +90,6 @@ module.exports = function (app, db, post, fs) {
             res.writeHead(200, head)
             fs.createReadStream(destination).pipe(res);
         }
-        // res.send('GET request to homepage');
     });
 
     function remove(array, element) {
