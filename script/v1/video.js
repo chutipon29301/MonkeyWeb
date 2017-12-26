@@ -2,10 +2,12 @@ var ObjectID = require('mongodb').ObjectID;
 var CryptoJS = require('crypto-js');
 const AES_PASSWORD = 'monkey';
 
+
+var isDevelopOnMac = false;
 /**
  * Edit system path here
  */
-const destinationConst = '/Volumes/VDO/';
+const destinationConst = (isDevelopOnMac) ? '/Volumes/VDO/' : 'file://monkeycloud/VDO';
 /**
  * End editing path
  */
@@ -19,6 +21,7 @@ module.exports = function (app, db, post, fs) {
             });
         }
         var destination = destinationConst + req.body.studentCode + '/';
+        console.log(destination);
         fs.readdir(destination, (err, files) => {
             if (err) {
                 return res.status(500).send({
@@ -31,6 +34,7 @@ module.exports = function (app, db, post, fs) {
                     remove(files, i);
                 }
             }
+            console.log(files);
             res.status(200).send({
                 files: files
             });
