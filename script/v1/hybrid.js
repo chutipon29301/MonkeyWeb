@@ -192,7 +192,7 @@ module.exports = function (app, db, post) {
      *      ...
      * ]
      */
-    post('s', function (req, res) {
+    post('listStudentHybrid', function (req, res) {
         if (req.body.studentID === undefined || req.body.quarter === undefined || req.body.year === undefined) {
             return res.status(400).send({
                 err: -1,
