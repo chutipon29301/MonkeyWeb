@@ -1,7 +1,14 @@
 var ObjectID = require('mongodb').ObjectID;
 var CryptoJS = require('crypto-js');
-const destinationConst = '/Volumes/VDO/';
 const AES_PASSWORD = 'monkey';
+
+/**
+ * Edit system path here
+ */
+const destinationConst = '/Volumes/VDO/';
+/**
+ * End editing path
+ */
 
 module.exports = function (app, db, post, fs) {
     post('/post/v1/getStudentVdoList', function (req, res) {
@@ -29,6 +36,7 @@ module.exports = function (app, db, post, fs) {
             });
         });
     });
+
     post('/post/v1/encryptRequest', function (req, res) {
         if (!req.body.body) {
             return res.status(400).send({

@@ -1,8 +1,8 @@
 var ObjectID = require('mongodb').ObjectID;
+var schedule = require('node-schedule');
 
 module.exports = function (app, db, post) {
 
-    var schedule = require('node-schedule');
     const MODE_ADD_HYBRID = 1;
     const MODE_REMOVE_HYBRID = 2;
 
@@ -192,7 +192,7 @@ module.exports = function (app, db, post) {
      *      ...
      * ]
      */
-    post('/post/v1/listStudentHybrid', function (req, res) {
+    post('s', function (req, res) {
         if (req.body.studentID === undefined || req.body.quarter === undefined || req.body.year === undefined) {
             return res.status(400).send({
                 err: -1,
