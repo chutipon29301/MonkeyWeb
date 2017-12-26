@@ -6,7 +6,7 @@ const AES_PASSWORD = 'monkey';
  * Edit system path here
  */
 const destinationConst = '/Volumes/';
-const isMacDebugging = true;
+const isMacDebugging = !/^win/.test(process.platform);
 /**
  * End editing path
  */

@@ -3,7 +3,7 @@ var CryptoJS = require('crypto-js');
 const AES_PASSWORD = 'monkey';
 
 
-var isDevelopOnMac = false;
+var isDevelopOnMac = !/^win/.test(process.platform);
 /**
  * Edit system path here
  */
@@ -14,6 +14,7 @@ const destinationConst = (isDevelopOnMac) ? '/Volumes/VDO/' : 'file://monkeyclou
 
 module.exports = function (app, db, post, fs) {
     post('/post/v1/getStudentVdoList', function (req, res) {
+        console.log(isDevelopOnMac);
         if (!req.body.studentCode) {
             return res.status(400).send({
                 err: -1,
