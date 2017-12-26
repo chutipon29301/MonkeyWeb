@@ -1,6 +1,7 @@
-var ObjectID = require("mongodb").ObjectID;
-var CryptoJS = require("crypto-js");
+var ObjectID = require('mongodb').ObjectID;
+var CryptoJS = require('crypto-js');
 const destinationConst = '/Volumes/VDO/';
+const AES_PASSWORD = 'monkey';
 
 module.exports = function (app, db, post, fs) {
     post('/post/v1/getStudentVdoList', function (req, res) {
@@ -23,20 +24,34 @@ module.exports = function (app, db, post, fs) {
                     remove(files, i);
                 }
             }
-            res.status(200).send(files);
+            res.status(200).send({
+                files: files
+            });
+        });
+    });
+    post('/post/v1/encryptRequest', function (req, res) {
+        if (!req.body.body) {
+            return res.status(400).send({
+                err: 0,
+                msg: 'Bad Reqeust'
+            });
+        }
+        var string = req.body.body;
+        var encrypted = CryptoJS.AES.encrypt(string, AES_PASSWORD);
+        return res.status(200).send({
+            path: encodeURIComponent(encrypted.toString())
         });
     });
 
     app.get('/get/v1/video', function (req, res) {
         if (!req.query.v) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: 0,
                 msg: 'Bad Reqeust'
             });
         }
         var query = decodeURIComponent(req.query.v);
-        var password = 'monkey';
-        var decrypted = CryptoJS.AES.decrypt(query, password);
+        var decrypted = CryptoJS.AES.decrypt(query, AES_PASSWORD);
         var decode = decrypted.toString(CryptoJS.enc.Utf8);
         var requestObject = JSON.parse(decode);
         if (!(requestObject.studentCode && requestObject.videoName)) {
@@ -49,7 +64,6 @@ module.exports = function (app, db, post, fs) {
         var stat = fs.statSync(destination)
         var fileSize = stat.size;
         var range = req.headers.range;
-
         if (range) {
             var parts = range.replace(/bytes=/, "").split("-")
             var start = parseInt(parts[0], 10);

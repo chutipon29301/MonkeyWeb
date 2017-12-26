@@ -669,7 +669,7 @@ module.exports=function(app,db){
     //OK {tutorID} return {}
     post("/post/removeTutor",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
-        findUser(res,studentID,{position:"tutor"},function(result){
+        findUser(res,tutorID,{position:"tutor"},function(result){
             userDB.deleteOne({_id:tutorID},function(){
                 res.send({});
             });
