@@ -11,6 +11,20 @@ const isMacDebugging = !/^win/.test(process.platform);
  * End editing path
  */
 
+ /**
+ * Method for checking request ip address if the request send from local network
+ * @param {request} req request information containing ip address
+ */
+function isLocal(req) {
+    var index = req.ip.match(/\d/);
+    var ipAddress = req.ip.substring(index.index, req.ip.length);
+    if (ipAddress.substring(0, 7) === '192.168' || ipAddress === '125.25.54.23') {
+        return false;
+    }
+    return true;
+}
+
+
 module.exports = function (app, db, post, fs) {
     post('/post/v1/getKeyStudentPath', function (req, res) {
         if (!req.body.path) {
@@ -34,6 +48,12 @@ module.exports = function (app, db, post, fs) {
             return res.status(400).send({
                 err: 0,
                 msg: 'Bad Reqeust'
+            });
+        }
+        if (isLocal(req)) {
+            return res.status(401).send({
+                err: 0,
+                msg: 'Unauthorize network'
             });
         }
         var query = decodeURIComponent(req.query.k);
