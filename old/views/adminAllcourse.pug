@@ -74,6 +74,26 @@ block body
                             option(value="270000000") Sun 10
                             option(value="280800000") Sun 13
                             option(value="288000000") Sun 15
+                form
+                    .row#level
+                        label.checkbox-inline.col-2
+                            input(type='checkbox', value='a', checked, name="options[]", onClick="getAllCourseContent()")
+                            | a
+                        label.checkbox-inline.col-2
+                            input(type='checkbox', value='b', checked, name="options[]", onClick="getAllCourseContent()")
+                            | b
+                        label.checkbox-inline.col-2
+                            input(type='checkbox', value='c', checked, name="options[]", onClick="getAllCourseContent()")
+                            | c
+                        label.checkbox-inline.col-2
+                            input(type='checkbox', value='x', checked, name="options[]", onClick="getAllCourseContent()")
+                            | x
+                        label.checkbox-inline.col-2
+                            input(type='checkbox', value='g', checked, name="options[]", onClick="getAllCourseContent()")
+                            | g
+                        label.checkbox-inline.col-2
+                            input(type='checkbox', value='z', checked, name="options[]", onClick="getAllCourseContent()")
+                            | z
                 a(href="adminCourseTable" class=webUser.position === "tutor" ? "invisible" : "btn btn-link col")
                     span.fa.fa-lg.fa-book
                     |คัมภีร์เทวดา
