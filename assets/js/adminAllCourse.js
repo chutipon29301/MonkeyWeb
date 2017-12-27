@@ -5,17 +5,13 @@ const getDateName = (date) => {
 const getRoom = (roomNo) => {
     switch (roomNo) {
         case -1:
-            return "-"
-            break;
+            return "-";
         case 0:
-            return "HB"
-            break;
+            return "HB";
         case 5:
-            return "Glass"
-            break;
+            return "Glass";
         default:
-            return roomNo
-            break;
+            return roomNo;
     }
 }
 let userPosition = "";
@@ -34,11 +30,11 @@ $(document).ready(function () {
             switch (pos.position) {
                 case "tutor":
                 case "admin":
-                    quarterStatus = "protected"
+                    quarterStatus = "protected";
                     break;
                 case "dev":
                 case "mel":
-                    quarterStatus = "private"
+                    quarterStatus = "private";
                     break;
             }
             userPosition = pos.position;
@@ -56,11 +52,13 @@ $(document).ready(function () {
         })
     })
 });
+
 function quarterChange() {
     var quarter = document.getElementById("quarter");
     writeCookie("monkeyWebSelectedQuarter", quarter.options[quarter.selectedIndex].value);
     getAllCourseContent();
 }
+
 function getAllCourseContent() {
     quarterVal = $("#quarter").val();
     allCourseV1(quarterVal.slice(0, 4), quarterVal.slice(5)).then(data => {
@@ -69,16 +67,21 @@ function getAllCourseContent() {
         generateCourseHtmlTable(course);
     })
 }
+
 function filterCourseData(data) {
     let subject = document.getElementById("subject");
     let grade = document.getElementById("grade");
     let name = document.getElementById("name");
     let time = document.getElementById("time");
     let quarter = document.getElementById("quarter");
+    var checked = [];
+    var level = $("input[name='options[]']:checked").each(function () {
+        checked.push($(this).val());
+    });
     let cookie = getCookieDict();
     if (userPosition === "tutor") {
         data = data.filter(data => data.tutorName.indexOf(userName) !== -1);
-        return data
+        return data;
     } else {
         if (subject.options[subject.selectedIndex].value !== "all") {
             data = data.filter(data => data.courseName.slice(0, 1) === subject.options[subject.selectedIndex].value);
@@ -92,9 +95,11 @@ function filterCourseData(data) {
         if (time.options[time.selectedIndex].value !== "all") {
             data = data.filter(data => data.day === parseInt(time.options[time.selectedIndex].value));
         }
-        return data
+        data = data.filter(data => checked.indexOf(data.courseName.slice(data.courseName.length - 1, data.courseName.length)) !== -1);
+        return data;
     }
 }
+
 function generateCourseHtmlTable(course) {
     let table = document.getElementById("allCourseTable");
     table.innerHTML = "";
