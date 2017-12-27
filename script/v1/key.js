@@ -41,13 +41,13 @@ module.exports = function (app, db, post, fs) {
         var decode = decrypted.toString(CryptoJS.enc.Utf8);
         var requestObject = JSON.parse(decode);
         if (!requestObject.path) {
-            res.status(400).send({
+            return res.status(400).send({
                 err: 0,
                 msg: 'Bad Reqeust'
             });
         }
-        if(requestObject.path.search('key-student') === -1){
-            res.status(400).send({
+        if (requestObject.path.search('key-student') === -1) {
+            return res.status(400).send({
                 err: 0,
                 msg: 'Bad Reqeust'
             });
