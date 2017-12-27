@@ -229,4 +229,43 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/setRemark', function (req, res) {
+        if (!(req.body.studentID && req.body.remark)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var newValue = {
+            $set: {}
+        };
+        newValue.$set.remark = req.body.remark;
+        userDB.updateOne({
+            _id: parseInt(req.body.studentID)
+        }, newValue, (err, result) => {
+            if(err){
+                return res.status(500).send({
+                    err: -1,
+                    errInfo: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/resetRemark', function(req,res){
+        userDB.updateMany({}, {
+            $set: {
+                remark: ''
+            }
+        }, (err, result) => {
+            if(err){
+                return res.status(500).send({
+                    err: -1,
+                    errInfo: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
 }
