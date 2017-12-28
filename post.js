@@ -340,6 +340,7 @@ module.exports=function(app,db){
                                 quarter:result[i].student.quarter,
                                 status:result[i].student.status,
                                 level:result[i].level,
+                                remark:result[i].remark,
                                 inCourse:course!=null,
                                 inHybrid:hybrid!=null
                             };
