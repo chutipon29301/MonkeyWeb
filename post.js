@@ -1,12 +1,11 @@
 console.log("[START] post.js");
-module.exports=function(app,db){
+module.exports=function(app,db,passport){
     var chalk=require("chalk");
     var CryptoJS=require("crypto-js");
     var fs=require("fs-extra");
     var moment=require("moment");
     var ObjectID=require("mongodb").ObjectID;
     var request=require("request");
-
     var configDB=db.collection("config");
     var courseSuggestionDB=db.collection("courseSuggestion");
     var fullHybridDB=db.collection("fullHybrid");
@@ -21,7 +20,6 @@ module.exports=function(app,db){
     var courseDB = db.collection("course");
     var studentHybridDB = db.collection("hybridStudent");
     var studentSkillDB = db.collection("skillStudent");
-
     var gradeBitToString=function(bit){
         var output="",p=false,s=false;
         for(var i=0;i<6;i++){
@@ -248,7 +246,6 @@ module.exports=function(app,db){
             });
         });
     };
-
     // User Information
     //OK {userID,password} return {verified}
     post("/post/password",function(req,res){
@@ -1933,6 +1930,30 @@ module.exports=function(app,db){
         }
         res.status(200).send("OK");
     });
+    post("/post/test",function(req,res){
+        var local={moment:require('moment')};
+        var post = app.locals.post;
+        getQuarter(req.query.year,req.query.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                Object.assign(local,{quarter:quarter});
+                post("post/allCourseMaterial",{year:quarter.year,quarter:quarter.quarter},function(result){
+                    Object.assign(local,result);
+                    post("post/getConfig",{},function(result){
+                        Object.assign(local,{config:result});
+                        post("post/listQuarter",{status:"protected"},function(result){
+                            Object.assign(local,{protectedQuarter:result.quarter});
+                            console.log(local)
+                            res.status(200).send(local);
+                        });
+                    });
+                });
+            }
+        });
+    })
+    
+
+
 
     /**
      * Post method for listing student to conference
@@ -2094,7 +2115,8 @@ module.exports=function(app,db){
         });
     });
 
-    var postV1 = require("./v1.js")(app, db, post, fs);
+    var postV1 = require("./v1.js")(app, db, post, fs , passport , CryptoJS);
+
 }
 
 /**
