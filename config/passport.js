@@ -22,8 +22,7 @@ module.exports = function (passport, db) {
         passReqToCallback: true
     }, function (req, id, password, done) {
         process.nextTick(function () {
-            User.findOne({ '_id': parseInt(id) }, function (err, user) {
-                console.log('user : ',user)
+            User.findOne({ '_id': parseInt(id) , password: password}, function (err, user) {
                 if (err) return done(err);
                 if (!user) return done(null, false);
                 done(null, user)

@@ -37,7 +37,7 @@
   </div>
   <div class="container">
     <div class="col-md-4 col-md-offset-4">
-      <form onSubmit="loginSubmit(); return false;">
+      <form action="/v1/login" method="post">
         <div class="form-group" id="usrFromGroup">
           <label for="usr">ID: <span style="visibility: hidden; color:#F00" id="usrReq">*required</span></label>
           <input type="text" class="form-control" id="usr" autofocus>

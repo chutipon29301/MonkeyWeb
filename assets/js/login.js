@@ -41,8 +41,14 @@ function loginSubmit() {
 function login(user, pwd) {
     console.log(pwd)
     $.post('post/v1/login',{id:user,password:encrypt(""+pwd).toString()},data=>{
-        if(data.err) throw data.err;
-        this.location = data.redirect;
+        if(data.err) {
+            alert("ID or password is incorrect.")
+            throw data.err
+        }
+        else{
+            writeUserCookie(user, pwd)
+            this.location = data.redirect;
+        }
     })
 }
 
@@ -106,8 +112,8 @@ function encrypt(text) {
     return CryptoJS.SHA3(text)
 }
 
-// function writeUserCookie(user, pwd) {
-//     "use strict";
-//     writeCookie("monkeyWebUser", user);
-//     writeCookie("monkeyWebPassword", encrypt(pwd).toString())
-// }
+function writeUserCookie(user, pwd) {
+    "use strict";
+    writeCookie("monkeyWebUser", user);
+    writeCookie("monkeyWebPassword", encrypt(pwd).toString())
+}

@@ -1,5 +1,4 @@
 module.exports = function(app,db,post,passport){
-    var path = require('path')
     post('/post/v1/login', function(req,res,next){
         passport.authenticate('local', function(err,user){    
             if(err) throw err;
@@ -10,14 +9,20 @@ module.exports = function(app,db,post,passport){
             else{
                 req.logIn(user , function(err){
                     if(err) throw err;
-                    // res.status(200).send({msg : 'ok' , redirect : '/test' , status : req.isAuthenticated()})
-                    return res.redirect(307,'/test')
+                    let redirect
+                    if(user.position == 'student'){
+                        redirect = '/'
+                    } 
+                    else if(user.position == 'tutor') redirect = 'tutorCheck';
+                    else{ redirect = 'adminAllStudent' }
+                    res.status(200).send({msg : 'ok' , redirect : redirect , status : req.isAuthenticated()})
+                    // res.location('/test')
                 })
             }
         })(req,res,next)
     })
     post('/post/v1/isLoggedIn', function(req,res,next){
-        if(req.isAuthenticated()) res.status(200).send({loggedIn : true})
+        if(req.isAuthenticated()) res.status(200).send({loggedIn : true , position : req.user.position})
         else{res.status(202).send({loggedIn : false})}
     })
     post('/post/v1/logout',function(req,res,next){

@@ -65,20 +65,20 @@ if(fs.existsSync(recipientTokenPath)){
 else app.locals.recipientToken={};
 
 // Initialize passport
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(session({ secret: require('crypto-js').SHA3('j3f2ipnc').toString() })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 
-console.log(chalk.black.bgBlack("Black"));
-console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
-console.log(chalk.black.bgGreen("Green : [PAGE],student"));
-console.log(chalk.black.bgYellow("Yellow : [404]-full"));
-console.log(chalk.black.bgBlue("Blue : [POST],dev"));
-console.log(chalk.black.bgMagenta("Magenta : tutor"));
-console.log(chalk.black.bgCyan("Cyan : admin"));
-console.log(chalk.black.bgWhite("White : noUser"));
+// console.log(chalk.black.bgBlack("Black"));
+// console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
+// console.log(chalk.black.bgGreen("Green : [PAGE],student"));
+// console.log(chalk.black.bgYellow("Yellow : [404]-full"));
+// console.log(chalk.black.bgBlue("Blue : [POST],dev"));
+// console.log(chalk.black.bgMagenta("Magenta : tutor"));
+// console.log(chalk.black.bgCyan("Cyan : admin"));
+// console.log(chalk.black.bgWhite("White : noUser"));
 MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
     if(err){
         console.error(chalk.black.bgRed("[ERROR]",err.message));
@@ -136,11 +136,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
 
     console.log("[CONNECT] MonkeyDB successfully");
     db.admin().listDatabases(function(err,result){
-        console.log("[SHOW] All databases");
-        console.log(result);
         db.listCollections().toArray(function(err,result){
-            console.log("[SHOW] All collections");
-            console.log(result);
         });
     });
 
@@ -167,7 +163,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
             }
         },{upsert:true},function(err,result){
             configDB.findOne({},function(err,config){
-                console.log(config);
                 app.locals.post=function(method,input,callback){
                     app.locals.postFunction[method]({
                         body:input
@@ -178,11 +173,10 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
                     });
                 };
                 app.locals.postFunction={};
-
-
                 require("./config/passport.js")(passport,db);
                 require("./post.js")(app,db,passport);
                 require("./webFlow.js")(app,db,passport);
+
             });
         });
     });

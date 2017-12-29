@@ -37,4 +37,67 @@ module.exports = function (app, db, post ,CryptoJS) {
             res.status(200).send(result);
         });
     });
+
+    post('/post/v1/changePassword', function (req, res) {
+        if (!(req.body.userID && req.body.password)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        userDB.updateOne({
+            _id: parseInt(req.body.userID)
+        }, {
+            $set: {
+                password: req.body.password
+            }
+        }, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: 0,
+                    msg: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/userInfo', function (req, res) {
+        if (!req.body.userID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        userDB.findOne({
+            _id: parseInt(req.body.userID)
+        }).then(user => {
+            delete user._id;
+            res.status(200).send(user);
+        });
+    });
+
+    post('/post/v1/changeSubPosition', function (req, res) {
+        if (!(req.body.userID && req.body.subPosition)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        userDB.updateOne({
+            _id: parseInt(req.body.userID)
+        }, {
+            $set: {
+                subPosition: req.body.subPosition
+            }
+        }, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: 0,
+                    msg: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
 }

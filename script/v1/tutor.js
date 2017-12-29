@@ -864,7 +864,7 @@ module.exports = function (app, db, post) {
                     });
                 }
                 newValue.$set.multiplier = result.multiplier
-                if(!result.multiplier) {
+                if (!result.multiplier) {
                     newValue.$set.multiplier = {}
                 }
                 newValue.$set.multiplier[req.body.multiplier.tutorID] = parseInt(req.body.multiplier.value);
@@ -880,8 +880,8 @@ module.exports = function (app, db, post) {
         });
     });
 
-    post('/post/v1/deleteInterval', function(req,res){
-        if(!req.body.intervalID){
+    post('/post/v1/deleteInterval', function (req, res) {
+        if (!req.body.intervalID) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -889,11 +889,71 @@ module.exports = function (app, db, post) {
         }
         tutorCheckIntervalDB.deleteOne({
             _id: ObjectID(req.body.intervalID)
-        },(err, result) => {
+        }, (err, result) => {
             if (err) {
                 return res.status(400).send(err);
             }
             res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/addIntervalDone', function (req, res) {
+        if (!(req.body.intervalID && req.body.userID)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckIntervalDB.findOne({
+            _id: ObjectID(req.body.intervalID)
+        }).then(result => {
+            var newValue = {
+                $set: {}
+            };
+            if (result.done === undefined) {
+                newValue.$set.done = [parseInt(req.body.userID)];
+            } else {
+                newValue.$set.done = result.done;
+                newValue.$set.done.push(parseInt(req.body.userID));
+            }
+            tutorCheckIntervalDB.updateOne({
+                _id: ObjectID(req.body.intervalID)
+            }, newValue, (err, db) => {
+                if (err) {
+                    return res.status(400).send(err);
+                }
+                res.status(200).send('OK');
+            });
+        });
+    });
+
+    post('/post/v1/deleteIntervalDone', function (req, res) {
+        if (!(req.body.intervalID && req.body.userID)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        tutorCheckIntervalDB.findOne({
+            _id: ObjectID(req.body.intervalID)
+        }).then(result => {
+            var newValue = {
+                $set: {}
+            };
+            if (result.done === undefined) {
+                newValue.$set.done = [];
+            } else {
+                newValue.$set.done = result.done;
+                remove(newValue.$set.done, parseInt(req.body.userID));
+            }
+            tutorCheckIntervalDB.updateOne({
+                _id: ObjectID(req.body.intervalID)
+            }, newValue, (err, db) => {
+                if (err) {
+                    return res.status(400).send(err);
+                }
+                res.status(200).send('OK');
+            });
         });
     });
 
@@ -1029,6 +1089,13 @@ module.exports = function (app, db, post) {
                 return 5;
             default:
                 return -1;
+        }
+    }
+
+    function remove(array, element) {
+        var index = array.indexOf(element);
+        if (index !== -1) {
+            array.splice(index, 1);
         }
     }
 }
