@@ -21,6 +21,7 @@ var authorizeStaff = function (user, permission) {
     return userPosition >= pagePosition;
 }
 var authorizeStudent = function (user, permission, config) {
+    if(!user.student) return false;
     if (!(user.student.status == 'active' || user.student.status == 'inactive')) return false;
     if (permission.status) {
         if (user.student.status != permission.status) return false;
