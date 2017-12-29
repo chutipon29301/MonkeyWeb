@@ -1,3 +1,7 @@
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 genIntervalSelectOption();
 
 /* function for genIntervalSelect */
@@ -7,15 +11,9 @@ function genIntervalSelectOption() {
         for (let i in allInterval) {
             let startTime = moment(allInterval[i].startDate);
             let endTime = moment(allInterval[i].endDate);
-            if (allInterval[i].multiplier !== undefined) {
-                $intervalSelect.append(
-                    "<option id=" + allInterval[i].intervalID + ">" + startTime.format("DD MMM YY") + " - " + endTime.format("DD MMM YY") + " (" + allInterval[i].multiplier + ")" + "</option>"
-                );
-            } else {
-                $intervalSelect.append(
-                    "<option id=" + allInterval[i].intervalID + ">" + startTime.format("DD MMM YY") + " - " + endTime.format("DD MMM YY") + "</option>"
-                );
-            }
+            $intervalSelect.append(
+                "<option id=" + allInterval[i].intervalID + ">" + startTime.format("DD MMM YY") + " - " + endTime.format("DD MMM YY") + "</option>"
+            );
         }
         genTableData();
     });
@@ -75,14 +73,23 @@ $("#editIntervalEnd").datetimepicker({
 $("#editIntervalSubmitButt").click(function () {
     submitEditIntervalData();
 });
+$("#editIntervalRemoveButt").click(function () {
+    if (confirm("ต้องการลบช่วงเวลานี้?")) {
+        let intervalID = $("#interval-select option:selected").attr("id");
+        $.post("post/v1/deleteInterval", { intervalID: intervalID }).then((cb) => {
+            log("Complete to remove interval => " + cb);
+            location.reload();
+        });
+    }
+});
 
 function submitEditIntervalData() {
     let $intervalSelect = $("#interval-select");
     let intervalID = $intervalSelect.find(":selected").attr("id");
-    let body = {intervalID: intervalID};
+    let body = { intervalID: intervalID };
     if ($("#editIntervalStart").val() !== "") body.startDate = $("#editIntervalStart").data('DateTimePicker').date().hour(0).minute(0).second(0).millisecond(0).valueOf();
     if ($("#editIntervalEnd").val() !== "") body.endDate = $("#editIntervalEnd").data('DateTimePicker').date().hour(23).minute(59).second(59).millisecond(0).valueOf();
-    if ($("#editIntervalMultiplier").val() !== "") body.multiplier = $("#editIntervalMultiplier").val();
+    // if ($("#editIntervalMultiplier").val() !== "") body.multiplier = $("#editIntervalMultiplier").val();
     $.post("post/v1/editInterval", body).then((callbackData) => {
         log(callbackData);
         location.reload();
@@ -97,35 +104,274 @@ $("#interval-select").change(function () {
 //function for gen table
 async function genTableData() {
     let multiplier;
+    let doneTutorID;
     let $intervalSelect = $("#interval-select");
-    if ($intervalSelect.val().indexOf("(") >= 0) {
-        multiplier = parseInt($intervalSelect.val().slice($intervalSelect.val().indexOf("(") + 1, $intervalSelect.val().indexOf(")")));
-    } else {
-        multiplier = 1;
-    }
+    let intervalID = $("#interval-select option:selected").attr("id");
     let startDate = moment($intervalSelect.val().slice(0, 9), "DD MMM YY").hour(0).minute(0).second(0).millisecond(0).valueOf();
     let endDate = moment($intervalSelect.val().slice(12, 21), "DD MMM YY").hour(23).minute(59).second(59).millisecond(0).valueOf();
-    let allData = await $.post("post/v1/listAllCheckInHistory", {startDate: startDate, endDate: endDate});
+    let [allInterval, allData] = await Promise.all([$.post("post/v1/listInterval"), $.post("post/v1/listAllCheckInHistory", {
+        startDate: startDate,
+        endDate: endDate
+    })]);
+    for (let i in allInterval) {
+        if (allInterval[i].intervalID === intervalID) {
+            multiplier = allInterval[i].multiplier;
+            doneTutorID = allInterval[i].done;
+        }
+    }
     let $mainTableBody = $("#mainTableBody");
     $mainTableBody.empty();
+    let $summaryTableBody = $("#summaryTableBody");
+    $summaryTableBody.empty();
     let allStaff = [];
+    let promise = [];
     for (let i in allData) {
-        allStaff.push(name(i));
+        allStaff.push($.post("post/v1/userInfo", { userID: i }));
+        promise.push($.post("post/v1/listExtra", { intervalID: intervalID, tutorID: i }));
     }
     let allStaffName = await Promise.all(allStaff);
+    let allExtra = await Promise.all(promise);
     let index = 0;
+    let sumWH = 0;
+    let sumCredit = 0;
+    let sumAmout = 0;
+    let lastTotal = 0;
     for (let i in allData) {
+        let displayMultiply = 100;
+        if (multiplier !== undefined) {
+            if (multiplier[i] !== undefined) {
+                displayMultiply = multiplier[i];
+            }
+        }
+        let extra = allExtra[index];
+        let realExtra = 0;
+        let reason = "";
+        let reasonID = "";
+        let subPos = "-";
+        for (let j = 0; j < extra.length; j++) {
+            realExtra = realExtra + extra[j].value;
+            if (extra[j].reason.indexOf("FPGG") >= 0) {
+                reason = extra[j].reason.slice(4);
+                reasonID = extra[j].extraID;
+            }
+        }
+        if (allStaffName[index].subPosition !== undefined) {
+            subPos = allStaffName[index].subPosition;
+        }
+        sumWH = sumWH + parseInt(allData[i].hourSum.toFixed(1));
+        sumCredit = sumCredit + parseInt(allData[i].totalSum.toFixed(1));
+        sumAmout = sumAmout + parseInt((allData[i].totalSum * displayMultiply).toFixed(0));
+        lastTotal = lastTotal + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra);
         $mainTableBody.append(
-            "<tr onclick='showTutorHistory(" + i + ")'>" +
+            "<tr>" +
             "<td class='text-center'>" + i + "</td>" +
-            "<td class='text-center'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
-            "<td class='text-center'>" + allData[i].detail.totalSum.toFixed(0) + "</td>" +
-            "<td class='text-center'>" + (allData[i].detail.totalSum * multiplier).toFixed(0) + "</td>" +
+            "<td class='text-center table-info' onclick='showTutorHistory(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+            "<td class='text-center table-primary' onclick='changeSubPos(" + i + ")'>" + subPos + "</td>" +
+            "<td class='text-center table-info' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
+            "<td class='text-center'>" + allData[i].hourSum.toFixed(1) + "</td>" +
+            "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
+            "<td class='text-center table-primary' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
+            "<td id='" + "amout" + i + "' class='text-center'>" + (allData[i].totalSum * displayMultiply).toFixed(0) + "</td>" +
+            "<td class='text-center'>" + realExtra + "</td>" +
+            "<td id='" + "total" + i + "' class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
+            "</tr>"
+        );
+        let doneStatus = "<span class='fa fa-times' style='color:red' onclick='addIntervalDone(\"" + i + "\")'></span>";
+        let doneClass = "";
+        if (doneTutorID !== undefined) {
+            if ($.inArray(parseInt(i), doneTutorID) > -1) {
+                doneClass = "table-success";
+                doneStatus = "<span class='fa fa-check' style='color:green' onclick='deleteIntervalDone(\"" + i + "\")'></span>"
+            }
+        }
+        $summaryTableBody.append(
+            "<tr class=" + doneClass + ">" +
+            "<td class='text-center' onclick='showSummaryCover(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+            "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
+            "<td class='text-center'>" + doneStatus + "</td>" +
             "</tr>"
         );
         index += 1;
     }
+    $mainTableBody.append(
+        "<tr>" +
+        "<td class='text-center table-dark' colspan='4'>Total</td>" +
+        "<td class='text-center'>" + sumWH + "</td>" +
+        "<td class='text-center'>" + sumCredit + "</td>" +
+        "<td class='text-center'>100</td>" +
+        "<td class='text-center'>" + sumAmout + "</td>" +
+        "<td class='text-center'>0</td>" +
+        "<td class='text-center'>" + lastTotal + "</td>" +
+        "</tr>"
+    );
 }
+
+// function for show summary table
+$("#summaryTableButt").click(function () {
+    $("#summaryTableModal").modal('show');
+});
+
+// function for show summary cover
+async function showSummaryCover(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    let [userInfo, extra] = await Promise.all([$.post("post/v1/userInfo", { userID: tutorID }), $.post("post/v1/listExtra", { tutorID: tutorID, intervalID: intervalID })]);
+    let extraStr = "";
+    for (let i in extra) {
+        if (extra[i].reason.indexOf("FPGG") < 0) {
+            if (extra[i].value >= 0) {
+                extraStr += "<h5 class='ml-4'>" + extra[i].reason + ": + " + numberWithCommas(extra[i].value) + "</h5>";
+            } else {
+                extraStr += "<h5 class='ml-4'>" + extra[i].reason + ": - " + numberWithCommas(extra[i].value) + "</h5>";
+            }
+        }
+    }
+    $("#summaryCoverTitle").html(userInfo.nickname + " " + userInfo.firstname);
+    $("#summerCoverBody").empty();
+    $("#summerCoverBody").append(
+        "<h5>Sub position : " + userInfo.subPosition + "</h5>" +
+        "<h5>Salary : " + numberWithCommas($("#amout" + tutorID).html()) + "</h5>" +
+        extraStr +
+        "<h5>Total : " + numberWithCommas($("#total" + tutorID).html()) + "</h5>"
+    );
+    $("#summaryTableModal").modal('hide');
+    $("#summaryCoverModal").modal('show');
+}
+$("#summaryCoverCloseButt").click(function () {
+    $("#summaryCoverModal").modal('hide');
+});
+$("#summaryCoverModal").on('hidden.bs.modal', function () {
+    $("#summaryTableModal").modal('show');
+});
+
+
+//function for edit gain
+function callEditGainModal(tutorID) {
+    $("#editGainModalTitle").html("Edit " + tutorID + " gain");
+    $("#editGainModal").modal('show');
+}
+
+$("#editGainSubmitButt").click(function () {
+    editGain();
+});
+
+function editGain() {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    let tutorID = $("#editGainModalTitle").html().slice(5, 10);
+    if ($("#editGainValue").val() !== "") {
+        $.post("post/v1/editInterval", {
+            intervalID: intervalID,
+            multiplier: { tutorID: tutorID, value: $("#editGainValue").val() }
+        }).then((cb) => {
+            log("Complete to edit multiplier => " + cb);
+            genTableData();
+            $("#editGainModal").modal('hide');
+        });
+    } else {
+        alert("กรุณากรอกข้อมูล");
+    }
+}
+
+// function for change sub position
+function changeSubPos(tutorID) {
+    writeCookie("tempttID", tutorID);
+    $("#changeSunPosModal").modal('show');
+}
+$("#changeSubPosSubmitButt").click(function () {
+    let cookies = getCookieDict();
+    if ($("#changeSunPosInput").val() === "") {
+        alert("กรุณาใส่ sub position");
+    } else {
+        if (confirm("ต้องการเปลี่ยน sub position?")) {
+            $.post("post/v1/changeSubPosition", { userID: cookies.tempttID, subPosition: $("#changeSunPosInput").val() }).then((cb) => {
+                log("Complete to change sub position = > " + cb);
+                genTableData();
+                $("#changeSunPosModal").modal('hide');
+                deleteCookie("tempttID");
+            });
+        }
+    }
+});
+
+// function for change done status
+function addIntervalDone(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    if (confirm("ต้องการเปลี่ยนสถานะเป็น done?")) {
+        $.post("post/v1/addIntervalDone", { intervalID: intervalID, userID: tutorID }).then(cb => {
+            log("Complete to add done => " + cb);
+            genTableData();
+        });
+    }
+}
+function deleteIntervalDone(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    if (confirm("ต้องการเปลี่ยนสถานะเป็น undone?")) {
+        $.post("post/v1/deleteIntervalDone", { intervalID: intervalID, userID: tutorID }).then(cb => {
+            log("Complete to delete done => " + cb);
+            genTableData();
+        });
+    }
+}
+
+//function for manage firstpage reason
+function manageFirstpage(extraID, tutorID) {
+    writeCookie("tempFpID", extraID);
+    writeCookie("tempttID", tutorID);
+    $("#fpReasonModal").modal('show');
+}
+
+$("#fpReasonAddSubmitButt").click(function () {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    let cookies = getCookieDict();
+    if (cookies.tempFpID !== undefined) {
+        if ($("#fpReasonAdd").val() === "") {
+            alert("กรุณากรอกข้อมูล");
+        } else {
+            if (cookies.tempFpID !== "") {
+                $.post("post/v1/removeExtra", { extraID: cookies.tempFpID }).then((cb) => {
+                    log("Complete to remove extra => " + cb);
+                    $.post("post/v1/addExtra", {
+                        intervalID: intervalID,
+                        tutorID: cookies.tempttID,
+                        value: 0,
+                        reason: "FPGG" + $("#fpReasonAdd").val()
+                    }).then((cb2) => {
+                        $("#fpReasonModal").modal('hide');
+                        log("Complete to add extra => " + cb2);
+                        deleteCookie("tempFpID");
+                        deleteCookie("tempttID");
+                        genTableData();
+                    });
+                });
+            } else {
+                $.post("post/v1/addExtra", {
+                    intervalID: intervalID,
+                    tutorID: cookies.tempttID,
+                    value: 0,
+                    reason: "FPGG" + $("#fpReasonAdd").val()
+                }).then((cb2) => {
+                    $("#fpReasonModal").modal('hide');
+                    log("Complete to add extra => " + cb2);
+                    deleteCookie("tempFpID");
+                    deleteCookie("tempttID");
+                    genTableData();
+                });
+            }
+        }
+    }
+});
+$("#fpReasonRmSubmitButt").click(function () {
+    let cookies = getCookieDict();
+    if (cookies.tempFpID !== "") {
+        $.post("post/v1/removeExtra", { extraID: cookies.tempFpID }).then((cb) => {
+            deleteCookie("tempFpID");
+            $("#fpReasonModal").modal('hide');
+            log("Complete to remove extra => " + cb);
+            genTableData();
+        });
+    } else {
+        alert("ไม่มีข้อมูลในเซลล์นี้");
+    }
+});
 
 //function for show independent summary
 function showTutorHistory(tutorID) {
@@ -141,23 +387,43 @@ function showTutorHistory(tutorID) {
         endDate: endDate
     }).then((historyData) => {
         $table.empty();
+        let sumHour = 0;
+        let sumCredit = 0;
         for (let i in historyData.detail) {
             let checkIn = moment(historyData.detail[i].checkIn);
             let checkOut = moment(historyData.detail[i].checkOut);
+            let sum = 0;
+            let diffHour = (checkOut.hour() - checkIn.hour()) + ((checkOut.minute() - checkIn.minute()) / 60);
+            if (historyData.detail[i].sum >= 0) {
+                sum = historyData.detail[i].sum;
+            }
+            sumHour = sumHour + parseInt(diffHour.toFixed(1));
+            sumCredit = sumCredit + parseInt(sum.toFixed(1));
             $table.append(
-                "<tr>" +
+                "<tr class='" + ((diffHour < 0) ? "table-warning" : "") + "'>" +
                 "<td class='text-center'>" + checkIn.format("ddd") + "</td>" +
                 "<td class='text-center'>" + checkIn.format("DD MMM YYYY") + "</td>" +
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkIn.format("HH:mm") + "</td>" +
                 "<td class='text-center' onclick='editCheckIO(\"" + historyData.detail[i].historyID + "\",\"" + historyData.detail[i].checkIn + "\")'>" + checkOut.format("HH:mm") + "</td>" +
                 "<td>" + detailButton(historyData.detail[i].detail, historyData.detail[i].historyID) + "</td>" +
+                "<td class='text-center'>" + diffHour.toFixed(1) + "</td>" +
+                "<td class='text-center'>" + sum.toFixed(1) + "</td>" +
                 "<td>" + trashButton(tutorID + "", historyData.detail[i].historyID) + "</td>" +
                 "</tr>"
             );
         }
+        $table.append(
+            "<tr>" +
+            "<td class='text-center table-dark' colspan='5'>Total</td>" +
+            "<td class='text-center'>" + sumHour + "</td>" +
+            "<td class='text-center'>" + sumCredit + "</td>" +
+            "<td class='text-center'> - </td>" +
+            "</tr>"
+        );
         $title.html(tutorID);
         $modal.modal('show');
     });
+    showExtra(tutorID);
 }
 
 const detailButton = (detail, historyID) => {
@@ -186,6 +452,68 @@ const buttonMinText = (str) => {
 const trashButton = (tutorID, str) => {
     return "<button type='button' class='col btn btn-light' onclick='removeIOHistory(\"" + tutorID + "\",\"" + str + "\")'><span class='fa fa-lg fa-trash-o' style='color: red'></span></button>";
 };
+
+//function for extra
+function addExtra() {
+    $("#addExtraModal").modal('show');
+}
+
+function showExtra(tutorID) {
+    let intervalID = $("#interval-select option:selected").attr("id");
+    $.post("post/v1/listExtra", { tutorID: tutorID, intervalID: intervalID }).then((allExtra) => {
+        $("#independentExtra").empty();
+        if (allExtra.length !== 0) {
+            $("#independentExtra").append("<h4 onclick='addExtra()'>Extra</h4>");
+            for (let i in allExtra) {
+                if (allExtra[i].reason.indexOf("FPGG") < 0) {
+                    $("#independentExtra").append(
+                        "<h4>" + allExtra[i].reason + " : " + allExtra[i].value +
+                        " <span class='fa fa-trash' style='color:red' onclick='removeExtra(\"" +
+                        allExtra[i].extraID + "\")'></span></h4>"
+                    );
+                }
+            }
+        } else {
+            $("#independentExtra").append("<button class='btn btn-light' onclick='addExtra()'>+ Add extra</button>");
+        }
+    });
+}
+
+function removeExtra(extraID) {
+    if (confirm("ต้องการลบ Extra นี้?")) {
+        let tutorID = $("#tutorHistoryModalTitle").html();
+        $.post("post/v1/removeExtra", { extraID: extraID }).then((cb) => {
+            log("Complete to remove extra => " + cb);
+            showTutorHistory(tutorID);
+            genTableData();
+        });
+    }
+}
+
+$("#addExtraSubmitButt").click(function () {
+    if ($("#addExtraValue").val() === "") {
+        alert("กรุณาใส่ตัวเลข");
+    } else if ($("#addExtraReason").val() === "") {
+        alert("กรุณาใส่เหตุผล");
+    } else {
+        let intervalID = $("#interval-select option:selected").attr("id");
+        let tutorID = $("#tutorHistoryModalTitle").html();
+        $.post("post/v1/addExtra", {
+            intervalID: intervalID,
+            tutorID: tutorID,
+            value: $("#addExtraValue").val(),
+            reason: $("#addExtraReason").val()
+        }).then((cb) => {
+            log("Complete to add extra => " + cb);
+            $("#addExtraModal").modal('hide');
+            showTutorHistory(tutorID);
+            genTableData();
+        });
+    }
+});
+$("#addExtraModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
+});
 
 //function for edit history
 $("#editTutorHistoryIn").datetimepicker({
@@ -240,6 +568,9 @@ function editIOHistoryTime() {
         }
     }
 }
+$("#checkIOTimeHistoryModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
+});
 
 function editIOHistorySlot(historyID, detail, index) {
     writeCookie("tempEditHistoryID", historyID);
@@ -268,7 +599,10 @@ $("#checkIOSlotModal .selector").click(function () {
         deleteCookie("tempEditHistoryID");
         deleteCookie("tempEditDetail");
         deleteCookie("tempEditIndex");
-    })
+    });
+});
+$("#checkIOSlotModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
 });
 const getSlotValue = (str) => {
     let type = -1;
@@ -309,9 +643,9 @@ function removeIOHistory(tutorID, historyID) {
     let $table = $("#tutorHistoryModalTable");
     $table.modal('hide');
     if (confirm("ต้องการลบประวัตินี้?")) {
-        $.post("post/v1/deleteCheckOutHistory", {historyID: historyID}).then((cb) => {
+        $.post("post/v1/deleteCheckOutHistory", { historyID: historyID }).then((cb) => {
             log("Complete to delete history=>" + cb);
-            showTutorHistory(tutorID)
+            showTutorHistory(tutorID);
         });
     }
 }
@@ -336,6 +670,9 @@ $("#addTutorHistorySubmitButt").click(function () {
         addIOHistory();
         $("#addHistoryModal").modal('hide');
     }
+});
+$("#addHistoryModal").on('hidden.bs.modal', function () {
+    $("body").addClass("modal-open");
 });
 
 function addIOHistory() {

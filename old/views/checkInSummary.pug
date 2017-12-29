@@ -65,6 +65,8 @@ block body
                 button#editIntervalButt.col-12.btn.btn-outline-info(type="button")
                     span.fa.fa-cogs
                     | &nbsp;Edit
+            .col-12.col-md-2
+                button#summaryTableButt.col-12.btn.btn-outline-info(type="button") Summary
         .row
             .col-12.table-responsive
                 table.table.table-hover
@@ -72,7 +74,13 @@ block body
                         tr
                             th.text-center ID
                             th.text-center Name
-                            th.text-center Score
+                            th.text-center Pos.
+                            th.text-center Done
+                            th.text-center WH
+                            th.text-center Credits
+                            th.text-center Gain
+                            th.text-center Amount
+                            th.text-center Extra
                             th.text-center Total
                     tbody#mainTableBody
 
@@ -93,7 +101,7 @@ block body
                         button#addIntervalSubmitButt.btn.btn-success(type="button") Add
                         button.btn.btn-danger(type="button" data-dismiss="modal") Close
 
-        //Modal for add new interval
+        //Modal for edit interval
         #editIntervalModal.modal.fade
             .modal-dialog
                 .modal-content
@@ -106,11 +114,59 @@ block body
                             input#editIntervalStart.form-control(type='text')
                             label End time:
                             input#editIntervalEnd.form-control(type='text')
-                            label Multiplier:
-                            input#editIntervalMultiplier.form-control(type='number')
+                            //label Multiplier:
+                            //input#editIntervalMultiplier.form-control(type='number')
                     .modal-footer
                         button#editIntervalSubmitButt.btn.btn-info(type="button") Edit
+                        button#editIntervalRemoveButt.btn.btn-warning(type="button") Remove
                         button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+        //Modal for edit gain
+        #editGainModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title#editGainModalTitle
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .row
+                            .col-12
+                                .form-group
+                                    label Input:
+                                    input#editGainValue.form-control(type='number')
+                    .modal-footer
+                        button.btn.btn-success#editGainSubmitButt(type="button") Edit
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
+
+        //Modal for show summary table
+        #summaryTableModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Summary
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body.p-0
+                        .table-responsive
+                            table.table.table-hover.table-striped.mb-0
+                                thead.thead-dark
+                                    tr
+                                        th.text-center Name
+                                        th.text-center Total
+                                        th.text-center Done
+                                tbody#summaryTableBody
+                    .modal-footer
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+        //Modal for show summary cover
+        #summaryCoverModal.modal.fade
+            .modal-dialog
+                .modal-content(style="background-color:lightblue")
+                    .modal-header
+                        h4.modal-title#summaryCoverTitle
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body#summerCoverBody
+                    .modal-footer
+                        button.btn.btn-danger#summaryCoverCloseButt(type="button" data-dismiss="modal") Close
 
         //Modal for show independent history
         #tutorHistoryModal.modal.fade
@@ -120,12 +176,69 @@ block body
                         h4.modal-title#tutorHistoryModalTitle
                         button.close(type="button" data-dismiss="modal") &times;
                     .modal-body.p-0
+                        .col#independentExtra
                         .table-responsive
                             table.table.table-hover.mb-0
                                 tbody#tutorHistoryModalTable
                     .modal-footer
                         button.btn.btn-info#addHistoryButt(type="button") Add
                         button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+        //Modal for change sub position
+        #changeSunPosModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Change sub position
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .row
+                            .col-12
+                                .form-group
+                                    label Input:
+                                    input#changeSunPosInput.form-control(type='text')
+                    .modal-footer
+                        button.btn.btn-success#changeSubPosSubmitButt(type="button") Change
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
+
+        //Modal for add First page reason
+        #fpReasonModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Add reason
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .row
+                            .col-12
+                                .form-group
+                                    label Input:
+                                    input#fpReasonAdd.form-control(type='text')
+                    .modal-footer
+                        button.btn.btn-success#fpReasonAddSubmitButt(type="button") Add
+                        button.btn.btn-warning#fpReasonRmSubmitButt(type="button") Remove
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
+
+        //Modal for add Extra
+        #addExtraModal.modal.fade
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        h4.modal-title Add extra
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .row
+                            .col-12.col-md-6
+                                .form-group
+                                    label Value:
+                                    input#addExtraValue.form-control(type='number')
+                            .col-12.col-md-6
+                                .form-group
+                                    label Reason:
+                                    input#addExtraReason.form-control(type='text')
+                    .modal-footer
+                        button.btn.btn-success#addExtraSubmitButt(type="button") Add
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
 
         //Modal for edit checkIO history time
         #checkIOTimeHistoryModal.modal.fade
