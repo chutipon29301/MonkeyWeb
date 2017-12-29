@@ -178,6 +178,7 @@ module.exports=function(app,db){
     addPage("login");
     addPage("login",{url:"/"});
     addPugPage("studentDocument");
+    addPugPage("devTemplate");
     var options={middlewareOptions:{login:true,position:"student"}};
         options.middlewareOptions.studentStatus="inactive";
             addPugPage("registrationName",options);
