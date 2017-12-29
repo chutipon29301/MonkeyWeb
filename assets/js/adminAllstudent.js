@@ -262,6 +262,20 @@ async function generateStudentHtmlTable(student) {
         if (stage === "finished") {
             row.setAttribute("class", "table-success");
         }
+        let remark = "";
+        let remarkStr = "";
+        if (student[i].remark !== undefined) {
+            remark = student[i].remark;
+            if (remark === "1") {
+                remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
+            } else if (remark === "2") {
+                remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
+            } else {
+                remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+            }
+        } else {
+            remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+        }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
         let cell2 = row.insertCell(2);
@@ -271,6 +285,7 @@ async function generateStudentHtmlTable(student) {
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
         // let cell8 = row.insertCell(8);
+        let cell7 = row.insertCell(7);
         cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
         cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
@@ -280,7 +295,9 @@ async function generateStudentHtmlTable(student) {
         cell5.innerHTML = "<td>" + student[i].level + "</td>";
         promise.push($.post("post/v1/getRegistrationState", { studentID: student[i].studentID, year: selectedQ.slice(0, 4), quarter: selectedQ.slice(5) }));
         cell6.innerHTML = "<td>-</td>";
-        cell6.id = "cell7-" + i
+        cell6.id = "cell7-" + i;
+        cell7.innerHTML = "<td>" + remarkStr + "</td>";
+        cell7.id = remark;
         // cell8.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
@@ -289,7 +306,38 @@ async function generateStudentHtmlTable(student) {
             //noinspection SpellCheckingInspection
             self.location = "/adminStudentprofile";
         };
-        row.onclick = clickHandler(row);
+        cell0.onclick = clickHandler(row);
+        cell1.onclick = clickHandler(row);
+        cell2.onclick = clickHandler(row);
+        cell3.onclick = clickHandler(row);
+        cell4.onclick = clickHandler(row);
+        cell5.onclick = clickHandler(row);
+        cell6.onclick = clickHandler(row);
+        let changeCheckState = (row, cell) => () => {
+            let sendData = "";
+            if (cell.id === "" || cell.id === "0") {
+                sendData = "1";
+            } else if (cell.id === "1") {
+                sendData = "2";
+            } else if (cell.id === "2") {
+                sendData = "0";
+            }
+            $.post("post/v1/setRemark", { studentID: row.getElementsByTagName("td")[1].innerHTML, remark: sendData }).then(() => {
+                let remarkStr = "";
+                if (cell.id === "" || cell.id === "0") {
+                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
+                    cell.id = "1";
+                } else if (cell.id === "1") {
+                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
+                    cell.id = "2";
+                } else if (cell.id === "2") {
+                    remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+                    cell.id = "0";
+                }
+                cell.innerHTML = "<td>" + remarkStr + "</td>";
+            });
+        };
+        cell7.onclick = changeCheckState(row, cell7);
     }
     let description = await Promise.all(promise);
     for (let i = 0; i < description.length; i++) {
@@ -298,6 +346,14 @@ async function generateStudentHtmlTable(student) {
         }
     }
 }
+
+$("#checkTableColumm").click(function () {
+    if (confirm("ต้องการ reset ทั้งหมด?")) {
+        $.post("post/v1/resetRemark").then(() => {
+            location.reload();
+        });
+    }
+});
 
 function scanStudentBarcode() {
     let inputBox = document.getElementById("studentID");

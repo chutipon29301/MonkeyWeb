@@ -1,8 +1,8 @@
 var ObjectID = require('mongodb').ObjectID;
+var schedule = require('node-schedule');
 
 module.exports = function (app, db, post) {
 
-    var schedule = require('node-schedule');
     const MODE_ADD_HYBRID = 1;
     const MODE_REMOVE_HYBRID = 2;
 
