@@ -56,6 +56,7 @@ var authorizeStudent = function (user, permission, config) {
 var authorize = function(user,side,permission,config){
     if(!user) return false;
     if(side == "staff") return authorizeStaff(user,permission);
+    if(!config) return false;
     if(side == 'student') return authorizeStudent(user,permission,config);
     return false;
 }

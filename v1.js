@@ -40,7 +40,8 @@ module.exports = function (app, db, post, fs ,passport , CryptoJS) {
     var userDB = db.collection('user');
     var courseDB = db.collection('course');
     var configDB = db.collection('config');
-    
+    var auth = require('./auth.js')
+
     require('./script/v1/quarter.js')(app, db, post);
     require('./script/v1/subject.js')(app, db, post, gradeBitToString);
     require('./script/v1/course.js')(app, db, post, gradeBitToString, gradeBitToArray);
@@ -56,4 +57,5 @@ module.exports = function (app, db, post, fs ,passport , CryptoJS) {
     require('./script/v1/authen.js')(app,db,post,passport);
     require('./script/v1/video.js')(app, db, post, fs);
     require('./script/v1/key.js')(app, db, post, fs);
+    require('./script/v1/config.js')(app, db, post,auth);
 }
