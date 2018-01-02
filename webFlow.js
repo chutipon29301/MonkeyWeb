@@ -238,7 +238,8 @@ module.exports = function (app, db, pasport) {
     });
     permission = 'mel'
     addPugPage("checkInSummary", side, permission);
-    addPugPage("testDev", side, 'dev', function () {
+    permission = 'dev'
+    addPugPage("testDev", side, permission, function () {
         return new Promise((res, rej) => {
             var local = { moment: moment };
             post("post/allCourse", { quarter: "all" }, function (result) {
