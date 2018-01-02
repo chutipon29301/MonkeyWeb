@@ -13,7 +13,7 @@ module.exports = function (app, db, post) {
     const ABSENT = 1;
     const PRESENT = 2;
 
-    post('post/v1/addStudentAbsent', function (req, res) {
+    post('/post/v1/addStudentAbsent', function (req, res) {
         if (!(req.body.userID && req.body.date && (req.body.courseID || req.body.hybridID) && req.body.reason && req.body.sender)) {
             return res.status(400).send({
                 err: -1,
