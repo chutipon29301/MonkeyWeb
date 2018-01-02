@@ -355,8 +355,9 @@ async function genCover(type) {
     let w = [1289, 1508, 811, 1050];
     let h = [390, 533, 675, 813, 955];
     let mw = [1335, 1416, 1498, 1580];
-    let mh = [140, 215, 290, 365, 440];
+    let mh = [140, 220, 300, 380, 460];
     ctx.font = "bold 60px Cordia New";
+    ctx.fillStyle = "#f442df";
     for (let i in timeTable.course) {
         ctx.fillText("CR: " + timeTable.course[i].courseName, w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)]);
         ctx.fillText((timeTable.course[i].tutorName == "Hybrid" ? "HB" : timeTable.course[i].tutorName), w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)] + 70);
@@ -369,14 +370,18 @@ async function genCover(type) {
         }
     }
     for (let i in timeTable.hybrid) {
+        ctx.fillStyle = "#242de2";
         ctx.fillText("FHB: " + timeTable.hybrid[i].subject, w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)]);
         ctx.fillText("HB", w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)] + 70);
+        ctx.fillStyle = "black";
         if (type == 0 && timeTable.hybrid[i].subject == "M") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         } else if (type == 1 && timeTable.hybrid[i].subject == "P") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         }
     }
+    ctx.font = "bold 50px Cordia New";
+    ctx.fillStyle = "orange";
     for (let i in timeTable.skill) {
         let time = moment(timeTable.skill[i].day);
         if (timeTable.skill[i].subject == "ME") {
@@ -390,6 +395,7 @@ async function genCover(type) {
             }
         }
     }
+    ctx.fillStyle = "black";
     if (type == 2 || type == 3) {
         if (type == 2) {
             var appRejCanvas = document.getElementById('appRejCover1');
