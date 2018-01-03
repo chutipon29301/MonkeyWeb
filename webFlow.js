@@ -57,6 +57,11 @@ module.exports = function (app, db, pasport) {
         else return chalk.black.bgWhite;
     }
 
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     */
     var return404 = function (req, res) {
         if (req.user) {
             let positionColor = logPosition(req.user)
@@ -113,6 +118,9 @@ module.exports = function (app, db, pasport) {
             console.log(chalk.black.bgGreen("[GET REQUEST]"), req.url, "FROM", req.ip, moment().format("@ dddDDMMMYYYY HH:mm:ss"));
         }
         next()
+    })
+    app.get('/test',function(req,res){
+        res.status(200).render('test')
     })
     app.get('/',async function (req, res) {
         if (req.isAuthenticated()) {

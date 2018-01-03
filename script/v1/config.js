@@ -34,4 +34,21 @@ module.exports = function(app,db,post,auth){
         }
         return res.status(200).send({msg:"success"})
     })
+    post('/post/v1/editDefaultQuarter',async function(req,res){
+        if(!auth.authorize(req.user,"staff","dev")){
+            return res.status(401).send({
+                err : 401,
+                msg : "unauthorized"
+            })
+        }
+        try{
+            let config = await configDB.findOne({_id:"config"})
+            let defaultQuarter = config.defaultQuarter;
+            for(let i in req.body) if(defaultQuarter[i]) defaultQuarter[i] = parseConfig(i,req.body[i]);
+            await configDB.updateOne({},{$set : {defaultQuarter : defaultQuarter}})
+        }catch(e){
+            return res.status(400).send({err:400 , msg:e})
+        }
+        return res.status(200).send({msg:"success"})
+    })
 }
