@@ -110,30 +110,44 @@ async function getHistory() {
         let tableTarget;
         if (history[i].type === 1) {
             tableTarget = $("#absentTableBody");
-        } else {
-            tableTarget = $("#presentTableBody");
-        }
-        if (history[i].courseID === 0) {
-            tableTarget.append(
-                "<tr>" +
-                "<td class='text-center'>" + t + "</td>" +
-                "<td class='text-center'>FHB:" + historyDetail[i].subject + "</td>" +
-                "<td class='text-center'>" + history[i].sender + "</td>" +
-                "</tr>"
-            );
-            if (historyDetail[i].subject === "M") {
-                mHbFound += 1;
-            } else if (historyDetail[i].subject === "P") {
-                pHbFound += 1;
+            if (history[i].courseID === 0) {
+                tableTarget.append(
+                    "<tr>" +
+                    "<td class='text-center'>" + t + "</td>" +
+                    "<td class='text-center'>FHB:" + historyDetail[i].subject + "</td>" +
+                    "<td class='text-center'>" + history[i].sender + "</td>" +
+                    "</tr>"
+                );
+                if (historyDetail[i].subject === "M") {
+                    mHbFound += 1;
+                } else if (historyDetail[i].subject === "P") {
+                    pHbFound += 1;
+                }
+            } else {
+                tableTarget.append(
+                    "<tr>" +
+                    "<td class='text-center'>" + t + "</td>" +
+                    "<td class='text-center'>CR:" + historyDetail[i].courseName + "</td>" +
+                    "<td class='text-center'>" + history[i].sender + "</td>" +
+                    "</tr>"
+                );
             }
         } else {
-            tableTarget.append(
-                "<tr>" +
-                "<td class='text-center'>" + t + "</td>" +
-                "<td class='text-center'>CR:" + historyDetail[i].courseName + "</td>" +
-                "<td class='text-center'>" + history[i].sender + "</td>" +
-                "</tr>"
-            );
+            tableTarget = $("#presentTableBody");
+            if (history[i].courseID === 0) {
+                tableTarget.append(
+                    "<tr>" +
+                    "<td class='text-center'>" + t + "</td>" +
+                    "<td class='text-center'>FHB:" + history[i].subject + "</td>" +
+                    "<td class='text-center'>" + history[i].sender + "</td>" +
+                    "</tr>"
+                );
+                if (historyDetail[i].subject === "M") {
+                    mHbFound += 1;
+                } else if (historyDetail[i].subject === "P") {
+                    pHbFound += 1;
+                }
+            }
         }
     }
     editQuota();
@@ -254,13 +268,23 @@ async function sendData() {
                 sender: $("#senderInput").val()
             }));
         } else {
-            promise.push($.post("post/v1/addStudentAbsent", {
-                userID: studentID,
-                date: roundTime.hour(classHour(thisButt)).valueOf(),
-                hybridID: thisButt.attr("id"),
-                reason: $("#reasonInput").val(),
-                sender: $("#senderInput").val()
-            }));
+            if (pickDate.day() === 0 || pickDate.day() === 6) {
+                promise.push($.post("post/v1/addStudentAbsent", {
+                    userID: studentID,
+                    date: roundTime.hour(classHour(thisButt)).valueOf(),
+                    hybridID: thisButt.attr("id"),
+                    reason: $("#reasonInput").val(),
+                    sender: $("#senderInput").val()
+                }));
+            } else {
+                promise.push($.post("post/v1/addStudentAbsent", {
+                    userID: studentID,
+                    date: roundTime.hour(17).valueOf(),
+                    hybridID: thisButt.attr("id"),
+                    reason: $("#reasonInput").val(),
+                    sender: $("#senderInput").val()
+                }));
+            }
         }
     }
     notifyStr = notifyStr + "เหตุผล:" + $("#reasonInput").val();

@@ -12,7 +12,7 @@ $("#quarterSelect").change(function () {
 
 // add event when click Img for upload pic
 $("#profileImg").click(function () {
-    $("#uploadPicModal").modal('show');
+    // $("#uploadPicModal").modal('show');
 });
 $("#uploadPicButt").click(function () {
     if (confirm("ยืนยันการ upload?")) {

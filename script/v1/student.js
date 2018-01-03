@@ -47,7 +47,7 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/addStudentPresent', function (req, res) {
-        if (!(req.body.userID && req.body.date && (req.body.courseID || req.body.hybridID) && req.body.sender)) {
+        if (!(req.body.userID && req.body.date && (req.body.courseID || (req.body.hybridID && req.body.subject)) && req.body.sender)) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -63,7 +63,7 @@ module.exports = function (app, db, post) {
                 type: PRESENT,
                 sender: req.body.sender
             });
-        } else if (req.body.hybridID) {
+        } else if (req.body.hybridID && req.body.subject) {
             attendanceDB.insertOne({
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
@@ -71,7 +71,8 @@ module.exports = function (app, db, post) {
                 hybridID: req.body.hybridID,
                 date: parseInt(req.body.date),
                 type: PRESENT,
-                sender: req.body.sender
+                sender: req.body.sender,
+                subject: req.body.subject
             });
         }
         res.status(200).send('OK');
