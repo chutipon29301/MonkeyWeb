@@ -342,24 +342,25 @@ async function genCover(type) {
     let profileImg = document.getElementById('profileImg');
     let picH = 184;
     let picW = profileImg.width * picH / profileImg.height;
-    ctx.drawImage(profileImg, 205, 30, picW, picH);
+    ctx.drawImage(profileImg, 200, 30, picW, picH);
     ctx.font = "bold 80px Cordia New";
     if (type == 0) {
-        ctx.fillText('ID: ' + ID + '1', 550, 63);
+        ctx.fillText('ID: ' + ID + '1', 1025, 63);
     }else{
-        ctx.fillText('ID: ' + ID + '2', 550, 63);
+        ctx.fillText('ID: ' + ID + '2', 1025, 63);
     }
-    ctx.drawImage(barcode, 435, 115);
-    ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 930, 80);
-    ctx.fillText(profile.lastname, 930, 170);
-    let w = [327, 566, 811, 1050];
-    let h = [380, 510, 637, 767, 900];
+    ctx.drawImage(barcode, 900, 115);
+    ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 600, 80);
+    ctx.fillText(profile.lastname, 600, 170);
+    let w = [1289, 1508, 811, 1050];
+    let h = [390, 533, 675, 813, 955];
     let mw = [1335, 1416, 1498, 1580];
-    let mh = [140, 215, 290, 365, 440];
+    let mh = [140, 220, 300, 380, 460];
     ctx.font = "bold 60px Cordia New";
+    ctx.fillStyle = "#f442df";
     for (let i in timeTable.course) {
         ctx.fillText("CR: " + timeTable.course[i].courseName, w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)]);
-        ctx.fillText((timeTable.course[i].tutorName == "Hybrid" ? "HB" : timeTable.course[i].tutorName), w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)] + 60);
+        ctx.fillText((timeTable.course[i].tutorName == "Hybrid" ? "HB" : timeTable.course[i].tutorName), w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)] + 70);
         if (timeTable.course[i].tutorName == "Hybrid") {
             if (type == 0 && timeTable.course[i].courseName.slice(0, 1) == "M") {
                 ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
@@ -369,27 +370,32 @@ async function genCover(type) {
         }
     }
     for (let i in timeTable.hybrid) {
+        ctx.fillStyle = "#242de2";
         ctx.fillText("FHB: " + timeTable.hybrid[i].subject, w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)]);
-        ctx.fillText("HB", w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)] + 60);
+        ctx.fillText("HB", w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)] + 70);
+        ctx.fillStyle = "black";
         if (type == 0 && timeTable.hybrid[i].subject == "M") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         } else if (type == 1 && timeTable.hybrid[i].subject == "P") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         }
     }
+    ctx.font = "bold 50px Cordia New";
+    ctx.fillStyle = "orange";
     for (let i in timeTable.skill) {
         let time = moment(timeTable.skill[i].day);
         if (timeTable.skill[i].subject == "ME") {
             ctx.fillText("SK: M " + time.format("H:00"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)]);
-            ctx.fillText("SK: E " + time.format("H:30"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 60);
+            ctx.fillText("SK: E " + time.format("H:30"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 70);
         } else {
             if (time.hour() == 9 || time.hour() == 11 || time.hour() == 14 || time.hour() == 16) {
-                ctx.fillText("SK: " + timeTable.skill[i].subject + " " + time.format("H:mm"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 60);
+                ctx.fillText("SK: " + timeTable.skill[i].subject + " " + time.format("H:mm"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 70);
             } else {
                 ctx.fillText("SK: " + timeTable.skill[i].subject + " " + time.format("H:mm"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)]);
             }
         }
     }
+    ctx.fillStyle = "black";
     if (type == 2 || type == 3) {
         if (type == 2) {
             var appRejCanvas = document.getElementById('appRejCover1');
