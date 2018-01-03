@@ -263,6 +263,6 @@ async function sendData() {
         sender: $("#senderInput").val()
     });
     log("OK");
-    await lineNotify("Test", notifyStr);
+    await lineNotify("MonkeyAdmin", notifyStr);
     location.reload();
 }
