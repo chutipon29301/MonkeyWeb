@@ -13,6 +13,7 @@
 //     quarter: 4
 // });
 
+
 function loginSubmit() {
     "use strict";
     let user = document.getElementById("usr");
@@ -43,6 +44,7 @@ function login(user, pwd) {
     $.post('post/v1/login',{id:user,password:encrypt(""+pwd).toString()},data=>{
         if(data.err) {
             alert("ID or password is incorrect.")
+            $('#pwd').val('')
             throw data.err
         }
         else{
