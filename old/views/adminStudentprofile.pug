@@ -25,6 +25,8 @@ block script
 block body
     canvas#mathBarcode(hidden='true')
     canvas#phyBarcode(hidden='true')
+    canvas#cheBarcode(hidden='true')
+    canvas#engBarcode(hidden='true')
     img#tableTemplate(src="#" hidden='true')
     .container-fluid
         .row
@@ -103,9 +105,13 @@ block body
                                     +tdButt("selector btn110")
                                     +tdButt("selector btn113")
                 .row
-                    .col-12.col-md-6
-                        button.col-6.btn.btn-outline-info#mathCoverDownloadButt(type='button') Math cover 
-                        button.col-6.btn.btn-outline-info#phyCoverDownloadButt(type='button') Physic cover
+                    .dropdown.col-12.col-md-6
+                        button.col.btn.btn-outline-info.dropdown-toggle(type='button' data-toggle="dropdown") Download cover
+                        .dropdown-menu
+                            a#mathCoverDowload.dropdown-item.disabled(href="#") Math cover
+                            a#phyCoverDowload.dropdown-item.disabled(href="#") Physic cover
+                            a#cheCoverDowload.dropdown-item.disabled(href="#") Chemistry cover
+                            a#engCoverDowload.dropdown-item.disabled(href="#") English cover
                     .col-6.col-md-3
                         button.col.btn.btn-outline-info#commentViewButt(type='button') Comment
                     .col-6.col-md-3
@@ -114,6 +120,8 @@ block body
                     .col
                         canvas#mathCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#phyCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
+                        canvas#cheCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
+                        canvas#engCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#appRejCover1(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#appRejCover2(style="border:1px solid black" width="1654" height="1170" hidden='true')
             .col-12.offset-md-9.col-md-3.offset-xl-10.col-xl-2.p-0#statusSidebar
