@@ -10,9 +10,7 @@ module.exports = function(app,db,post,passport){
                 req.logIn(user , function(err){
                     if(err) throw err;
                     let redirect
-                    if(user.position == 'student'){
-                        redirect = '/'
-                    } 
+                    if(user.position == 'student') redirect = '/';
                     else if(user.position == 'tutor') redirect = 'tutorCheck';
                     else{ redirect = 'adminAllStudent' }
                     res.status(200).send({msg : 'ok' , redirect : redirect , status : req.isAuthenticated()})
