@@ -1,102 +1,68 @@
-extends oldHtmlTemplate
+extends htmlTemplate
 block head
     -const pageTitle = "Absent Form"
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
-    script(src="js/bootstrap-datetimepicker.min.js")
+block script
+    script(src="js/bootstrap-datetimepicker4.min.js")
     script(src="js/studentAbsentForm.min.js")
-    style.
-        .btn-default, .btn-success{
-            margin-bottom:25px;
-        }
-        .jumbotron{
-            background-color:#efdfde !important
-        }
-        .loading {
-            border: 16px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 16px solid #e88719;
-            width: 120px;
-            height: 120px;
-            -webkit-animation: spin 2s linear infinite;
-            animation: spin 2s linear infinite;
-        }
-
-        @-webkit-keyframes spin {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
 block body
-    .jumbotron
+    .jumbotron.jumbotron-fluid.bg-danger.text-white
         .container
-            h2 แบบฟอร์มลา
-            p#pageHead
+            h2 แบบฟอร์มลา CR&FHB
+            h4#pageBanner CRxxQx
     .container
-        .row
-            .col-xs-12
-                label(style="color:red") สำหรับระบบ FHB
-        .row
-            .col-xs-12
-                label(style="color:red") ต้องลาก่อนเวลา 18.00 น.  ก่อนวันเรียน 1 วัน
-        .row
-            .col-xs-12
-                label(style="color:red") มิฉะนั้น&nbsp;ระบบจะตัดเงินเหมือนมาเรียนตามปกติ
-        .row
-            .col-xs-12
-                label(style="color:red") *เสาร์,อาทิตย์ต้องลาภายในวันศุกร์*
         .form-group
-            label.control-label วันที่ต้องการลา:
-            input.form-control#datePicker(type="text")
+            label.text-danger
+                |จะต้องทำการลาก่อนเวลา 18.00น. ก่อนวันเรียน 1 วัน และภายใน 18.00น. วันศุกร์สำหรับเสาร์/อาทิตย์
+                |มิเช่นนั้นจะถือเป็นการลาฉุกเฉิน ซึ่งตัดเงินเสมือนมาเรียนปกติสำหรับระบบ FHB และไม่ชดเชยให้สำหรับคอร์สที่เรียนใน HB
+        .form-group
+            label วันที่:
+            input#absentDate.form-control(type="text")
+        .form-group.mb-0
+            label วิชา:
         .row
-            .col-xs-12
-                label วิชา:
+            .col-6.col-md-3.pb-3
+                buttun.col.btn.btn-8.selector -
+            .col-6.col-md-3
+                buttun.col.btn.btn-10.selector -
+            .col-6.col-md-3.pb-3
+                buttun.col.btn.btn-13.selector -
+            .col-6.col-md-3
+                buttun.col.btn.btn-15.selector -
+        .form-group
+            label เหตุผล:
+            input#reasonInput.form-control(type="text")
+        .form-group
+            label ผู้แจ้ง:
+            input#senderInput.form-control(type="text")
         .row
-            .col-xs-6.col-sm-3
-                button.col-xs-12.btn.btn-default.selector#btn8 &nbsp;
-            .col-xs-6.col-sm-3
-                button.col-xs-12.btn.btn-default.selector#btn10 &nbsp;
-            .col-xs-6.col-sm-3
-                button.col-xs-12.btn.btn-default.selector#btn13 &nbsp;
-            .col-xs-6.col-sm-3
-                button.col-xs-12.btn.btn-default.selector#btn15 &nbsp;
-        form
-            .form-group
-                label เหตุผล:
-                input.form-control#reasonInput(type="text")
-            .form-group
-                label ผู้แจ้ง:
-                input.form-control#senderInput(type="text")
-        label ประวัติการลา/เพิ่ม
-        label(style="color:red") (ย้อนหลัง 3 เดือนจากวันที่เลือก)
+            .col-12
+                button#submitButt.float-right.btn.btn-success ยืนยัน
+        .form-group.mb-0
+            label ประวัติการลา/เพิ่ม
+            label.text-danger (ย้อนหลัง 3 เดือน)
+        .form-group
+            label#mQuota.col-6.px-0 โควต้าลา FHB:M
+            label#pQuota โควต้าลา FHB:P
         .row
-            .col-xs-12.col-sm-6
-                p#mathSum
-            .col-xs-12.col-sm-6
-                p#phySum
-        .row
-            .col-xs-12.col-sm-6
+            .col-12.col-md-6
                 .table-responsive
-                    table.table.table-bordered.table-striped
+                    table.table.table-bordered
                         thead
-                            tr: td.text-center.danger ลา
+                            tr
+                                td.text-center.table-danger(colspan="3") ลา
                         tbody#absentTableBody
-            .col-xs-12.col-sm-6
+            .col-12.col-md-6
                 .table-responsive
-                    table.table.table-bordered.table-striped
+                    table.table.table-bordered
                         thead
-                            tr: td.text-center.success เพิ่ม
+                            tr
+                                td.text-center.table-success(colspan="3") เพิ่ม
                         tbody#presentTableBody
-        .row
-            .col-xs-3.col-xs-offset-9.col-sm-1.col-sm-offset-11
-                button#submit.btn.btn-primary.col-xs-12.col-sm-12 ยืนยัน
-        //- loader modal
-        .modal.fade#loaderModal(role='dialog')
-            .modal-dialog.modal-sm
-                .modal-content
-                    .modal-body
-                        .loading.center-block
-                        h3 Uploading please wait...
+
+    // Modal for loading
+    #loadingModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-body
+                    h3 Send data, please wait ...
