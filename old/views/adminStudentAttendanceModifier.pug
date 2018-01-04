@@ -60,19 +60,22 @@ block body
                             tbody#fhbPresentTable
         #activityContent.tab-pane.container-fluid
             br
-            .col-12
-                .table-responsive
-                    table.table.table-bordered.table-hover
-                        thead.thead-light
-                            tr
-                                th.text-center Timestamp
-                                th.text-center Name
-                                th.text-center Subject
-                                th.text-center Time
-                                th.text-center Reason
-                                th.text-center Sender
-                                th.text-center ลบ
-                        tbody#acTableBody
+            .row
+                .col-12
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead.thead-light
+                                tr
+                                    th.text-center Timestamp
+                                    th.text-center Name
+                                    th.text-center Subject
+                                    th.text-center Time
+                                    th.text-center Reason
+                                    th.text-center Sender
+                                    th.text-center ลบ
+                            tbody#acTableBody
+                .col-12
+                    a#upToTop.float-right(href="#") Up to top
         #addAttendContent.tab-pane.container
             .row
                 .col-12

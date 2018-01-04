@@ -11,24 +11,33 @@ block body
             h2 แบบฟอร์มลา CR&FHB
             h4#pageBanner CRxxQx
     .container
-        //- .form-group
-            label.text-danger
-                |จะต้องทำการลาก่อนเวลา 18.00น. ก่อนวันเรียน 1 วัน และภายใน 18.00น. วันศุกร์สำหรับเสาร์/อาทิตย์
-                |มิเช่นนั้นจะถือเป็นการลาฉุกเฉิน ซึ่งตัดเงินเสมือนมาเรียนปกติสำหรับระบบ FHB และไม่ชดเชยให้สำหรับคอร์สที่เรียนใน HB
+        .form-group
+            label#mQuota.col-6.px-0 โควต้าลา FHB:M
+            label#pQuota โควต้าลา FHB:P
         .form-group
             label วันที่:
             input#absentDate.form-control(type="text")
         .form-group.mb-0
             label วิชา:
-        .row
-            .col-6.col-md-3.pb-3
-                buttun.col.btn.btn-8.selector -
-            .col-6.col-md-3
-                buttun.col.btn.btn-10.selector -
-            .col-6.col-md-3.pb-3
-                buttun.col.btn.btn-13.selector -
-            .col-6.col-md-3
-                buttun.col.btn.btn-15.selector -
+        .table-responsive
+            table.table
+                tbody
+                    tr
+                        td.text-center.labelor.label-8(width="50%") 8-10
+                        td.text-center
+                            buttun.col.btn.btn-8.selector -
+                    tr
+                        td.text-center.labelor.label-10 10-12
+                        td.text-center
+                            buttun.col.btn.btn-10.selector -
+                    tr
+                        td.text-center.labelor.label-13 13-15
+                        td.text-center
+                            buttun.col.btn.btn-13.selector -
+                    tr
+                        td.text-center.labelor.label-15 15-17
+                        td.text-center
+                            buttun.col.btn.btn-15.selector -
         .form-group
             label เหตุผล:
             input#reasonInput.form-control(type="text")
@@ -41,9 +50,6 @@ block body
         .form-group.mb-0
             label ประวัติการลา/เพิ่ม
             label.text-danger (ย้อนหลัง 3 เดือน)
-        .form-group
-            label#mQuota.col-6.px-0 โควต้าลา FHB:M
-            label#pQuota โควต้าลา FHB:P
         .row
             .col-12.col-md-6
                 .table-responsive
@@ -59,6 +65,9 @@ block body
                             tr
                                 td.text-center.table-success(colspan="3") เพิ่ม
                         tbody#presentTableBody
+        .row
+            .col
+                a#upToTop.float-right(href="#") Up to top
 
     // Modal for loading
     #loadingModal.modal.fade

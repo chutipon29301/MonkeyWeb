@@ -59,12 +59,14 @@ async function getRoom() {
 
 async function fillButton() {
     $(".selector").removeClass("disabled btn-info").addClass("btn-light");
+    $(".labelor").html("-");
     let pickDate = $('#addDate').data('DateTimePicker').date();
     if (pickDate.day() === 0 || pickDate.day() === 6) {
-        $(".btn-8").html("8-10");
-        $(".btn-10").html("10-12");
-        $(".btn-13").html("13-15");
-        $(".btn-15").html("15-17");
+        $(".selector").html("กดเพื่อเพิ่ม");
+        $(".label-8").html("8-10");
+        $(".label-10").html("10-12");
+        $(".label-13").html("13-15");
+        $(".label-15").html("15-17");
         let cr = timetable.course;
         for (let i in cr) {
             let t = moment(cr[i].day);
@@ -81,9 +83,11 @@ async function fillButton() {
         }
     } else {
         $(".selector").html("-");
+        $(".btn-8").html("กดเพื่อเพิ่ม");
         $(".btn-10").addClass("disabled");
         $(".btn-13").addClass("disabled");
         $(".btn-15").addClass("disabled");
+        $(".label-8").html("17-19");
         let hb = timetable.hybrid;
         for (let i in hb) {
             let t = moment(hb[i].day);
@@ -210,7 +214,7 @@ $("#addDate").on("dp.change", function () {
 $(".selector").click(function () {
     if (!$(this).hasClass("disabled")) {
         if ($(this).hasClass("btn-light")) {
-            $(".selector").removeClass("btn-info");
+            $(".selector").removeClass("btn-info").addClass("btn-light");
             $(this).removeClass("btn-light").addClass("btn-info");
         } else {
             $(this).toggleClass("btn-light btn-info");
