@@ -52,10 +52,12 @@ async function getTimetable() {
 
 function fillButton() {
     $(".selector").html("-").removeClass("cr hb btn-warning").addClass("btn-light disabled");
+    $(".labelor").html("-");
     let pickDate = $('#absentDate').data('DateTimePicker').date();
     let cr = timetable.course;
     let hb = timetable.hybrid;
     if (pickDate.day() === 2 || pickDate.day() === 4) {
+        $(".label-8").html("17-19");
         for (let i in hb) {
             let t = moment(hb[i].day);
             if (t.day() === pickDate.day()) {
@@ -63,6 +65,10 @@ function fillButton() {
             }
         }
     } else {
+        $(".label-8").html("8-10");
+        $(".label-10").html("10-12");
+        $(".label-13").html("13-15");
+        $(".label-15").html("15-17");
         for (let i in cr) {
             let t = moment(cr[i].day);
             if (t.day() === pickDate.day()) {
