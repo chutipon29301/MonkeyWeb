@@ -73,35 +73,36 @@ block body
                                 th.text-center Sender
                                 th.text-center ลบ
                         tbody#acTableBody
-        #addAttendContent.tab-pane.container-fluid
+        #addAttendContent.tab-pane.container
             .row
-                .col-md-3.col-12
+                .col-12
+                    .form-group
+                        label &nbsp;
+                        select.form-control#addType(type="text")
+                            option(value=1) ลา
+                            option(value=2) เพิ่ม
+                .col-12
+                    .form-group
+                        label.control-label StudentID:
+                        input.form-control#addStdID(type="text")
+                .col-md-6.col-12
                     .form-group
                         label.control-label Day:
                         input.form-control#addDatePicker(type="text")
-                .col-md-3.col-12
-                    .form-group
-                        label.control-label StudentID:
-                        input.form-control#addID(type="text")
-                .col-md-3.col-12
-                    .form-group
-                        label.control-label Sender:
-                        input.form-control#addSender(type="text")
-                .col-md-3.col-12
-                    .form-group
-                        label Type:
-                        select.form-control#addType(type="text")
-                            option ลา
-                            option เพิ่ม
-            .row
                 .col-md-6.col-12
+                    .form-group
+                        label Time:
+                        select.form-control#addTime(type="text")
+                .col-12.absentContent
                     .form-group
                         label.control-label Reason:
                         input.form-control#addReason(type="text")
-                .col-md-3.col-12
+                .col-12.addContent
                     .form-group
-                        label Type:
+                        label Subject:
                         select.form-control#addSubj(type="text")
-                            option FHB:M
-                            option FHB:P
-            button.btn.btn-primary.col-md-1.col-4.offset-md-11.offset-8#addNewAttend ADD NEW
+                            option(value="M") FHB:M
+                            option(value="P") FHB:P
+            .row
+                .col
+                    button.btn.btn-success.float-right#addNewAttend ADD ADTEND
