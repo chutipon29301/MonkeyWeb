@@ -163,8 +163,10 @@ module.exports = function (app, db, pasport) {
     addPugPage("studentProfile", side, permission);
     addPugPage("summerAbsentForm", side, permission);
     permission = { status: 'active', state: 'finished' }
+    addPugPage("absentAgreeForm", side, permission);
     addPugPage("absentForm", side, permission);
     addPugPage("addForm", side, permission);
+    addPugPage("addAgreeForm", side, permission);
     addPugPage("permanentAdtendance", side, permission);
     permission = { status: 'active', state: ["unregistered", "rejected"] }
     addPugPage("regisPage", side, permission);

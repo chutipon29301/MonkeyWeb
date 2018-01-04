@@ -1,0 +1,14 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Add Form"
+block script
+    script(src="js/studentAbsentAgreeForm.js")
+block body
+    .card
+        .card-header
+            h3 ข้อกำหนดและเงื่อนไขการเพิ่ม
+            h5.text-danger (โปรดอ่านอย่างละเอียด)
+        .card-body
+            h5 Condition text
+        .card-footer
+            button#submitButt.btn.btn-success.float-right ยืนยัน
