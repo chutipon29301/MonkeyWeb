@@ -1,3 +1,12 @@
+let year;
+let quarter;
+getYearAndQuarter();
+function getYearAndQuarter() {
+    getConfig().then((config) => {
+        year = config.defaultQuarter.quarter.year;
+        quarter = config.defaultQuarter.quarter.quarter;
+    });
+}
 /**
  * fhb datePicker
  */
@@ -240,3 +249,125 @@ async function genActivityTable() {
         );
     }
 }
+
+// admin add attend function
+$("#addType").change(function () {
+    loadAdtendPage();
+});
+loadAdtendPage();
+function loadAdtendPage() {
+    let type = $("#addType").val();
+    if (type === "1") {
+        $(".absentContent").show();
+        $(".addContent").hide();
+    } else {
+        $(".absentContent").hide();
+        $(".addContent").show();
+    }
+}
+$("#addDatePicker").datetimepicker({
+    format: "DD/MM/YYYY",
+    daysOfWeekDisabled: [1, 3, 5]
+});
+genAddAdtendTimePicker();
+$("#addDatePicker").on("dp.change", function () {
+    genAddAdtendTimePicker();
+});
+function genAddAdtendTimePicker() {
+    $("#addTime").empty();
+    let pickDate = $('#addDatePicker').data('DateTimePicker').date();
+    if (pickDate.day() === 2 || pickDate.day() === 4) {
+        $("#addTime").append(
+            "<option value=" + 17 + ">17-19</option>"
+        );
+    } else {
+        $("#addTime").append(
+            "<option value=" + 8 + ">8-10</option>" +
+            "<option value=" + 10 + ">10-12</option>" +
+            "<option value=" + 13 + ">13-15</option>" +
+            "<option value=" + 15 + ">15-17</option>"
+        );
+    }
+}
+$("#addNewAttend").click(function () {
+    let type = $("#addType").val();
+    if ($("#addStdID").val() === "") {
+        alert("Input studentID");
+    } else if ($("#addStdID").val().length !== 5) {
+        alert("Incorrect studentID");
+    } else {
+        if (type === "1") {
+            if ($("#addReason").val() === "") {
+                alert("Input reason");
+            } else {
+                if (confirm("ยืนยันการลา?")) {
+                    sendAddAdtendData();
+                }
+            }
+        } else {
+            if (confirm("ยืนยันการเพิ่ม?")) {
+                sendAddAdtendData();
+            }
+        }
+    }
+});
+const roundTime = (time, round) => {
+    let result = moment(0);
+    result.year(time.year()).month(time.month()).date(time.date()).hour(parseInt(round));
+    return result.valueOf();
+};
+async function sendAddAdtendData() {
+    let pickDate = $('#addDatePicker').data('DateTimePicker').date();
+    let type = $("#addType").val();
+    let hour = parseInt($("#addTime").val());
+    let studentID = $("#addStdID").val();
+    let subj = $("#addSubj").val();
+    if (type === "1") {
+        let promise = [];
+        let timetable = await $.post("post/v1/studentTimeTable", { year: year, quarter: quarter, studentID: studentID });
+        let cr = timetable.course;
+        for (let i in cr) {
+            let t = moment(cr[i].day);
+            if (t.day() === pickDate.day() && t.hour() === hour) {
+                promise.push($.post("post/v1/addStudentAbsent", {
+                    userID: studentID,
+                    date: roundTime(pickDate, hour),
+                    courseID: cr[i].courseID,
+                    reason: $("#addReason").val(),
+                    sender: "Admin"
+                }));
+            }
+        }
+        let hb = timetable.hybrid;
+        for (let i in hb) {
+            let t = moment(hb[i].day);
+            if (t.day() === pickDate.day() && t.hour() === hour) {
+                promise.push($.post("post/v1/addStudentAbsent", {
+                    userID: studentID,
+                    date: roundTime(pickDate, hour),
+                    hybridID: hb[i].hybridID,
+                    reason: $("#addReason").val(),
+                    sender: "Admin"
+                }));
+            }
+        }
+        location.reload();
+    } else {
+        let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
+        let hybridID;
+        for (let i in allHB) {
+            let t = moment(allHB[i].day);
+            if (t.day() === pickDate.day() && t.hour() === hour) {
+                hybridID = allHB[i].hybridID;
+            }
+        }
+        await $.post("post/v1/addStudentPresent", {
+            userID: studentID,
+            date: roundTime(pickDate, hour),
+            hybridID: hybridID,
+            subject: subj,
+            sender: "Admin"
+        });
+        location.reload();
+    }
+} 
