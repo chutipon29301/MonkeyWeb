@@ -240,6 +240,21 @@ const roundTime = (time, round) => {
     return result.valueOf();
 };
 
+// function for get hour from class name
+const classHour = (button) => {
+    let result = 0;
+    if (button.hasClass("btn-8")) {
+        result = 8;
+    } else if (button.hasClass("btn-10")) {
+        result = 10;
+    } else if (button.hasClass("btn-13")) {
+        result = 13;
+    } else if (button.hasClass("btn-15")) {
+        result = 15;
+    }
+    return result;
+};
+
 // function for send data to server
 async function sendData() {
     $("#loadingModal").modal("show");
@@ -248,20 +263,20 @@ async function sendData() {
     let studentName = await name(studentID);
     notifyStr = notifyStr + studentName.nickname + " " + studentName.firstname + "\n";
     notifyStr = notifyStr + "ต้องการเพิ่ม: " + pickDate.format("ddd DD/MM/YY") + "\n";
-    let timeStr = $(".btn-info").html();
+    let timeStr = classHour($(".btn-info"));
     notifyStr = notifyStr + "FHB:" + $("#subjInput").val() + " - " +
-        timeStr.slice(0, timeStr.indexOf("-")) + ":00";
+        timeStr + ":00";
     let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
     let hybridID;
     for (let i in allHB) {
         let t = moment(allHB[i].day);
-        if (t.day() === pickDate.day() && t.hour() === parseInt(timeStr.slice(0, timeStr.indexOf("-")))) {
+        if (t.day() === pickDate.day() && t.hour() === timeStr) {
             hybridID = allHB[i].hybridID;
         }
     }
     await $.post("post/v1/addStudentPresent", {
         userID: studentID,
-        date: roundTime(pickDate, timeStr.slice(0, timeStr.indexOf("-"))),
+        date: roundTime(pickDate, timeStr),
         hybridID: hybridID,
         subject: $("#subjInput").val(),
         sender: $("#senderInput").val()
