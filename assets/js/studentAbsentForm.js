@@ -28,7 +28,6 @@ function getYearAndQuarter() {
         quarter = config.defaultQuarter.quarter.quarter;
         genBanner();
         getTimetable();
-        getHistory();
     });
 }
 
@@ -47,6 +46,7 @@ async function getTimetable() {
             pHbMax += 3;
         }
     }
+    getHistory();
     fillButton();
 }
 
