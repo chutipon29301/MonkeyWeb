@@ -148,10 +148,10 @@ async function getHistory() {
                     "<td class='text-center'>" + history[i].sender + "</td>" +
                     "</tr>"
                 );
-                if (historyDetail[i].subject === "M") {
-                    mHbFound += 1;
-                } else if (historyDetail[i].subject === "P") {
-                    pHbFound += 1;
+                if (history[i].subject === "M") {
+                    mHbFound -= 1;
+                } else if (history[i].subject === "P") {
+                    pHbFound -= 1;
                 }
             }
         }
