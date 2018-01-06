@@ -69,10 +69,10 @@ async function genFhbTable() {
     let adtendInfo = await Promise.all(promise);
     let studentName = await Promise.all(promise2);
     for (let i = 0; i < allAdtend.length; i++) {
-        let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY");
+        let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY HH:mm");
         let t = moment(allAdtend[i].date).hour();
         let style = "";
-        if (emergencyAbsent()) {
+        if (emergencyAbsent(allAdtend[i].timestamp, allAdtend[i].date)) {
             style = "table-warning";
         }
         if (allAdtend[i].type === 1) {
@@ -130,10 +130,11 @@ function emergencyAbsent(timestamp, date) {
     let result = false;
     let aDay = 24 * 60 * 60 * 1000;
     let t = moment(date);
+    t.hour(18).minute(0).second(0).millisecond(0);
     if (t.day() === 0) {
-        if (date - timestamp < 2 * aDay) result = true;
+        if (t.valueOf() - timestamp < 2 * aDay) result = true;
     } else {
-        if (date - timestamp < aDay) result = true;
+        if (t.valueOf() - timestamp < aDay) result = true;
     }
     return result;
 }
