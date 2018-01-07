@@ -1,0 +1,21 @@
+extends oldHtmlTemplate
+block head
+    -const pageTitle = "Course Room"
+    script(src="js/admin.min.js")
+block body
+    include generalTemplate
+    .container
+        .row
+            .col-sm-12
+                h2 Room
+        .row
+            .form-group.col-sm-2
+                select#quarterSelect(name="Select Quarter" onchange="getTableContent()").form-control
+        .row
+            .col-sm-12
+                ul#tabs.nav.nav-tabs
+        .row
+            #content.tab-content
+    script(src="js/adminRoom.js")
+    script.
+        getPageContent();

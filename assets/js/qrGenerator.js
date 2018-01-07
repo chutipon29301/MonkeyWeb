@@ -1,0 +1,1 @@
+$('#qrcode').qrcode({width: 256,height: 256,text: "size doesn't matter"});

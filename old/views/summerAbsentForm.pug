@@ -1,0 +1,107 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Summer Absent Form"
+    script(src="js/summerAbsentForm.min.js")
+block body
+    mixin tablebody(startDay,type)
+        tr
+            th.text-center= "Mon "+startDay
+            th.text-center= "Tue "+(startDay+1)
+            th.text-center= "Wed "+(startDay+2)
+            th.text-center= "Thu "+(startDay+3)
+            th.text-center= "Fri "+(startDay+4)
+        tr
+            +tabletd(startDay,type)
+            +tabletd(startDay+1,type)
+            +tabletd(startDay+2,type)
+            +tabletd(startDay+3,type)
+            +tabletd(startDay+4,type)
+    mixin tabletd(day,type)
+        td
+            +butt(day,type)
+    mixin butt(day,type)
+        if(day<10)
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-08") 8
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-10") 10
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-13") 13
+        else
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-08") 8
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-10") 10
+            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-13") 13
+    .container
+        .row: .col-xs-12: h3(style="color:red") หากไม่ต้องการลาสามารถกดยืนยันได้ทันที
+        .row: .col-xs-12
+            h3 แบบฟอร์มลา CR60OCT ล่วงหน้า
+            p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่ต้องการลา
+        form.form-horizontal
+            .form-group
+                label.control-label.col-sm-1 ผู้แจ้ง :
+                .col-sm-11: input#sender.form-control(type="text")
+        .table-responsive
+            table.table.table-bordered
+                tbody
+                    +tablebody(9,"a")
+                    +tablebody(16,"a")
+                    +tablebody(23,"a")
+        hr
+        .row: .col-xs-12
+            h3 แบบฟอร์มชดเชย CR60OCT ล่วงหน้า
+            p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่สะดวกมาชดเชย
+            p(style="color:red") *แต่ทาง รร จะจัดชดเชยให้ตามสมควร
+        .table-responsive
+            table.table.table-bordered
+                tbody
+                    tr
+                        th.text-center Mon 9
+                        th.text-center Tue 10
+                        th.text-center Wed 11
+                        th.text-center Thu 12
+                        th.text-center Fri 13
+                    tr
+                        td
+                            button#p09-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p10-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p11-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p12-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p13-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                    tr
+                        th.text-center Mon 16
+                        th.text-center Tue 17
+                        th.text-center Wed 18
+                        th.text-center Thu 19
+                        th.text-center Fri 20
+                    tr
+                        td
+                            button#p16-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p17-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p18-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p19-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p20-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                    tr
+                        th.text-center Mon 23
+                        th.text-center Tue 24
+                        th.text-center Wed 25
+                        th.text-center Thu 26
+                        th.text-center Fri 27
+                    tr
+                        td
+                            button#p23-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p24-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p25-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p26-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                        td
+                            button#p27-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+        .row
+            .col-xs-12.text-right
+                button#submit.btn.btn-success ยืนยัน
