@@ -48,7 +48,7 @@ module.exports = function (app, db, post, fs) {
         };
         for (const key in keyObject) {
             keyObject[key] += rev;
-            // fs.ensureFileSync(keyObject[key]);
+            fs.ensureFileSync(keyObject[key]);
         }
         res.status(200).send(keyObject);
     });
