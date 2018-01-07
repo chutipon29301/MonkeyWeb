@@ -1,13 +1,13 @@
 var ObjectID = require('mongodb').ObjectID;
+var fs = require('fs-extra');
 
 module.exports = function (app, db, post) {
-
-    var fs = require('fs-extra');
 
     var courseDB = db.collection('course');
     var configDB = db.collection('config');
     var studentDocumentDB = db.collection('studentDocument');
     var userDB = db.collection('user');
+    var attendanceDocumentDB = db.collection('attendanceDocument');
 
     /**
      * Post method for upload file to document coresponse to the course
@@ -60,8 +60,7 @@ module.exports = function (app, db, post) {
                             courseID: courseID,
                             upload: new Date(),
                             displayDate: date
-                        }, function (err, result) {
-                        });
+                        }, function (err, result) {});
                     } catch (err) {
                         if (error === undefined) {
                             error = [];
@@ -221,6 +220,61 @@ module.exports = function (app, db, post) {
                 }
                 res.status(200).send('OK');
             });
+        });
+    });
+
+    post('/post/v1/uploadAttendanceDocument', function (req, res) {
+        if (!req.body.attendanceID) {
+            res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        Promise.all([
+            attendanceDocumentDB.insertOne({
+                attendanceID: req.body.attendanceID
+            }),
+            configDB.findOne({
+                _id: 'config'
+            })
+        ]).then(values => {
+            try {
+                fs.ensureDirSync(values[1].attendanceDocumentPath);
+                fs.moveSync(req.files[0].path, values[1].attendanceDocumentPath + '/' + values[0].ops[0]._id);
+            } catch (e) {
+                return res.status(500).send({
+                    err: 2,
+                    errorInfo: e
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/removeAttendanceDocument', function (req, res) {
+        if (!req.body.attendanceDocumentID) {
+            res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        Promise.all([
+            configDB.findOne({
+                _id: 'config'
+            }),
+            attendanceDocumentDB.remove({
+                _id: ObjectID(req.body.attendanceDocumentID)
+            })
+        ]).then(values => {
+            try {
+                fs.removeSync(values[0].attendanceDocumentPath + '/' + req.body.attendanceDocumentID)
+            } catch (error) {
+                return res.status(500).send({
+                    err: 2,
+                    errorInfo: e
+                });
+            }
+            res.status(200).send('OK');
         });
     });
 }
