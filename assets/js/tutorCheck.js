@@ -186,7 +186,7 @@ function getSlot(date) {
 
 function getSlotLabel() {
     var startHour = ['08', '10', '13', '15', '17', '19'];
-    var endHour = ['10', '12', '15', '17', '19', '24'];
+    var endHour = ['10', '13', '15', '17', '19', '24'];
     if (currentSlot === getSlot(checkInDate) && currentSlot === getSlot(checkOutDate)) {
         return moment(checkInDate).format("HH:mm:ss") + ' - ' + moment(checkOutDate).format("HH:mm:ss");
     } else if (currentSlot === getSlot(checkInDate)) {

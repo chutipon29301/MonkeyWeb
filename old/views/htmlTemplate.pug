@@ -74,6 +74,7 @@ html(lang="en")
                                     a.dropdown-item(href="/tutorCheckInActivity") Activity
                                     if(webUser.position=="mel")
                                         a.dropdown-item(href="/checkInSummary") Manage
+                            +navLink("tutorQrGenerator","QR Generator")
                             if(webUser.position!="tutor")
                                 +navLink("adminCourseRoom","Room")
                             //- +navLink("adminConference","Conference")
