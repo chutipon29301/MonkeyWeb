@@ -2,8 +2,8 @@ module.exports = function (app, db, post, fs) {
 
     var isDevelopOnMac = !/^win/.test(process.platform);
 
-    const KEY_PATH = (isDevelopOnMac) ? '/Volumes/KEY-QRCODE/' : 'W:\\';
-    const KEY_STUDENT_PATH = (isDevelopOnMac) ? '/Volumes/KEY-STUDENT/' : 'V:\\';
+    const KEY_PATH = (isDevelopOnMac) ? '/Volumes/KEY-QRCODE/' : 'file://monkeycloud/key-qrcode/';
+    const KEY_STUDENT_PATH = (isDevelopOnMac) ? '/Volumes/KEY-STUDENT/' : 'file://monkeycloud/key-qrcode/';
     const SUBJECT_CONST = {
         'M': 'MATH',
         'P': 'PHYSICS',
