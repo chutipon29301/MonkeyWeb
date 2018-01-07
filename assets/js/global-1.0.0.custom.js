@@ -61,6 +61,7 @@ const changeRegistrationState = (studentID, registrationState, quarter) => {
     }
 }
 
+// recipient: "MonkeyIT","Test","MonkeyAdmin","MonkeyStaff"
 const lineNotify = (recipient, message) => $.post("post/lineNotify", {
     recipient: recipient,
     message: message

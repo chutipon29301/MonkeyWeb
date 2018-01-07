@@ -70,14 +70,24 @@ $("#addSubStateButt").click(function () {
 });
 
 // add event when click download butt
-$("#mathCoverDownloadButt").click(function () {
+$("#mathCoverDowload").click(function () {
     if (!($(this).hasClass('disabled'))) {
         genCover(0);
     }
 });
-$("#phyCoverDownloadButt").click(function () {
+$("#phyCoverDowload").click(function () {
     if (!($(this).hasClass('disabled'))) {
         genCover(1);
+    }
+});
+$("#cheCoverDowload").click(function () {
+    if (!($(this).hasClass('disabled'))) {
+        genCover(2);
+    }
+});
+$("#engCoverDowload").click(function () {
+    if (!($(this).hasClass('disabled'))) {
+        genCover(3);
     }
 });
 
@@ -241,6 +251,8 @@ async function genSubRegisState() {
 async function genStudentTable() {
     let fhbHasMath = false;
     let fhbHasPhy = false;
+    let fhbHasChe = false;
+    let fhbHasEng = false;
     let str = $("#quarterSelect").val();
     $(".selector").html("ADD SUBJ").removeClass("cr hb sk");
     if (parseInt(str.slice(5)) > 4) {
@@ -256,9 +268,26 @@ async function genStudentTable() {
         let tutorName = (timeTable.course[i].tutorName == "Hybrid") ? "HB" : timeTable.course[i].tutorName;
         $(".btn" + time.day() + time.hour()).html("CR:" + timeTable.course[i].courseName + " - " + tutorName).addClass("cr").attr("id", timeTable.course[i].courseID);
         if (timeTable.course[i].tutorName == "Hybrid") {
-            if (timeTable.course[i].courseName.slice(0, 1) == "P") {
-                fhbHasPhy = true;
-            } else fhbHasMath = true;
+            switch (timeTable.course[i].courseName.slice(0, 1)) {
+                case "M":
+                    fhbHasMath = true;
+                    break;
+                case "P":
+                    fhbHasPhy = true;
+                    break;
+                case "C":
+                    fhbHasChe = true;
+                    break;
+                case "E":
+                    fhbHasEng = true;
+                    break;
+                default:
+                    break;
+            }
+
+        }
+        if (timeTable.course[i].courseName.slice(0, 1) === "C") {
+            fhbHasChe = true;
         }
     }
     for (let i in timeTable.hybrid) {
@@ -276,7 +305,7 @@ async function genStudentTable() {
         $(".btn" + time.day() + time.hour()).html("SKILL:" + timeTable.skill[i].subject).addClass("sk").attr("id", timeTable.skill[i].skillID);
     }
     genBarcode();
-    genTableTemplate(fhbHasMath, fhbHasPhy);
+    genTableTemplate(fhbHasMath, fhbHasPhy, fhbHasChe, fhbHasEng);
 }
 function genChangeInfoModal(studentData) {
     $("#nicknameInput").attr("placeholder", studentData.nickname);
@@ -306,31 +335,77 @@ async function genBarcode() {
         height: 68,
         displayValue: false
     });
+    JsBarcode("#cheBarcode", ID + '3', {
+        lineColor: "black",
+        width: 3.4,
+        height: 68,
+        displayValue: false
+    });
+    JsBarcode("#engBarcode", ID + '4', {
+        lineColor: "black",
+        width: 3.4,
+        height: 68,
+        displayValue: false
+    });
 }
-async function genTableTemplate(hasMath, hasPhy) {
+async function genTableTemplate(hasMath, hasPhy, hasChe, hasEng) {
     let studentData = await studentProfile(ID);
     let state = (studentData.grade > 6) ? 'h' : 'j';
     if (hasMath && hasPhy) {
         $("#tableTemplate").attr("src", "images/mp" + state + ".png");
     } else if (hasMath) {
         $("#tableTemplate").attr("src", "images/m" + state + ".png");
-        $("#phyCoverDownloadButt").addClass("disabled");
+        // $("#phyCoverDownloadButt").addClass("disabled");
     } else if (hasPhy) {
         $("#tableTemplate").attr("src", "images/p" + state + ".png");
-        $("#mathCoverDownloadButt").addClass("disabled");
+        // $("#mathCoverDownloadButt").addClass("disabled");
+    } else {
+        $("#tableTemplate").attr("src", "images/mp" + state + ".png");
+    }
+    if (hasMath) {
+        $("#mathCoverDowload").removeClass("disabled");
+    }
+    if (hasPhy) {
+        $("#phyCoverDowload").removeClass("disabled");
+    }
+    if (hasChe) {
+        $("#cheCoverDowload").removeClass("disabled");
+    }
+    if (hasEng) {
+        $("#engCoverDowload").removeClass("disabled");
     }
 }
 
-// generate and download cover function
+/**
+ * gen and download cover
+ * @param {number} type 0:math 1:phy 2:chem 3:eng 4:reject 5:finished
+ */
 async function genCover(type) {
     let str = $("#quarterSelect").val();
     let [profile, timeTable] = await Promise.all([studentProfile(ID), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
-    if (type == 0) {
-        var coverCanvas = document.getElementById('mathCover');
-        var barcode = document.getElementById('mathBarcode');
-    } else {
-        var coverCanvas = document.getElementById('phyCover');
-        var barcode = document.getElementById('phyBarcode');
+    let coverCanvas;
+    let barcode;
+    switch (type) {
+        case 0:
+            coverCanvas = document.getElementById('mathCover');
+            barcode = document.getElementById('mathBarcode');
+            break;
+        case 1:
+            coverCanvas = document.getElementById('phyCover');
+            barcode = document.getElementById('phyBarcode');
+            break;
+        case 2:
+            coverCanvas = document.getElementById('cheCover');
+            barcode = document.getElementById('cheBarcode');
+            break;
+        case 3:
+            coverCanvas = document.getElementById('engCover');
+            barcode = document.getElementById('engBarcode');
+            break;
+        default:
+            overCanvas = document.getElementById('mathCover');
+            barcode = document.getElementById('mathBarcode');
+            break;
     }
     let ctx = coverCanvas.getContext('2d');
     let template = document.getElementById('tableTemplate');
@@ -344,10 +419,22 @@ async function genCover(type) {
     let picW = profileImg.width * picH / profileImg.height;
     ctx.drawImage(profileImg, 200, 30, picW, picH);
     ctx.font = "bold 80px Cordia New";
-    if (type == 0) {
-        ctx.fillText('ID: ' + ID + '1', 1025, 63);
-    }else{
-        ctx.fillText('ID: ' + ID + '2', 1025, 63);
+    switch (type) {
+        case 0:
+            ctx.fillText('ID: ' + ID + '1', 1025, 63);
+            break;
+        case 1:
+            ctx.fillText('ID: ' + ID + '2', 1025, 63);
+            break;
+        case 2:
+            ctx.fillText('ID: ' + ID + '3', 1025, 63);
+            break;
+        case 3:
+            ctx.fillText('ID: ' + ID + '4', 1025, 63);
+            break;
+        default:
+            ctx.fillText('ID: ' + ID + '1', 1025, 63);
+            break;
     }
     ctx.drawImage(barcode, 900, 115);
     ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 600, 80);
@@ -355,8 +442,9 @@ async function genCover(type) {
     let w = [1289, 1508, 811, 1050];
     let h = [390, 533, 675, 813, 955];
     let mw = [1335, 1416, 1498, 1580];
-    let mh = [140, 215, 290, 365, 440];
+    let mh = [140, 220, 300, 380, 460];
     ctx.font = "bold 60px Cordia New";
+    ctx.fillStyle = "#f442df";
     for (let i in timeTable.course) {
         ctx.fillText("CR: " + timeTable.course[i].courseName, w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)]);
         ctx.fillText((timeTable.course[i].tutorName == "Hybrid" ? "HB" : timeTable.course[i].tutorName), w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)] + 70);
@@ -365,18 +453,26 @@ async function genCover(type) {
                 ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
             } else if (type == 1 && timeTable.course[i].courseName.slice(0, 1) == "P") {
                 ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
+            } else if (type == 2 && timeTable.course[i].courseName.slice(0, 1) == "C") {
+                ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
+            } else if (type == 3 && timeTable.course[i].courseName.slice(0, 1) == "E") {
+                ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
             }
         }
     }
     for (let i in timeTable.hybrid) {
+        ctx.fillStyle = "#242de2";
         ctx.fillText("FHB: " + timeTable.hybrid[i].subject, w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)]);
         ctx.fillText("HB", w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)] + 70);
+        ctx.fillStyle = "black";
         if (type == 0 && timeTable.hybrid[i].subject == "M") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         } else if (type == 1 && timeTable.hybrid[i].subject == "P") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         }
     }
+    ctx.font = "bold 50px Cordia New";
+    ctx.fillStyle = "orange";
     for (let i in timeTable.skill) {
         let time = moment(timeTable.skill[i].day);
         if (timeTable.skill[i].subject == "ME") {
@@ -390,8 +486,9 @@ async function genCover(type) {
             }
         }
     }
-    if (type == 2 || type == 3) {
-        if (type == 2) {
+    ctx.fillStyle = "black";
+    if (type == 4 || type == 5) {
+        if (type == 4) {
             var appRejCanvas = document.getElementById('appRejCover1');
         } else {
             var appRejCanvas = document.getElementById('appRejCover2');
@@ -401,16 +498,16 @@ async function genCover(type) {
         let picRcW = 1654;
         let picRcH = receipt.height * picRcW / receipt.width;
         ctx2.drawImage(receipt, 0, 0, picRcW, picRcH);
-        let appRejTemplate = document.getElementById('phyCover');
+        let appRejTemplate = document.getElementById('mathCover');
         ctx2.globalAlpha = 0.5;
         ctx2.drawImage(appRejTemplate, 0, 0, 1654, 1170);
         ctx2.globalAlpha = 1;
         ctx2.font = "bold 400px Cordia New";
         ctx2.rotate(Math.PI / 6);
-        if (type == 2) {
+        if (type == 4) {
             ctx2.fillStyle = "red";
             ctx2.fillText("REJECT", 350, 200);
-        } else {
+        } else if (type == 5) {
             ctx2.fillStyle = "green";
             ctx2.fillText("FINISHED", 350, 200);
         }
@@ -451,18 +548,34 @@ const hourIndex = (day) => {
 }
 function downloadCanvas(type) {
     let text = ""
-    if (type == 0) {
-        var canvas = document.getElementById('mathCover');
-        text += ID + "1.png";
-    } else if (type == 1) {
-        var canvas = document.getElementById('phyCover');
-        text += ID + "2.png";
-    } else if (type == 2) {
-        var canvas = document.getElementById('appRejCover1');
-        text += ID + ".png";
-    } else if (type == 3) {
-        var canvas = document.getElementById('appRejCover2');
-        text += ID + ".png";
+    let canvas;
+    switch (type) {
+        case 0:
+            canvas = document.getElementById('mathCover');
+            text += ID + "1.png";
+            break;
+        case 1:
+            canvas = document.getElementById('phyCover');
+            text += ID + "2.png";
+            break;
+        case 2:
+            canvas = document.getElementById('cheCover');
+            text += ID + "3.png";
+            break;
+        case 3:
+            canvas = document.getElementById('engCover');
+            text += ID + "4.png";
+            break;
+        case 4:
+            canvas = document.getElementById('appRejCover1');
+            text += ID + ".png";
+            break;
+        case 5:
+            canvas = document.getElementById('appRejCover2');
+            text += ID + ".png";
+            break;
+        default:
+            break;
     }
     let dlImg = canvas.toDataURL();
     let aref = document.createElement('a');
@@ -472,7 +585,10 @@ function downloadCanvas(type) {
     aref.click();
 }
 
-// change status function
+/**
+ * change student status
+ * @param {string} status 
+ */
 function changeStudentStatus(status) {
     if (confirm("ต้องการเปลี่ยน status?")) {
         $.post("post/changeStatus", { userID: ID, status: status }).then(() => {
@@ -482,15 +598,18 @@ function changeStudentStatus(status) {
     }
 }
 
-// change state function
+/**
+ * change student state
+ * @param {string} state 
+ */
 function changeStudentState(state) {
     let str = $("#quarterSelect").val();
     if (confirm("ต้องการเปลี่ยน state?")) {
         if (state == "rejected") {
-            genCover(2);
-            removeAllTimeTable();
+            genCover(4);
+            // removeAllTimeTable();
         } else if (state == "finished") {
-            genCover(3);
+            genCover(5);
         }
         if ($($("#statusSubButton .btn-success")).html() == "UNREGISTER") {
             changeRegistrationState(ID, state, { year: str.slice(0, 4), quarter: str.slice(5) }).then(() => {

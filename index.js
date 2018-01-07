@@ -12,6 +12,8 @@ var passport = require('passport')
 var session = require('express-session');
 var flash = require('connect-flash');
 var app=express();
+var server = app.listen(8080)
+var io = require('socket.io')(server);
 // Accept object notation in POST method
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
@@ -51,8 +53,6 @@ if(fs.existsSync(caPath)&&fs.existsSync(keyPath)&&fs.existsSync(certPath)){
         res.redirect("https://"+req.hostname+req.url);
     })).listen(80);
 }
-// Listen to port 8080
-app.listen(8080);
 
 // LINE Notify tokens
 var recipientTokenPath=path.join(
@@ -70,7 +70,9 @@ app.use(session({ secret: require('crypto-js').SHA3('j3f2ipnc').toString() })); 
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-
+io.on('connect',function(socket){
+    console.log(socket)
+})
 
 // console.log(chalk.black.bgBlack("Black"));
 // console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));

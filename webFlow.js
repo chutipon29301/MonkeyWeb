@@ -57,6 +57,11 @@ module.exports = function (app, db, pasport) {
         else return chalk.black.bgWhite;
     }
 
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     */
     var return404 = function (req, res) {
         if (req.user) {
             let positionColor = logPosition(req.user)
@@ -114,6 +119,9 @@ module.exports = function (app, db, pasport) {
         }
         next()
     })
+    app.get('/test',function(req,res){
+        res.status(200).render('test')
+    })
     app.get('/',async function (req, res) {
         if (req.isAuthenticated()) {
             let local = {
@@ -163,8 +171,10 @@ module.exports = function (app, db, pasport) {
     addPugPage("studentProfile", side, permission);
     addPugPage("summerAbsentForm", side, permission);
     permission = { status: 'active', state: 'finished' }
+    addPugPage("absentAgreeForm", side, permission);
     addPugPage("absentForm", side, permission);
     addPugPage("addForm", side, permission);
+    addPugPage("addAgreeForm", side, permission);
     addPugPage("permanentAdtendance", side, permission);
     permission = { status: 'active', state: ["unregistered", "rejected"] }
     addPugPage("regisPage", side, permission);
