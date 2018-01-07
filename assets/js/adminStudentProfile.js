@@ -286,6 +286,9 @@ async function genStudentTable() {
             }
 
         }
+        if (timeTable.course[i].courseName.slice(0, 1) === "C") {
+            fhbHasChe = true;
+        }
     }
     for (let i in timeTable.hybrid) {
         let time = moment(timeTable.hybrid[i].day);
