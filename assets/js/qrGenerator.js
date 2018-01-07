@@ -69,6 +69,10 @@ function generateQR(qr) {
     $("#hwLabel").show();
     $("#skLabel").show();
     $("#testLabel").show();
+    $('#hotQR').empty();
+    $('#hwQR').empty();
+    $('#skQR').empty();
+    $('#testQR').empty();
     $('#hotQR').qrcode({ width: 256, height: 256, text: qr.hot });
     $('#hwQR').qrcode({ width: 256, height: 256, text: qr.hw });
     $('#skQR').qrcode({ width: 256, height: 256, text: qr.skill });

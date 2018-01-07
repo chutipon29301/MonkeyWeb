@@ -48,10 +48,10 @@ module.exports = function (app, db, post, fs) {
         };
         for (const key in keyObject) {
             keyObject[key] += rev;
-            var dir = keyObject[key]
+            var dir = keyObject[key];
             if (!isDevelopOnMac) {
-                dir.replace('file://monkeycloud/key-qrcode/', 'W://');
-                dir.replace('file://monkeycloud/key-student/', 'V://');
+                dir = dir.replace('file://monkeycloud/key-qrcode/', 'W://');
+                dir = dir.replace('file://monkeycloud/key-student/', 'V://');
             }
             fs.ensureFileSync(dir);
         }
