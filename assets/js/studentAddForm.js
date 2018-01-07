@@ -263,13 +263,19 @@ async function sendData() {
     let studentName = await name(studentID);
     notifyStr = notifyStr + studentName.nickname + " " + studentName.firstname + "\n";
     notifyStr = notifyStr + "ต้องการเพิ่ม: " + pickDate.format("ddd DD/MM/YY") + "\n";
-    let timeStr = classHour($(".btn-info"));
+    let timeStr;
+    if (pickDate.day() === 2 || pickDate.day() === 4) {
+        timeStr = 17;
+    } else {
+        timeStr = classHour($(".btn-info"));
+    }
     notifyStr = notifyStr + "FHB:" + $("#subjInput").val() + " - " +
         timeStr + ":00";
     let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
     let hybridID;
     for (let i in allHB) {
         let t = moment(allHB[i].day);
+        // log(t.hour())
         if (t.day() === pickDate.day() && t.hour() === timeStr) {
             hybridID = allHB[i].hybridID;
         }
