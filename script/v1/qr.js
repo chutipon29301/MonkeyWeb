@@ -3,7 +3,7 @@ module.exports = function (app, db, post, fs) {
     var isDevelopOnMac = !/^win/.test(process.platform);
 
     const KEY_PATH = (isDevelopOnMac) ? '/Volumes/KEY-QRCODE/' : 'file://monkeycloud/key-qrcode/';
-    const KEY_STUDENT_PATH = (isDevelopOnMac) ? '/Volumes/KEY-STUDENT/' : 'file://monkeycloud/key-qrcode/';
+    const KEY_STUDENT_PATH = (isDevelopOnMac) ? '/Volumes/KEY-STUDENT/' : 'file://monkeycloud/key-student/';
     const SUBJECT_CONST = {
         'M': 'MATH',
         'P': 'PHYSICS',
@@ -48,7 +48,12 @@ module.exports = function (app, db, post, fs) {
         };
         for (const key in keyObject) {
             keyObject[key] += rev;
-            fs.ensureFileSync(keyObject[key]);
+            var dir = keyObject[key]
+            if (!isDevelopOnMac) {
+                dir.replace('file://monkeycloud/key-qrcode/', 'W://');
+                dir.replace('file://monkeycloud/key-student/', 'V://');
+            }
+            fs.ensureFileSync(dir);
         }
         res.status(200).send(keyObject);
     });
