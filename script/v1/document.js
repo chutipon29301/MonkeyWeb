@@ -224,7 +224,7 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/uploadAttendanceDocument', function (req, res) {
-        if (!req.body.attendanceID) {
+        if (!(req.body.attendanceID && req.files)) {
             res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
