@@ -1,0 +1,27 @@
+extends oldHtmlTemplate
+block head
+    -const pageTitle = "Edit Profile"
+    script(src="/js/sha3.js")
+    script(src="js/tutorEditProfile.js")
+block body
+    .jumbotron
+        .container
+            h1 Edit Profile
+            p Input and submit to edit profile
+    .container
+        form#emailForm
+            .form-group
+                label E-mail:
+                .input-group
+                    .input-group-addon: i.glyphicon.glyphicon-envelope
+                    input#tutorEmail.form-control(type="email" placeholder="example@monkey.com")
+                    .input-group-btn
+                        button.btn.btn-success(type="submit") Edit
+        form#pwdForm
+            .form-group
+                label Password:
+                .input-group
+                    .input-group-addon: i.glyphicon.glyphicon-lock
+                    input#tutorPwd.form-control(type="password" placeholder="password")
+                    .input-group-btn
+                        button.btn.btn-success(type="submit") Edit

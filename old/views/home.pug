@@ -1,0 +1,17 @@
+extends oldHtmlTemplate
+block head
+    -const pageTitle = "Home"
+    script(src="js/student.min.js")
+    script(src="galleria/galleria-1.5.7.min.js")
+    script(src="js/home.min.js")
+block body
+    .container-fluid
+        .row
+            .col-sm-12.text-center
+                h3 คู่มือการลงทะเบียน
+                br
+        .row
+            #slideShow.col-sm-12
+                .galleria
+        script.
+            writeCookie("slideType","pclassic")

@@ -1,0 +1,111 @@
+extends htmlTemplate
+block head
+    - var pageTitle = "Student Attendance Modifier"
+    //- link(rel="stylesheet", href="css/typeaheadjs.css")
+    link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
+block script
+    script(src="js/admin.min.js")
+    //- script(src="js/bootstrap3-typeahead.min.js")
+    script(src="js/bootstrap-datetimepicker4.min.js")
+    script(src="js/adminStudentAttendanceModifier.min.js")
+block body
+    ul.nav.nav-tabs.nav-justified
+        li.nav-item: a.nav-link.active(data-toggle="tab" href="#fhbContent") MAIN
+        li.nav-item: a.nav-link(data-toggle="tab" href="#activityContent") ACTIVITY
+        li.nav-item: a.nav-link(data-toggle="tab" href="#addAttendContent") ADD
+    .tab-content
+        //- fhb tabs content
+        #fhbContent.tab-pane.container-fluid.active
+            .row
+                .col-12.col-md-4
+                    .form-group
+                        label.control-label Day:
+                        input.form-control#fhbDatePicker(type="text")
+                .col-12.col-md-4
+                    .form-group
+                        label Time:
+                        select.form-control#fhbTimePick(type="text")
+                .col-12.col-md-4
+                    .form-group
+                        label Filter:
+                        select.form-control#fhbFilterPick(type="text")
+                            option ALL
+                            option FHB
+                            option HB
+                            option CR
+            .row
+                .col-12.col-md-7
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead
+                                tr: th.text-center.table-danger(colspan=6) ลา
+                                tr
+                                    th.text-center Time
+                                    th.text-center Name
+                                    th.text-center Subject
+                                    th.text-center Tutor
+                                    th.text-center Reason
+                                    th.text-center ลบ
+                            tbody#fhbAbsentTable
+                .col-12.col-md-5
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead
+                                tr: td.text-center.table-success(colspan=4) เพิ่ม
+                                tr
+                                    td.text-center Time
+                                    td.text-center Name
+                                    td.text-center Subject
+                                    td.text-center ลบ
+                            tbody#fhbPresentTable
+        #activityContent.tab-pane.container-fluid
+            br
+            .row
+                .col-12
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead.thead-light
+                                tr
+                                    th.text-center Timestamp
+                                    th.text-center Name
+                                    th.text-center Subject
+                                    th.text-center Time
+                                    th.text-center Reason
+                                    th.text-center Sender
+                                    th.text-center ลบ
+                            tbody#acTableBody
+                .col-12
+                    a#upToTop.float-right(href="#") Up to top
+        #addAttendContent.tab-pane.container
+            .row
+                .col-12
+                    .form-group
+                        label &nbsp;
+                        select.form-control#addType(type="text")
+                            option(value=1) ลา
+                            option(value=2) เพิ่ม
+                .col-12
+                    .form-group
+                        label.control-label StudentID:
+                        input.form-control#addStdID(type="text")
+                .col-md-6.col-12
+                    .form-group
+                        label.control-label Day:
+                        input.form-control#addDatePicker(type="text")
+                .col-md-6.col-12
+                    .form-group
+                        label Time:
+                        select.form-control#addTime(type="text")
+                .col-12.absentContent
+                    .form-group
+                        label.control-label Reason:
+                        input.form-control#addReason(type="text")
+                .col-12.addContent
+                    .form-group
+                        label Subject:
+                        select.form-control#addSubj(type="text")
+                            option(value="M") FHB:M
+                            option(value="P") FHB:P
+            .row
+                .col
+                    button.btn.btn-success.float-right#addNewAttend ADD ADTEND
