@@ -96,18 +96,18 @@ module.exports = function (app, db, post) {
                     $lte: new Date(parseInt(req.body.endDate))
                 }
             }, {
-                    sort: {
-                        timestamp: -1
-                    }
-                }).toArray().then(result => {
-                    for (let i = 0; i < result.length; i++) {
-                        result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                        result[i].attendanceID = result[i]._id;
-                        result[i].date = new Date(result[i].date).valueOf();
-                        delete result[i]._id;
-                    }
-                    return res.status(200).send(result);
-                });
+                sort: {
+                    timestamp: -1
+                }
+            }).toArray().then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
+                    result[i].attendanceID = result[i]._id;
+                    result[i].date = new Date(result[i].date).valueOf();
+                    delete result[i]._id;
+                }
+                return res.status(200).send(result);
+            });
         } else if (req.body.date) {
             var requestDate = new Date(parseInt(req.body.date));
             var startQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate());
@@ -118,18 +118,18 @@ module.exports = function (app, db, post) {
                     $lte: endQueryDate.valueOf()
                 }
             }, {
-                    sort: {
-                        date: 1
-                    }
-                }).toArray().then(result => {
-                    for (let i = 0; i < result.length; i++) {
-                        result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                        result[i].attendanceID = result[i]._id;
-                        result[i].date = new Date(result[i].date).valueOf();
-                        delete result[i]._id;
-                    }
-                    return res.status(200).send(result);
-                });
+                sort: {
+                    date: 1
+                }
+            }).toArray().then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
+                    result[i].attendanceID = result[i]._id;
+                    result[i].date = new Date(result[i].date).valueOf();
+                    delete result[i]._id;
+                }
+                return res.status(200).send(result);
+            });
         } else if (req.body.studentStartDate && req.body.studentEndDate && req.body.studentID) {
             attendanceDB.find({
                 date: {
@@ -138,18 +138,18 @@ module.exports = function (app, db, post) {
                 },
                 userID: parseInt(req.body.studentID)
             }, {
-                    sort: {
-                        date: 1
-                    }
-                }).toArray().then(result => {
-                    for (let i = 0; i < result.length; i++) {
-                        result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                        result[i].attendanceID = result[i]._id;
-                        result[i].date = new Date(result[i].date).valueOf();
-                        delete result[i]._id;
-                    }
-                    return res.status(200).send(result);
-                });
+                sort: {
+                    date: 1
+                }
+            }).toArray().then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
+                    result[i].attendanceID = result[i]._id;
+                    result[i].date = new Date(result[i].date).valueOf();
+                    delete result[i]._id;
+                }
+                return res.status(200).send(result);
+            });
         }
     });
 
@@ -170,6 +170,45 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/setAttendanceRemark', function (req, res) {
+        if (!(req.body.attendanceID && req.body.remark)) {
+            return res.status(200).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var newValue = {
+            $set: {}
+        }
+        newValue.$set.remark = req.body.remark;
+        attendanceDB.updateOne({
+            _id: ObjectID(req.body.attendanceID)
+        }, newValue, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: -1,
+                    errInfo: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/resetAttendanceRemark', function (req, res) {
+        attendanceDB.updateMany({}, {
+            $set: {
+                remark: ''
+            }
+        }, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: -1,
+                    errInfo: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
     post('/post/v1/updateStudentRegistrationState', function (req, res) {
         if (!(req.body.studentID && req.body.quarter && req.body.year && req.body.registrationState && req.body.subRegistrationState)) {
             return res.status(400).send({
@@ -193,12 +232,12 @@ module.exports = function (app, db, post) {
             userDB.updateOne({
                 _id: parseInt(req.body.studentID)
             }, {
-                    $set: {
-                        'student.quarter': stateObject
-                    }
-                }).then(result => {
-                    return res.status(200).send('OK');
-                });
+                $set: {
+                    'student.quarter': stateObject
+                }
+            }).then(result => {
+                return res.status(200).send('OK');
+            });
         });
     });
 
