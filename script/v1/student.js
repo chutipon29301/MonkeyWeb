@@ -30,6 +30,8 @@ module.exports = function (app, db, post) {
                 type: ABSENT,
                 reason: req.body.reason,
                 sender: req.body.sender
+            }).then(data => {
+                return res.status(200).send(data.ops[0]._id);
             });
         } else if (req.body.hybridID) {
             attendanceDB.insertOne({
@@ -41,9 +43,10 @@ module.exports = function (app, db, post) {
                 type: ABSENT,
                 reason: req.body.reason,
                 sender: req.body.sender
+            }).then(data => {
+                return res.status(200).send(data.ops[0]._id);
             });
         }
-        res.status(200).send('OK');
     });
 
     post('/post/v1/addStudentPresent', function (req, res) {
