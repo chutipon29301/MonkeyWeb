@@ -4,7 +4,7 @@ block head
 block script
 		script(src="js/qrcode.js")
 		script(src="js/jquery.qrcode.js")
-		script(src="js/qrGenerator.js")
+		script(src="js/qrGenerator.min.js")
 block body
 	.container
 		.row
@@ -19,7 +19,7 @@ block body
 								option(val=i+j)= i+j
 			.col-12.col-md-2
 				.form-group
-					label &nbsp;
+					label.form-label &nbsp;
 					select#seriesSelect.form-control
 						-for(var i = 65; i<88; i++)
 							option(value = String.fromCharCode(i))= String.fromCharCode(i)
@@ -47,7 +47,7 @@ block body
 						option(value = "MD") MD
 			.col-12.col-md-2
 				.form-group
-					label &nbsp;
+					label.form-label &nbsp;
 					select#difficultSelect.form-control
 						option(value = "B") B
 						option(value = "I") I
@@ -58,13 +58,13 @@ block body
 						option(value = "C") C
 			.col-12.col-md-2
 				.form-group
-					label &nbsp;
+					label.form-label &nbsp;
 					select#sheetNumSelect.form-control
 						-for(var i = 1; i<31; i++)	
 							option(value = i)= i
 			.col-12.col-md-2
 				.form-group
-					label &nbsp;
+					label.form-label &nbsp;
 					select#subSeriesSelect.form-control
 						option(value = "") -
 						-for(var i = 97; i<103; i++)
@@ -101,3 +101,8 @@ block body
 				.row
 					.col-12.text-center#testLabel: p Testkey
 					.col-12.text-center#testQR
+		.row
+			.col-12.col-md-2.mx-auto
+				button.col.btn.btn-primary#DownloadAllButt
+					span.fa.fa-download.fa-lg
+					|&nbsp;Dowload all
