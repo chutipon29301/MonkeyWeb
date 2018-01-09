@@ -14,27 +14,64 @@ $("#fhbDatePicker").datetimepicker({
     format: "DD/MM/YYYY",
     daysOfWeekDisabled: [1, 3, 5]
 });
-genTimePicker();
-genFhbTable();
+/**
+ * cr datePicker
+ */
+$("#crDatePicker").datetimepicker({
+    format: "DD/MM/YYYY",
+    daysOfWeekDisabled: [1, 2, 3, 4, 5]
+});
+genTimePicker(1);
+genTable(1);
+genTimePicker(2);
+genTutor();
+async function genTutor() {
+    let tutor = await $.post("post/v1/listTutor");
+    tutor.sort(function (a, b) {
+        return a.tutorID - b.tutorID
+    });
+    for (let i in tutor) {
+        $("#crFilterPick").append(
+            "<option value=" + tutor[i].tutorID + ">" + tutor[i].nicknameEn + "</option>"
+        );
+    }
+    genTable(2);
+}
 /**
  * fhb datePicker change handler
  */
 $("#fhbDatePicker").on("dp.change", function () {
-    genTimePicker();
-    genFhbTable();
+    genTimePicker(1);
+    genTable(1);
 });
 /**
- * gen fhb timePicker
+ * cr datePicker change handler
  */
-function genTimePicker() {
-    $("#fhbTimePick").empty();
-    let pickDate = $('#fhbDatePicker').data('DateTimePicker').date();
+$("#crDatePicker").on("dp.change", function () {
+    genTable(2);
+});
+/**
+ * genTimePicker
+ * @param {number} type HB:1, CR:2
+ */
+function genTimePicker(type) {
+    let pointer;
+    let pickDate;
+    if (type === 1) {
+        pointer = $("#fhbTimePick");
+        pickDate = $('#fhbDatePicker').data('DateTimePicker').date();
+    } else {
+        pointer = $("#crTimePick");
+        pickDate = $('#crDatePicker').data('DateTimePicker').date();
+    }
+    pointer.empty();
     if (pickDate.day() === 2 || pickDate.day() === 4) {
-        $("#fhbTimePick").append(
+        pointer.append(
             "<option value=" + 17 + ">17-19</option>"
         );
     } else {
-        $("#fhbTimePick").append(
+        pointer.append(
+            "<option value=" + 0 + ">All</option>" +
             "<option value=" + 8 + ">8-10</option>" +
             "<option value=" + 10 + ">10-12</option>" +
             "<option value=" + 13 + ">13-15</option>" +
@@ -43,12 +80,19 @@ function genTimePicker() {
     }
 }
 /**
- * gen fhb table
+ * gen adtend table
+ * @param {number} mainType HB:1, CR:2
  */
-async function genFhbTable() {
-    $("#fhbAbsentTable").empty();
-    $("#fhbPresentTable").empty();
-    let pickDate = $('#fhbDatePicker').data('DateTimePicker').date();
+async function genTable(mainType) {
+    let pickDate;
+    if (mainType === 1) {
+        $("#fhbAbsentTable").empty();
+        $("#fhbPresentTable").empty();
+        pickDate = $('#fhbDatePicker').data('DateTimePicker').date();
+    } else {
+        $("#crAbsentTable").empty();
+        pickDate = $('#crDatePicker').data('DateTimePicker').date();
+    }
     pickDate.hour(0);
     let allAdtend = await $.post("post/v1/listAttendance", {
         date: pickDate.valueOf()
@@ -72,8 +116,24 @@ async function genFhbTable() {
         let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY HH:mm");
         let t = moment(allAdtend[i].date).hour();
         let style = "";
+        let remark;
+        let nextRemark;
         if (emergencyAbsent(allAdtend[i].timestamp, allAdtend[i].date)) {
             style = "table-warning";
+        }
+        switch (allAdtend[i].remark) {
+            case "1":
+                remark = "<span class='fa fa-lg fa-check-circle-o' style='color:orange'></span>"
+                nextRemark = "next2";
+                break;
+            case "2":
+                remark = "<span class='fa fa-lg fa-check-circle-o' style='color:green'></span>"
+                nextRemark = "next0";
+                break;
+            default:
+                remark = "<span class='fa fa-lg fa-times-circle-o' style='color:red'></span>"
+                nextRemark = "next1";
+                break;
         }
         if (allAdtend[i].type === 1) {
             let subj;
@@ -94,32 +154,54 @@ async function genFhbTable() {
                     type = "CR";
                 }
             }
-            $("#fhbAbsentTable").append(
-                "<tr id='" + allAdtend[i].attendanceID + "' class='fhbTableRow row" + t + " " + type + " " + style + "'>" +
-                "<td class='text-center'>" + timestamp + "</td>" +
-                "<td class='text-center' onclick='gotoStdProfile(\"" +
-                allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
-                "<td class='text-center'>" + subj + "</td>" +
-                "<td class='text-center'>" + tutor + "</td>" +
-                "<td class='text-center'>" + allAdtend[i].reason + "</td>" +
-                "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
-                "</tr>"
-            );
-        } else {
+            if (type !== "CR" && mainType === 1) {
+                $("#fhbAbsentTable").append(
+                    "<tr id='" + allAdtend[i].attendanceID + "' class='fhbTableRow fhbRow" + t + " " + type + " " + style + "'>" +
+                    "<td class='text-center'>" + timestamp + "</td>" +
+                    "<td class='text-center' onclick='gotoStdProfile(\"" +
+                    allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
+                    "<td class='text-center'>" + subj + "</td>" +
+                    "<td class='text-center'>" + tutor + "</td>" +
+                    "<td class='text-center'>" + allAdtend[i].reason + "</td>" +
+                    "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
+                    "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
+                    "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
+                    allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    "</tr>"
+                );
+            } else if (type !== "FHB" && mainType === 2) {
+                $("#crAbsentTable").append(
+                    "<tr id='" + allAdtend[i].attendanceID + "' class='crTableRow crRow" + t + " " + adtendInfo[i].tutor[0] + " " + style + "'>" +
+                    "<td class='text-center'>" + timestamp + "</td>" +
+                    "<td class='text-center' onclick='gotoStdProfile(\"" +
+                    allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
+                    "<td class='text-center'>" + subj + "</td>" +
+                    "<td class='text-center'>" + tutor + "</td>" +
+                    "<td class='text-center'>" + allAdtend[i].reason + "</td>" +
+                    "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
+                    "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
+                    "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
+                    allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    "</tr>"
+                );
+            }
+        } else if (mainType === 1) {
             $("#fhbPresentTable").append(
-                "<tr id='" + allAdtend[i].attendanceID + "' class='fhbTableRow row" + t + "'>" +
+                "<tr id='" + allAdtend[i].attendanceID + "' class='fhbTableRow fhbRow" + t + "'>" +
                 "<td class='text-center'>" + timestamp + "</td>" +
                 "<td class='text-center' onclick='gotoStdProfile(\"" +
                 allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
                 "<td class='text-center'>" + "FHB:" + allAdtend[i].subject + "</td>" +
+                "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
+                "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
                 "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
                 allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
                 "</tr>"
             );
         }
     }
-    filterFhbTable();
+    filterFhbTable(1);
+    filterFhbTable(2);
 }
 /**
  * check emergency absent
@@ -139,34 +221,69 @@ function emergencyAbsent(timestamp, date) {
     return result;
 }
 /**
- * filter unwanted fhb table row
+ * filter unwanted data
+ * @param {number} mainType HB:1, CR:2
  */
-function filterFhbTable() {
-    let timePick = $("#fhbTimePick").val();
-    let type = $("#fhbFilterPick").val();
-    $(".fhbTableRow").hide();
-    $(".row" + timePick).show();
-    switch (type) {
-        case "FHB":
-            $(".HB").hide();
-            $(".CR").hide();
-            break;
-        case "HB":
-            $(".CR").hide();
-            break;
-        case "CR":
-            $(".FHB").hide();
-            $(".HB").hide();
-            break;
-        default:
-            break;
+function filterFhbTable(mainType) {
+    let timePick;
+    let type;
+    if (mainType === 1) {
+        timePick = $("#fhbTimePick").val();
+        type = $("#fhbFilterPick").val();
+    } else {
+        timePick = $("#crTimePick").val();
+        type = $("#crFilterPick").val();
     }
+    if (mainType === 1) {
+        if (timePick !== "0") {
+            $(".fhbTableRow").hide();
+            $(".fhbRow" + timePick).show();
+        } else {
+            $(".fhbTableRow").show();
+        }
+        switch (type) {
+            case "FHB":
+                $(".HB").hide();
+                break;
+            default:
+                break;
+        }
+    } else {
+        if (timePick !== "0") {
+            let indexHour = ["8", "10", "13", "15"];
+            if (type !== "0") {
+                $(".crTableRow").hide();
+                $("." + type).show();
+            } else {
+                $(".crTableRow").show();
+            }
+            for (let i = 0; i < 4; i++) {
+                if (indexHour[i] !== timePick) {
+                    $(".crRow" + indexHour[i]).hide();
+                }
+            }
+        } else {
+            if (type === "0") {
+                $(".crTableRow").show();
+            } else {
+                $(".crTableRow").hide();
+                $("." + type).show();
+            }
+        }
+    }
+
 }
 $("#fhbTimePick").change(function () {
-    filterFhbTable();
+    filterFhbTable(1);
 });
 $("#fhbFilterPick").change(function () {
-    filterFhbTable();
+    filterFhbTable(1);
+});
+$("#crTimePick").change(function () {
+    filterFhbTable(2);
+});
+$("#crFilterPick").change(function () {
+    filterFhbTable(2);
 });
 
 /**
@@ -190,7 +307,41 @@ function gotoStdProfile(studentID) {
     writeCookie("monkeyWebAdminAllstudentSelectedUser", studentID);
     self.location = "/adminStudentprofile";
 }
-
+/**
+ * set remark
+ * @param {string} adtendID 
+ */
+function setRemark(adtendID) {
+    let nextRemark;
+    let that = $(".rm" + adtendID);
+    if (that.hasClass("next0")) {
+        $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "0" }).then((cb) => {
+            log(cb);
+            that.removeClass("next0").addClass("next1");
+            that.html("<span class='fa fa-lg fa-times-circle-o' style='color:red'></span>");
+        });
+    } else if (that.hasClass("next1")) {
+        $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "1" }).then((cb) => {
+            log(cb);
+            that.removeClass("next1").addClass("next2");
+            that.html("<span class='fa fa-lg fa-check-circle-o' style='color:orange'></span>");
+        });
+    } else if (that.hasClass("next2")) {
+        $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "2" }).then((cb) => {
+            log(cb);
+            that.removeClass("next2").addClass("next0");
+            that.html("<span class='fa fa-lg fa-check-circle-o' style='color:green'></span>");
+        });
+    }
+}
+$(".remarkReset").click(function () {
+    if (confirm("ต้องการ reset remark ทั้งหมด?")) {
+        $.post("post/v1/resetAttendanceRemark").then((cb) => {
+            log(cb);
+            location.reload();
+        });
+    }
+});
 genActivityTable();
 /**
  * gen activity table
