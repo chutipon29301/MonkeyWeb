@@ -10,12 +10,13 @@ block script
     script(src="js/adminStudentAttendanceModifier.min.js")
 block body
     ul.nav.nav-tabs.nav-justified
-        li.nav-item: a.nav-link.active(data-toggle="tab" href="#fhbContent") MAIN
+        li.nav-item: a.nav-link.active(data-toggle="tab" href="#hbContent") HB
+        li.nav-item: a.nav-link(data-toggle="tab" href="#crContent") CR
         li.nav-item: a.nav-link(data-toggle="tab" href="#activityContent") ACTIVITY
         li.nav-item: a.nav-link(data-toggle="tab" href="#addAttendContent") ADD
     .tab-content
-        //- fhb tabs content
-        #fhbContent.tab-pane.container-fluid.active
+        //- hb tabs content
+        #hbContent.tab-pane.container-fluid.active
             .row
                 .col-12.col-md-4
                     .form-group
@@ -32,32 +33,66 @@ block body
                             option ALL
                             option FHB
                             option HB
-                            option CR
+                            //- option CR
             .row
                 .col-12.col-md-7
                     .table-responsive
                         table.table.table-bordered.table-hover
                             thead
-                                tr: th.text-center.table-danger(colspan=6) ลา
+                                tr: th.text-center.table-danger(colspan=7) ลา
                                 tr
                                     th.text-center Time
                                     th.text-center Name
                                     th.text-center Subject
                                     th.text-center Tutor
                                     th.text-center Reason
+                                    th.text-center.remarkReset Remark
                                     th.text-center ลบ
                             tbody#fhbAbsentTable
                 .col-12.col-md-5
                     .table-responsive
                         table.table.table-bordered.table-hover
                             thead
-                                tr: td.text-center.table-success(colspan=4) เพิ่ม
+                                tr: td.text-center.table-success(colspan=5) เพิ่ม
                                 tr
-                                    td.text-center Time
-                                    td.text-center Name
-                                    td.text-center Subject
-                                    td.text-center ลบ
+                                    th.text-center Time
+                                    th.text-center Name
+                                    th.text-center Subject
+                                    th.text-center.remarkReset Remark
+                                    th.text-center ลบ
                             tbody#fhbPresentTable
+        //- Cr tab content
+        #crContent.tab-pane.container-fluid
+            .row
+                .col-12.col-md-4
+                    .form-group
+                        label.control-label Day:
+                        input.form-control#crDatePicker(type="text")
+                .col-12.col-md-4
+                    .form-group
+                        label Time:
+                        select.form-control#crTimePick(type="text")
+                .col-12.col-md-4
+                    .form-group
+                        label Tutor:
+                        select.form-control#crFilterPick(type="text")
+                            option(value="0") All
+            .row
+                .col
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead
+                                tr: th.text-center.table-danger(colspan=7) ลา
+                                tr
+                                    th.text-center Time
+                                    th.text-center Name
+                                    th.text-center Subject
+                                    th.text-center Tutor
+                                    th.text-center Reason
+                                    th.text-center.remarkReset Remark
+                                    th.text-center ลบ
+                            tbody#crAbsentTable
+        //- Activity tab content
         #activityContent.tab-pane.container-fluid
             br
             .row
@@ -76,6 +111,7 @@ block body
                             tbody#acTableBody
                 .col-12
                     a#upToTop.float-right(href="#") Up to top
+        //- Add tab content
         #addAttendContent.tab-pane.container
             .row
                 .col-12

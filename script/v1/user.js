@@ -30,7 +30,7 @@ module.exports = function (app, db, post ,CryptoJS) {
                 delete result[i].password;
                 delete result[i].firstnameEn;
                 delete result[i].lastnameEn;
-                delete result[i].nicknameEn;
+                // delete result[i].nicknameEn;
                 delete result[i].phone;
                 delete result[i].tutor;
             }
