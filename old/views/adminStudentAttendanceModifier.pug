@@ -107,6 +107,7 @@ block body
                                     th.text-center Time
                                     th.text-center Reason
                                     th.text-center Sender
+                                    th.text-center: span.fa.fa-lg.fa-folder 
                                     th.text-center ลบ
                             tbody#acTableBody
                 .col-12
@@ -145,3 +146,15 @@ block body
             .row
                 .col
                     button.btn.btn-success.float-right#addNewAttend ADD ADTEND
+
+    //- Modal for show pic
+    #picModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title sda
+                    button.close(type="button" data-dismiss="modal") &times;
+                .modal-body
+                    img#picSrc.img-fluid(src="#")
+                .modal-footer
+                    button.btn.btn-danger(type="button" data-dismiss="modal") Close
