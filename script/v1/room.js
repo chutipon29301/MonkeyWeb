@@ -227,5 +227,5 @@ module.exports = function (app, db, post, gradeBitToString) {
     //         console.log(value);
     //         res.status(200).send(value)
     //     });
-    });
+    // });
 }

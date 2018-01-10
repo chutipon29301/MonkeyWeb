@@ -8,6 +8,7 @@ module.exports = function (app, db, post) {
     var courseDB = db.collection('course');
     var configDB = db.collection('config');
     var userDB = db.collection('user');
+    var attendanceDocumentDB = db.collection('attendanceDocument');
 
     const NONE = 0;
     const ABSENT = 1;
@@ -89,66 +90,64 @@ module.exports = function (app, db, post) {
             });
         }
 
+        var responseAttandance = (query) => {
+            var listAttandance = attendanceDB.find(query, {
+                sort: {
+                    timestamp: -1
+                }
+            }).toArray();
+
+            Promise.all([
+                listAttandance,
+                listAttandance.then(results => {
+                    return Promise.all(results.map(result => {
+                        return attendanceDocumentDB.findOne({
+                            attendanceID: '' + result._id
+                        });
+                    }));
+                })
+            ]).then(results => {
+                var responseArray = [];
+                for (let i = 0; i < results[0].length; i++) {
+                    var responseObject = results[0][i];
+                    responseObject.timestamp = new Date(responseObject.timestamp).valueOf();
+                    responseObject.attendanceID = responseObject._id;
+                    responseObject.date = new Date(responseObject.date).valueOf();
+                    if (results[1][i] !== null) {
+                        responseObject.link = 'https://www.monkey-monkey.com/get/v1/attendanceDocument?k=' + results[1][i]._id;
+                    }
+                    delete responseObject._id;
+                    responseArray.push(responseObject);
+                }
+                res.status(200).send(responseArray);
+            });
+        }
+
         if (req.body.startDate && req.body.endDate) {
-            attendanceDB.find({
+            responseAttandance({
                 timestamp: {
                     $gte: new Date(parseInt(req.body.startDate)),
                     $lte: new Date(parseInt(req.body.endDate))
                 }
-            }, {
-                sort: {
-                    timestamp: -1
-                }
-            }).toArray().then(result => {
-                for (let i = 0; i < result.length; i++) {
-                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                    result[i].attendanceID = result[i]._id;
-                    result[i].date = new Date(result[i].date).valueOf();
-                    delete result[i]._id;
-                }
-                return res.status(200).send(result);
             });
         } else if (req.body.date) {
             var requestDate = new Date(parseInt(req.body.date));
             var startQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate());
             var endQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate() + 1);
-            attendanceDB.find({
+
+            responseAttandance({
                 date: {
                     $gte: startQueryDate.valueOf(),
                     $lte: endQueryDate.valueOf()
                 }
-            }, {
-                sort: {
-                    date: 1
-                }
-            }).toArray().then(result => {
-                for (let i = 0; i < result.length; i++) {
-                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                    result[i].attendanceID = result[i]._id;
-                    result[i].date = new Date(result[i].date).valueOf();
-                    delete result[i]._id;
-                }
-                return res.status(200).send(result);
             });
         } else if (req.body.studentStartDate && req.body.studentEndDate && req.body.studentID) {
-            attendanceDB.find({
+            responseAttandance({
                 date: {
                     $gte: parseInt(req.body.studentStartDate),
                     $lte: parseInt(req.body.studentEndDate)
                 },
                 userID: parseInt(req.body.studentID)
-            }, {
-                sort: {
-                    date: 1
-                }
-            }).toArray().then(result => {
-                for (let i = 0; i < result.length; i++) {
-                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                    result[i].attendanceID = result[i]._id;
-                    result[i].date = new Date(result[i].date).valueOf();
-                    delete result[i]._id;
-                }
-                return res.status(200).send(result);
             });
         }
     });
