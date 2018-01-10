@@ -40,7 +40,15 @@ block body
                             buttun.col.btn.btn-15.selector -
         .form-group
             label เหตุผล:
-            input#reasonInput.form-control(type="text")
+            select#reasonInput.custom-select.form-control
+                option ป่วย
+                option สอบ
+                option เข้าค่าย
+                option ลากิจ
+            //- input#reasonInput.form-control(type="text")
+        .custom-file
+            input#customFile.custom-file-input(type="file")
+            label.custom-file-label(for="customFile") Choose file
         .form-group
             label ผู้แจ้ง:
             input#senderInput.form-control(type="text")
