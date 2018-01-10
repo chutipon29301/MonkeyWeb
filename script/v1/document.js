@@ -277,4 +277,18 @@ module.exports = function (app, db, post) {
             res.status(200).send('OK');
         });
     });
+
+    app.get('/get/v1/attendanceDocument', function(req,res){
+        if (!req.query.k) {
+            return res.status(400).send({
+                err: 0,
+                msg: 'Bad Reqeust'
+            });
+        }
+        configDB.findOne({
+            _id: 'config'
+        }).then(config => {
+            res.sendFile(config.attendanceDocumentPath + '/' + req.query.k);
+        })
+    });
 }

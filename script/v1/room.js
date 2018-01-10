@@ -1,3 +1,5 @@
+// var Rx = require('rxjs/Rx');
+
 module.exports = function (app, db, post, gradeBitToString) {
 
     var quarterDB = db.collection('quarter');
@@ -159,7 +161,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                                 for (type in response[day][key]) {
                                     if (type === 'course') {
                                         for (let i = 0; i < response[day][key][type].length; i++) {
-                                            response[day][key][type][i].tutorName = values[index].nicknameEn;
+    response[day][key][type][i].tutorName = values[index].nicknameEn;
                                             index++;
                                         }
                                     }
@@ -172,4 +174,58 @@ module.exports = function (app, db, post, gradeBitToString) {
             });
         });
     });
+
+    // post('/post/v1/allRoom', function (req, res) {
+    //     configDB.findOne({
+    //         _id: 'config'
+    //     }).then(config => {
+    //         if (req.body.year === undefined || req.body.quarter === undefined) {
+    //             quarter = config.defaultQuarter.quarter.quarter;
+    //             year = config.defaultQuarter.quarter.year
+    //         } else {
+    //             quarter = parseInt(req.body.quarter);
+    //             year = parseInt(req.body.year);
+    //         }
+    //         return quarterDB.findOne({
+    //             quarter: quarter,
+    //             year: year
+    //         });
+    //     }).then(quarter => {
+    //         return Promise.all([
+    //             // courseDB.find({
+    //             //     quarter: quarter.quarter,
+    //             //     year: quarter.year
+    //             // }).toArray().then(courses => {
+    //             //     return Promise.all(courses.map(course => {
+    //             //         return Promise.all(course.student.map(student => {
+    //             //             return userDB.findOne({
+    //             //                 _id: student
+    //             //             });
+    //             //         }));
+    //             //     }));
+    //             // }),
+    //             courseDB.aggregate([{
+    //                 $unwind: '$student'
+    //             }, {
+    //                 $lookup: {
+    //                     from: 'user',
+    //                     localField: 'student',
+    //                     foreignField: 'student',
+    //                     as: 'studentQuarter'
+    //                 }
+    //             }, {
+    //                 $match: {
+    //                     quarter: quarter.quarter,
+    //                     year: quarter.year
+    //                 }
+    //             }]).toArray(),
+    //             studentHybridDB.find({
+    //                 quarterID: quarter._id
+    //             }).toArray()
+    //         ]);
+    //     }).then(value => {
+    //         console.log(value);
+    //         res.status(200).send(value)
+    //     });
+    // });
 }
