@@ -118,6 +118,12 @@ async function genTable(mainType) {
         let style = "";
         let remark;
         let nextRemark;
+        let link;
+        if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
+            link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
+        } else {
+            link = "-";
+        }
         if (emergencyAbsent(allAdtend[i].timestamp, allAdtend[i].date)) {
             style = "table-warning";
         }
@@ -163,6 +169,7 @@ async function genTable(mainType) {
                     "<td class='text-center'>" + subj + "</td>" +
                     "<td class='text-center'>" + tutor + "</td>" +
                     "<td class='text-center'>" + allAdtend[i].reason + "</td>" +
+                    "<td class='text-center'>" + link + "</td>" +
                     "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
                     "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
@@ -178,6 +185,7 @@ async function genTable(mainType) {
                     "<td class='text-center'>" + subj + "</td>" +
                     "<td class='text-center'>" + tutor + "</td>" +
                     "<td class='text-center'>" + allAdtend[i].reason + "</td>" +
+                    "<td class='text-center'>" + link + "</td>" +
                     "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
                     "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
