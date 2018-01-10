@@ -373,6 +373,7 @@ async function genActivityTable() {
         let subj;
         let t = moment(allAdtend[i].date).format("ddd DD/MM/YY - HH:mm");
         let reason;
+        let link;
         if (allAdtend[i].type === 1) {
             style = "table-danger";
             if (allAdtend[i].courseID === 0) {
@@ -386,6 +387,11 @@ async function genActivityTable() {
             subj = "FHB:" + allAdtend[i].subject;
             reason = "-";
         }
+        if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
+            link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
+        } else {
+            link = "-";
+        }
         $("#acTableBody").append(
             "<tr class='" + style + "' id='" + allAdtend[i].attendanceID + "'>" +
             "<td class='text-center'>" + timestamp + "</td>" +
@@ -395,6 +401,7 @@ async function genActivityTable() {
             "<td class='text-center'>" + t + "</td>" +
             "<td class='text-center'>" + reason + "</td>" +
             "<td class='text-center'>" + allAdtend[i].sender + "</td>" +
+            "<td class='text-center'>" + link + "</td>" +
             "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
             allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
             "</tr>"
@@ -402,6 +409,14 @@ async function genActivityTable() {
     }
 }
 
+/**
+ * show adtend pic
+ * @param {string} picLink 
+ */
+function showAdtendPic(picLink) {
+    $("#picSrc").attr("src", picLink);
+    $("#picModal").modal("show");
+}
 // admin add attend function
 $("#addType").change(function () {
     loadAdtendPage();
