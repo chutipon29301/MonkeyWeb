@@ -39,13 +39,14 @@ block body
                     .table-responsive
                         table.table.table-bordered.table-hover
                             thead
-                                tr: th.text-center.table-danger(colspan=7) ลา
+                                tr: th.text-center.table-danger(colspan=8) ลา
                                 tr
                                     th.text-center Time
                                     th.text-center Name
                                     th.text-center Subject
                                     th.text-center Tutor
                                     th.text-center Reason
+                                    th.text-center: span.fa.fa-lg.fa-folder 
                                     th.text-center.remarkReset Remark
                                     th.text-center ลบ
                             tbody#fhbAbsentTable
@@ -82,13 +83,14 @@ block body
                     .table-responsive
                         table.table.table-bordered.table-hover
                             thead
-                                tr: th.text-center.table-danger(colspan=7) ลา
+                                tr: th.text-center.table-danger(colspan=8) ลา
                                 tr
                                     th.text-center Time
                                     th.text-center Name
                                     th.text-center Subject
                                     th.text-center Tutor
                                     th.text-center Reason
+                                    th.text-center: span.fa.fa-lg.fa-folder 
                                     th.text-center.remarkReset Remark
                                     th.text-center ลบ
                             tbody#crAbsentTable
@@ -152,7 +154,7 @@ block body
         .modal-dialog
             .modal-content
                 .modal-header
-                    h5.modal-title sda
+                    h5.modal-title Adtendance image
                     button.close(type="button" data-dismiss="modal") &times;
                 .modal-body
                     img#picSrc.img-fluid(src="#")
