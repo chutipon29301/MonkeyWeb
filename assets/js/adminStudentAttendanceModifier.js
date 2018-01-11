@@ -122,7 +122,7 @@ async function genTable(mainType) {
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
             link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
         } else {
-            link = "-";
+            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
         }
         if (emergencyAbsent(allAdtend[i].timestamp, allAdtend[i].date)) {
             style = "table-warning";
@@ -398,7 +398,7 @@ async function genActivityTable() {
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
             link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
         } else {
-            link = "-";
+            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
         }
         $("#acTableBody").append(
             "<tr class='" + style + "' id='" + allAdtend[i].attendanceID + "'>" +
@@ -408,8 +408,8 @@ async function genActivityTable() {
             "<td class='text-center'>" + subj + "</td>" +
             "<td class='text-center'>" + t + "</td>" +
             "<td class='text-center'>" + reason + "</td>" +
-            "<td class='text-center'>" + allAdtend[i].sender + "</td>" +
             "<td class='text-center'>" + link + "</td>" +
+            "<td class='text-center'>" + allAdtend[i].sender + "</td>" +
             "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
             allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
             "</tr>"
@@ -424,6 +424,40 @@ async function genActivityTable() {
 function showAdtendPic(picLink) {
     $("#picSrc").attr("src", picLink);
     $("#picModal").modal("show");
+}
+let uploadID;
+function showUploadModal(adtendID) {
+    uploadID = adtendID;
+    $("#picUploadModal").modal('show');
+}
+$("#uploadPicButt").click(function () {
+    if (confirm("ต้องการเพิ่มหลักฐานการลา?")) {
+        uploadAdtendPic();
+    }
+});
+function uploadAdtendPic() {
+    log(uploadID);
+    let ufile = $('#file-img');
+    let ext = ufile.val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+    } else {
+        let files = ufile.get(0).files;
+        let formData = new FormData();
+        let file = files[0];
+        formData.append('files', file, file.name);
+        formData.append("attendanceID", uploadID);
+        $.ajax({
+            url: "post/v1/uploadAttendanceDocument",
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                location.reload();
+            }
+        });
+    }
 }
 // admin add attend function
 $("#addType").change(function () {

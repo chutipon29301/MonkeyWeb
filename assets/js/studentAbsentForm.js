@@ -310,7 +310,7 @@ async function sendData() {
                 userID: studentID,
                 date: roundTime.hour(classHour(thisButt)).valueOf(),
                 courseID: thisButt.attr("id"),
-                reason: $("#reasonInput").val(),
+                reason: $("#reasonInput").val() + " " + $("#reasonOptionInput").val(),
                 sender: $("#senderInput").val()
             }));
         } else {
@@ -319,7 +319,7 @@ async function sendData() {
                     userID: studentID,
                     date: roundTime.hour(classHour(thisButt)).valueOf(),
                     hybridID: thisButt.attr("id"),
-                    reason: $("#reasonInput").val(),
+                    reason: $("#reasonInput").val() + " " + $("#reasonOptionInput").val(),
                     sender: $("#senderInput").val()
                 }));
             } else {
@@ -327,13 +327,13 @@ async function sendData() {
                     userID: studentID,
                     date: roundTime.hour(17).valueOf(),
                     hybridID: thisButt.attr("id"),
-                    reason: $("#reasonInput").val(),
+                    reason: $("#reasonInput").val() + " " + $("#reasonOptionInput").val(),
                     sender: $("#senderInput").val()
                 }));
             }
         }
     }
-    notifyStr = notifyStr + "เหตุผล:" + $("#reasonInput").val();
+    notifyStr = notifyStr + "เหตุผล:" + $("#reasonInput").val() + " " + $("#reasonOptionInput").val();
     let adtendID = await Promise.all(promise);
     // upload file
     if ($("#reasonInput").val() !== "ลากิจ") {
