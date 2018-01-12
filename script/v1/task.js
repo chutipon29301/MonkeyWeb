@@ -4,6 +4,7 @@ module.exports = function (app, db, post) {
 
     var taskDB = db.collection('task');
 
+    const NONE = -1;
     const TODO = 0;
     const ON_PROCESS = 1;
     const ASSIGN = 2;
@@ -31,7 +32,9 @@ module.exports = function (app, db, post) {
             modifyBy: parseInt(req.body.assigner),
             ancestors: [],
             parent: null,
-            status: TODO
+            status: TODO,
+            childStatus: NONE,
+            remark: ''
         };
 
         if (req.body.dueDate) {
@@ -98,18 +101,10 @@ module.exports = function (app, db, post) {
             _id: ObjectID(req.body.taskID)
         }).then(task => {
             return taskDB.updateMany({
-                ancestors: {
-                    $in: task.ancestors.map(ancestor => ObjectID(ancestor))
-                }
-            });
+                ancestors: task.ancestors[0]
+            }, newValue);
         }).then((err, result) => {
-            if (err) {
-                return res.status(500).send({
-                    err: 0,
-                    errInfo: err
-                });
-            }
-            res.status(200).send('OK')
+            res.status(200).send('OK');
         });
     });
 
@@ -125,62 +120,89 @@ module.exports = function (app, db, post) {
             assignees = [assignees];
         }
 
-
-        if (req.body.dueDate) {
-            task.dueDate = new Date(parseInt(req.body.dueDate));
-            task.hasDueDate = true;
-        } else {
-            rstask.hasDueDate = false;
-        }
-
-        // if (req.body.tags) {
-        //     if (Array.isArray(req.body.tags)) {
-        //         task.tags = req.body.tags;
-        //     } else {
-        //         task.tags = [req.body.tags];
-        //     }
-        // } else {
-        //     task.tags = [];
-        // }
-
+        assignees = assignees.map(assignee => parseInt(assignee));
 
         taskDB.findOne({
             _id: ObjectID(req.body.taskID)
-        }).then(task => {
-            var ancestors = task.ancestors;
-            ancestors.push(task._id)
-            return Promise.all(assignees.map(assignee => {
-                var insertObject = {
+        }).then(parentTask => {
+            var ancestors = parentTask.ancestors;
+            ancestors.push(parentTask._id);
+            var insertObject = assignees.map(assignee => {
+                var temp = {
                     createOn: new Date(),
                     lastModified: new Date(),
-                    title: task.title,
-                    detail: task.detail,
-                    owner: parseInt(assignee),
+                    title: parentTask.title,
+                    detail: parentTask.detail,
+                    owner: assignee,
                     createBy: parseInt(req.body.assigner),
                     modifyBy: parseInt(req.body.assigner),
                     ancestors: ancestors,
-                    parent: task._id,
+                    parent: parentTask._id,
                     status: TODO,
-                    hasDueDate: task.hasDueDate
-                };
-
-                if (task.hasDueDate) {
-                    insertObject.dueDate = task.dueDate;
+                    childStatus: NONE,
+                    hasDueDate: parentTask.hasDueDate,
+                    tags: parentTask.tags,
+                    remark: ''
                 }
+                if (parentTask.hasDueDate) {
+                    temp.dueDate = parentTask.dueDate;
+                }
+                return temp;
+            });
 
-                return taskDB.insertOne(insertObject);
-            }));
-        }).then(result => {
+            return Promise.all([
+                taskDB.insertMany(insertObject),
+                taskDB.updateOne({
+                    _id: ObjectID(req.body.taskID)
+                }, {
+                    $set: {
+                        childStatus: TODO
+                    }
+                })
+            ]);
+        }).then(values => {
             res.status(200).send('OK');
         });
     });
 
+    // post('/post/v1/changeTaskStatus', function(req,res){
+    //     if(!(req.body.taskID && req.body.taskStatus)){
+    //         return res.status(400).send({
+    //             err: -1,
+    //             msg: 'Bad Request'
+    //         });
+    //     }
+    // });
 
-    // function findHead() {
+    post('/post/v1/deleteTask', function (req, res) {
+        if (!req.body.taskID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
 
-    // }
-
-    // function deleteChild() {
-
-    // }
+        taskDB.findOne({
+            _id: ObjectID(req.body.taskID)
+        }).then(task => {
+            if (task.parent !== null) {
+                throw ({
+                    err: -1,
+                    msg: 'Non-head task cannot be delete'
+                });
+            }
+            return taskDB.deleteMany({
+                $or: [{
+                        ancestors: task._id     
+                    },{
+                        _id: ObjectID(task._id)
+                    }
+                ]
+            });
+        }).then(() => {
+            return res.status(200).send('OK');
+        }).catch(err => {
+            return res.status(400).send(err);
+        });
+    });
 }
