@@ -197,6 +197,26 @@ const checkEmer = () => {
     return result;
 };
 
+// add event when select reason
+$("#reasonInput").change(function () {
+    if ($("#reasonInput").val() === "ลากิจ") {
+        $(".custom-file").hide();
+    } else {
+        $(".custom-file").show();
+    }
+});
+
+// add event when select file
+$("#customFile").change(function () {
+    let val = this.value;
+    let filename;
+    if (val) {
+        let startIndex = val.indexOf("\\") >= 0 ? val.lastIndexOf("\\") : val.lastIndexOf("/");
+        filename = val.slice(startIndex + 1);
+    }
+    $(".custom-file-label").html(filename);
+});
+
 // add event when submit
 $("#submitButt").click(function () {
     let pickHbM = 0;
@@ -216,17 +236,37 @@ $("#submitButt").click(function () {
             alert("โควต้าลา FHB:M ไม่เพียงพอ");
         } else if ((pickHbP + pHbFound) > pHbMax) {
             alert("โควต้าลา FHB:P ไม่เพียงพอ");
-        } else if ($("#reasonInput").val() === "") {
-            alert("กรุณาใส่เหตุผลการลา");
-        } else if ($("#senderInput").val() === "") {
-            alert("กรุณาใส่ผู้แจ้ง");
         } else {
-            let str = "ยืนยันการลา?";
-            if (checkEmer()) {
-                str = "ยืนยันการลาฉุกเฉิน?";
-            }
-            if (confirm(str)) {
-                sendData();
+            if ($("#reasonInput").val() !== "ลากิจ") {
+                if ($("#customFile").val()) {
+                    let ufile = $("#customFile");
+                    let ext = ufile.val().split('.').pop().toLowerCase();
+                    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
+                        alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+                    } else if ($("#senderInput").val() === "") {
+                        alert("กรุณาใส่ผู้แจ้ง");
+                    } else {
+                        let str = "ยืนยันการลา?";
+                        if (checkEmer()) {
+                            str = "ยืนยันการลาฉุกเฉิน?";
+                        }
+                        if (confirm(str)) {
+                            sendData();
+                        }
+                    }
+                } else {
+                    alert("กรุณาอัพโหลดหลักฐานการลา");
+                }
+            } else if ($("#senderInput").val() === "") {
+                alert("กรุณาใส่ผู้แจ้ง");
+            } else {
+                let str = "ยืนยันการลา?";
+                if (checkEmer()) {
+                    str = "ยืนยันการลาฉุกเฉิน?";
+                }
+                if (confirm(str)) {
+                    sendData();
+                }
             }
         }
     }
@@ -270,7 +310,7 @@ async function sendData() {
                 userID: studentID,
                 date: roundTime.hour(classHour(thisButt)).valueOf(),
                 courseID: thisButt.attr("id"),
-                reason: $("#reasonInput").val(),
+                reason: $("#reasonInput").val() + " " + $("#reasonOptionInput").val(),
                 sender: $("#senderInput").val()
             }));
         } else {
@@ -279,7 +319,7 @@ async function sendData() {
                     userID: studentID,
                     date: roundTime.hour(classHour(thisButt)).valueOf(),
                     hybridID: thisButt.attr("id"),
-                    reason: $("#reasonInput").val(),
+                    reason: $("#reasonInput").val() + " " + $("#reasonOptionInput").val(),
                     sender: $("#senderInput").val()
                 }));
             } else {
@@ -287,15 +327,35 @@ async function sendData() {
                     userID: studentID,
                     date: roundTime.hour(17).valueOf(),
                     hybridID: thisButt.attr("id"),
-                    reason: $("#reasonInput").val(),
+                    reason: $("#reasonInput").val() + " " + $("#reasonOptionInput").val(),
                     sender: $("#senderInput").val()
                 }));
             }
         }
     }
-    notifyStr = notifyStr + "เหตุผล:" + $("#reasonInput").val();
-    await Promise.all(promise);
-    log("OK");
-    await lineNotify("MonkeyAdmin", notifyStr);
-    location.reload();
+    notifyStr = notifyStr + "เหตุผล:" + $("#reasonInput").val() + " " + $("#reasonOptionInput").val();
+    let adtendID = await Promise.all(promise);
+    // upload file
+    if ($("#reasonInput").val() !== "ลากิจ") {
+        let file = $("#customFile").get(0).files[0];
+        let formData = new FormData();
+        formData.append('files', file, file.name);
+        formData.append("attendanceID", adtendID);
+        $.ajax({
+            url: 'post/v1/uploadAttendanceDocument',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                lineNotify("MonkeyAdmin", notifyStr).then(() => {
+                    location.reload();
+                });
+                log("upload");
+            }
+        });
+    } else {
+        await lineNotify("MonkeyAdmin", notifyStr);
+        location.reload();
+    }
 }
