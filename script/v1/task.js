@@ -11,9 +11,6 @@ module.exports = function (app, db, post) {
     const DONE = 3;
     const COMPLETE = 4;
 
-    const CALENDAR = 0;
-    const TASK = 1;
-
     post('/post/v1/addTask', function (req, res) {
         if (!(req.body.assigner && req.body.title && req.body.detail)) {
             return res.status(400).send({
@@ -33,7 +30,6 @@ module.exports = function (app, db, post) {
             ancestors: [],
             parent: null,
             status: TODO,
-            childStatus: NONE,
             remark: ''
         };
 
@@ -139,7 +135,6 @@ module.exports = function (app, db, post) {
                     ancestors: ancestors,
                     parent: parentTask._id,
                     status: TODO,
-                    childStatus: NONE,
                     hasDueDate: parentTask.hasDueDate,
                     tags: parentTask.tags,
                     remark: ''
@@ -150,29 +145,112 @@ module.exports = function (app, db, post) {
                 return temp;
             });
 
-            return Promise.all([
-                taskDB.insertMany(insertObject),
-                taskDB.updateOne({
-                    _id: ObjectID(req.body.taskID)
-                }, {
-                    $set: {
-                        childStatus: TODO
-                    }
-                })
-            ]);
+            return taskDB.insertMany(insertObject);
         }).then(values => {
             res.status(200).send('OK');
         });
     });
 
-    // post('/post/v1/changeTaskStatus', function(req,res){
-    //     if(!(req.body.taskID && req.body.taskStatus)){
-    //         return res.status(400).send({
-    //             err: -1,
-    //             msg: 'Bad Request'
-    //         });
-    //     }
-    // });
+    post('/post/v1/changeTaskStatus', function (req, res) {
+        if (!(req.body.taskID && req.body.taskStatus)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+
+        var changeStatus = (task, childStatus, parentStatus) => {
+            return Promise.all([
+                taskDB.updateOne({
+                    _id: ObjectID(task._id)
+                }, {
+                    $set: {
+                        status: childStatus
+                    }
+                }),
+                taskDB.updateOne({
+                    _id: ObjectID(task.parent)
+                }, {
+                    $set: {
+                        status: childStatus
+                    }
+                })
+            ])
+        }
+
+        taskDB.findOne({
+            _id: ObjectID(req.body.taskID)
+        }).then(task => {
+            switch (parseInt(req.body.taskStatus)) {
+                case TODO:
+                    return changeStatus(task, TODO, TODO);
+                case ON_PROCESS:
+                    return changeStatus(task, ON_PROCESS, ON_PROCESS);
+                case ASSIGN:
+                    return changeStatus(task, ASSIGN, ON_PROCESS);
+                case DONE:
+                    return taskDB.find({
+                        parent: task.parent
+                    }).toArray().then(tasks => {
+                        var doneTask = tasks.filter(task => task.status === DONE);
+                        if (doneTask.length >= tasks.length - 1) {
+                            return taskDB.updateMany({
+                                $or: [{
+                                    ancestors: ObjectID(task.parent)
+                                }, {
+                                    _id: ObjectID(task.parent)
+                                }]
+                            }, {
+                                $set: {
+                                    status: DONE
+                                }
+                            });
+                        } else {
+                            return taskDB.updateOne({
+                                _id: ObjectID(task._id)
+                            }, {
+                                $set: {
+                                    status: DONE
+                                }
+                            });
+                        }
+                    })
+                case COMPLETE:
+                    return taskDB.findOne({
+                        _id: ObjectID(task._id)
+                    }).then(task => {
+                        if (task.parent !== null){
+                            throw({
+                                err: -1,
+                                msg: 'Non-head task cannot be set to complete'
+                            });
+                        }
+                        return taskDB.updateMany({
+                            $or: [{
+                                ancestors: ObjectID(task.parent)
+                            }, {
+                                _id: ObjectID(task.parent)
+                            }]
+                        }, {
+                            $set: {
+                                status: COMPLETE
+                            }
+                        });
+                    }).catch(err => {
+                        throw (err);
+                    });
+                default:
+                    throw ({
+                        err: 3,
+                        msg: 'Mismatch status'
+                    });
+            }
+        }).then(values => {
+            return res.status(200).send('OK');
+        }).catch(err => {
+            return res.status(400).send(err);
+        });
+    });
 
     post('/post/v1/deleteTask', function (req, res) {
         if (!req.body.taskID) {
@@ -193,11 +271,10 @@ module.exports = function (app, db, post) {
             }
             return taskDB.deleteMany({
                 $or: [{
-                        ancestors: task._id     
-                    },{
-                        _id: ObjectID(task._id)
-                    }
-                ]
+                    ancestors: task._id
+                }, {
+                    _id: ObjectID(task._id)
+                }]
             });
         }).then(() => {
             return res.status(200).send('OK');
