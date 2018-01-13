@@ -85,10 +85,10 @@ function generateQR(qr) {
     $('#hwQR').empty();
     $('#skQR').empty();
     $('#testQR').empty();
-    $('#hotQR').qrcode({ width: 250, height: 250, text: qr.hot });
-    $('#hwQR').qrcode({ width: 250, height: 250, text: qr.hw });
-    $('#skQR').qrcode({ width: 250, height: 250, text: qr.skill });
-    $('#testQR').qrcode({ width: 250, height: 250, text: qr.test });
+    $('#hotQR').qrcode({ width: 256, height: 256, text: qr.hot });
+    $('#hwQR').qrcode({ width: 256, height: 256, text: qr.hw });
+    $('#skQR').qrcode({ width: 256, height: 256, text: qr.skill });
+    $('#testQR').qrcode({ width: 256, height: 256, text: qr.test });
 }
 
 // download QR
