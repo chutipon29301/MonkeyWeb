@@ -282,4 +282,22 @@ module.exports = function (app, db, post) {
             return res.status(400).send(err);
         });
     });
+
+    post('/post/v1/listUserTask', function(req,res){
+        if(!req.body.userID){
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        taskDB.find({
+            owner: parseInt(req.body.userID)
+        }).toArray().then(tasks => {
+            res.status(200).send(tasks.map(task => {
+                task.taskID = task._id;
+                delete task._id;
+                return task;
+            }));
+        });
+    });
 }
