@@ -450,7 +450,6 @@ $("#uploadPicButt").click(function () {
     }
 });
 function uploadAdtendPic() {
-    log(uploadID);
     let ufile = $('#file-img');
     let ext = ufile.val().split('.').pop().toLowerCase();
     if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
@@ -460,7 +459,7 @@ function uploadAdtendPic() {
         let formData = new FormData();
         let file = files[0];
         formData.append('files', file, file.name);
-        formData.append("attendanceID", uploadID);
+        formData.append("attendanceID[]", uploadID);
         $.ajax({
             url: "post/v1/uploadAttendanceDocument",
             type: 'POST',
