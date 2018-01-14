@@ -350,15 +350,22 @@ $(".remarkReset").click(function () {
         });
     }
 });
-genActivityTable();
+
+// Start time for gen activity table
+let activityTime = 0;
+genActivityTable(0);
 /**
  * gen activity table
+ * @param {number} number 
  */
-async function genActivityTable() {
-    let now = moment().valueOf();
+async function genActivityTable(number) {
+    let acTime1 = moment();
+    acTime1.date(acTime1.date() - (7 * number + 7));
+    let acTime2 = moment();
+    acTime2.date(acTime2.date() - (7 * number));
     let allAdtend = await $.post("post/v1/listAttendance", {
-        startDate: 0,
-        endDate: now
+        startDate: acTime1.valueOf(),
+        endDate: acTime2.valueOf()
     });
     let promise = [];
     let promise2 = [];
@@ -375,6 +382,9 @@ async function genActivityTable() {
     }
     let adtendInfo = await Promise.all(promise);
     let studentName = await Promise.all(promise2);
+    if (allAdtend.length === 0) {
+        $("#loadMoreButt").hide();
+    }
     for (let i = 0; i < allAdtend.length; i++) {
         let style;
         let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY - HH:mm");
@@ -416,6 +426,10 @@ async function genActivityTable() {
         );
     }
 }
+$("#loadMoreButt").click(function () {
+    activityTime = activityTime + 1;
+    genActivityTable(activityTime);
+});
 
 /**
  * show adtend pic
