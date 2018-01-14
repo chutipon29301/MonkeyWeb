@@ -335,12 +335,15 @@ async function sendData() {
     }
     notifyStr = notifyStr + "เหตุผล:" + $("#reasonInput").val() + " " + $("#reasonOptionInput").val();
     let adtendID = await Promise.all(promise);
+    log(adtendID);
     // upload file
     if ($("#reasonInput").val() !== "ลากิจ") {
         let file = $("#customFile").get(0).files[0];
         let formData = new FormData();
         formData.append('files', file, file.name);
-        formData.append("attendanceID", adtendID);
+        for (let i in adtendID) {
+            formData.append("attendanceID[]", adtendID[i]);
+        }
         $.ajax({
             url: 'post/v1/uploadAttendanceDocument',
             type: 'POST',
