@@ -352,17 +352,18 @@ $(".remarkReset").click(function () {
 });
 
 // Start time for gen activity table
-let activityTime = 0;
+let acTime1 = moment();
+let acTime2 = moment();
 genActivityTable(0);
 /**
  * gen activity table
  * @param {number} number 
  */
 async function genActivityTable(number) {
-    let acTime1 = moment();
-    acTime1.date(acTime1.date() - (7 * number + 7));
-    let acTime2 = moment();
-    acTime2.date(acTime2.date() - (7 * number));
+    acTime1.date(acTime1.date() - 4);
+    if (number !== 0) {
+        acTime2.date(acTime2.date() - 4);
+    }
     let allAdtend = await $.post("post/v1/listAttendance", {
         startDate: acTime1.valueOf(),
         endDate: acTime2.valueOf()
@@ -427,8 +428,7 @@ async function genActivityTable(number) {
     }
 }
 $("#loadMoreButt").click(function () {
-    activityTime = activityTime + 1;
-    genActivityTable(activityTime);
+    genActivityTable(1);
 });
 
 /**
