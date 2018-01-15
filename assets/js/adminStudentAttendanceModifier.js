@@ -699,10 +699,13 @@ async function generateChart() {
                     fhbReal[dayIndex(dayStr)] += 1;
                 }
             } else {
-                if (attendC[i][j].type === 1) {
-                    crReal[dayIndex(dayStr)] -= 1;
-                } else {
-                    crReal[dayIndex(dayStr)] += 1;
+                let crInfo = await courseInfo(attendC[i][j].courseID);
+                if (crInfo.tutor[0] === 99000) {
+                    if (attendC[i][j].type === 1) {
+                        crReal[dayIndex(dayStr)] -= 1;
+                    } else {
+                        crReal[dayIndex(dayStr)] += 1;
+                    }
                 }
             }
         }
