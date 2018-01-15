@@ -8,6 +8,7 @@ module.exports = function (app, db, post) {
     var courseDB = db.collection('course');
     var configDB = db.collection('config');
     var userDB = db.collection('user');
+    var attendanceDocumentDB = db.collection('attendanceDocument');
 
     const NONE = 0;
     const ABSENT = 1;
@@ -26,10 +27,12 @@ module.exports = function (app, db, post) {
                 userID: parseInt(req.body.userID),
                 courseID: req.body.courseID,
                 hybridID: NONE,
-                date: req.body.date,
+                date: parseInt(req.body.date),
                 type: ABSENT,
                 reason: req.body.reason,
                 sender: req.body.sender
+            }).then(data => {
+                return res.status(200).send(data.ops[0]._id);
             });
         } else if (req.body.hybridID) {
             attendanceDB.insertOne({
@@ -37,17 +40,18 @@ module.exports = function (app, db, post) {
                 userID: parseInt(req.body.userID),
                 courseID: NONE,
                 hybridID: req.body.hybridID,
-                date: req.body.date,
+                date: parseInt(req.body.date),
                 type: ABSENT,
                 reason: req.body.reason,
                 sender: req.body.sender
+            }).then(data => {
+                return res.status(200).send(data.ops[0]._id);
             });
         }
-        res.status(200).send('OK');
     });
 
     post('/post/v1/addStudentPresent', function (req, res) {
-        if (!(req.body.userID && req.body.date && (req.body.courseID || req.body.hybridID) && req.body.sender)) {
+        if (!(req.body.userID && req.body.date && (req.body.courseID || (req.body.hybridID && req.body.subject)) && req.body.sender)) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
@@ -59,19 +63,20 @@ module.exports = function (app, db, post) {
                 userID: parseInt(req.body.userID),
                 courseID: req.body.courseID,
                 hybridID: NONE,
-                date: req.body.date,
+                date: parseInt(req.body.date),
                 type: PRESENT,
                 sender: req.body.sender
             });
-        } else if (req.body.hybridID) {
+        } else if (req.body.hybridID && req.body.subject) {
             attendanceDB.insertOne({
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: NONE,
                 hybridID: req.body.hybridID,
-                date: req.body.date,
+                date: parseInt(req.body.date),
                 type: PRESENT,
-                sender: req.body.sender
+                sender: req.body.sender,
+                subject: req.body.subject
             });
         }
         res.status(200).send('OK');
@@ -85,66 +90,64 @@ module.exports = function (app, db, post) {
             });
         }
 
+        var responseAttandance = (query) => {
+            var listAttandance = attendanceDB.find(query, {
+                sort: {
+                    timestamp: -1
+                }
+            }).toArray();
+
+            Promise.all([
+                listAttandance,
+                listAttandance.then(results => {
+                    return Promise.all(results.map(result => {
+                        return attendanceDocumentDB.findOne({
+                            attendanceID: '' + result._id
+                        });
+                    }));
+                })
+            ]).then(results => {
+                var responseArray = [];
+                for (let i = 0; i < results[0].length; i++) {
+                    var responseObject = results[0][i];
+                    responseObject.timestamp = new Date(responseObject.timestamp).valueOf();
+                    responseObject.attendanceID = responseObject._id;
+                    responseObject.date = new Date(responseObject.date).valueOf();
+                    if (results[1][i] !== null) {
+                        responseObject.link = 'https://www.monkey-monkey.com/get/v1/attendanceDocument?k=' + results[1][i]._id;
+                    }
+                    delete responseObject._id;
+                    responseArray.push(responseObject);
+                }
+                res.status(200).send(responseArray);
+            });
+        }
+
         if (req.body.startDate && req.body.endDate) {
-            attendanceDB.find({
+            responseAttandance({
                 timestamp: {
                     $gte: new Date(parseInt(req.body.startDate)),
                     $lte: new Date(parseInt(req.body.endDate))
                 }
-            }, {
-                sort: {
-                    timestamp: -1
-                }
-            }).toArray().then(result => {
-                for (let i = 0; i < result.length; i++) {
-                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                    result[i].attendanceID = result[i]._id;
-                    result[i].date = new Date(result[i].date).valueOf();
-                    delete result[i]._id;
-                }
-                return res.status(200).send(result);
             });
         } else if (req.body.date) {
             var requestDate = new Date(parseInt(req.body.date));
             var startQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate());
             var endQueryDate = new Date(requestDate.getFullYear(), requestDate.getMonth(), requestDate.getDate() + 1);
-            attendanceDB.find({
-                timestamp: {
-                    $gte: startQueryDate,
-                    $lte: endQueryDate
+
+            responseAttandance({
+                date: {
+                    $gte: startQueryDate.valueOf(),
+                    $lte: endQueryDate.valueOf()
                 }
-            }, {
-                sort: {
-                    timestamp: -1
-                }
-            }).toArray().then(result => {
-                for (let i = 0; i < result.length; i++) {
-                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                    result[i].attendanceID = result[i]._id;
-                    result[i].date = new Date(result[i].date).valueOf();
-                    delete result[i]._id;
-                }
-                return res.status(200).send(result);
             });
         } else if (req.body.studentStartDate && req.body.studentEndDate && req.body.studentID) {
-            attendanceDB.find({
-                timestamp: {
-                    $gte: new Date(parseInt(req.body.studentStartDate)),
-                    $lte: new Date(parseInt(req.body.studentEndDate))
+            responseAttandance({
+                date: {
+                    $gte: parseInt(req.body.studentStartDate),
+                    $lte: parseInt(req.body.studentEndDate)
                 },
-                userID: req.body.studentID
-            }, {
-                sort: {
-                    timestamp: -1
-                }
-            }).toArray().then(result => {
-                for (let i = 0; i < result.length; i++) {
-                    result[i].timestamp = new Date(result[i].timestamp).valueOf();
-                    result[i].attendanceID = result[i]._id;
-                    result[i].date = new Date(result[i].date).valueOf();
-                    delete result[i]._id;
-                }
-                return res.status(200).send(result);
+                userID: parseInt(req.body.studentID)
             });
         }
     });
@@ -166,6 +169,45 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/setAttendanceRemark', function (req, res) {
+        if (!(req.body.attendanceID && req.body.remark)) {
+            return res.status(200).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        var newValue = {
+            $set: {}
+        }
+        newValue.$set.remark = req.body.remark;
+        attendanceDB.updateOne({
+            _id: ObjectID(req.body.attendanceID)
+        }, newValue, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: -1,
+                    errInfo: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/resetAttendanceRemark', function (req, res) {
+        attendanceDB.updateMany({}, {
+            $set: {
+                remark: ''
+            }
+        }, (err, result) => {
+            if (err) {
+                return res.status(500).send({
+                    err: -1,
+                    errInfo: err
+                });
+            }
+            res.status(200).send('OK');
+        });
+    });
     post('/post/v1/updateStudentRegistrationState', function (req, res) {
         if (!(req.body.studentID && req.body.quarter && req.body.year && req.body.registrationState && req.body.subRegistrationState)) {
             return res.status(400).send({
@@ -243,7 +285,7 @@ module.exports = function (app, db, post) {
         userDB.updateOne({
             _id: parseInt(req.body.studentID)
         }, newValue, (err, result) => {
-            if(err){
+            if (err) {
                 return res.status(500).send({
                     err: -1,
                     errInfo: err
@@ -253,13 +295,13 @@ module.exports = function (app, db, post) {
         });
     });
 
-    post('/post/v1/resetRemark', function(req,res){
+    post('/post/v1/resetRemark', function (req, res) {
         userDB.updateMany({}, {
             $set: {
                 remark: ''
             }
         }, (err, result) => {
-            if(err){
+            if (err) {
                 return res.status(500).send({
                     err: -1,
                     errInfo: err

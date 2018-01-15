@@ -138,13 +138,13 @@ module.exports = function (app, db, post) {
         studentHybridDB.update({
             _id: ObjectID(req.body.hybridID)
         }, {
-            $push: {
-                student: {
-                    studentID: parseInt(req.body.studentID),
-                    subject: req.body.subject
+                $push: {
+                    student: {
+                        studentID: parseInt(req.body.studentID),
+                        subject: req.body.subject
+                    }
                 }
-            }
-        });
+            });
         res.status(200).send('OK')
     });
 
@@ -167,12 +167,12 @@ module.exports = function (app, db, post) {
         studentHybridDB.update({
             _id: ObjectID(req.body.hybridID)
         }, {
-            $pull: {
-                student: {
-                    studentID: parseInt(req.body.studentID)
+                $pull: {
+                    student: {
+                        studentID: parseInt(req.body.studentID)
+                    }
                 }
-            }
-        });
+            });
         res.status(200).send('OK')
     });
 
@@ -238,6 +238,29 @@ module.exports = function (app, db, post) {
                 }
                 res.status(200).send(result);
             });
+        });
+    });
+
+    // write by TAO temp
+    post('/post/v1/studentHybridSubject', function (req, res) {
+        if (req.body.studentID === undefined || req.body.hybridID === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        studentHybridDB.findOne({
+            _id: ObjectID(req.body.hybridID),
+        }).then((data) => {
+            let result = {};
+            result.hybridID = data._id;
+            for (let i in data.student) {
+                if (data.student[i].studentID === parseInt(req.body.studentID)) {
+                    result.studentID = data.student[i].studentID;
+                    result.subject = data.student[i].subject
+                }
+            }
+            res.status(200).send(result);
         });
     });
 
@@ -342,7 +365,7 @@ module.exports = function (app, db, post) {
                 quarter = config.defaultQuarter.quarter.quarter;
                 year = config.defaultQuarter.quarter.year;
             }
-            var quarterID = year + ((('' + quarter).length == 1) ? '0' + quarter: quarter);
+            var quarterID = year + ((('' + quarter).length == 1) ? '0' + quarter : quarter);
             studentHybridDB.find({
                 quarterID: quarterID,
                 student: {
@@ -352,11 +375,11 @@ module.exports = function (app, db, post) {
                     }
                 }
             }).toArray().then(data => {
-                if(data.length == 0){
+                if (data.length == 0) {
                     return res.status(200).send({
                         hasHybrid: false
                     });
-                }else{
+                } else {
                     return res.status(200).send({
                         hasHybrid: true
                     });
@@ -383,24 +406,24 @@ module.exports = function (app, db, post) {
                 executeFunction = () => studentHybridDB.update({
                     _id: ObjectID(hybridID)
                 }, {
-                    $push: {
-                        student: {
-                            studentID: parseInt(studentID),
-                            subject: subject
+                        $push: {
+                            student: {
+                                studentID: parseInt(studentID),
+                                subject: subject
+                            }
                         }
-                    }
-                });
+                    });
                 break;
             case MODE_REMOVE_HYBRID:
                 executeFunction = () => studentHybridDB.update({
                     _id: ObjectID(hybridID)
                 }, {
-                    $pull: {
-                        student: {
-                            studentID: parseInt(studentID)
+                        $pull: {
+                            student: {
+                                studentID: parseInt(studentID)
+                            }
                         }
-                    }
-                });
+                    });
                 break;
         }
         console.log('[HYBRID] Request created, Ref_id = ' + id);

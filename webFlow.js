@@ -172,8 +172,10 @@ module.exports = function (app, db, pasport) {
     addPugPage("studentProfile", side, permission);
     addPugPage("summerAbsentForm", side, permission);
     permission = { status: 'active', state: 'finished' }
+    addPugPage("absentAgreeForm", side, permission);
     addPugPage("absentForm", side, permission);
     addPugPage("addForm", side, permission);
+    addPugPage("addAgreeForm", side, permission);
     addPugPage("permanentAdtendance", side, permission);
     permission = { status: 'active', state: ["unregistered", "rejected"] }
     addPugPage("regisPage", side, permission);
@@ -217,6 +219,7 @@ module.exports = function (app, db, pasport) {
             });
         })
     });
+    addPugPage("tutorQrGenerator", side, permission);
     permission = 'admin'
     addPugPage("adminAllstudent", side, permission);
     addPugPage("adminStudentProfileQ4", side, permission);
@@ -247,7 +250,8 @@ module.exports = function (app, db, pasport) {
     });
     permission = 'mel'
     addPugPage("checkInSummary", side, permission);
-    addPugPage("testDev", side, 'dev', function () {
+    permission = 'dev'
+    addPugPage("testDev", side, permission, function () {
         return new Promise((res, rej) => {
             var local = { moment: moment };
             post("post/allCourse", { quarter: "all" }, function (result) {

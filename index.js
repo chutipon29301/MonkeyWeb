@@ -32,6 +32,7 @@ app.use(function(req,res,next){
     res.header("Expires","0");
     next();
 });
+app.use('/v2', require('./script/v2/index')());
 // Allow render from pug files
 app.set("views",path.join(__dirname,"old/views"));
 app.set("view engine","pug");
@@ -175,7 +176,6 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
                 require("./config/passport.js")(passport,db);
                 require("./post.js")(app,db,passport);
                 require("./webFlow.js")(app,db,passport);
-
             });
         });
     });

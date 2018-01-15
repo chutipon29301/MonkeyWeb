@@ -1,187 +1,293 @@
-// param
-var useM = 0;
-var useP = 0;
-var maxM = 0;
-var maxP = 0;
-var firstname = "";
-var nickname = "";
-$(document).ready(function () {
-    // get studentID
-    let cookie = getCookieDict();
-    let ID = cookie.monkeyWebUser;
-    // var for year and Q
-    let year = 2017;
-    let quarter = 4;
-    // Param
-    let course = [];
-    let fhb = [];
-    // set date picker
-    $("#datePicker").datetimepicker({
-        format: "DD/MM/YYYY",
-        daysOfWeekDisabled: [1, 3, 5],
-        minDate: moment()
-    });
-    // get config
-    $.post("post/getConfig", (config) => {
+// global param
+let studentID;
+let year;
+let quarter;
+let timetable;
+let room = {
+    "sat8": {},
+    "sat10": {},
+    "sat13": {},
+    "sat15": {},
+    "sun8": {},
+    "sun10": {},
+    "sun13": {},
+    "sun15": {},
+    "tue17": {},
+    "thu17": {},
+};
+
+// datePicker
+let startDate = moment();
+startDate.date(startDate.date() - 1);
+$("#addDate").datetimepicker({
+    format: "DD/MM/YYYY",
+    daysOfWeekDisabled: [1, 3, 5],
+    minDate: startDate
+});
+
+// main
+let cookies = getCookieDict();
+studentID = cookies.monkeyWebUser;
+
+getYearAndQuarter();
+function getYearAndQuarter() {
+    getConfig().then((config) => {
         year = config.defaultQuarter.quarter.year;
         quarter = config.defaultQuarter.quarter.quarter;
-        $("#pageHead").html("CR60Q" + config.defaultQuarter.quarter.quarter + " & FHB");
-    }).then($.post("post/studentProfile", { studentID: ID }, (profile) => {
-        nickname = profile.nickname;
-        firstname = profile.firstname;
-        let promise = [];
-        for (let i in profile.courseID) {
-            promise.push($.post("post/courseInfo", { courseID: profile.courseID[i] }));
-        }
-        // get course & fhb info
-        Promise.all([Promise.all(promise).then((crInfo) => {
-            for (let i in crInfo) {
-                if (crInfo[i].quarter === quarter) {
-                    course.push(crInfo[i]);
-                }
+        genBanner();
+        getTimetable();
+        getHistory();
+    });
+}
+
+function genBanner() {
+    $("#pageBanner").html("CR" + (year + 543 + "").slice(2) + "Q" + quarter);
+}
+
+async function getTimetable() {
+    timetable = await $.post("post/v1/studentTimeTable", { year: year, quarter: quarter, studentID: studentID });
+    getRoom();
+}
+
+async function getRoom() {
+    allRoom = await $.post("post/v1/allRoom");
+    for (let i in allRoom) {
+        room[i] = allRoom[i].room0;
+    }
+    fillButton();
+}
+
+async function fillButton() {
+    $(".selector").removeClass("disabled btn-info").addClass("btn-light");
+    $(".labelor").html("-");
+    let pickDate = $('#addDate').data('DateTimePicker').date();
+    if (pickDate.day() === 0 || pickDate.day() === 6) {
+        $(".selector").html("กดเพื่อเพิ่ม");
+        $(".label-8").html("8-10");
+        $(".label-10").html("10-12");
+        $(".label-13").html("13-15");
+        $(".label-15").html("15-17");
+        let cr = timetable.course;
+        for (let i in cr) {
+            let t = moment(cr[i].day);
+            if (t.day() === pickDate.day()) {
+                $(".btn-" + t.hour()).html("CR:" + cr[i].courseName).addClass("disabled");
             }
-        }), $.post("post/v1/listStudentHybrid", { studentID: ID, year: year, quarter: quarter }, (hybrid) => {
-            for (let i in hybrid) {
-                fhb.push(hybrid[i]);
-                if (hybrid[i].subject == "M") {
-                    maxM += 3;
-                } else {
-                    maxP += 3;
-                }
-            }
-        })]).then(() => {
-            fillTable(ID, fhb, course);
-            fillButt(course, fhb);
-        })
-    }));
-    // add event when pick date
-    $("#datePicker").on("dp.change", function () {
-        fillTable(ID, fhb, course);
-        fillButt(course, fhb);
-    });
-    // add toggle when click button
-    $(".selector").click(function () {
-        if (!($(this).hasClass("disabled"))) {
-            $(".btn-success").toggleClass("btn-default btn-success");
-            $(this).toggleClass("btn-default btn-success");
         }
-    });
-    // add event when submit
-    $("#submit").click(function () {
-        if ($(".btn-success").length == 0) {
-            alert("กรุณาเลือกเวลาที่ต้องการเพิ่ม");
-        } else if (!($("#senderInput").val())) {
-            alert("กรุณาใส่ชื่อผู้แจ้ง");
-        } else {
-            sendData(ID);
-        }
-    });
-});
-// func for fill data in button
-function fillButt(cr, fhb) {
-    // log(cr);
-    // log(fhb);
-    $(".selector").addClass("btn-default").removeClass("disabled btn-success course");
-    let pickDate = $('#datePicker').data('DateTimePicker').date();
-    if (pickDate.day() == 2 || pickDate.day() == 4) {
-        $("#btn8").html("17-19");
-        $("#btn10").html("&nbsp;").addClass("disabled");
-        $("#btn13").html("&nbsp;").addClass("disabled");
-        $("#btn15").html("&nbsp;").addClass("disabled");
-        for (let i in fhb) {
-            if (moment(fhb[i].day).day() == pickDate.day()) {
-                $("#btn8").html("FHB:" + fhb[i].subject.slice(0, 1)).addClass("disabled");
+        let hb = timetable.hybrid;
+        for (let i in hb) {
+            let t = moment(hb[i].day);
+            if (t.day() === pickDate.day()) {
+                $(".btn-" + t.hour()).html("FHB:" + hb[i].subject).addClass("disabled");
             }
         }
     } else {
-        $("#btn8").html("8-10");
-        $("#btn10").html("10-12");
-        $("#btn13").html("13-15");
-        $("#btn15").html("15-17");
-        for (let i in fhb) {
-            if (moment(fhb[i].day).day() == pickDate.day()) {
-                $("#btn" + moment(fhb[i].day).hour()).html("FHB:" + fhb[i].subject.slice(0, 1)).addClass("disabled course");
-            }
-        }
-        for (let i in cr) {
-            if (moment(cr[i].day).day() == pickDate.day()) {
-                $("#btn" + moment(cr[i].day).hour()).html(cr[i].courseName).addClass("disabled course");
+        $(".selector").html("-");
+        $(".btn-8").html("กดเพื่อเพิ่ม");
+        $(".btn-10").addClass("disabled");
+        $(".btn-13").addClass("disabled");
+        $(".btn-15").addClass("disabled");
+        $(".label-8").html("17-19");
+        let hb = timetable.hybrid;
+        for (let i in hb) {
+            let t = moment(hb[i].day);
+            if (t.day() === pickDate.day()) {
+                $(".btn-8").html("FHB:" + hb[i].subject).addClass("disabled");
             }
         }
     }
-}
-// func for fill table
-function fillTable(ID, fhb, cr) {
-    useP = 0;
-    useM = 0;
-    $("#absentTableBody").empty();
-    $("#presentTableBody").empty();
-    let pickDate = $('#datePicker').data('DateTimePicker').date();
-    let startDate = moment(0).year(pickDate.year()).month(pickDate.month() - 3).date(pickDate.date());
-    $.post("post/listStudentAttendanceModifierByStudent", { studentID: ID, start: startDate.valueOf() }, (data) => {
-        for (let i in data.modifier) {
-            if (data.modifier[i].reason == "addFHB:M") {
-                useM -= 1;
-                $("#presentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + " - <strong>FHB:M</strong></td></tr>");
-            } else if (data.modifier[i].reason == "addFHB:P") {
-                useP -= 1;
-                $("#presentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + "- <strong>FHB:P</strong></td></tr>");
-            } else if (data.modifier[i].reason != "ลา" && data.modifier[i].reason != "เพิ่ม") {
-                for (let j = 0; j < fhb.length; j++) {
-                    if (moment(fhb[j].day).hour() == moment(data.modifier[i].day).hour() && moment(fhb[j].day).day() == moment(data.modifier[i].day).day()) {
-                        let str = "";
-                        if (fhb[j].subject == "M") {
-                            useM += 1;
-                            str = "FHB:M";
-                        } else {
-                            useP += 1;
-                            str = "FHB:P";
-                        }
-                        $("#absentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + " - <strong>" + str + "</strong></td></tr>");
-                    }
-                }
-                for (let j = 0; j < cr.length; j++) {
-                    if (moment(cr[j].day).hour() == moment(data.modifier[i].day).hour() && moment(cr[j].day).day() == moment(data.modifier[i].day).day()) {
-                        $("#absentTableBody").append("<tr><td class='text-center'>" + moment(data.modifier[i].day).format("ddd DD MMM HH:mm") + " - <strong>" + cr[j].courseName + "</strong></td></tr>");
-                    }
-                }
-            }
-        }
-        $("#mathSum").html("โควต้าลา FHB:M เหลือ " + (maxM - useM) + "/" + maxM);
-        $("#phySum").html("โควต้าลา FHB:P เหลือ " + (maxP - useP) + "/" + maxP);
+    let adtend = await $.post("post/v1/listAttendance", {
+        date: pickDate.hour(6).valueOf()
     });
-}
-// func for send data
-function sendData(ID) {
-    let pickDate = $('#datePicker').data('DateTimePicker').date();
-    sendAbsentModifier(ID, pickDate);
-}
-// func for send absent to server
-function sendAbsentModifier(ID, pickDate) {
-    if (confirm("ยืนยันการเพิ่ม")) {
-        $("#loaderModal").modal();
-        let absent = [];
-        let str = "\n" + nickname + " " + firstname + "\n" + "ต้องการเพิ่ม:";
-        if (pickDate.day() == 2 || pickDate.day() == 4) {
-            for (let i = 0; i < $(".btn-success").length; i++) {
-                absent.push(pickDate.hour(17).minute(0).second(0).millisecond(0).valueOf());
-                str += ("\n" + $("#subjInput").val().slice(0, 5));
-                str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
+    let adtendSum = {
+        "sat8": 0,
+        "sat10": 0,
+        "sat13": 0,
+        "sat15": 0,
+        "sun8": 0,
+        "sun10": 0,
+        "sun13": 0,
+        "sun15": 0,
+        "tue17": 0,
+        "thu17": 0,
+    };
+    for (let i in adtend) {
+        let t = moment(adtend[i].date);
+        let str = t.format("ddd") + t.hour() + "";
+        str = str.toLowerCase();
+        let max = room[str].maxStudent;
+        let useStd = room[str].studentCount;
+        if (adtend[i].courseID === 0) {
+            if (adtend[i].type === 1) {
+                adtendSum[str] -= 1;
+            } else {
+                adtendSum[str] += 1;
             }
         } else {
-            for (let i = 0; i < $(".btn-success").length; i++) {
-                let hour = $($(".btn-success")[i]).attr("id").slice(3);
-                absent.push(pickDate.hour($($(".btn-success")[i]).attr("id").slice(3)).minute(0).second(0).millisecond(0).valueOf());
-                str += ("\n" + $("#subjInput").val().slice(0, 5));
-                str += (" - " + pickDate.format("ddd DD/MM/YYYY รอบ HH:mm"));
+            let cr = room[str].course;
+            for (let j in cr) {
+                if (cr.courseID === adtend[i].courseID) {
+                    adtendSum[str] -= 1;
+                }
             }
         }
-        // log(absent)
-        $.post("post/addStudentAbsenceModifier", { studentID: ID, day: absent, reason: "add" + $("#subjInput").val().slice(0, 5), sender: $("#senderInput").val() }, (data) => {
-            $.post("post/lineNotify", { recipient: "MonkeyAdmin", message: str }, () => {
-                location.reload();
-            })
-
-        })
     }
+    for (let i in room) {
+        let pointer = $(".btn-" + i.slice(3));
+        if (!pointer.hasClass("disabled")) {
+            if (room[i].studentCount + adtendSum[i] >= room[i].maxStudent) {
+                pointer.addClass("disabled").html("FULL");
+            }
+        }
+    }
+}
+
+async function getHistory() {
+    $("#absentTableBody").empty();
+    $("#presentTableBody").empty();
+    let pickDate = $('#addDate').data('DateTimePicker').date();
+    let startDate = moment(0);
+    let endDate = moment(0);
+    startDate.year(pickDate.year()).month(pickDate.month() - 3).date(pickDate.date());
+    endDate.year(pickDate.year()).month(pickDate.month() + 3).date(pickDate.date());
+    let history = await $.post("post/v1/listAttendance", {
+        studentID: studentID,
+        studentStartDate: startDate.valueOf(),
+        studentEndDate: endDate.valueOf()
+    });
+    let promise = [];
+    for (let i in history) {
+        if (history[i].courseID === 0) {
+            promise.push($.post("post/v1/studentHybridSubject", {
+                studentID: studentID,
+                hybridID: history[i].hybridID
+            }));
+        } else {
+            promise.push(courseInfo(history[i].courseID));
+        }
+    }
+    let historyDetail = await Promise.all(promise);
+    for (let i = 0; i < history.length; i++) {
+        let t = moment(history[i].date).format("DD/MM/YY - HH:mm");
+        let tableTarget;
+        if (history[i].type === 2) {
+            tableTarget = $("#presentTableBody");
+            if (history[i].courseID === 0) {
+                tableTarget.append(
+                    "<tr>" +
+                    "<td class='text-center'>" + t + "</td>" +
+                    "<td class='text-center'>FHB:" + history[i].subject + "</td>" +
+                    "<td class='text-center'>" + history[i].sender + "</td>" +
+                    "</tr>"
+                );
+            }
+        } else {
+            tableTarget = $("#absentTableBody");
+            if (history[i].courseID === 0) {
+                tableTarget.append(
+                    "<tr>" +
+                    "<td class='text-center'>" + t + "</td>" +
+                    "<td class='text-center'>FHB:" + historyDetail[i].subject + "</td>" +
+                    "<td class='text-center'>" + history[i].sender + "</td>" +
+                    "</tr>"
+                );
+            } else {
+                tableTarget.append(
+                    "<tr>" +
+                    "<td class='text-center'>" + t + "</td>" +
+                    "<td class='text-center'>CR:" + historyDetail[i].courseName + "</td>" +
+                    "<td class='text-center'>" + history[i].sender + "</td>" +
+                    "</tr>"
+                );
+            }
+        }
+    }
+}
+
+// add event when change pick date
+$("#addDate").on("dp.change", function () {
+    getHistory();
+    fillButton();
+});
+
+// toggle button
+$(".selector").click(function () {
+    if (!$(this).hasClass("disabled")) {
+        if ($(this).hasClass("btn-light")) {
+            $(".selector").removeClass("btn-info").addClass("btn-light");
+            $(this).removeClass("btn-light").addClass("btn-info");
+        } else {
+            $(this).toggleClass("btn-light btn-info");
+        }
+    }
+});
+
+// add event when submit
+$("#submitButt").click(function () {
+    if ($(".btn-info").length <= 0) {
+        alert("กรุณาเลือกเวลา");
+    } else if ($("#senderInput").val() === "") {
+        alert("กรุณาใส่ผู้แจ้ง");
+    } else if (confirm("ยืนยันการเพิ่ม?")) {
+        sendData();
+    }
+});
+
+// round time function
+const roundTime = (time, round) => {
+    let result = moment(0);
+    result.year(time.year()).month(time.month()).date(time.date()).hour(parseInt(round));
+    return result.valueOf();
+};
+
+// function for get hour from class name
+const classHour = (button) => {
+    let result = 0;
+    if (button.hasClass("btn-8")) {
+        result = 8;
+    } else if (button.hasClass("btn-10")) {
+        result = 10;
+    } else if (button.hasClass("btn-13")) {
+        result = 13;
+    } else if (button.hasClass("btn-15")) {
+        result = 15;
+    }
+    return result;
+};
+
+// function for send data to server
+async function sendData() {
+    $("#loadingModal").modal("show");
+    let pickDate = $('#addDate').data('DateTimePicker').date();
+    let notifyStr = "\n";
+    let studentName = await name(studentID);
+    notifyStr = notifyStr + studentName.nickname + " " + studentName.firstname + "\n";
+    notifyStr = notifyStr + "ต้องการเพิ่ม: " + pickDate.format("ddd DD/MM/YY") + "\n";
+    let timeStr;
+    if (pickDate.day() === 2 || pickDate.day() === 4) {
+        timeStr = 17;
+    } else {
+        timeStr = classHour($(".btn-info"));
+    }
+    notifyStr = notifyStr + "FHB:" + $("#subjInput").val() + " - " +
+        timeStr + ":00";
+    let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
+    let hybridID;
+    for (let i in allHB) {
+        let t = moment(allHB[i].day);
+        // log(t.hour())
+        if (t.day() === pickDate.day() && t.hour() === timeStr) {
+            hybridID = allHB[i].hybridID;
+        }
+    }
+    await $.post("post/v1/addStudentPresent", {
+        userID: studentID,
+        date: roundTime(pickDate, timeStr),
+        hybridID: hybridID,
+        subject: $("#subjInput").val(),
+        sender: $("#senderInput").val()
+    });
+    log("OK");
+    await lineNotify("MonkeyAdmin", notifyStr);
+    location.reload();
 }
