@@ -289,6 +289,6 @@ module.exports = function (app, db, post) {
             _id: 'config'
         }).then(config => {
             res.sendFile(config.attendanceDocumentPath + '/' + req.query.k);
-        })
+        });
     });
 }

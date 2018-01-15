@@ -102,7 +102,7 @@ module.exports = function (app, db, post) {
                 listAttandance.then(results => {
                     return Promise.all(results.map(result => {
                         return attendanceDocumentDB.findOne({
-                            attendanceID: '' + result._id
+                            attendanceID: result._id
                         });
                     }));
                 })
