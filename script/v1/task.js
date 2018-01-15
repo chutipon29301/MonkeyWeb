@@ -30,6 +30,7 @@ module.exports = function (app, db, post) {
             ancestors: [],
             parent: null,
             status: TODO,
+            order: -1,
             remark: ''
         };
 
@@ -137,6 +138,7 @@ module.exports = function (app, db, post) {
                     status: TODO,
                     hasDueDate: parentTask.hasDueDate,
                     tags: parentTask.tags,
+                    order: -1,
                     remark: ''
                 }
                 if (parentTask.hasDueDate) {
