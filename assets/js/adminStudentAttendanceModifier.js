@@ -720,32 +720,32 @@ async function generateChart() {
                 label: 'FHB(Static)',
                 stack: 'Stack 0',
                 data: fhbStatic,
-                backgroundColor: 'rgba(59, 81, 246, 0.37)',
-                borderColor: 'rgba(59, 81, 246, 1)',
+                backgroundColor: '#bbdefb',
+                borderColor: '#5d99c6',
                 borderWidth: 1
             }, {
                 type: 'bar',
                 label: 'CR(Static)',
                 stack: 'Stack 0',
                 data: crStatic,
-                backgroundColor: 'rgba(246, 59, 234, 0.26)',
-                borderColor: 'rgba(246, 59, 234, 1)',
+                backgroundColor: '#f8bbd0',
+                borderColor: '#c48b9f',
                 borderWidth: 1
             }, {
                 type: 'bar',
                 label: 'FHB(Current)',
                 stack: 'Stack 1',
                 data: fhbReal,
-                backgroundColor: 'rgba(59, 81, 246, 0.37)',
-                borderColor: 'rgba(59, 81, 246, 1)',
+                backgroundColor: '#2196f3',
+                borderColor: '#0069c0',
                 borderWidth: 1
             }, {
                 type: 'bar',
                 label: 'CR(Current)',
                 stack: 'Stack 1',
                 data: crReal,
-                backgroundColor: 'rgba(246, 59, 234, 0.26)',
-                borderColor: 'rgba(246, 59, 234, 1)',
+                backgroundColor: '#f06292',
+                borderColor: '#ba2d65',
                 borderWidth: 1
             }, {
                 type: 'line',
