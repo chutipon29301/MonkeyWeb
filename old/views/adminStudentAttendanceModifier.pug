@@ -8,17 +8,23 @@ block script
     script(src="js/admin.min.js")
     //- script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker4.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js")
     script(src="js/custom-file-input.js")
     script(src="js/adminStudentAttendanceModifier.min.js")
 block body
     ul.nav.nav-tabs.nav-justified
-        li.nav-item: a.nav-link.active(data-toggle="tab" href="#hbContent") HB
+        li.nav-item: a.nav-link.active(data-toggle="tab" href="#chartContent") Chart
+        li.nav-item: a.nav-link(data-toggle="tab" href="#hbContent") HB
         li.nav-item: a.nav-link(data-toggle="tab" href="#crContent") CR
-        li.nav-item: a.nav-link(data-toggle="tab" href="#activityContent") ACTIVITY
-        li.nav-item: a.nav-link(data-toggle="tab" href="#addAttendContent") ADD
+        li.nav-item: a.nav-link(data-toggle="tab" href="#activityContent") Activity
+        li.nav-item: a.nav-link(data-toggle="tab" href="#addAttendContent") Add
     .tab-content
+        //- chart tabs content
+        #chartContent.tab-pane.container-fluid.active
+            .chart-container.mx-auto(style="position: relative; height:76vh; width:90vw")
+                canvas#fhbChart
         //- hb tabs content
-        #hbContent.tab-pane.container-fluid.active
+        #hbContent.tab-pane.container-fluid
             .row
                 .col-12.col-md-4
                     .form-group
