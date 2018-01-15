@@ -108,6 +108,7 @@ module.exports = function (app, db, pasport) {
         })
     }
     app.get('*', function (req, res, next) {
+        console.log(req)
         if (req.url == '/login') req.logOut();
         if (req.isAuthenticated()) {
             let positionColor = logPosition(req.user);
@@ -120,7 +121,7 @@ module.exports = function (app, db, pasport) {
         next()
     })
     app.get('/test',function(req,res){
-        res.status(200).render('test')
+        res.status(200).render('test',{})
     })
     app.get('/',async function (req, res) {
         if (req.isAuthenticated()) {
