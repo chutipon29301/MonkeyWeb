@@ -21,10 +21,25 @@ $("#crDatePicker").datetimepicker({
     format: "DD/MM/YYYY",
     daysOfWeekDisabled: [1, 2, 3, 4, 5]
 });
-genTimePicker(1);
-genTable(1);
-genTimePicker(2);
-genTutor();
+let fhbIndicator = true;
+$(".nav-tabs > .nav-item:nth-child(2)").click(function () {
+    if (fhbIndicator) {
+        genTimePicker(1);
+        genTable(1);
+        genTimePicker(2);
+        genTutor();
+    }
+    fhbIndicator = false;
+});
+$(".nav-tabs > .nav-item:nth-child(3)").click(function () {
+    if (fhbIndicator) {
+        genTimePicker(1);
+        genTable(1);
+        genTimePicker(2);
+        genTutor();
+    }
+    fhbIndicator = false;
+});
 async function genTutor() {
     let tutor = await $.post("post/v1/listTutor");
     tutor.sort(function (a, b) {
@@ -351,11 +366,16 @@ $(".remarkReset").click(function () {
     }
 });
 
+// check first time click activity
+let activityIndicator = true;
 // Start time for gen activity table
 let acTime1 = moment();
 let acTime2 = moment();
-$(".nav-tabs > .nav-item:nth-child(3)").click(function () {
-    genActivityTable(0);
+$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
+    if (activityIndicator) {
+        genActivityTable(0);
+    }
+    activityIndicator = false;
 });
 /**
  * gen activity table
@@ -594,4 +614,170 @@ async function sendAddAdtendData() {
         });
         location.reload();
     }
-} 
+}
+
+/**
+ * get index from date str
+ * @param {string} dayStr 
+ */
+const dayIndex = (dayStr) => {
+    switch (dayStr) {
+        case "tue17":
+            return 0;
+        case "thu17":
+            return 1;
+        case "sat8":
+            return 2;
+        case "sat10":
+            return 3;
+        case "sat13":
+            return 4;
+        case "sat15":
+            return 5;
+        case "sun8":
+            return 6;
+        case "sun10":
+            return 7;
+        case "sun13":
+            return 8;
+        case "sun15":
+            return 9;
+        default:
+            break;
+    }
+};
+// generate fhb room chart
+generateChart();
+async function generateChart() {
+    let allRoom = await $.post("post/v1/allRoom");
+    let allHbRoom = {};
+    let maxSeat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let fhbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let crStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let fhbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let crReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    for (let i in allRoom) {
+        allHbRoom[i] = allRoom[i].room0;
+    }
+    for (let i in allHbRoom) {
+        maxSeat[dayIndex(i)] = allHbRoom[i].maxStudent;
+        fhbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].num;
+        fhbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].num;
+        if (allHbRoom[i].course !== undefined) {
+            let cr = allHbRoom[i].course;
+            for (let j in cr) {
+                crStatic[dayIndex(i)] += cr[j].num;
+                crReal[dayIndex(i)] += cr[j].num;
+            }
+        }
+    }
+    let now = moment();
+    now.hour(0).minute(0).second(0).millisecond(0);
+    let sunDay = moment(now);
+    sunDay.date(sunDay.date() - sunDay.day());
+    let tueDay = moment(sunDay);
+    tueDay.date(sunDay.date() + 2);
+    let thuDay = moment(sunDay);
+    thuDay.date(sunDay.date() + 4);
+    let satDay = moment(sunDay);
+    satDay.date(sunDay.date() + 6);
+    let promise = [
+        $.post("post/v1/listAttendance", { date: sunDay.valueOf() }),
+        $.post("post/v1/listAttendance", { date: tueDay.valueOf() }),
+        $.post("post/v1/listAttendance", { date: thuDay.valueOf() }),
+        $.post("post/v1/listAttendance", { date: satDay.valueOf() })
+    ];
+    let attendC = await Promise.all(promise);
+    for (let i in attendC) {
+        for (let j in attendC[i]) {
+            let time = moment(attendC[i][j].date);
+            let dayStr = time.format('dddHH').toLowerCase();
+            if (attendC[i][j].courseID === 0) {
+                if (attendC[i][j].type === 1) {
+                    fhbReal[dayIndex(dayStr)] -= 1;
+                } else {
+                    fhbReal[dayIndex(dayStr)] += 1;
+                }
+            } else {
+                if (attendC[i][j].type === 1) {
+                    crReal[dayIndex(dayStr)] -= 1;
+                } else {
+                    crReal[dayIndex(dayStr)] += 1;
+                }
+            }
+        }
+    }
+    var ctx = document.getElementById("fhbChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['tue', 'thu', 'sat8', 'sat10', 'sat13', 'sat15', 'sun8', 'sun10', 'sun13', 'sun15'],
+            datasets: [{
+                type: 'bar',
+                label: 'FHB(Static)',
+                stack: 'Stack 0',
+                data: fhbStatic,
+                backgroundColor: 'rgba(59, 81, 246, 0.37)',
+                borderColor: 'rgba(59, 81, 246, 1)',
+                borderWidth: 1
+            }, {
+                type: 'bar',
+                label: 'CR(Static)',
+                stack: 'Stack 0',
+                data: crStatic,
+                backgroundColor: 'rgba(246, 59, 234, 0.26)',
+                borderColor: 'rgba(246, 59, 234, 1)',
+                borderWidth: 1
+            }, {
+                type: 'bar',
+                label: 'FHB(Current)',
+                stack: 'Stack 1',
+                data: fhbReal,
+                backgroundColor: 'rgba(59, 81, 246, 0.37)',
+                borderColor: 'rgba(59, 81, 246, 1)',
+                borderWidth: 1
+            }, {
+                type: 'bar',
+                label: 'CR(Current)',
+                stack: 'Stack 1',
+                data: crReal,
+                backgroundColor: 'rgba(246, 59, 234, 0.26)',
+                borderColor: 'rgba(246, 59, 234, 1)',
+                borderWidth: 1
+            }, {
+                type: 'line',
+                label: 'max',
+                data: maxSeat,
+                backgroundColor: 'rgba(0,0,0,0)',
+                borderColor: 'red',
+                pointBorderColor: 'rgba(0,0,0,0)',
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                fontSize: 24,
+                text: "HB Student Chart"
+            },
+            tooltips: {
+                mode: 'point',
+                intersect: false
+            },
+            legend: {
+                position: 'bottom'
+            },
+            responsive: true,
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                }],
+                yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
