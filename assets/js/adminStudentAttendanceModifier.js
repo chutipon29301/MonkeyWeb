@@ -354,7 +354,9 @@ $(".remarkReset").click(function () {
 // Start time for gen activity table
 let acTime1 = moment();
 let acTime2 = moment();
-genActivityTable(0);
+$(".nav-tabs > .nav-item:nth-child(3)").click(function () {
+    genActivityTable(0);
+});
 /**
  * gen activity table
  * @param {number} number 
