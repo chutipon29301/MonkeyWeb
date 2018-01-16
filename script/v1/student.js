@@ -23,7 +23,8 @@ module.exports = function (app, db, post, gradeBitToString) {
                     $set: {
                         hybridID: ObjectID(attendances[i].hybridID)
                     }
-                });
+                }
+            );
         }
     });
 
@@ -52,7 +53,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: NONE,
-                hybridID: req.body.hybridID,
+                hybridID: ObjectID(req.body.hybridID),
                 date: parseInt(req.body.date),
                 type: ABSENT,
                 reason: req.body.reason,
@@ -85,7 +86,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: NONE,
-                hybridID: req.body.hybridID,
+                hybridID: ObjectID(req.body.hybridID),
                 date: parseInt(req.body.date),
                 type: PRESENT,
                 sender: req.body.sender,
@@ -170,6 +171,10 @@ module.exports = function (app, db, post, gradeBitToString) {
                         $first: '$subject'
                     }
                 }
+            },{
+                $sort: {
+                    timestamp: -1
+                }
             }]).toArray().then(values => {
                 for (let i = 0; i < values.length; i++) {
                     if (values[i].courseID === null) {
@@ -188,6 +193,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                         values[i].courseName = values[i].courseID.subject + gradeBitToString(values[i].courseID.grade) + values[i].courseID.level;
                         values[i].tutorID = values[i].courseID.tutor[0];
                         values[i].courseID = values[i].courseID._id;
+                        delete values[i].subject;
                     }
                     if (values[i].hybridID) {
                         var selectSubject = _.find(values[i].hybridID.student, {
@@ -202,12 +208,10 @@ module.exports = function (app, db, post, gradeBitToString) {
                     }
                     delete values[i].userID;
                 }
-                // res.status(200).send(values);
-
                 Promise.all([
                     Promise.all(values.map(value => {
                         return attendanceDocumentDB.findOne({
-                            _id: value._id
+                            attendanceID: value._id.toString()
                         });
                     })),
                     Promise.all(values.map(value => {
