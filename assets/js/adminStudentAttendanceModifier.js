@@ -22,23 +22,21 @@ $("#crDatePicker").datetimepicker({
     daysOfWeekDisabled: [1, 2, 3, 4, 5]
 });
 let fhbIndicator = true;
+let crIndicator = true;
+genTimePicker(1);
+genTimePicker(2);
 $(".nav-tabs > .nav-item:nth-child(2)").click(function () {
     if (fhbIndicator) {
-        genTimePicker(1);
         genTable(1);
-        genTimePicker(2);
-        genTutor();
     }
     fhbIndicator = false;
 });
 $(".nav-tabs > .nav-item:nth-child(3)").click(function () {
-    if (fhbIndicator) {
-        genTimePicker(1);
-        genTable(1);
-        genTimePicker(2);
+    if (crIndicator) {
         genTutor();
+        genTable(2);
     }
-    fhbIndicator = false;
+    crIndicator = false;
 });
 async function genTutor() {
     let tutor = await $.post("post/v1/listTutor");
@@ -63,6 +61,7 @@ $("#fhbDatePicker").on("dp.change", function () {
  * cr datePicker change handler
  */
 $("#crDatePicker").on("dp.change", function () {
+    genTimePicker(2);
     genTable(2);
 });
 /**
@@ -112,21 +111,6 @@ async function genTable(mainType) {
     let allAdtend = await $.post("post/v1/listAttendance", {
         date: pickDate.valueOf()
     });
-    let promise = [];
-    let promise2 = [];
-    for (let i in allAdtend) {
-        promise2.push(name(allAdtend[i].userID));
-        if (allAdtend[i].courseID === 0) {
-            promise.push($.post("post/v1/studentHybridSubject", {
-                studentID: allAdtend[i].userID,
-                hybridID: allAdtend[i].hybridID
-            }));
-        } else {
-            promise.push(courseInfo(allAdtend[i].courseID));
-        }
-    }
-    let adtendInfo = await Promise.all(promise);
-    let studentName = await Promise.all(promise2);
     for (let i = 0; i < allAdtend.length; i++) {
         let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY HH:mm");
         let t = moment(allAdtend[i].date).hour();
@@ -137,7 +121,7 @@ async function genTable(mainType) {
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
             link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
         } else {
-            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
+            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i]._id + "\")'></span>";
         }
         if (emergencyAbsent(allAdtend[i].timestamp, allAdtend[i].date)) {
             style = "table-warning";
@@ -158,67 +142,63 @@ async function genTable(mainType) {
         }
         if (allAdtend[i].type === 1) {
             let subj;
-            let tutor;
             let type;
-            if (allAdtend[i].courseID === 0) {
-                subj = "FHB:" + adtendInfo[i].subject
-                tutor = "HB";
+            if (allAdtend[i].courseID === undefined) {
+                subj = "FHB:" + allAdtend[i].hybridSubject;
                 type = "FHB";
             } else {
-                subj = "CR:" + adtendInfo[i].courseName;
-                if (adtendInfo[i].tutor[0] === 99000) {
-                    tutor = "HB";
+                if (allAdtend[i].tutorName === "Hybrid") {
+                    subj = "CR:" + allAdtend[i].courseName;
                     type = "HB";
                 } else {
-                    let tutorName = await name(adtendInfo[i].tutor[0]);
-                    tutor = tutorName.nicknameEn;
+                    subj = "CR:" + allAdtend[i].courseName;
                     type = "CR";
                 }
             }
             if (type !== "CR" && mainType === 1) {
                 $("#fhbAbsentTable").append(
-                    "<tr id='" + allAdtend[i].attendanceID + "' class='fhbTableRow fhbRow" + t + " " + type + " " + style + "'>" +
+                    "<tr id='" + allAdtend[i]._id + "' class='fhbTableRow fhbRow" + t + " " + type + " " + style + "'>" +
                     "<td class='text-center'>" + timestamp + "</td>" +
                     "<td class='text-center' onclick='gotoStdProfile(\"" +
-                    allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
+                    allAdtend[i].studentID + "\")'>" + allAdtend[i].nickname + " " + allAdtend[i].firstname + "</td>" +
                     "<td class='text-center'>" + subj + "</td>" +
-                    "<td class='text-center'>" + tutor + "</td>" +
+                    "<td class='text-center'>HB</td>" +
                     "<td class='text-center'>" + allAdtend[i].reason + "</td>" +
                     "<td class='text-center'>" + link + "</td>" +
-                    "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
-                    "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
+                    "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
+                    "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                    allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
                     "</tr>"
                 );
             } else if (type !== "FHB" && mainType === 2) {
                 $("#crAbsentTable").append(
-                    "<tr id='" + allAdtend[i].attendanceID + "' class='crTableRow crRow" + t + " " + adtendInfo[i].tutor[0] + " " + style + "'>" +
+                    "<tr id='" + allAdtend[i]._id + "' class='crTableRow crRow" + t + " " + allAdtend[i].tutorID + " " + style + "'>" +
                     "<td class='text-center'>" + timestamp + "</td>" +
                     "<td class='text-center' onclick='gotoStdProfile(\"" +
-                    allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
+                    allAdtend[i].studentID + "\")'>" + allAdtend[i].nickname + " " + allAdtend[i].firstname + "</td>" +
                     "<td class='text-center'>" + subj + "</td>" +
-                    "<td class='text-center'>" + tutor + "</td>" +
+                    "<td class='text-center'>" + (allAdtend[i].tutorName !== "Hybrid" ? allAdtend[i].tutorName : "HB") + "</td>" +
                     "<td class='text-center'>" + allAdtend[i].reason + "</td>" +
                     "<td class='text-center'>" + link + "</td>" +
-                    "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
-                    "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
+                    "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
+                    "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                    allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
                     "</tr>"
                 );
             }
         } else if (mainType === 1) {
             $("#fhbPresentTable").append(
-                "<tr id='" + allAdtend[i].attendanceID + "' class='fhbTableRow fhbRow" + t + "'>" +
+                "<tr id='" + allAdtend[i]._id + "' class='fhbTableRow fhbRow" + t + "'>" +
                 "<td class='text-center'>" + timestamp + "</td>" +
                 "<td class='text-center' onclick='gotoStdProfile(\"" +
-                allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
+                allAdtend[i].studentID + "\")'>" + allAdtend[i].nickname + " " + allAdtend[i].firstname + "</td>" +
                 "<td class='text-center'>" + "FHB:" + allAdtend[i].subject + "</td>" +
-                "<td class='text-center " + nextRemark + " rm" + allAdtend[i].attendanceID +
-                "' onclick='setRemark(\"" + allAdtend[i].attendanceID + "\")'>" + remark + "</td>" +
+                "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
+                "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                 "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
                 "</tr>"
             );
         }
@@ -235,11 +215,10 @@ function emergencyAbsent(timestamp, date) {
     let result = false;
     let aDay = 24 * 60 * 60 * 1000;
     let t = moment(date);
-    t.hour(18).minute(0).second(0).millisecond(0);
     if (t.day() === 0) {
-        if (t.valueOf() - timestamp < 2 * aDay) result = true;
+        if (t.valueOf() - moment(timestamp).valueOf() < 2 * aDay) result = true;
     } else {
-        if (t.valueOf() - timestamp < aDay) result = true;
+        if (t.valueOf() - moment(timestamp).valueOf() < aDay) result = true;
     }
     return result;
 }
@@ -390,21 +369,6 @@ async function genActivityTable(number) {
         startDate: acTime1.valueOf(),
         endDate: acTime2.valueOf()
     });
-    let promise = [];
-    let promise2 = [];
-    for (let i in allAdtend) {
-        promise2.push(name(allAdtend[i].userID));
-        if (allAdtend[i].courseID === 0) {
-            promise.push($.post("post/v1/studentHybridSubject", {
-                studentID: allAdtend[i].userID,
-                hybridID: allAdtend[i].hybridID
-            }));
-        } else {
-            promise.push(courseInfo(allAdtend[i].courseID));
-        }
-    }
-    let adtendInfo = await Promise.all(promise);
-    let studentName = await Promise.all(promise2);
     if (allAdtend.length === 0) {
         $("#loadMoreButt").hide();
     }
@@ -417,10 +381,10 @@ async function genActivityTable(number) {
         let link;
         if (allAdtend[i].type === 1) {
             style = "table-danger";
-            if (allAdtend[i].courseID === 0) {
-                subj = "FHB:" + adtendInfo[i].subject
+            if (allAdtend[i].courseID === undefined) {
+                subj = "FHB:" + allAdtend[i].hybridSubject
             } else {
-                subj = "CR:" + adtendInfo[i].courseName;
+                subj = "CR:" + allAdtend[i].courseName;
             }
             reason = allAdtend[i].reason;
         } else {
@@ -434,17 +398,17 @@ async function genActivityTable(number) {
             link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
         }
         $("#acTableBody").append(
-            "<tr class='" + style + "' id='" + allAdtend[i].attendanceID + "'>" +
+            "<tr class='" + style + "' id='" + allAdtend[i]._id + "'>" +
             "<td class='text-center'>" + timestamp + "</td>" +
             "<td class='text-center' onclick='gotoStdProfile(\"" +
-            allAdtend[i].userID + "\")'>" + studentName[i].nickname + " " + studentName[i].firstname + "</td>" +
+            allAdtend[i].studentID + "\")'>" + allAdtend[i].nickname + " " + allAdtend[i].firstname + "</td>" +
             "<td class='text-center'>" + subj + "</td>" +
             "<td class='text-center'>" + t + "</td>" +
             "<td class='text-center'>" + reason + "</td>" +
             "<td class='text-center'>" + link + "</td>" +
             "<td class='text-center'>" + allAdtend[i].sender + "</td>" +
             "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-            allAdtend[i].attendanceID + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+            allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
             "</tr>"
         );
     }
@@ -461,7 +425,7 @@ function showAdtendPic(picLink) {
     $("#picSrc").attr("src", picLink);
     $("#picModal").modal("show");
 }
-let uploadID;
+var uploadID;
 function showUploadModal(adtendID) {
     uploadID = adtendID;
     $("#picUploadModal").modal('show');
@@ -692,15 +656,14 @@ async function generateChart() {
         for (let j in attendC[i]) {
             let time = moment(attendC[i][j].date);
             let dayStr = time.format('dddHH').toLowerCase();
-            if (attendC[i][j].courseID === 0) {
+            if (attendC[i][j].courseID === undefined) {
                 if (attendC[i][j].type === 1) {
                     fhbReal[dayIndex(dayStr)] -= 1;
                 } else {
                     fhbReal[dayIndex(dayStr)] += 1;
                 }
             } else {
-                let crInfo = await courseInfo(attendC[i][j].courseID);
-                if (crInfo.tutor[0] === 99000) {
+                if (attendC[i][j].tutorName === "Hybrid") {
                     if (attendC[i][j].type === 1) {
                         crReal[dayIndex(dayStr)] -= 1;
                     } else {

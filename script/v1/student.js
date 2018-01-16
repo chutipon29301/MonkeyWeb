@@ -20,10 +20,10 @@ module.exports = function (app, db, post, gradeBitToString) {
             attendanceDB.updateOne({
                 _id: ObjectID(attendances[i]._id)
             }, {
-                $set: {
-                    hybridID: ObjectID(attendances[i].hybridID)
-                }
-            });
+                    $set: {
+                        hybridID: ObjectID(attendances[i].hybridID)
+                    }
+                });
         }
     });
 
@@ -165,6 +165,9 @@ module.exports = function (app, db, post, gradeBitToString) {
                     },
                     sender: {
                         $first: '$sender'
+                    },
+                    subject: {
+                        $first: '$subject'
                     }
                 }
             }]).toArray().then(values => {
@@ -174,6 +177,9 @@ module.exports = function (app, db, post, gradeBitToString) {
                     }
                     if (values[i].hybridID === null) {
                         delete values[i].hybridID;
+                    }
+                    if (values[i].type === 2) {
+                        delete values[i].reason;
                     }
                     values[i].studentID = values[i].userID._id;
                     values[i].firstname = values[i].userID.firstname;
@@ -346,12 +352,12 @@ module.exports = function (app, db, post, gradeBitToString) {
             userDB.updateOne({
                 _id: parseInt(req.body.studentID)
             }, {
-                $set: {
-                    'student.quarter': stateObject
-                }
-            }).then(result => {
-                return res.status(200).send('OK');
-            });
+                    $set: {
+                        'student.quarter': stateObject
+                    }
+                }).then(result => {
+                    return res.status(200).send('OK');
+                });
         });
     });
 
