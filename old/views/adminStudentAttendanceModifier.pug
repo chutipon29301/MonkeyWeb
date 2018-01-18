@@ -24,6 +24,11 @@ block body
         #chartContent.tab-pane.container-fluid.active
             .chart-container.mx-auto(style="position: relative; height:70vh; width:80vw")
                 canvas#fhbChart
+            .container
+                .btn-group.justify-content-center.col-12
+                    button.btn.btn-primary#staticChartButt(type="button") Static
+                    button.btn.btn-primary#realChartButt(type="button") Realtime
+                    button.btn.btn-primary#compareChartButt(type="button") Compare
         //- hb tabs content
         #hbContent.tab-pane.container-fluid
             .row

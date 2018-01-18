@@ -582,8 +582,10 @@ async function sendAddAdtendData() {
 }
 
 // generate fhb room chart
+let firstTimeGen = true;
+var myChart;
 generateChart();
-async function generateChart() {
+async function generateChart(type) {
     let allRoom = await $.post("post/v1/allRoom");
     let allHbRoom = {};
     for (let i in allRoom) {
@@ -597,6 +599,7 @@ async function generateChart() {
     let pcrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ccrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ecrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let emptySeat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     // realtime data
     let mhbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let phbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -666,13 +669,16 @@ async function generateChart() {
             }
         }
     }
+    for (let i in emptySeat) {
+        emptySeat[i] = maxSeat[i] - mhbStatic[i] - phbStatic[i] - mcrStatic[i] - pcrStatic[i] - ccrStatic[i] - ecrStatic[i];
+    }
     /**
      * change zero to ''
      * @param {number[]} dataIn 
      */
     const cvZero = (dataIn) => {
         for (let i in dataIn) {
-            if (dataIn[i] === 0) {
+            if (dataIn[i] <= 0) {
                 dataIn[i] = '';
             }
         }
@@ -745,6 +751,7 @@ async function generateChart() {
     cvZero(pcrStatic);
     cvZero(ccrStatic);
     cvZero(ecrStatic);
+    cvZero(emptySeat);
     cvZero(mhbReal);
     cvZero(phbReal);
     cvZero(mcrReal);
@@ -752,87 +759,226 @@ async function generateChart() {
     cvZero(ccrReal);
     cvZero(ecrReal);
     let dataset = [];
+    /**
+     * add Dataset for chart
+     * @param {string} label 
+     * @param {number[]} data 
+     * @param {number} stack 
+     * @param {string} colorStr
+     * @param {string} txtColor
+     * @param {string} borderColor optional
+     */
+    const addDataSet = (label, data, stack, colorStr, txtColor, borderColor) => {
+        if (borderColor !== undefined) {
+            dataset.push({
+                type: 'bar',
+                label: label,
+                stack: 'Stack ' + stack,
+                data: data,
+                backgroundColor: colorStr,
+                borderColor: borderColor,
+                borderWidth: 3,
+                datalabels: {
+                    color: txtColor
+                }
+            });
+        } else {
+            dataset.push({
+                type: 'bar',
+                label: label,
+                stack: 'Stack ' + stack,
+                data: data,
+                backgroundColor: colorStr,
+                borderColor: colorStr,
+                borderWidth: 1,
+                datalabels: {
+                    color: txtColor
+                }
+            });
+        }
+    };
     dataset.push({
         type: 'line',
         label: 'max',
         data: maxSeat,
         backgroundColor: 'rgba(0,0,0,0)',
         borderColor: 'red',
+        borderWidth: 2,
         pointBorderColor: 'rgba(0,0,0,0)',
         datalabels: {
             display: false
         }
     });
     /**
-     * add Dataset for chart
-     * @param {string} label 
-     * @param {number[]} data 
-     * @param {number} stack 
-     * @param {string} colorStr ###,###,###
-     * @param {string} txtColor 
+     * update all element in exist array
+     * @param  oldArray 
+     * @param  newArray 
      */
-    const addDataSet = (label, data, stack, colorStr, txtColor) => {
+    const updateArray = (oldArray, newArray) => {
+        oldArray.splice(0, oldArray.length);
+        for (let i in newArray) {
+            oldArray.push(newArray[i]);
+        }
+    };
+    if (firstTimeGen) {
+        addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
+        addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+        addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
+        addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
+        addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff5cd1", "#ff5cd1");
+        addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
         dataset.push({
             type: 'bar',
-            label: label,
-            stack: 'Stack ' + stack,
-            data: data,
-            backgroundColor: 'rgba(' + colorStr + ',1)',
-            borderColor: 'rgba(' + colorStr + ',1)',
-            borderWidth: 1,
+            label: "Remaining",
+            stack: 'Stack 0',
+            data: emptySeat,
+            backgroundColor: "rgba(0,0,0,0)",
+            borderColor: "rgba(0,0,0,0)",
+            borderWidth: 2,
             datalabels: {
-                color: txtColor
+                color: "red",
+                anchor: "start",
+                align: "end",
+                offset: 1,
+                formatter: function (value, context) {
+                    if (value === '') {
+                        return '';
+                    } else {
+                        return 'Remain: ' + value;
+                    }
+                }
             }
         });
-    };
-    addDataSet("MHB(Static)", mhbStatic, 0, "255, 153, 0", "white");
-    addDataSet("PHB(Static)", phbStatic, 0, "212, 0, 255", "white");
-    addDataSet("Math(Static)", mcrStatic, 0, "255, 0, 178", "white");
-    addDataSet("Phy(Static)", pcrStatic, 0, "0, 195, 255", "black");
-    addDataSet("Che(Static)", ccrStatic, 0, "0, 242, 255", "black");
-    addDataSet("Eng(Static)", ecrStatic, 0, "255, 232, 102", "black");
-    addDataSet("MHB(Real)", mhbReal, 1, "255, 115, 0", "white");
-    addDataSet("PHB(Real)", phbReal, 1, "187, 0, 255", "white");
-    addDataSet("Math(Real)", mcrReal, 1, "255, 0, 123", "white");
-    addDataSet("Phy(Real)", pcrReal, 1, "0, 110, 255", "white");
-    addDataSet("Che(Real)", ccrReal, 1, "0, 200, 255", "black");
-    addDataSet("Eng(Real)", ecrReal, 1, "255, 210, 46", "black");
-    var ctx = document.getElementById("fhbChart").getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['tue', 'thu', 'sat8', 'sat10', 'sat13', 'sat15', 'sun8', 'sun10', 'sun13', 'sun15'],
-            datasets: dataset
-        },
-        options: {
-            title: {
-                display: true,
-                fontSize: 24,
-                text: "HB Student Chart"
+        addDataSet("MHB(Real)", mhbReal, 1, "rgb(255,115,0)", "white");
+        addDataSet("PHB(Real)", phbReal, 1, "rgb(187,0,255)", "white");
+        addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "rgb(255,115,0)", "rgb(255,115,0)");
+        addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "rgb(187,0,255)", "rgb(187,0,255)");
+        addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff00b7", "#ff00b7");
+        addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
+        var ctx = document.getElementById("fhbChart").getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['tue', 'thu', 'sat8', 'sat10', 'sat13', 'sat15', 'sun8', 'sun10', 'sun13', 'sun15'],
+                datasets: dataset
             },
-            tooltips: {
-                mode: 'point',
-                intersect: false
-            },
-            legend: {
-                position: 'bottom'
-            },
-            responsive: true,
-            scales: {
-                xAxes: [{
-                    stacked: true,
-                }],
-                yAxes: [{
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
+            options: {
+                title: {
+                    display: true,
+                    fontSize: 24,
+                    text: "HB Student Chart"
+                },
+                tooltips: {
+                    mode: 'point',
+                    intersect: false
+                },
+                legend: {
+                    position: 'bottom',
+                    display: false
+                },
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true,
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
             }
+        });
+        firstTimeGen = false;
+    } else {
+        switch (type) {
+            case 1:
+                addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
+                addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
+                addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
+                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff5cd1", "#ff5cd1");
+                addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
+                dataset.push({
+                    type: 'bar',
+                    label: "Remaining",
+                    stack: 'Stack 0',
+                    data: emptySeat,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "rgba(0,0,0,0)",
+                    borderWidth: 2,
+                    datalabels: {
+                        color: "red",
+                        anchor: "start",
+                        align: "end",
+                        offset: 1,
+                        formatter: function (value, context) {
+                            if (value === '') {
+                                return '';
+                            } else {
+                                return 'Remain: ' + value;
+                            }
+                        }
+                    }
+                });
+                updateArray(myChart.data.datasets, dataset);
+                myChart.update();
+                break;
+            case 3:
+                addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
+                addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
+                addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
+                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff5cd1", "#ff5cd1");
+                addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
+                dataset.push({
+                    type: 'bar',
+                    label: "Remaining",
+                    stack: 'Stack 0',
+                    data: emptySeat,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "rgba(0,0,0,0)",
+                    borderWidth: 2,
+                    datalabels: {
+                        color: "red",
+                        anchor: "start",
+                        align: "end",
+                        offset: 1,
+                        formatter: function (value, context) {
+                            if (value === '') {
+                                return '';
+                            } else {
+                                return 'Remain: ' + value;
+                            }
+                        }
+                    }
+                });
+            case 2:
+                addDataSet("MHB(Real)", mhbReal, 1, "rgb(255,115,0)", "white");
+                addDataSet("PHB(Real)", phbReal, 1, "rgb(187,0,255)", "white");
+                addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "rgb(255,115,0)", "rgb(255,115,0)");
+                addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "rgb(187,0,255)", "rgb(187,0,255)");
+                addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff00b7", "#ff00b7");
+                addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
+                updateArray(myChart.data.datasets, dataset);
+                myChart.update();
+                break;
+            default:
+                break;
         }
-    });
+    }
     fixWindowHeight();
 }
 function fixWindowHeight() {
     $("#chartContent > .chart-container").height($("#fhbChart").height());
 }
+$("#staticChartButt").click(function () {
+    generateChart(1);
+});
+$("#realChartButt").click(function () {
+    generateChart(2);
+});
+$("#compareChartButt").click(function () {
+    generateChart(3);
+});
