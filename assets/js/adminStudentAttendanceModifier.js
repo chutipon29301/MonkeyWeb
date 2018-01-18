@@ -849,7 +849,7 @@ async function generateChart(type) {
                     style: 'bold',
                     size: 16
                 },
-                color: "blue",
+                color: "#6eb339",
                 anchor: "start",
                 align: "end",
                 offset: 1,
@@ -926,7 +926,7 @@ async function generateChart(type) {
                             style: 'bold',
                             size: 16
                         },
-                        color: "blue",
+                        color: "#6eb339",
                         anchor: "start",
                         align: "end",
                         offset: 1,
@@ -962,7 +962,7 @@ async function generateChart(type) {
                             style: 'bold',
                             size: 16
                         },
-                        color: "blue",
+                        color: "#6eb339",
                         anchor: "start",
                         align: "end",
                         offset: 1,
