@@ -779,7 +779,11 @@ async function generateChart(type) {
                 borderColor: borderColor,
                 borderWidth: 3,
                 datalabels: {
-                    color: txtColor
+                    color: txtColor,
+                    font: {
+                        style: 'bold',
+                        size: 14
+                    }
                 }
             });
         } else {
@@ -792,23 +796,15 @@ async function generateChart(type) {
                 borderColor: colorStr,
                 borderWidth: 1,
                 datalabels: {
-                    color: txtColor
+                    color: txtColor,
+                    font: {
+                        style: 'bold',
+                        size: 14
+                    }
                 }
             });
         }
     };
-    dataset.push({
-        type: 'line',
-        label: 'max',
-        data: maxSeat,
-        backgroundColor: 'rgba(0,0,0,0)',
-        borderColor: 'red',
-        borderWidth: 2,
-        pointBorderColor: 'rgba(0,0,0,0)',
-        datalabels: {
-            display: false
-        }
-    });
     /**
      * update all element in exist array
      * @param  oldArray 
@@ -820,12 +816,25 @@ async function generateChart(type) {
             oldArray.push(newArray[i]);
         }
     };
+    dataset.push({
+        type: 'line',
+        label: 'max',
+        data: maxSeat,
+        backgroundColor: 'rgba(0,0,0,0)',
+        borderColor: 'black',
+        borderDash: [15, 10],
+        borderWidth: 3,
+        pointBorderColor: 'rgba(0,0,0,0)',
+        datalabels: {
+            display: false
+        }
+    });
     if (firstTimeGen) {
         addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
         addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
         addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
         addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
-        addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff5cd1", "#ff5cd1");
+        addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
         addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
         dataset.push({
             type: 'bar',
@@ -836,7 +845,11 @@ async function generateChart(type) {
             borderColor: "rgba(0,0,0,0)",
             borderWidth: 2,
             datalabels: {
-                color: "red",
+                font: {
+                    style: 'bold',
+                    size: 16
+                },
+                color: "blue",
                 anchor: "start",
                 align: "end",
                 offset: 1,
@@ -844,16 +857,16 @@ async function generateChart(type) {
                     if (value === '') {
                         return '';
                     } else {
-                        return 'Remain: ' + value;
+                        return '( ' + value + ' )';
                     }
                 }
             }
         });
-        addDataSet("MHB(Real)", mhbReal, 1, "rgb(255,115,0)", "white");
-        addDataSet("PHB(Real)", phbReal, 1, "rgb(187,0,255)", "white");
-        addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "rgb(255,115,0)", "rgb(255,115,0)");
-        addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "rgb(187,0,255)", "rgb(187,0,255)");
-        addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff00b7", "#ff00b7");
+        addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
+        addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+        addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
+        addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
+        addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
         addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
         var ctx = document.getElementById("fhbChart").getContext('2d');
         myChart = new Chart(ctx, {
@@ -898,7 +911,7 @@ async function generateChart(type) {
                 addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
                 addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
                 addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
-                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff5cd1", "#ff5cd1");
+                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
                 addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
                 dataset.push({
                     type: 'bar',
@@ -909,7 +922,11 @@ async function generateChart(type) {
                     borderColor: "rgba(0,0,0,0)",
                     borderWidth: 2,
                     datalabels: {
-                        color: "red",
+                        font: {
+                            style: 'bold',
+                            size: 16
+                        },
+                        color: "blue",
                         anchor: "start",
                         align: "end",
                         offset: 1,
@@ -917,7 +934,7 @@ async function generateChart(type) {
                             if (value === '') {
                                 return '';
                             } else {
-                                return 'Remain: ' + value;
+                                return '( ' + value + ' )';
                             }
                         }
                     }
@@ -930,7 +947,7 @@ async function generateChart(type) {
                 addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
                 addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
                 addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
-                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff5cd1", "#ff5cd1");
+                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
                 addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
                 dataset.push({
                     type: 'bar',
@@ -941,7 +958,11 @@ async function generateChart(type) {
                     borderColor: "rgba(0,0,0,0)",
                     borderWidth: 2,
                     datalabels: {
-                        color: "red",
+                        font: {
+                            style: 'bold',
+                            size: 16
+                        },
+                        color: "blue",
                         anchor: "start",
                         align: "end",
                         offset: 1,
@@ -949,17 +970,17 @@ async function generateChart(type) {
                             if (value === '') {
                                 return '';
                             } else {
-                                return 'Remain: ' + value;
+                                return '( ' + value + ' )';
                             }
                         }
                     }
                 });
             case 2:
-                addDataSet("MHB(Real)", mhbReal, 1, "rgb(255,115,0)", "white");
-                addDataSet("PHB(Real)", phbReal, 1, "rgb(187,0,255)", "white");
-                addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "rgb(255,115,0)", "rgb(255,115,0)");
-                addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "rgb(187,0,255)", "rgb(187,0,255)");
-                addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff00b7", "#ff00b7");
+                addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
+                addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+                addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
+                addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
+                addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
                 addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
                 updateArray(myChart.data.datasets, dataset);
                 myChart.update();
@@ -970,6 +991,9 @@ async function generateChart(type) {
     }
     fixWindowHeight();
 }
+$(window).resize(function () {
+    fixWindowHeight();
+});
 function fixWindowHeight() {
     $("#chartContent > .chart-container").height($("#fhbChart").height());
 }
