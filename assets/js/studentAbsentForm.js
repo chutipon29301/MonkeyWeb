@@ -128,7 +128,7 @@ async function getHistory() {
             }
         } else {
             tableTarget = $("#presentTableBody");
-            if (history[i].courseID === 0) {
+            if (history[i].courseID === undefined) {
                 tableTarget.append(
                     "<tr>" +
                     "<td class='text-center'>" + t + "</td>" +
