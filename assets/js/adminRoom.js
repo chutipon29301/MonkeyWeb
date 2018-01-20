@@ -86,7 +86,7 @@ async function genRoom() {
                 for (let k in room.hybrid) {
                     if (room.hybrid[k].numMath !== undefined) {
                         $("#" + i + j).append(
-                            "<tr class='table-warning'>" +
+                            "<tr class='table-warning hbRow' id='m" + room.hybrid[k].hybridID + "'>" +
                             "<td class='text-left'>FHB:M</td>" +
                             "<td class='text-right'>" + room.hybrid[k].numMath + "</td>" +
                             "</tr>"
@@ -94,7 +94,7 @@ async function genRoom() {
                     }
                     if (room.hybrid[k].numPhysics !== undefined) {
                         $("#" + i + j).append(
-                            "<tr class='table-primary'>" +
+                            "<tr class='table-primary hbRow' id='p" + room.hybrid[k].hybridID + "'>" +
                             "<td class='text-left'>FHB:P</td>" +
                             "<td class='text-right'>" + room.hybrid[k].numPhysics + "</td>" +
                             "</tr>"
@@ -118,6 +118,10 @@ async function genRoom() {
 $(".tab-pane").on("click", ".crRow", function (e) {
     writeCookie("monkeyWebAdminAllcourseSelectedCourseID", this.id);
     self.location = "/adminCoursedescription";
+});
+$(".tab-pane").on("click", ".hbRow", function (e) {
+    writeCookie("monkeySelectedHybrid", this.id);
+    self.location = "/adminHybridInfo";
 });
 $(".tab-pane").on("click", ".card-header", function (e) {
     let target = "body" + this.id.slice(4);
