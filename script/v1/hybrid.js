@@ -398,7 +398,7 @@ module.exports = function (app, db, post) {
         studentHybridDB.findOne({
             _id: ObjectID(req.body.hybridID)
         }).then((data) => {
-            res.status(200).send(data.student)
+            res.status(200).send(data)
         });
     });
 
