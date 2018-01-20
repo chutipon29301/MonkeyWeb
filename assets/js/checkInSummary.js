@@ -158,8 +158,8 @@ async function genTableData() {
         if (allStaffName[index].subPosition !== undefined) {
             subPos = allStaffName[index].subPosition;
         }
-        sumWH = sumWH + parseInt(allData[i].hourSum.toFixed(1));
-        sumCredit = sumCredit + parseInt(allData[i].totalSum.toFixed(1));
+        sumWH = sumWH + parseFloat(allData[i].hourSum.toFixed(1));
+        sumCredit = sumCredit + parseFloat(allData[i].totalSum.toFixed(1));
         sumAmout = sumAmout + parseInt((allData[i].totalSum * displayMultiply).toFixed(0));
         lastTotal = lastTotal + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra);
         $mainTableBody.append(
@@ -196,8 +196,8 @@ async function genTableData() {
     $mainTableBody.append(
         "<tr>" +
         "<td class='text-center table-dark' colspan='4'>Total</td>" +
-        "<td class='text-center'>" + sumWH + "</td>" +
-        "<td class='text-center'>" + sumCredit + "</td>" +
+        "<td class='text-center'>" + sumWH.toFixed(1) + "</td>" +
+        "<td class='text-center'>" + sumCredit.toFixed(1) + "</td>" +
         "<td class='text-center'>100</td>" +
         "<td class='text-center'>" + sumAmout + "</td>" +
         "<td class='text-center'>0</td>" +
@@ -388,17 +388,13 @@ function showTutorHistory(tutorID) {
     }).then((historyData) => {
         $table.empty();
         let sumHour = 0;
-        let sumCredit = 0;
         for (let i in historyData.detail) {
             let checkIn = moment(historyData.detail[i].checkIn);
             let checkOut = moment(historyData.detail[i].checkOut);
             let sum = 0;
             let diffHour = (checkOut.hour() - checkIn.hour()) + ((checkOut.minute() - checkIn.minute()) / 60);
-            if (historyData.detail[i].sum >= 0) {
-                sum = historyData.detail[i].sum;
-            }
-            sumHour = sumHour + parseInt(diffHour.toFixed(1));
-            sumCredit = sumCredit + parseInt(sum.toFixed(1));
+            sum = historyData.detail[i].sum;
+            sumHour = sumHour + diffHour;
             $table.append(
                 "<tr class='" + ((diffHour < 0) ? "table-warning" : "") + "'>" +
                 "<td class='text-center'>" + checkIn.format("ddd") + "</td>" +
@@ -415,8 +411,8 @@ function showTutorHistory(tutorID) {
         $table.append(
             "<tr>" +
             "<td class='text-center table-dark' colspan='5'>Total</td>" +
-            "<td class='text-center'>" + sumHour + "</td>" +
-            "<td class='text-center'>" + sumCredit + "</td>" +
+            "<td class='text-center'>" + sumHour.toFixed(1) + "</td>" +
+            "<td class='text-center'>" + historyData.totalSum.toFixed(1) + "</td>" +
             "<td class='text-center'> - </td>" +
             "</tr>"
         );
