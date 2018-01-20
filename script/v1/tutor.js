@@ -454,124 +454,7 @@ module.exports = function (app, db, post) {
             });
         }
         if (req.body.tutorID && req.body.startDate && req.body.endDate) {
-            tutorCheckHistoryDB.find({
-                tutorID: parseInt(req.body.tutorID),
-                checkIn: {
-                    $gte: new Date(parseInt(req.body.startDate)),
-                    $lte: new Date(parseInt(req.body.endDate))
-                }
-            }, {
-                sort: {
-                    checkIn: -1
-                }
-            }).toArray().then(result => {
-                result.reverse();
-                var totalSum = 0;
-                var response = {};
-                response.summary = [0, 0, 0, 0, 0, 0, 0];
-                response.hour = [0, 0, 0, 0, 0, 0, 0];
-                for (let i = 0; i < result.length; i++) {
-                    result[i].historyID = result[i]._id;
-                    result[i].checkIn = new Date(result[i].checkIn).valueOf();
-                    result[i].checkOut = new Date(result[i].checkOut).valueOf();
-                    var startIndex = -1,
-                        endIndex = -1;
-                    for (let j = 0; j < result[i].detail.length; j++) {
-                        if (startIndex == -1 && result[i].detail[j] != -1) startIndex = j;
-                        if (endIndex == -1 && result[i].detail[result[i].detail.length - j - 1] != -1) endIndex = result[i].detail.length - j - 1;
-                    }
-                    var sum = 0;
-                    for (let j = 0; j < result[i].detail.length; j++) {
-                        if (j === startIndex && j === endIndex) {
-                            var date1 = new Date(result[i].checkIn);
-                            var date2 = new Date(result[i].checkOut);
-                            if (date1.getHours() < 8) {
-                                date1.setHours(8);
-                                date1.setMinutes(0);
-                                date1.setSeconds(0);
-                                date1.setMilliseconds(0);
-                            }
-                            if (date1.getHours() < 13 && date1.getHours() > 12) {
-                                date1.setHours(13);
-                                date1.setMinutes(0);
-                                date1.setSeconds(0);
-                                date1.setMilliseconds(0);
-                            }
-                            if (date2.getHours() < 13 && date2.getHours() > 12) {
-                                date2.setHours(12);
-                                date2.setMinutes(0);
-                                date2.setSeconds(0);
-                                date2.setMilliseconds(0);
-                            }
-                            if (date2.getHours() > 19) {
-                                date2.setHours(19);
-                                date2.setMinutes(0);
-                                date2.setSeconds(0);
-                                date2.setMilliseconds(0);
-                            }
-                            var diff = date2 - date1;
-                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                            response.hour[result[i].detail[j] + 1] += diff;
-                            sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                        } else if (j === startIndex) {
-                            var date1 = new Date(result[i].checkIn);
-                            var date2 = new Date(result[i].checkIn);
-                            if (date1.getHours() < 8) {
-                                date1.setHours(8);
-                                date1.setMinutes(0);
-                                date1.setSeconds(0);
-                                date1.setMilliseconds(0);
-                            }
-                            if (date1.getHours() < 13 && date1.getHours() > 12) {
-                                date1.setHours(13);
-                                date1.setMinutes(0);
-                                date1.setSeconds(0);
-                                date1.setMilliseconds(0);
-                            }
-                            date2.setHours(timeRangeEnd[startIndex + 1]);
-                            date2.setMinutes(0);
-                            date2.setSeconds(0);
-                            date2.setMilliseconds(0);
-                            var diff = date2 - date1;
-                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                            response.hour[result[i].detail[j] + 1] += diff;
-                            sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                        } else if (j === endIndex) {
-                            var date1 = new Date(result[i].checkOut);
-                            var date2 = new Date(result[i].checkOut);
-                            if (date2.getHours() > 19) {
-                                date2.setHours(19);
-                                date2.setMinutes(0);
-                                date2.setSeconds(0);
-                                date2.setMilliseconds(0);
-                            }
-                            if (date2.getHours() < 13 && date2.getHours() > 12) {
-                                date2.setHours(12);
-                                date2.setMinutes(0);
-                                date2.setSeconds(0);
-                                date2.setMilliseconds(0);
-                            }
-                            date1.setHours(timeRangeStart[endIndex]);
-                            date1.setMinutes(0);
-                            date1.setSeconds(0);
-                            date1.setMilliseconds(0);
-                            var diff = date2 - date1;
-                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                            response.hour[result[i].detail[j] + 1] += diff;
-                            sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                        } else {
-                            response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point;
-                            sum += description[result[i].detail[j] + 1].point;
-                        }
-                        result[i].detail[j] = description[result[i].detail[j] + 1].name;
-                    }
-                    result[i].sum = sum;
-                    totalSum += sum
-                    delete result[i].tutorID;
-                    delete result[i]._id;
-                }
-                response.detail = result;
-                response.totalSum = totalSum
+            calculateTutorCredit(req.body.tutorID, req.body.startDate, req.body.endDate).then(response => {
                 return res.status(200).send(response);
             });
         } else if (req.body.date) {
@@ -615,157 +498,173 @@ module.exports = function (app, db, post) {
                 msg: 'Bad Request'
             });
         }
-        tutorCheckHistoryDB.find({
-            checkIn: {
-                $gte: new Date(parseInt(req.body.startDate)),
-                $lte: new Date(parseInt(req.body.endDate))
-            }
-        }, {
-            sort: {
-                checkIn: -1
-            }
-        }).toArray().then(result => {
-            result.reverse();
-            var totalSum = 0;
-            var response = {};
-            for (let i = 0; i < result.length; i++) {
-                if (response[result[i].tutorID] === undefined) {
-                    response[result[i].tutorID] = {};
-                    response[result[i].tutorID].detail = {};
-                    response[result[i].tutorID].detail.summary = [0, 0, 0, 0, 0, 0, 0];
-                    response[result[i].tutorID].detail.hour = [0, 0, 0, 0, 0, 0, 0];
-                    response[result[i].tutorID].body = [];
-                    response[result[i].tutorID].totalSum = 0;
-                    response[result[i].tutorID].hourSum = 0;
+
+        tutorCheckHistoryDB.distinct('tutorID').then(ids => {
+            ids = ids.sort().filter(x => x !== null);
+            return Promise.all(ids.map(id => {
+                return calculateTutorCredit(id, req.body.startDate, req.body.endDate);
+            }));
+        }).then(values => {
+            tutorCheckHistoryDB.distinct('tutorID').then(ids => {
+                ids = ids.sort().filter(x => x !== null);
+                var responseObject = {};
+                for(let i = 0; i < ids.length;i++){
+                    responseObject[ids[i]] = values[i];
                 }
-                var checkInDate = new Date(result[i].checkIn);
-                var checkOutDate = new Date(result[i].checkOut);
-                response[result[i].tutorID].hourSum = response[result[i].tutorID].hourSum + ((checkOutDate.getTime() - checkInDate.getTime()) / 3600000);
-                var dateDetail = {
-                    historyID: result[i]._id,
-                    checkIn: checkInDate.valueOf(),
-                    checkOut: checkOutDate.valueOf(),
-                    detail: [],
-                    sum: 0
-                };
-                var checkInSlot = getSlotFromHour(checkInDate.getHours());
-                var checkOutSlot = getSlotFromHour(checkOutDate.getHours());
-                if (checkInDate.getHours() <= 8) {
-                    checkInDate.setHours(8);
-                    checkInDate.setMinutes(0);
-                    checkInDate.setSeconds(0);
-                    checkInDate.setMilliseconds(0);
-                }
-                if (checkInDate.getHours() === 12) {
-                    checkInDate.setHours(13);
-                    checkInDate.setMinutes(0);
-                    checkInDate.setSeconds(0);
-                    checkInDate.setMilliseconds(0);
-                }
-                if (checkInDate.getHours() >= 19) {
-                    checkInDate.setHours(19);
-                    checkInDate.setMinutes(0);
-                    checkInDate.setSeconds(0);
-                    checkInDate.setMilliseconds(0);
-                }
-                if (checkOutDate.getHours() <= 8) {
-                    checkOutDate.setHours(8);
-                    checkOutDate.setMinutes(0);
-                    checkOutDate.setSeconds(0);
-                    checkOutDate.setMilliseconds(0);
-                }
-                if (checkOutDate.getHours() === 13) {
-                    checkOutDate.setHours(12);
-                    checkOutDate.setMinutes(0);
-                    checkOutDate.setSeconds(0);
-                    checkOutDate.setMilliseconds(0);
-                }
-                if (checkOutDate.getHours() >= 19) {
-                    checkOutDate.setHours(19);
-                    checkOutDate.setMinutes(0);
-                    checkOutDate.setSeconds(0);
-                    checkOutDate.setMilliseconds(0);
-                }
-                for (let j = 0; j < result[i].detail.length; j++) {
-                    dateDetail.detail.push(description[result[i].detail[j] + 1].name);
-                    if (j === checkInSlot && j === checkOutSlot) {
-                        // dateDetail.debug.push({
-                        //     type: 0,
-                        //     checkInMilli: checkInDate.getTime(),
-                        //     checkinHour: checkInDate.getHours(),
-                        //     checkinMin: checkInDate.getMinutes(),
-                        //     checkOutMilli: checkOutDate.getTime(),
-                        //     checkOutHour: checkOutDate.getHours(),
-                        //     checkOutMin: checkOutDate.getMinutes(),
-                        //     milliDiff: checkOutDate.getTime() - checkInDate.getTime(),
-                        //     hourDiff: (checkOutDate.getTime() - checkInDate.getTime()) / 7200000,
-                        //     point: description[result[i].detail[j] + 1].point,
-                        //     multiply: (checkOutDate.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point
-                        // });
-                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + (checkOutDate.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
-                        response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + (checkOutDate.getTime() - checkInDate.getTime()) / 7200000;
-                        dateDetail.sum = dateDetail.sum + (checkOutDate.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
-                    } else if (j === checkInSlot) {
-                        var date = new Date(checkInDate);
-                        var hour = [10, 12, 15, 17, 19, 19];
-                        date.setHours(hour[j]);
-                        date.setMinutes(0);
-                        date.setSeconds(0);
-                        date.setMilliseconds(0);
-                        // dateDetail.debug.push({
-                        //     type: 1,
-                        //     checkInMilli: checkInDate.getTime(),
-                        //     checkinHour: checkInDate.getHours(),
-                        //     checkinMin: checkInDate.getMinutes(),
-                        //     checkOutMilli: date.getTime(),
-                        //     checkOutHour: date.getHours(),
-                        //     checkOutMin: date.getMinutes(),
-                        //     milliDiff: date.getTime() - checkInDate.getTime(),
-                        //     hourDiff: (date.getTime() - checkInDate.getTime()) / 7200000,
-                        //     point: description[result[i].detail[j] + 1].point,
-                        //     multiply: (date.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point
-                        // });
-                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + (date.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
-                        response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + (date.getTime() - checkInDate.getTime()) / 7200000;
-                        dateDetail.sum = dateDetail.sum + (date.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
-                    } else if (j === checkOutSlot) {
-                        var date = new Date(checkOutDate);
-                        var hour = [8, 10, 13, 15, 17, 19];
-                        date.setHours(timeRangeStart[j]);
-                        date.setMinutes(0);
-                        date.setSeconds(0);
-                        date.setMilliseconds(0);
-                        // dateDetail.debug.push({
-                        //     type: 2,
-                        //     checkInMilli: date.getTime(),
-                        //     checkinHour: date.getHours(),
-                        //     checkinMin: date.getMinutes(),
-                        //     checkOutMilli: checkOutDate.getTime(),
-                        //     checkOutHour: checkOutDate.getHours(),
-                        //     checkOutMin: checkOutDate.getMinutes(),
-                        //     milliDiff: date.getTime() - checkOutDate.getTime(),
-                        //     hourDiff: (date.getTime() - checkOutDate.getTime()) / 7200000,
-                        //     point: description[result[i].detail[j] + 1].point,
-                        //     multiply: (date.getTime() - checkOutDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point
-                        // });
-                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + (date.getTime() - checkOutDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
-                        response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + (date.getTime() - checkOutDate.getTime()) / 7200000;
-                        dateDetail.sum = dateDetail.sum + (date.getTime() - checkOutDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
-                    } else if (j > checkInSlot && j < checkOutSlot) {
-                        // dateDetail.debug.push({
-                        //     type: 3,
-                        //     point: description[result[i].detail[j] + 1].point
-                        // });
-                        response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + description[result[i].detail[j] + 1].point;
-                        response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + 7200000;
-                        dateDetail.sum = dateDetail.sum + description[result[i].detail[j] + 1].point;
-                    } else {}
-                }
-                response[result[i].tutorID].totalSum = response[result[i].tutorID].totalSum + dateDetail.sum;
-                response[result[i].tutorID].body.push(dateDetail);
-            }
-            return res.status(200).send(response);
+                res.status(200).send(responseObject);
+            });
         });
+        // tutorCheckHistoryDB.find({
+        //     checkIn: {
+        //         $gte: new Date(parseInt(req.body.startDate)),
+        //         $lte: new Date(parseInt(req.body.endDate))
+        //     }
+        // }, {
+        //     sort: {
+        //         checkIn: -1
+        //     }
+        // }).toArray().then(result => {
+        //     result.reverse();
+        //     var totalSum = 0;
+        //     var response = {};
+        //     for (let i = 0; i < result.length; i++) {
+        //         if (response[result[i].tutorID] === undefined) {
+        //             response[result[i].tutorID] = {};
+        //             response[result[i].tutorID].detail = {};
+        //             response[result[i].tutorID].detail.summary = [0, 0, 0, 0, 0, 0, 0];
+        //             response[result[i].tutorID].detail.hour = [0, 0, 0, 0, 0, 0, 0];
+        //             response[result[i].tutorID].body = [];
+        //             response[result[i].tutorID].totalSum = 0;
+        //             response[result[i].tutorID].hourSum = 0;
+        //         }
+        //         var checkInDate = new Date(result[i].checkIn);
+        //         var checkOutDate = new Date(result[i].checkOut);
+        //         response[result[i].tutorID].hourSum = response[result[i].tutorID].hourSum + ((checkOutDate.getTime() - checkInDate.getTime()) / 3600000);
+        //         var dateDetail = {
+        //             historyID: result[i]._id,
+        //             checkIn: checkInDate.valueOf(),
+        //             checkOut: checkOutDate.valueOf(),
+        //             detail: [],
+        //             sum: 0
+        //         };
+        //         var checkInSlot = getSlotFromHour(checkInDate.getHours());
+        //         var checkOutSlot = getSlotFromHour(checkOutDate.getHours());
+        //         if (checkInDate.getHours() <= 8) {
+        //             checkInDate.setHours(8);
+        //             checkInDate.setMinutes(0);
+        //             checkInDate.setSeconds(0);
+        //             checkInDate.setMilliseconds(0);
+        //         }
+        //         if (checkInDate.getHours() === 12) {
+        //             checkInDate.setHours(13);
+        //             checkInDate.setMinutes(0);
+        //             checkInDate.setSeconds(0);
+        //             checkInDate.setMilliseconds(0);
+        //         }
+        //         if (checkInDate.getHours() >= 19) {
+        //             checkInDate.setHours(19);
+        //             checkInDate.setMinutes(0);
+        //             checkInDate.setSeconds(0);
+        //             checkInDate.setMilliseconds(0);
+        //         }
+        //         if (checkOutDate.getHours() <= 8) {
+        //             checkOutDate.setHours(8);
+        //             checkOutDate.setMinutes(0);
+        //             checkOutDate.setSeconds(0);
+        //             checkOutDate.setMilliseconds(0);
+        //         }
+        //         if (checkOutDate.getHours() === 13) {
+        //             checkOutDate.setHours(12);
+        //             checkOutDate.setMinutes(0);
+        //             checkOutDate.setSeconds(0);
+        //             checkOutDate.setMilliseconds(0);
+        //         }
+        //         if (checkOutDate.getHours() >= 19) {
+        //             checkOutDate.setHours(19);
+        //             checkOutDate.setMinutes(0);
+        //             checkOutDate.setSeconds(0);
+        //             checkOutDate.setMilliseconds(0);
+        //         }
+        //         for (let j = 0; j < result[i].detail.length; j++) {
+        //             dateDetail.detail.push(description[result[i].detail[j] + 1].name);
+        //             if (j === checkInSlot && j === checkOutSlot) {
+        //                 // dateDetail.debug.push({
+        //                 //     type: 0,
+        //                 //     checkInMilli: checkInDate.getTime(),
+        //                 //     checkinHour: checkInDate.getHours(),
+        //                 //     checkinMin: checkInDate.getMinutes(),
+        //                 //     checkOutMilli: checkOutDate.getTime(),
+        //                 //     checkOutHour: checkOutDate.getHours(),
+        //                 //     checkOutMin: checkOutDate.getMinutes(),
+        //                 //     milliDiff: checkOutDate.getTime() - checkInDate.getTime(),
+        //                 //     hourDiff: (checkOutDate.getTime() - checkInDate.getTime()) / 7200000,
+        //                 //     point: description[result[i].detail[j] + 1].point,
+        //                 //     multiply: (checkOutDate.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point
+        //                 // });
+        //                 response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + (checkOutDate.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
+        //                 response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + (checkOutDate.getTime() - checkInDate.getTime()) / 7200000;
+        //                 dateDetail.sum = dateDetail.sum + (checkOutDate.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
+        //             } else if (j === checkInSlot) {
+        //                 var date = new Date(checkInDate);
+        //                 var hour = [10, 12, 15, 17, 19, 19];
+        //                 date.setHours(hour[j]);
+        //                 date.setMinutes(0);
+        //                 date.setSeconds(0);
+        //                 date.setMilliseconds(0);
+        //                 // dateDetail.debug.push({
+        //                 //     type: 1,
+        //                 //     checkInMilli: checkInDate.getTime(),
+        //                 //     checkinHour: checkInDate.getHours(),
+        //                 //     checkinMin: checkInDate.getMinutes(),
+        //                 //     checkOutMilli: date.getTime(),
+        //                 //     checkOutHour: date.getHours(),
+        //                 //     checkOutMin: date.getMinutes(),
+        //                 //     milliDiff: date.getTime() - checkInDate.getTime(),
+        //                 //     hourDiff: (date.getTime() - checkInDate.getTime()) / 7200000,
+        //                 //     point: description[result[i].detail[j] + 1].point,
+        //                 //     multiply: (date.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point
+        //                 // });
+        //                 response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + (date.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
+        //                 response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + (date.getTime() - checkInDate.getTime()) / 7200000;
+        //                 dateDetail.sum = dateDetail.sum + (date.getTime() - checkInDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
+        //             } else if (j === checkOutSlot) {
+        //                 var date = new Date(checkOutDate);
+        //                 var hour = [8, 10, 13, 15, 17, 19];
+        //                 date.setHours(timeRangeStart[j]);
+        //                 date.setMinutes(0);
+        //                 date.setSeconds(0);
+        //                 date.setMilliseconds(0);
+        //                 // dateDetail.debug.push({
+        //                 //     type: 2,
+        //                 //     checkInMilli: date.getTime(),
+        //                 //     checkinHour: date.getHours(),
+        //                 //     checkinMin: date.getMinutes(),
+        //                 //     checkOutMilli: checkOutDate.getTime(),
+        //                 //     checkOutHour: checkOutDate.getHours(),
+        //                 //     checkOutMin: checkOutDate.getMinutes(),
+        //                 //     milliDiff: date.getTime() - checkOutDate.getTime(),
+        //                 //     hourDiff: (date.getTime() - checkOutDate.getTime()) / 7200000,
+        //                 //     point: description[result[i].detail[j] + 1].point,
+        //                 //     multiply: (date.getTime() - checkOutDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point
+        //                 // });
+        //                 response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + (date.getTime() - checkOutDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
+        //                 response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + (date.getTime() - checkOutDate.getTime()) / 7200000;
+        //                 dateDetail.sum = dateDetail.sum + (date.getTime() - checkOutDate.getTime()) / 7200000 * description[result[i].detail[j] + 1].point;
+        //             } else if (j > checkInSlot && j < checkOutSlot) {
+        //                 // dateDetail.debug.push({
+        //                 //     type: 3,
+        //                 //     point: description[result[i].detail[j] + 1].point
+        //                 // });
+        //                 response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] = response[result[i].tutorID].detail.summary[result[i].detail[j] + 1] + description[result[i].detail[j] + 1].point;
+        //                 response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] = response[result[i].tutorID].detail.hour[result[i].detail[j] + 1] + 7200000;
+        //                 dateDetail.sum = dateDetail.sum + description[result[i].detail[j] + 1].point;
+        //             } else {}
+        //         }
+        //         response[result[i].tutorID].totalSum = response[result[i].tutorID].totalSum + dateDetail.sum;
+        //         response[result[i].tutorID].body.push(dateDetail);
+        //     }
+        //     return res.status(200).send(response);
+        // });
     });
 
     /**
@@ -1097,5 +996,136 @@ module.exports = function (app, db, post) {
         if (index !== -1) {
             array.splice(index, 1);
         }
+    }
+
+    function calculateTutorCredit(tutorID, startDate, endDate){
+        return tutorCheckHistoryDB.find({
+            tutorID: parseInt(tutorID),
+            checkIn: {
+                $gte: new Date(parseInt(startDate)),
+                $lte: new Date(parseInt(endDate))
+            }
+        }, {
+            sort: {
+                checkIn: -1
+            }
+        }).toArray().then(result => {
+            result.reverse();
+            var totalSum = 0;
+            var hourSum = 0;
+            var response = {};
+            response.summary = [0, 0, 0, 0, 0, 0, 0];
+            response.hour = [0, 0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < result.length; i++) {
+                result[i].historyID = result[i]._id;
+                result[i].checkIn = new Date(result[i].checkIn).valueOf();
+                result[i].checkOut = new Date(result[i].checkOut).valueOf();
+                var startIndex = -1,
+                    endIndex = -1;
+                for (let j = 0; j < result[i].detail.length; j++) {
+                    if (startIndex == -1 && result[i].detail[j] != -1) startIndex = j;
+                    if (endIndex == -1 && result[i].detail[result[i].detail.length - j - 1] != -1) endIndex = result[i].detail.length - j - 1;
+                }
+                var sum = 0;
+                var hour = 0;
+                for (let j = 0; j < result[i].detail.length; j++) {
+                    if (j === startIndex && j === endIndex) {
+                        var date1 = new Date(result[i].checkIn);
+                        var date2 = new Date(result[i].checkOut);
+                        if (date1.getHours() < 8) {
+                            date1.setHours(8);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        if (date1.getHours() < 13 && date1.getHours() > 12) {
+                            date1.setHours(13);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        if (date2.getHours() < 13 && date2.getHours() > 12) {
+                            date2.setHours(12);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        if (date2.getHours() > 19) {
+                            date2.setHours(19);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        var diff = date2 - date1;
+                        response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        response.hour[result[i].detail[j] + 1] += diff;
+                        sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        hour += diff;
+                    } else if (j === startIndex) {
+                        var date1 = new Date(result[i].checkIn);
+                        var date2 = new Date(result[i].checkIn);
+                        if (date1.getHours() < 8) {
+                            date1.setHours(8);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        if (date1.getHours() < 13 && date1.getHours() > 12) {
+                            date1.setHours(13);
+                            date1.setMinutes(0);
+                            date1.setSeconds(0);
+                            date1.setMilliseconds(0);
+                        }
+                        date2.setHours(timeRangeEnd[startIndex + 1]);
+                        date2.setMinutes(0);
+                        date2.setSeconds(0);
+                        date2.setMilliseconds(0);
+                        var diff = date2 - date1;
+                        response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        response.hour[result[i].detail[j] + 1] += diff;
+                        sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        hour += diff;
+                    } else if (j === endIndex) {
+                        var date1 = new Date(result[i].checkOut);
+                        var date2 = new Date(result[i].checkOut);
+                        if (date2.getHours() > 19) {
+                            date2.setHours(19);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        if (date2.getHours() < 13 && date2.getHours() > 12) {
+                            date2.setHours(12);
+                            date2.setMinutes(0);
+                            date2.setSeconds(0);
+                            date2.setMilliseconds(0);
+                        }
+                        date1.setHours(timeRangeStart[endIndex]);
+                        date1.setMinutes(0);
+                        date1.setSeconds(0);
+                        date1.setMilliseconds(0);
+                        var diff = date2 - date1;
+                        response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        response.hour[result[i].detail[j] + 1] += diff;
+                        sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
+                        hour += diff;
+                    } else {
+                        response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point;
+                        sum += description[result[i].detail[j] + 1].point;
+                        hour += 7200000;
+                    }
+                    result[i].detail[j] = description[result[i].detail[j] + 1].name;
+                }
+                result[i].sum = sum;
+                totalSum += sum;
+                hourSum += hour;
+                delete result[i].tutorID;
+                delete result[i]._id;
+            }
+            response.detail = result;
+            response.totalSum = totalSum;
+            response.hourSum = hourSum / 7200000;
+            return response;
+        });
     }
 }
