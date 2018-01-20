@@ -191,6 +191,7 @@ module.exports = function (app, db, pasport) {
     addPugPage("adminHome", side, permission);
     addPugPage("adminAllcourse", side, permission);
     addPugPage("adminCoursedescription", side, permission);
+    addPugPage("adminHybridInfo", side, permission);
     addPugPage("tutorCommentStudent", side, permission);
     addPugPage("tutorEditProfile", side, permission);
     addPugPage("adminStudentAttendanceModifier", side, permission);
