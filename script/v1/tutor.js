@@ -1027,7 +1027,6 @@ module.exports = function (app, db, post) {
                     if (endIndex == -1 && result[i].detail[result[i].detail.length - j - 1] != -1) endIndex = result[i].detail.length - j - 1;
                 }
                 var sum = 0;
-                var hour = 0;
                 for (let j = 0; j < result[i].detail.length; j++) {
                     if (j === startIndex && j === endIndex) {
                         var date1 = new Date(result[i].checkIn);
@@ -1060,7 +1059,6 @@ module.exports = function (app, db, post) {
                         response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         response.hour[result[i].detail[j] + 1] += diff;
                         sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                        hour += diff;
                     } else if (j === startIndex) {
                         var date1 = new Date(result[i].checkIn);
                         var date2 = new Date(result[i].checkIn);
@@ -1084,7 +1082,6 @@ module.exports = function (app, db, post) {
                         response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         response.hour[result[i].detail[j] + 1] += diff;
                         sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                        hour += diff;
                     } else if (j === endIndex) {
                         var date1 = new Date(result[i].checkOut);
                         var date2 = new Date(result[i].checkOut);
@@ -1108,23 +1105,21 @@ module.exports = function (app, db, post) {
                         response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point * (diff / 7200000);
                         response.hour[result[i].detail[j] + 1] += diff;
                         sum += description[result[i].detail[j] + 1].point * (diff / 7200000);
-                        hour += diff;
                     } else {
                         response.summary[result[i].detail[j] + 1] += description[result[i].detail[j] + 1].point;
                         sum += description[result[i].detail[j] + 1].point;
-                        hour += 7200000;
                     }
                     result[i].detail[j] = description[result[i].detail[j] + 1].name;
                 }
                 result[i].sum = sum;
                 totalSum += sum;
-                hourSum += hour;
+                hourSum = hourSum + result[i].checkOut - result[i].checkIn;
                 delete result[i].tutorID;
                 delete result[i]._id;
             }
             response.detail = result;
             response.totalSum = totalSum;
-            response.hourSum = hourSum / 7200000;
+            response.hourSum = (hourSum / 3600000);
             return response;
         });
     }
