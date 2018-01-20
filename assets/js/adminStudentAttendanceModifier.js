@@ -215,6 +215,7 @@ function emergencyAbsent(timestamp, date) {
     let result = false;
     let aDay = 24 * 60 * 60 * 1000;
     let t = moment(date);
+    t.hour(18).minute(0).second(0).millisecond(0);
     if (t.day() === 0) {
         if (t.valueOf() - moment(timestamp).valueOf() < 2 * aDay) result = true;
     } else {
@@ -580,61 +581,108 @@ async function sendAddAdtendData() {
     }
 }
 
-/**
- * get index from date str
- * @param {string} dayStr 
- */
-const dayIndex = (dayStr) => {
-    switch (dayStr) {
-        case "tue17":
-            return 0;
-        case "thu17":
-            return 1;
-        case "sat8":
-            return 2;
-        case "sat10":
-            return 3;
-        case "sat13":
-            return 4;
-        case "sat15":
-            return 5;
-        case "sun8":
-            return 6;
-        case "sun10":
-            return 7;
-        case "sun13":
-            return 8;
-        case "sun15":
-            return 9;
-        default:
-            break;
-    }
-};
 // generate fhb room chart
+let firstTimeGen = true;
+var myChart;
 generateChart();
-async function generateChart() {
+async function generateChart(type) {
     let allRoom = await $.post("post/v1/allRoom");
     let allHbRoom = {};
-    let maxSeat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let fhbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let crStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let fhbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let crReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     for (let i in allRoom) {
         allHbRoom[i] = allRoom[i].room0;
     }
+    // static data
+    let maxSeat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let mhbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let phbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let mcrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let pcrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ccrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ecrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let emptySeat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    // realtime data
+    let mhbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let phbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let mcrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let pcrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ccrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ecrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /**
+     * change day str to num index
+     * @param {string} dayStr 
+     */
+    const dayIndex = (dayStr) => {
+        switch (dayStr) {
+            case "tue17":
+                return 0;
+            case "thu17":
+                return 1;
+            case "sat8":
+                return 2;
+            case "sat10":
+                return 3;
+            case "sat13":
+                return 4;
+            case "sat15":
+                return 5;
+            case "sun8":
+                return 6;
+            case "sun10":
+                return 7;
+            case "sun13":
+                return 8;
+            case "sun15":
+                return 9;
+            default:
+                break;
+        }
+    };
     for (let i in allHbRoom) {
         maxSeat[dayIndex(i)] = allHbRoom[i].maxStudent;
-        fhbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].num;
-        fhbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].num;
+        mhbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numMath;
+        phbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numPhysics;
+        mhbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numMath;
+        phbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numPhysics;
         if (allHbRoom[i].course !== undefined) {
             let cr = allHbRoom[i].course;
             for (let j in cr) {
-                crStatic[dayIndex(i)] += cr[j].num;
-                crReal[dayIndex(i)] += cr[j].num;
+                switch (cr[j].courseName.slice(0, 1)) {
+                    case "M":
+                        mcrStatic[dayIndex(i)] += cr[j].num;
+                        mcrReal[dayIndex(i)] += cr[j].num;
+                        break;
+                    case "P":
+                        pcrStatic[dayIndex(i)] += cr[j].num;
+                        pcrReal[dayIndex(i)] += cr[j].num;
+                        break;
+                    case "C":
+                        ccrStatic[dayIndex(i)] += cr[j].num;
+                        ccrReal[dayIndex(i)] += cr[j].num;
+                        break;
+                    case "E":
+                        ecrStatic[dayIndex(i)] += cr[j].num;
+                        ecrReal[dayIndex(i)] += cr[j].num;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
+    for (let i in emptySeat) {
+        emptySeat[i] = maxSeat[i] - mhbStatic[i] - phbStatic[i] - mcrStatic[i] - pcrStatic[i] - ccrStatic[i] - ecrStatic[i];
+    }
+    /**
+     * change zero to ''
+     * @param {number[]} dataIn 
+     */
+    const cvZero = (dataIn) => {
+        for (let i in dataIn) {
+            if (dataIn[i] <= 0) {
+                dataIn[i] = '';
+            }
+        }
+    };
     let now = moment();
     now.hour(0).minute(0).second(0).millisecond(0);
     let sunDay = moment(now);
@@ -651,99 +699,310 @@ async function generateChart() {
         $.post("post/v1/listAttendance", { date: thuDay.valueOf() }),
         $.post("post/v1/listAttendance", { date: satDay.valueOf() })
     ];
-    let attendC = await Promise.all(promise);
-    for (let i in attendC) {
-        for (let j in attendC[i]) {
-            let time = moment(attendC[i][j].date);
-            let dayStr = time.format('dddHH').toLowerCase();
-            if (attendC[i][j].courseID === undefined) {
-                if (attendC[i][j].type === 1) {
-                    fhbReal[dayIndex(dayStr)] -= 1;
-                } else {
-                    fhbReal[dayIndex(dayStr)] += 1;
-                }
-            } else {
-                if (attendC[i][j].tutorName === "Hybrid") {
-                    if (attendC[i][j].type === 1) {
-                        crReal[dayIndex(dayStr)] -= 1;
-                    } else {
-                        crReal[dayIndex(dayStr)] += 1;
+    let allAttend = await Promise.all(promise);
+    for (let i in allAttend) {
+        let attend = allAttend[i];
+        for (let j in attend) {
+            if (attend[j].type === 1) {
+                let t = moment(attend[j].date).format("dddH").toLowerCase();
+                if (attend[j].courseID === undefined) {
+                    if (attend[j].hybridSubject === "M") {
+                        mhbReal[dayIndex(t)] -= 1;
+                    } else if (attend[j].hybridSubject === "P") {
+                        phbReal[dayIndex(t)] -= 1;
                     }
+                } else {
+                    if (attend[j].tutorID === 99000) {
+                        for (let i in allHbRoom[t].course) {
+                            if (allHbRoom[t].course[i].courseID === attend[j].courseID) {
+                                switch (attend[j].courseName.slice(0, 1)) {
+                                    case "M":
+                                        mcrReal[dayIndex(t)] -= 1;
+                                        break;
+                                    case "P":
+                                        pcrReal[dayIndex(t)] -= 1;
+                                        break;
+                                    case "C":
+                                        ccrReal[dayIndex(t)] -= 1;
+                                        break;
+                                    case "E":
+                                        ecrReal[dayIndex(t)] -= 1;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (attend[j].type === 2) {
+                let t = moment(attend[j].date).format("dddH").toLowerCase();
+                if (attend[j].subject === "M") {
+                    mhbReal[dayIndex(t)] += 1;
+                } else if (attend[j].subject === "P") {
+                    phbReal[dayIndex(t)] += 1;
                 }
             }
         }
     }
-    var ctx = document.getElementById("fhbChart").getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['tue', 'thu', 'sat8', 'sat10', 'sat13', 'sat15', 'sun8', 'sun10', 'sun13', 'sun15'],
-            datasets: [{
+    cvZero(mhbStatic);
+    cvZero(phbStatic);
+    cvZero(mcrStatic);
+    cvZero(pcrStatic);
+    cvZero(ccrStatic);
+    cvZero(ecrStatic);
+    cvZero(emptySeat);
+    cvZero(mhbReal);
+    cvZero(phbReal);
+    cvZero(mcrReal);
+    cvZero(pcrReal);
+    cvZero(ccrReal);
+    cvZero(ecrReal);
+    let dataset = [];
+    /**
+     * add Dataset for chart
+     * @param {string} label 
+     * @param {number[]} data 
+     * @param {number} stack 
+     * @param {string} colorStr
+     * @param {string} txtColor
+     * @param {string} borderColor optional
+     */
+    const addDataSet = (label, data, stack, colorStr, txtColor, borderColor) => {
+        if (borderColor !== undefined) {
+            dataset.push({
                 type: 'bar',
-                label: 'FHB(Static)',
-                stack: 'Stack 0',
-                data: fhbStatic,
-                backgroundColor: '#bbdefb',
-                borderColor: '#5d99c6',
-                borderWidth: 1
-            }, {
-                type: 'bar',
-                label: 'CR(Static)',
-                stack: 'Stack 0',
-                data: crStatic,
-                backgroundColor: '#f8bbd0',
-                borderColor: '#c48b9f',
-                borderWidth: 1
-            }, {
-                type: 'bar',
-                label: 'FHB(Current)',
-                stack: 'Stack 1',
-                data: fhbReal,
-                backgroundColor: '#2196f3',
-                borderColor: '#0069c0',
-                borderWidth: 1
-            }, {
-                type: 'bar',
-                label: 'CR(Current)',
-                stack: 'Stack 1',
-                data: crReal,
-                backgroundColor: '#f06292',
-                borderColor: '#ba2d65',
-                borderWidth: 1
-            }, {
-                type: 'line',
-                label: 'max',
-                data: maxSeat,
-                backgroundColor: 'rgba(0,0,0,0)',
-                borderColor: 'red',
-                pointBorderColor: 'rgba(0,0,0,0)',
-            }]
-        },
-        options: {
-            title: {
-                display: true,
-                fontSize: 24,
-                text: "HB Student Chart"
-            },
-            tooltips: {
-                mode: 'point',
-                intersect: false
-            },
-            legend: {
-                position: 'bottom'
-            },
-            responsive: true,
-            scales: {
-                xAxes: [{
-                    stacked: true,
-                }],
-                yAxes: [{
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true
+                label: label,
+                stack: 'Stack ' + stack,
+                data: data,
+                backgroundColor: colorStr,
+                borderColor: borderColor,
+                borderWidth: 3,
+                datalabels: {
+                    color: txtColor,
+                    font: {
+                        style: 'bold',
+                        size: 14
                     }
-                }]
-            }
+                }
+            });
+        } else {
+            dataset.push({
+                type: 'bar',
+                label: label,
+                stack: 'Stack ' + stack,
+                data: data,
+                backgroundColor: colorStr,
+                borderColor: colorStr,
+                borderWidth: 1,
+                datalabels: {
+                    color: txtColor,
+                    font: {
+                        style: 'bold',
+                        size: 14
+                    }
+                }
+            });
+        }
+    };
+    /**
+     * update all element in exist array
+     * @param  oldArray 
+     * @param  newArray 
+     */
+    const updateArray = (oldArray, newArray) => {
+        oldArray.splice(0, oldArray.length);
+        for (let i in newArray) {
+            oldArray.push(newArray[i]);
+        }
+    };
+    dataset.push({
+        type: 'line',
+        label: 'max',
+        data: maxSeat,
+        backgroundColor: 'rgba(0,0,0,0)',
+        borderColor: 'black',
+        borderDash: [15, 10],
+        borderWidth: 3,
+        pointBorderColor: 'rgba(0,0,0,0)',
+        datalabels: {
+            display: false
         }
     });
+    if (firstTimeGen) {
+        addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
+        addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+        addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
+        addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
+        addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
+        addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
+        dataset.push({
+            type: 'bar',
+            label: "Remaining",
+            stack: 'Stack 0',
+            data: emptySeat,
+            backgroundColor: "rgba(0,0,0,0)",
+            borderColor: "rgba(0,0,0,0)",
+            borderWidth: 2,
+            datalabels: {
+                font: {
+                    style: 'bold',
+                    size: 16
+                },
+                color: "#6eb339",
+                anchor: "start",
+                align: "end",
+                offset: 1,
+                formatter: function (value, context) {
+                    if (value === '') {
+                        return '';
+                    } else {
+                        return '( ' + value + ' )';
+                    }
+                }
+            }
+        });
+        addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
+        addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+        addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
+        addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
+        addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
+        addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
+        var ctx = document.getElementById("fhbChart").getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['tue', 'thu', 'sat8', 'sat10', 'sat13', 'sat15', 'sun8', 'sun10', 'sun13', 'sun15'],
+                datasets: dataset
+            },
+            options: {
+                title: {
+                    display: true,
+                    fontSize: 24,
+                    text: "HB Student Chart"
+                },
+                tooltips: {
+                    mode: 'point',
+                    intersect: false
+                },
+                legend: {
+                    position: 'bottom',
+                    display: false
+                },
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true,
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+        firstTimeGen = false;
+    } else {
+        switch (type) {
+            case 1:
+                addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
+                addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
+                addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
+                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
+                addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
+                dataset.push({
+                    type: 'bar',
+                    label: "Remaining",
+                    stack: 'Stack 0',
+                    data: emptySeat,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "rgba(0,0,0,0)",
+                    borderWidth: 2,
+                    datalabels: {
+                        font: {
+                            style: 'bold',
+                            size: 16
+                        },
+                        color: "#6eb339",
+                        anchor: "start",
+                        align: "end",
+                        offset: 1,
+                        formatter: function (value, context) {
+                            if (value === '') {
+                                return '';
+                            } else {
+                                return '( ' + value + ' )';
+                            }
+                        }
+                    }
+                });
+                updateArray(myChart.data.datasets, dataset);
+                myChart.update();
+                break;
+            case 3:
+                addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
+                addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
+                addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
+                addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
+                addDataSet("Eng(Static)", ecrStatic, 0, "rgba(0,0,0,0)", "#bdbdbd", "#bdbdbd");
+                dataset.push({
+                    type: 'bar',
+                    label: "Remaining",
+                    stack: 'Stack 0',
+                    data: emptySeat,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "rgba(0,0,0,0)",
+                    borderWidth: 2,
+                    datalabels: {
+                        font: {
+                            style: 'bold',
+                            size: 16
+                        },
+                        color: "#6eb339",
+                        anchor: "start",
+                        align: "end",
+                        offset: 1,
+                        formatter: function (value, context) {
+                            if (value === '') {
+                                return '';
+                            } else {
+                                return '( ' + value + ' )';
+                            }
+                        }
+                    }
+                });
+            case 2:
+                addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
+                addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+                addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
+                addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
+                addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
+                addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
+                updateArray(myChart.data.datasets, dataset);
+                myChart.update();
+                break;
+            default:
+                break;
+        }
+    }
+    fixWindowHeight();
 }
+$(window).resize(function () {
+    fixWindowHeight();
+});
+function fixWindowHeight() {
+    $("#chartContent > .chart-container").height($("#fhbChart").height());
+}
+$("#staticChartButt").click(function () {
+    generateChart(1);
+});
+$("#realChartButt").click(function () {
+    generateChart(2);
+});
+$("#compareChartButt").click(function () {
+    generateChart(3);
+});

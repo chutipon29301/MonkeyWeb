@@ -9,6 +9,7 @@ block script
     //- script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker4.min.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels")
     script(src="js/custom-file-input.js")
     script(src="js/adminStudentAttendanceModifier.min.js")
 block body
@@ -23,6 +24,11 @@ block body
         #chartContent.tab-pane.container-fluid.active
             .chart-container.mx-auto(style="position: relative; height:70vh; width:80vw")
                 canvas#fhbChart
+            .container
+                .btn-group.justify-content-center.col-12
+                    button.btn.btn-primary#staticChartButt(type="button") Static
+                    button.btn.btn-primary#realChartButt(type="button") Realtime
+                    button.btn.btn-primary#compareChartButt(type="button") Compare
         //- hb tabs content
         #hbContent.tab-pane.container-fluid
             .row
