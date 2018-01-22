@@ -139,7 +139,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         db.listCollections().toArray(function(err,result){
         });
     });
-
+    
     configDB.updateOne({_id:"config"},{
         $setOnInsert:{
             courseMaterialPath:"courseMaterial/",
