@@ -1,6 +1,7 @@
-var ObjectID = require("mongodb").ObjectID;
+var ObjectID = require('mongodb').ObjectID;
+var _ = require('lodash');
 
-module.exports = function (app, db, post) {
+module.exports = function (app, db, post, gradeBitToString) {
 
     var attendanceDB = db.collection('attendance');
     var quarterDB = db.collection('quarter');
@@ -13,6 +14,19 @@ module.exports = function (app, db, post) {
     const NONE = 0;
     const ABSENT = 1;
     const PRESENT = 2;
+
+    attendanceDB.find({}).toArray().then(attendances => {
+        for (let i = 0; i < attendances.length; i++) {
+            attendanceDB.updateOne({
+                _id: ObjectID(attendances[i]._id)
+            }, {
+                    $set: {
+                        hybridID: ObjectID(attendances[i].hybridID)
+                    }
+                }
+            );
+        }
+    });
 
     post('/post/v1/addStudentAbsent', function (req, res) {
         if (!(req.body.userID && req.body.date && (req.body.courseID || req.body.hybridID) && req.body.reason && req.body.sender)) {
@@ -39,7 +53,7 @@ module.exports = function (app, db, post) {
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: NONE,
-                hybridID: req.body.hybridID,
+                hybridID: ObjectID(req.body.hybridID),
                 date: parseInt(req.body.date),
                 type: ABSENT,
                 reason: req.body.reason,
@@ -72,7 +86,7 @@ module.exports = function (app, db, post) {
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: NONE,
-                hybridID: req.body.hybridID,
+                hybridID: ObjectID(req.body.hybridID),
                 date: parseInt(req.body.date),
                 type: PRESENT,
                 sender: req.body.sender,
@@ -91,38 +105,149 @@ module.exports = function (app, db, post) {
         }
 
         var responseAttandance = (query) => {
-            var listAttandance = attendanceDB.find(query, {
-                sort: {
+            attendanceDB.aggregate([{
+                $match: query
+            }, {
+                $lookup: {
+                    from: 'user',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'userID'
+                }
+            }, {
+                $lookup: {
+                    from: 'course',
+                    localField: 'courseID',
+                    foreignField: '_id',
+                    as: 'courseID'
+                }
+            }, {
+                $lookup: {
+                    from: 'hybridStudent',
+                    localField: 'hybridID',
+                    foreignField: '_id',
+                    as: 'hybridID'
+                }
+            }, {
+                $group: {
+                    _id: '$_id',
+                    userID: {
+                        $first: {
+                            $arrayElemAt: [
+                                '$userID', 0
+                            ]
+                        }
+                    },
+                    timestamp: {
+                        $first: '$timestamp'
+                    },
+                    courseID: {
+                        $first: {
+                            $arrayElemAt: [
+                                '$courseID', 0
+                            ]
+                        }
+                    },
+                    hybridID: {
+                        $first: {
+                            $arrayElemAt: [
+                                '$hybridID', 0
+                            ]
+                        }
+                    },
+                    date: {
+                        $first: '$date'
+                    },
+                    type: {
+                        $first: '$type'
+                    },
+                    reason: {
+                        $first: '$reason'
+                    },
+                    sender: {
+                        $first: '$sender'
+                    },
+                    subject: {
+                        $first: '$subject'
+                    }
+                }
+            },{
+                $sort: {
                     timestamp: -1
                 }
-            }).toArray();
-
-            Promise.all([
-                listAttandance,
-                listAttandance.then(results => {
-                    return Promise.all(results.map(result => {
-                        return attendanceDocumentDB.findOne({
-                            attendanceID: '' + result._id
-                        });
-                    }));
-                })
-            ]).then(results => {
-                var responseArray = [];
-                for (let i = 0; i < results[0].length; i++) {
-                    var responseObject = results[0][i];
-                    responseObject.timestamp = new Date(responseObject.timestamp).valueOf();
-                    responseObject.attendanceID = responseObject._id;
-                    responseObject.date = new Date(responseObject.date).valueOf();
-                    if (results[1][i] !== null) {
-                        responseObject.link = 'https://www.monkey-monkey.com/get/v1/attendanceDocument?k=' + results[1][i]._id;
+            }]).toArray().then(values => {
+                for (let i = 0; i < values.length; i++) {
+                    if (values[i].courseID === null) {
+                        delete values[i].courseID;
                     }
-                    delete responseObject._id;
-                    responseArray.push(responseObject);
+                    if (values[i].hybridID === null) {
+                        delete values[i].hybridID;
+                    }
+                    if (values[i].type === 2) {
+                        delete values[i].reason;
+                    }
+                    values[i].studentID = values[i].userID._id;
+                    values[i].firstname = values[i].userID.firstname;
+                    values[i].nickname = values[i].userID.nickname;
+                    if (values[i].courseID) {
+                        values[i].courseName = values[i].courseID.subject + gradeBitToString(values[i].courseID.grade) + values[i].courseID.level;
+                        values[i].tutorID = values[i].courseID.tutor[0];
+                        values[i].courseID = values[i].courseID._id;
+                        delete values[i].subject;
+                    }
+                    if (values[i].hybridID) {
+                        var selectSubject = _.find(values[i].hybridID.student, {
+                            studentID: values[i].studentID
+                        });
+                        if (selectSubject) {
+                            values[i].hybridSubject = selectSubject.subject;
+                        } else {
+                            values[i].hybridSubject == null;
+                        }
+                        delete values[i].hybridID;
+                    }
+                    delete values[i].userID;
                 }
-                res.status(200).send(responseArray);
+                Promise.all([
+                    Promise.all(values.map(value => {
+                        return attendanceDocumentDB.findOne({
+                            attendanceID: value._id.toString()
+                        });
+                    })),
+                    Promise.all(values.map(value => {
+                        if (value.tutorID) {
+                            return userDB.findOne({
+                                _id: value.tutorID
+                            });
+                        } else {
+                            return null;
+                        }
+                    }))
+                ]).then(results => {
+                    for (let i = 0; i < results.length; i++) {
+                        switch (i) {
+                            case 0:
+                                for (let j = 0; j < results[i].length; j++) {
+                                    if (results[i][j]) {
+                                        values[j].link = 'https://www.monkey-monkey.com/get/v1/attendanceDocument?k=' + results[i][j]._id;
+                                    }
+                                }
+                                break;
+                            case 1:
+                                for (let j = 0; j < results[i].length; j++) {
+                                    if (results[i][j]) {
+                                        values[j].tutorName = results[i][j].nicknameEn;
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    res.status(200).send(values);
+                });
             });
         }
-
         if (req.body.startDate && req.body.endDate) {
             responseAttandance({
                 timestamp: {
@@ -231,12 +356,12 @@ module.exports = function (app, db, post) {
             userDB.updateOne({
                 _id: parseInt(req.body.studentID)
             }, {
-                $set: {
-                    'student.quarter': stateObject
-                }
-            }).then(result => {
-                return res.status(200).send('OK');
-            });
+                    $set: {
+                        'student.quarter': stateObject
+                    }
+                }).then(result => {
+                    return res.status(200).send('OK');
+                });
         });
     });
 

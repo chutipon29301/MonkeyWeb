@@ -23,17 +23,19 @@ if (crCookie === undefined) {
             promise.push($.post("post/studentProfile", { studentID: crInfo.student[i] }));
         }
         Promise.all(promise).then(stdName => {
+            let index = 1;
             for (let i in stdName) {
                 if (stdName[i].status == "active") {
                     $("#allStudentInCourseTable").append(
                         "<tr class='std-row' id='" + crInfo.student[i] + "'>" +
-                        "<td>" + (parseInt(i) + 1) + "</td>" +
+                        "<td>" + index + "</td>" +
                         "<td class='text-center'>" + crInfo.student[i] + "</td>" +
                         "<td class='text-center'>" + stdName[i].nickname + "</td>" +
                         "<td>" + stdName[i].firstname + "</td>" +
                         "<td>" + stdName[i].lastname + "</td>" +
                         "</tr>"
                     )
+                    index += 1;
                 }
             }
         });

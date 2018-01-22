@@ -138,13 +138,13 @@ module.exports = function (app, db, post) {
         studentHybridDB.update({
             _id: ObjectID(req.body.hybridID)
         }, {
-                $push: {
-                    student: {
-                        studentID: parseInt(req.body.studentID),
-                        subject: req.body.subject
-                    }
+            $push: {
+                student: {
+                    studentID: parseInt(req.body.studentID),
+                    subject: req.body.subject
                 }
-            });
+            }
+        });
         res.status(200).send('OK')
     });
 
@@ -167,12 +167,12 @@ module.exports = function (app, db, post) {
         studentHybridDB.update({
             _id: ObjectID(req.body.hybridID)
         }, {
-                $pull: {
-                    student: {
-                        studentID: parseInt(req.body.studentID)
-                    }
+            $pull: {
+                student: {
+                    studentID: parseInt(req.body.studentID)
                 }
-            });
+            }
+        });
         res.status(200).send('OK')
     });
 
@@ -388,6 +388,20 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/listHybridInfo', function (req, res) {
+        if (!req.body.hybridID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        studentHybridDB.findOne({
+            _id: ObjectID(req.body.hybridID)
+        }).then((data) => {
+            res.status(200).send(data)
+        });
+    });
+
     /**
      * Function which execute when the input time is reached 
      * Execute method has 2 mode add and remove selected by MODE_ADD_HYBRID, MODE_REMOVE_HYBRID
@@ -406,24 +420,24 @@ module.exports = function (app, db, post) {
                 executeFunction = () => studentHybridDB.update({
                     _id: ObjectID(hybridID)
                 }, {
-                        $push: {
-                            student: {
-                                studentID: parseInt(studentID),
-                                subject: subject
-                            }
+                    $push: {
+                        student: {
+                            studentID: parseInt(studentID),
+                            subject: subject
                         }
-                    });
+                    }
+                });
                 break;
             case MODE_REMOVE_HYBRID:
                 executeFunction = () => studentHybridDB.update({
                     _id: ObjectID(hybridID)
                 }, {
-                        $pull: {
-                            student: {
-                                studentID: parseInt(studentID)
-                            }
+                    $pull: {
+                        student: {
+                            studentID: parseInt(studentID)
                         }
-                    });
+                    }
+                });
                 break;
         }
         console.log('[HYBRID] Request created, Ref_id = ' + id);

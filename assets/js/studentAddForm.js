@@ -155,24 +155,12 @@ async function getHistory() {
         studentStartDate: startDate.valueOf(),
         studentEndDate: endDate.valueOf()
     });
-    let promise = [];
-    for (let i in history) {
-        if (history[i].courseID === 0) {
-            promise.push($.post("post/v1/studentHybridSubject", {
-                studentID: studentID,
-                hybridID: history[i].hybridID
-            }));
-        } else {
-            promise.push(courseInfo(history[i].courseID));
-        }
-    }
-    let historyDetail = await Promise.all(promise);
     for (let i = 0; i < history.length; i++) {
         let t = moment(history[i].date).format("DD/MM/YY - HH:mm");
         let tableTarget;
         if (history[i].type === 2) {
             tableTarget = $("#presentTableBody");
-            if (history[i].courseID === 0) {
+            if (history[i].courseID === undefined) {
                 tableTarget.append(
                     "<tr>" +
                     "<td class='text-center'>" + t + "</td>" +
@@ -183,11 +171,11 @@ async function getHistory() {
             }
         } else {
             tableTarget = $("#absentTableBody");
-            if (history[i].courseID === 0) {
+            if (history[i].courseID === undefined) {
                 tableTarget.append(
                     "<tr>" +
                     "<td class='text-center'>" + t + "</td>" +
-                    "<td class='text-center'>FHB:" + historyDetail[i].subject + "</td>" +
+                    "<td class='text-center'>FHB:" + history[i].hybridSubject + "</td>" +
                     "<td class='text-center'>" + history[i].sender + "</td>" +
                     "</tr>"
                 );
@@ -195,7 +183,7 @@ async function getHistory() {
                 tableTarget.append(
                     "<tr>" +
                     "<td class='text-center'>" + t + "</td>" +
-                    "<td class='text-center'>CR:" + historyDetail[i].courseName + "</td>" +
+                    "<td class='text-center'>CR:" + history[i].courseName + "</td>" +
                     "<td class='text-center'>" + history[i].sender + "</td>" +
                     "</tr>"
                 );
