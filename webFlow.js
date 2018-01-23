@@ -264,7 +264,7 @@ module.exports = function (app, db, pasport) {
             });
         })
     });
-    app.all("*", return404);
+    // app.all("*", return404);
 }
 
 
