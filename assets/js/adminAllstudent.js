@@ -270,6 +270,8 @@ async function generateStudentHtmlTable(student) {
                 remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
             } else if (remark === "2") {
                 remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
+            } else if (remark === "3") {
+                remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:orange'></span>";
             } else {
                 remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
             }
@@ -316,6 +318,8 @@ async function generateStudentHtmlTable(student) {
         let changeCheckState = (row, cell) => () => {
             let sendData = "";
             if (cell.id === "" || cell.id === "0") {
+                sendData = "3";
+            } else if (cell.id === "3") {
                 sendData = "1";
             } else if (cell.id === "1") {
                 sendData = "2";
@@ -325,14 +329,17 @@ async function generateStudentHtmlTable(student) {
             $.post("post/v1/setRemark", { studentID: row.getElementsByTagName("td")[1].innerHTML, remark: sendData }).then(() => {
                 let remarkStr = "";
                 if (cell.id === "" || cell.id === "0") {
-                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
-                    cell.id = "1";
+                    remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:orange'></span>";
+                    cell.id = "3";
                 } else if (cell.id === "1") {
                     remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
                     cell.id = "2";
                 } else if (cell.id === "2") {
                     remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
                     cell.id = "0";
+                } else if (cell.id === "3") {
+                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
+                    cell.id = "1";
                 }
                 cell.innerHTML = "<td>" + remarkStr + "</td>";
             });
