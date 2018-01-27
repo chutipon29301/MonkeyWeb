@@ -559,6 +559,8 @@ async function sendAddAdtendData() {
                 }));
             }
         }
+        let cb = await Promise.all(promise);
+        log(cb);
         location.reload();
     } else {
         let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
