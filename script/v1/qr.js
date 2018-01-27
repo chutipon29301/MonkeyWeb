@@ -53,7 +53,7 @@ module.exports = function (app, db, post, fs) {
                 dir = dir.replace('file://monkeycloud/key-qrcode/', 'W://');
                 dir = dir.replace('file://monkeycloud/key-student/', 'V://');
             }
-            // fs.ensureFileSync(dir);
+            fs.ensureFileSync(dir);
         }
         res.status(200).send(keyObject);
     });
