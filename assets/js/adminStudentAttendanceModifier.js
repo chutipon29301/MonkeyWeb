@@ -34,7 +34,6 @@ $(".nav-tabs > .nav-item:nth-child(2)").click(function () {
 $(".nav-tabs > .nav-item:nth-child(3)").click(function () {
     if (crIndicator) {
         genTutor();
-        genTable(2);
     }
     crIndicator = false;
 });
