@@ -42,6 +42,7 @@ async function genRoom() {
     let roomData = await $.post("post/v1/allRoom", {
         year: $("#quarterSelect").val().slice(0, 4), quarter: $("#quarterSelect").val().slice(5)
     });
+    log(roomData);
     $(".tab-pane").empty();
     for (let i in roomData) {
         let allRoom = sortObject(roomData[i]);
@@ -104,9 +105,13 @@ async function genRoom() {
             }
             if (room.course !== undefined) {
                 for (let k in room.course) {
+                    let tutorName = "";
+                    if (room.course[k].tutor != "Hybrid") {
+                        tutorName = " - " + room.course[k].tutor;
+                    }
                     $("#" + i + j).append(
                         "<tr class='crRow' id='" + room.course[k].courseID + "'>" +
-                        "<td class='text-left'>CR:" + room.course[k].courseName + "</td>" +
+                        "<td class='text-left'>CR:" + room.course[k].courseName + tutorName + "</td>" +
                         "<td class='text-right'>" + room.course[k].num + "</td>" +
                         "</tr>"
                     );
