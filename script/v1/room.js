@@ -178,7 +178,8 @@ module.exports = function (app, db, post, gradeBitToString) {
                                 response[field]['room' + values[i][j].room].course.push({
                                     courseID: values[i][j]._id,
                                     courseName: values[i][j].subject + gradeBitToString(values[i][j].grade) + values[i][j].level,
-                                    num: studentNum
+                                    num: studentNum,
+                                    tutor: values[i][j].tutor[0].nicknameEn
                                 });
                             }
                             break;
