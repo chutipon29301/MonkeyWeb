@@ -91,10 +91,12 @@ function generateQR(qr) {
     $('#hwQR').append("<canvas width='256' height='256'></canvas>");
     $('#skQR').append("<canvas width='256' height='256'></canvas>");
     $('#testQR').append("<canvas width='256' height='256'></canvas>");
-    genCanvas("hotQR");
-    genCanvas("hwQR");
-    genCanvas("skQR");
-    genCanvas("testQR");
+    setTimeout(function () {
+        genCanvas("hotQR");
+        genCanvas("hwQR");
+        genCanvas("skQR");
+        genCanvas("testQR");
+    }, 1000);
 }
 function genCanvas(id) {
     let canvas = document.getElementById(id).getElementsByTagName("canvas")[0];
