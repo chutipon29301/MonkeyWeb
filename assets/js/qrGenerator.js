@@ -79,30 +79,53 @@ function generateQR(qr) {
     $('#hwQR').empty();
     $('#skQR').empty();
     $('#testQR').empty();
-    $('#hotQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.hot + "'>")
-    $('#hwQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.hw + "'>")
-    $('#skQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.skill + "'>")
-    $('#testQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.test + "'>")
-    $('#hotQR > img').hide();
-    $('#hwQR > img').hide();
-    $('#skQR > img').hide();
-    $('#testQR > img').hide();
+    // $('#hotQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.hot + "'>")
+    // $('#hwQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.hw + "'>")
+    // $('#skQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.skill + "'>")
+    // $('#testQR').append("<img src='https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=" + qr.test + "'>")
+    // $('#hotQR > img').hide();
+    // $('#hwQR > img').hide();
+    // $('#skQR > img').hide();
+    // $('#testQR > img').hide();
     $('#hotQR').append("<canvas width='256' height='256'></canvas>");
     $('#hwQR').append("<canvas width='256' height='256'></canvas>");
     $('#skQR').append("<canvas width='256' height='256'></canvas>");
     $('#testQR').append("<canvas width='256' height='256'></canvas>");
-    setTimeout(function () {
-        genCanvas("hotQR");
-        genCanvas("hwQR");
-        genCanvas("skQR");
-        genCanvas("testQR");
-    }, 1000);
+    // setTimeout(function () {
+    //     genCanvas("hotQR");
+    //     genCanvas("hwQR");
+    //     genCanvas("skQR");
+    //     genCanvas("testQR");
+    // }, 1000);
+    genCanvas("hotQR", qr);
+    genCanvas("hwQR", qr);
+    genCanvas("skQR", qr);
+    genCanvas("testQR", qr);
 }
-function genCanvas(id) {
+function genCanvas(id, qr) {
     let canvas = document.getElementById(id).getElementsByTagName("canvas")[0];
     let ctx = canvas.getContext("2d");
-    let img = document.getElementById(id).getElementsByTagName("img")[0];
-    ctx.drawImage(img, 0, 0);
+    let img = new Image;
+    img.onload = function () {
+        ctx.drawImage(img, 0, 0);
+    };
+    // let img = document.getElementById(id).getElementsByTagName("img")[0];
+    switch (id.slice(0, -2)) {
+        case 'hot':
+            img.src = 'https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=' + qr.hot
+            break;
+        case 'hw':
+            img.src = 'https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=' + qr.hw
+            break;
+        case 'sk':
+            img.src = 'https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=' + qr.skill
+            break;
+        case 'test':
+            img.src = 'https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=L|0&chl=' + qr.test
+            break;
+        default:
+            break;
+    }
 }
 
 // download QR
