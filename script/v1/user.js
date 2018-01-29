@@ -24,6 +24,7 @@ module.exports = function (app, db, post, CryptoJS) {
                 $in: ['tutor', 'admin', 'dev']
             }
         }).toArray().then(result => {
+            var data = [];
             for (let i = 0; i < result.length; i++) {
                 if (result[i].tutor.status == "active") {
                     result[i].tutorID = result[i]._id;
@@ -34,9 +35,10 @@ module.exports = function (app, db, post, CryptoJS) {
                     // delete result[i].nicknameEn;
                     delete result[i].phone;
                     delete result[i].tutor;
+                    data.push(result[i])
                 }
             }
-            res.status(200).send(result);
+            res.status(200).send(data);
         });
     });
 
