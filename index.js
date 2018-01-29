@@ -70,9 +70,6 @@ app.use(session({ secret: require('crypto-js').SHA3('j3f2ipnc').toString() })); 
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-io.on('connect',function(socket){
-    console.log(socket)
-})
 
 // console.log(chalk.black.bgBlack("Black"));
 // console.log(chalk.black.bgRed("Red : [ERROR POST]-all,invalidPassword"));
@@ -142,7 +139,7 @@ MongoClient.connect("mongodb://127.0.0.1:27017/monkeyDB",function(err,db){
         db.listCollections().toArray(function(err,result){
         });
     });
-
+    
     configDB.updateOne({_id:"config"},{
         $setOnInsert:{
             courseMaterialPath:"courseMaterial/",

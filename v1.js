@@ -59,4 +59,5 @@ module.exports = function (app, db, post, fs, passport, CryptoJS) {
     require('./script/v1/key.js')(app, db, post, fs);
     require('./script/v1/config.js')(app, db, post, auth);
     require('./script/v1/qr.js')(app, db, post, fs);
+    require('./script/v1/transactionFHB.js')(app, db, post);
 }

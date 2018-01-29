@@ -58,7 +58,9 @@ module.exports = function (app, db, post) {
                     errInfo: err
                 });
             }
-            res.status(200).send('OK');
+            res.status(200).send({
+                msg: 'OK'
+            });
         });
     });
 
@@ -101,7 +103,9 @@ module.exports = function (app, db, post) {
                 ancestors: task.ancestors[0]
             }, newValue);
         }).then((err, result) => {
-            res.status(200).send('OK');
+            res.status(200).send({
+                msg: 'OK'
+            });
         });
     });
 
@@ -147,9 +151,22 @@ module.exports = function (app, db, post) {
                 return temp;
             });
 
-            return taskDB.insertMany(insertObject);
+            return Promise.all([
+                taskDB.insertMany(insertObject),
+                taskDB.updateOne({
+                    _id: ObjectID(req.body.taskID)
+                }, {
+                    $set: {
+                        status: ASSIGN
+                    }
+                })
+            ])
+
+            return;
         }).then(values => {
-            res.status(200).send('OK');
+            res.status(200).send({
+                msg: 'OK'
+            });
         });
     });
 
@@ -161,7 +178,7 @@ module.exports = function (app, db, post) {
             });
         }
 
-        var changeStatus = (task, childStatus, parentStatus) => {
+        var changeStatus = (task, childStatus) => {
             return Promise.all([
                 taskDB.updateOne({
                     _id: ObjectID(task._id)
@@ -174,7 +191,7 @@ module.exports = function (app, db, post) {
                     _id: ObjectID(task.parent)
                 }, {
                     $set: {
-                        status: childStatus
+                        childStatus: childStatus
                     }
                 })
             ])
@@ -183,14 +200,26 @@ module.exports = function (app, db, post) {
         taskDB.findOne({
             _id: ObjectID(req.body.taskID)
         }).then(task => {
-            switch (parseInt(req.body.taskStatus)) {
-                case TODO:
-                    return changeStatus(task, TODO, TODO);
-                case ON_PROCESS:
-                    return changeStatus(task, ON_PROCESS, ON_PROCESS);
-                case ASSIGN:
-                    return changeStatus(task, ASSIGN, ON_PROCESS);
-                case DONE:
+            if (parseInt(req.body.taskStatus) === DONE) {
+                if (task.parent === null) {
+                    return taskDB.findOne({
+                        _id: ObjectID(task._id)
+                    }).then(task => {
+                        return taskDB.updateMany({
+                            $or: [{
+                                ancestors: ObjectID(task._id)
+                            }, {
+                                _id: task._id
+                            }]
+                        }, {
+                            $set: {
+                                status: COMPLETE
+                            }
+                        });
+                    }).catch(err => {
+                        throw (err);
+                    });
+                } else {
                     return taskDB.find({
                         parent: task.parent
                     }).toArray().then(tasks => {
@@ -204,7 +233,7 @@ module.exports = function (app, db, post) {
                                 }]
                             }, {
                                 $set: {
-                                    status: DONE
+                                    childStatus: DONE
                                 }
                             });
                         } else {
@@ -217,38 +246,14 @@ module.exports = function (app, db, post) {
                             });
                         }
                     })
-                case COMPLETE:
-                    return taskDB.findOne({
-                        _id: ObjectID(task._id)
-                    }).then(task => {
-                        if (task.parent !== null){
-                            throw({
-                                err: -1,
-                                msg: 'Non-head task cannot be set to complete'
-                            });
-                        }
-                        return taskDB.updateMany({
-                            $or: [{
-                                ancestors: ObjectID(task.parent)
-                            }, {
-                                _id: ObjectID(task.parent)
-                            }]
-                        }, {
-                            $set: {
-                                status: COMPLETE
-                            }
-                        });
-                    }).catch(err => {
-                        throw (err);
-                    });
-                default:
-                    throw ({
-                        err: 3,
-                        msg: 'Mismatch status'
-                    });
+                }
+            } else {
+                return changeStatus(task, parseInt(req.body.taskStatus));
             }
         }).then(values => {
-            return res.status(200).send('OK');
+            return res.status(200).send({
+                msg: 'OK'
+            });
         }).catch(err => {
             return res.status(400).send(err);
         });
@@ -279,27 +284,44 @@ module.exports = function (app, db, post) {
                 }]
             });
         }).then(() => {
-            return res.status(200).send('OK');
+            return res.status(200).send({
+                msg: 'OK'
+            });
         }).catch(err => {
             return res.status(400).send(err);
         });
     });
 
-    post('/post/v1/listUserTask', function(req,res){
-        if(!req.body.userID){
+    post('/post/v1/listUserTask', function (req, res) {
+        if (!req.body.userID) {
             return res.status(400).send({
                 err: -1,
                 msg: 'Bad Request'
             });
         }
-        taskDB.find({
-            owner: parseInt(req.body.userID)
-        }).toArray().then(tasks => {
-            res.status(200).send(tasks.map(task => {
-                task.taskID = task._id;
-                delete task._id;
-                return task;
-            }));
+        taskDB.aggregate([{
+            $match: {
+                owner: parseInt(req.body.userID),
+                status: {
+                    $ne: COMPLETE
+                }
+            }
+        }, {
+            $lookup: {
+                from: 'user',
+                localField: 'createBy',
+                foreignField: '_id',
+                as: 'createBy'
+            }
+        }]).toArray().then(tasks => {
+            res.status(200).send({
+                tasks: tasks.map(task => {
+                    task.taskID = task._id;
+                    task.createBy = task.createBy[0].nicknameEn
+                    delete task._id;
+                    return task;
+                })
+            });
         });
     });
 }
