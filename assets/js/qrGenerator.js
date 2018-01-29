@@ -106,6 +106,7 @@ function genCanvas(id, qr) {
     let canvas = document.getElementById(id).getElementsByTagName("canvas")[0];
     let ctx = canvas.getContext("2d");
     let img = new Image;
+    img.crossOrigin = "anonymous";
     img.onload = function () {
         ctx.drawImage(img, 0, 0);
     };
