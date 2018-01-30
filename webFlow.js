@@ -144,7 +144,7 @@ module.exports = function (app, db, pasport) {
                         }
                     return res.status(200).render('home', local);
                 } 
-                if (req.user.student.status == 'inactive') return res.status(200).render('registrationName');
+                if (req.user.student.status == 'inactive') return res.status(200).render('registrationName',local);
             }
             else return res.status(200).render('adminHome', local);
         }
@@ -262,7 +262,7 @@ module.exports = function (app, db, pasport) {
             });
         })
     });
-    // app.all("*", return404);
+    app.all("*", return404);
 }
 
 
