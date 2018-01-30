@@ -1,12 +1,11 @@
 console.log("[START] post.js");
-module.exports=function(app,db){
+module.exports=function(app,db,passport){
     var chalk=require("chalk");
     var CryptoJS=require("crypto-js");
     var fs=require("fs-extra");
     var moment=require("moment");
     var ObjectID=require("mongodb").ObjectID;
     var request=require("request");
-
     var configDB=db.collection("config");
     var courseSuggestionDB=db.collection("courseSuggestion");
     var fullHybridDB=db.collection("fullHybrid");
@@ -21,7 +20,6 @@ module.exports=function(app,db){
     var courseDB = db.collection("course");
     var studentHybridDB = db.collection("hybridStudent");
     var studentSkillDB = db.collection("skillStudent");
-
     var gradeBitToString=function(bit){
         var output="",p=false,s=false;
         for(var i=0;i<6;i++){
@@ -248,7 +246,6 @@ module.exports=function(app,db){
             });
         });
     };
-
     // User Information
     //OK {userID,password} return {verified}
     post("/post/password",function(req,res){
@@ -340,6 +337,7 @@ module.exports=function(app,db){
                                 quarter:result[i].student.quarter,
                                 status:result[i].student.status,
                                 level:result[i].level,
+                                remark:result[i].remark,
                                 inCourse:course!=null,
                                 inHybrid:hybrid!=null
                             };
@@ -669,7 +667,7 @@ module.exports=function(app,db){
     //OK {tutorID} return {}
     post("/post/removeTutor",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
-        findUser(res,studentID,{position:"tutor"},function(result){
+        findUser(res,tutorID,{position:"tutor"},function(result){
             userDB.deleteOne({_id:tutorID},function(){
                 res.send({});
             });
@@ -697,7 +695,7 @@ module.exports=function(app,db){
         addField("nicknameEn");
         addField("email");
         addField("phone");
-        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+        findUser(res,tutorID,{position:["tutor","admin","dev","mel"]},function(result){
             userDB.updateOne({_id:tutorID},{$set:input},function(){
                 res.send({});
             });
@@ -758,7 +756,7 @@ module.exports=function(app,db){
     post("/post/changePosition",function(req,res){
         var tutorID=parseInt(req.body.tutorID);
         var position=req.body.position;
-        findUser(res,tutorID,{position:["tutor","admin","dev"]},function(result){
+        findUser(res,tutorID,{position:["tutor","admin","dev","mel"]},function(result){
             userDB.updateOne({_id:tutorID},{
                 $set:{position:position}
             },function(){
@@ -818,17 +816,20 @@ module.exports=function(app,db){
             else{
                 getCourseDB(function(courseDB){
                     courseDB.find({grade:{$bitsAllSet:[grade-1]},year:quarter.year,quarter:quarter.quarter}).sort({subject:1,grade:1,level:1,tutor:1}).toArray(function(err,result){
-                        callbackLoop(result.length,function(i,continueLoop){
-                            getCourseName(result[i]._id,function(courseName){
-                                output.push({
-                                    courseID:result[i]._id,courseName:courseName,
-                                    day:result[i].day,tutor:result[i].tutor
+                        if(result!=undefined){
+                            callbackLoop(result.length,function(i,continueLoop){
+                                getCourseName(result[i]._id,function(courseName){
+                                    output.push({
+                                        courseID:result[i]._id,courseName:courseName,
+                                        day:result[i].day,tutor:result[i].tutor,
+                                        description:result[i].description,
+                                    });
+                                    continueLoop();
                                 });
-                                continueLoop();
+                            },function(){
+                                res.send({course:output});
                             });
-                        },function(){
-                            res.send({course:output});
-                        });
+                        }else res.send("Have some problem in grade course");
                     });
                 });
             }
@@ -845,7 +846,9 @@ module.exports=function(app,db){
                         res.send({
                             courseName:courseName,day:result.day,
                             tutor:result.tutor,student:result.student,
-                            year:result.year,quarter:result.quarter
+                            year:result.year,quarter:result.quarter,
+                            description:result.description,level:result.level,
+                            room:result.room
                         });
                     });
                 }
@@ -860,16 +863,21 @@ module.exports=function(app,db){
             if(err)res.send(err);
             else{
                 courseSuggestionDB.find({grade:grade,year:quarter.year,quarter:quarter.quarter}).sort({level:1}).toArray(function(err,result){
-                    if(result){
-                        for(var i=0;i<result.length;i++){
-                            output[i]={
-                                level:result[i].level,
-                                courseID:result[i].courseID
-                            };
+                    if(err) res.send(err);
+                    else{
+                        if(result){
+                            if(result!=undefined){
+                                for(var i=0;i<result.length;i++){
+                                    output[i]={
+                                        level:result[i].level,
+                                        courseID:result[i].courseID
+                                    };
+                                }
+                                res.send({course:output});
+                            }else res.send("Have some problem in listCourseSuggestion");
                         }
-                        res.send({course:output});
+                        else res.send({course:output});
                     }
-                    else res.send({course:output});
                 });
             }
         });
@@ -1922,6 +1930,30 @@ module.exports=function(app,db){
         }
         res.status(200).send("OK");
     });
+    post("/post/test",function(req,res){
+        var local={moment:require('moment')};
+        var post = app.locals.post;
+        getQuarter(req.query.year,req.query.quarter,function(err,quarter){
+            if(err)res.send(err);
+            else{
+                Object.assign(local,{quarter:quarter});
+                post("post/allCourseMaterial",{year:quarter.year,quarter:quarter.quarter},function(result){
+                    Object.assign(local,result);
+                    post("post/getConfig",{},function(result){
+                        Object.assign(local,{config:result});
+                        post("post/listQuarter",{status:"protected"},function(result){
+                            Object.assign(local,{protectedQuarter:result.quarter});
+                            console.log(local)
+                            res.status(200).send(local);
+                        });
+                    });
+                });
+            }
+        });
+    })
+    
+
+
 
     /**
      * Post method for listing student to conference
@@ -2083,190 +2115,5 @@ module.exports=function(app,db){
         });
     });
 
-    var postV1 = require("./v1.js")(app, db, post);
-}
-
-/**
- * courseName format: subject + level + "-" + set + subset + setNo + {subscript + subscriptNo} + "(REV" + mainRev + "_" + subRev
- * e.g. MK-AB11r1(REV1_0)
- * @param {String} courseName
- */
-function decodeCourseName(courseName) {
-    var courseNameComponent = {};
-    var subjectFullName = {
-        "M": "MATH",
-        "P": "PHYSICS",
-        "C": "CHEMISTRY"
-    }
-    courseNameComponent.fatalError = null;
-
-    var errorLog = (err) => {
-        console.log(err);
-        return courseNameComponent;
-    }
-
-    //locate index of "("
-    var indexOfBracket;
-    try {
-        indexOfBracket = courseName.indexOf("(");
-        if (indexOfBracket === -1) throw new Error(chalk.red("Cannot locate '(' in courseName"));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //locate index of "-"
-    var indexOfHyphen;
-    try {
-        indexOfHyphen = courseName.indexOf("-");
-        if (indexOfHyphen === -1) throw new Error(chalk.red("Cannot locate '-' in courseName"));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //locate index of "_"
-    var indexOfUnderscore;
-    try {
-        indexOfUnderscore = courseName.indexOf("_");
-        if (indexOfUnderscore === -1) throw new Error(chalk.red("Cannot locate '_' in courseName"));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //locate index of first integer
-    var indexOfFirstInt = -1;
-    try {
-        for (let i = 0; i < courseName.length; i++) {
-            if (Number.isInteger(parseInt(courseName.charAt(i)))) {
-                indexOfFirstInt = i;
-                break;
-            }
-        }
-        if (indexOfFirstInt === -1) throw new Error(chalk.red("Cannot locate number in courseName"));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //Get subject from courseName
-    try {
-        courseNameComponent.subject = courseName.charAt(0);
-        if (courseNameComponent.subject === undefined) throw new Error(chalk.red("Cannot get subject form courseName, index out of range"));
-        courseNameComponent.subjectFullName = subjectFullName[courseNameComponent.subject];
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //Get level from courseName
-    try {
-        courseNameComponent.level = courseName.charAt(1);
-        if (courseNameComponent.level === undefined) throw new Error(chalk.red("Cannot get level form courseName, index out of range"));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //Get set from courseName
-    try {
-        courseNameComponent.set = courseName.substring(indexOfHyphen + 1, indexOfFirstInt - 1);
-        if (courseNameComponent.set === undefined) throw new Error(chalk.red("Cannot get set form courseName, index out of range"));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //Get subset from courseName
-    try {
-        courseNameComponent.subset = courseName.charAt(indexOfFirstInt - 1);
-        if (courseNameComponent.subset === undefined) throw new Error(chalk.red("Cannot get subset from courseName, index out of range"));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //Get setNo from courseName
-    try {
-        courseNameComponent.setNo = parseInt(courseName.substring(indexOfFirstInt, indexOfFirstInt + 2));
-        if (courseName.substring(indexOfFirstInt, indexOfFirstInt + 1) === undefined) throw new Error(chalk.red('Cannot get setNo form courseName, index out of range'));
-        if (isNaN(courseNameComponent.setNo)) throw new Error(chalk.red('Invalid setNo, cannot parse setNo into int'));
-        courseNameComponent.setNo = String(courseNameComponent.setNo);
-        if (courseNameComponent.setNo.length === 1) {
-            courseNameComponent.setNo = "0" + courseNameComponent.setNo;
-        }
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //Get subscript from courseName
-    try {
-        courseNameComponent.subscript = courseName.charAt(indexOfFirstInt + 2);
-        if (courseNameComponent.subscript === undefined) throw new Error(chalk.red('Cannot get subscript from courseName, index out of range'));
-    } catch (error) {
-        courseNameComponent.subscript = '';
-    }
-
-    //Get subscriptNo from courseName
-    try {
-        courseNameComponent.subscriptNo = parseInt(courseName.substring(indexOfFirstInt + 3, indexOfFirstInt + 5));
-        if (courseName.substring(indexOfFirstInt + 3, indexOfFirstInt + 5) === undefined) throw new Error(chalk.red('Cannot subscriptNo from courseName, index out od range'));
-        if (isNaN(courseNameComponent.subscriptNo)) throw new Error(chalk.red('Invalid subscriptNo, cannot parse subscriptNo into int'));
-        courseNameComponent.subscriptNo = String(courseNameComponent.subscriptNo);
-        if (courseNameComponent.subscriptNo.length === 1) {
-            courseNameComponent.subscriptNo = "0" + courseNameComponent.subscriptNo;
-        }
-    } catch (error) {
-        courseNameComponent.subscriptNo = '';
-    }
-
-    //Get mainRev from courseName
-    try {
-        courseNameComponent.mainRev = parseInt(courseName.charAt(indexOfBracket + 4));
-        if (courseName.charAt(indexOfBracket + 4) === undefined) throw new Error(chalk.red('Cannot get mainRev form courseName, index out of range'));
-        if (isNaN(courseNameComponent.mainRev)) throw new Error(chalk.red('Invalid mainRev, cannot parse mainRev into int'));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    //Get subRev form courseName
-    try {
-        courseNameComponent.subRev = parseInt(courseName.charAt(indexOfUnderscore + 1));
-        if (courseName.charAt(indexOfUnderscore + 1) === undefined) throw new Error(chalk.red('Cannot get subRev from courseName, index out of range'));
-        if (isNaN(courseNameComponent.subRev)) throw new Error(chalk.red('Invalid subRev, cannot parse subRev into int'));
-    } catch (error) {
-        errorLog(error);
-    }
-
-    return courseNameComponent;
-}
-
-function decodePathResponse(res, courseName) {
-    res.status(200).send({
-        "skillKeyPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + "(REV" + courseName.mainRev + ")"
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + courseName.subscript + courseName.subscriptNo + "SKILLKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf",
-        "hwKeyPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + "(REV" + courseName.mainRev + ")"
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + courseName.subscript + courseName.subscriptNo + "HWKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf",
-        "testKeyPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + "(REV" + courseName.mainRev + ")"
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + courseName.subscript + courseName.subscriptNo + "TESTKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf",
-        "keyStudentPath": "file://monkeycloud/key-qrcode/" + courseName.subjectFullName
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + "/" + courseName.subject + courseName.level + "-" + courseName.set + courseName.subset + courseName.setNo
-        + courseName.subscript + courseName.subscriptNo + "HOTKEY" + "(REV" + courseName.mainRev + "_" + courseName.subRev + ").pdf"
-    });
-}
-
-function splitSheetComponent(bin) {
-    var pos = ["COVER", "VDO", "SKILL", "HW", "FULL", "TEST", "EXERCISE"];
-    var output = [];
-    for(i in pos){
-        if (bin[i] === "1") output.push(pos[i]);
-    }
-    return output;
+    var postV1 = require("./v1.js")(app, db, post, fs , passport , CryptoJS);
 }

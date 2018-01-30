@@ -1,10 +1,9 @@
-extends oldHtmlTemplate
+extends htmlTemplate
+mixin tdButt(className)
+    td: button.col-12.selector.btn.btn-light(class=className) &nbsp;
 block head
     -const pageTitle = "Student Profile"
     link(href="css/component.css", rel="stylesheet")
-    script(src="js/student.min.js")
-    script(src="js/constRegisQuarter.js")
-    script(src="js/studentProfile.min.js")
     style.
         .cr {
             background-color: #FFE4F5!important;
@@ -18,143 +17,98 @@ block head
             background-color: #D4EEF8!important;
             border-color: transparent!important;
         }
+block script
+    script(src="js/custom-file-input.js")
+    script(src="js/constRegisQuarter.js")
+    script(src="js/studentProfile.min.js")
 block body
-    .container
-        form
-            .row
-                .form-group.col-xs-4.col-sm-2
-                    label(for="Q") Quarter:
-                    select#qList.form-control
+    .container-fluid
         .row
-            .col-xs-8.visible-xs
-                img.profilePic.img-responsive(src="images/noImage.svg")
+            .col-12.col-md-3
+                form
+                    .form-group
+                        label
+                            span.fa.fa-lg.fa-th-large &nbsp;
+                            |Quarter
+                        select.form-control#quarterSelect
         .row
-            .col-sm-8.col-xs-12
-                .row
-                    label.col-sm-3.col-xs-4 ID:
-                    p#id
-                .row
-                    label.col-sm-3.col-xs-4 ชื่อ:
-                    p#name
-                .row
-                    p#nameE.col-sm-offset-3.col-xs-offset-4
-                .row
-                    label.col-sm-3.col-xs-4 ชั้น:
-                    p#grade
-                .row
-                    label.col-sm-3.col-xs-4 เบอร์โทร:
-                    p#parentTel
-                .row
-                    p#studentTel.col-sm-offset-3.col-xs-offset-4
-                .row
-                    label.col-sm-3.col-xs-4 E-mail:
-                    p#email
-                .row
-                    label.col-sm-3.col-xs-4 สถานะ:
-                    p#status
-                //- .row
-                    label.col-sm-3.col-xs-4 สถานะ CR60OCT:
-                    p#status
-                //- .row
-                //-     p.col-sm-12.col-xs-12
-                //-         kbd Course Detail
-                //- .row
-                //-     label.col-sm-2.col-xs-4 เริ่ม:
-                //-     p#startCr
-                //- .row
-                //-     label.col-sm-2.col-xs-4 ปัจจุบัน:
-                //-     p#nowCr
-                //- .row
-                //-     label.col-sm-2.col-xs-4 สิ้นสุด:
-                //-     p#endCr
-                
-            .col-sm-4.hidden-xs(align="right")
-                img.profilePic.img-responsive(src="images/noImage.svg")
+            .col-4
+                img.img-fluid.img-thumbnail#profileImg(src="images/noImage.svg")
+            .col-8
+                #studentProfileContent
         .row
-            p.col-sm-12.col-xs-12
-                kbd ตารางเรียน
-        .collapse#crTable
-            .table-responsive
-                table.table.table-bordered
-                    thead
-                        tr
-                            th.col-xs-2
-                            th.col-xs-5.text-center TUE
-                            th.col-xs-5.text-center THU
-                    tbody
-                        tr
-                            td.text-center 17-19
-                            td
-                                button(class="btn-tue-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                            td
-                                button(class="btn-thu-17 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-            .table-responsive
-                table.table.table-bordered
-                    thead
-                        tr
-                            th.col-xs-2
-                            th.col-xs-5.text-center SAT
-                            th.col-xs-5.text-center SUN
-                    tbody
-                        tr
-                            td.text-center 8-10
-                            td
-                                button(class="btn-sat-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                            td
-                                button(class="btn-sun-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        tr
-                            td.text-center 10-12
-                            td
-                                button(class="btn-sat-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                            td
-                                button(class="btn-sun-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        tr
-                            td.text-center 13-15
-                            td
-                                button(class="btn-sat-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                            td
-                                button(class="btn-sun-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        tr
-                            td.text-center 15-17
-                            td
-                                button(class="btn-sat-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                            td
-                                button(class="btn-sun-15 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-        .collapse#smTable
-            .table-responsive
-                table.table.table-bordered
-                    thead
-                        tr
-                            th.col-xs-4.text-center TIME
-                            th.col-xs-8.text-center COURSE
-                    tbody
-                        tr
-                            td.text-center 8-10
-                            td
-                                button(class="btn-mon-8 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        tr
-                            td.text-center 10-12
-                            td
-                                button(class="btn-mon-10 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-                        tr
-                            td.text-center 13-15
-                            td
-                                button(class="btn-mon-13 btn btn-default disabled col-xs-12" type="button" onClick="this.blur()") &nbsp;
-        //- modal for upPic
-        #profileModal.modal.fade(role="dialog")
+            .col-12.collapse#mainTable
+                .table-responsive
+                    table.table.table-bordered
+                        thead.thead-dark
+                            tr
+                                th &nbsp;
+                                th.text-center TUE
+                                th.text-center THU
+                        tbody
+                            tr
+                                td.text-center 17-19
+                                +tdButt("btn2-17")
+                                +tdButt("btn4-17")
+                .table-responsive
+                    table.table.table-bordered
+                        thead.thead-dark
+                            tr
+                                th &nbsp;
+                                th.text-center SAT
+                                th.text-center SUN
+                        tbody
+                            tr
+                                td.text-center 8-10
+                                +tdButt("btn6-8")
+                                +tdButt("btn0-8")
+                            tr
+                                td.text-center 10-12
+                                +tdButt("btn6-10")
+                                +tdButt("btn0-10")
+                            tr
+                                td.text-center 13-15
+                                +tdButt("btn6-13")
+                                +tdButt("btn0-13")
+                            tr
+                                td.text-center 15-17
+                                +tdButt("btn6-15")
+                                +tdButt("btn0-15")
+            .col-12.collapse#summerTable
+                .table-responsive
+                    table.table.table-bordered
+                        thead.thead-dark
+                            tr
+                                th &nbsp;
+                                th.text-center CR
+                        tbody
+                            tr
+                                td.text-center 8-10
+                                +tdButt("btn1-8")
+                            tr
+                                td.text-center 10-12
+                                +tdButt("btn1-10")
+                            tr
+                                td.text-center 13-15
+                                +tdButt("btn1-13")
+        //- Modal for Upload Pic
+        #uploadPicModal.modal.fade
             .modal-dialog
                 .modal-content
                     .modal-header
-                        h4 เปลี่ยนรูปประจำตัว
+                        h4.modal-title Upload
+                        button.close(type="button" data-dismiss="modal") &times;
                     .modal-body
-                        .form-group
-                            .box(align="center")
-                                input#file-1.inputfile.inputfile-1(type="file" name="file-1[]" style="opacity:0;height:0;")
-                                label(for="file-1")
-                                    svg(xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17")
-                                        path(d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z")
-                                    span เลือกรูป
+                        .box(align="center")
+                            input#file-img.inputfile.inputfile-1(
+                                type="file"
+                                name="file-img[]"
+                                style="opacity: 0;height: 0;"
+                            )
+                            label(for="file-img")
+                                svg(xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17")
+                                    path(d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z")
+                                span เลือกรูป
                     .modal-footer
-                        button.upload.btn.btn-primary(type="submit" onClick="upPic()") ตกลง
-                        button.btn.btn-danger(type="button" data-dismiss="modal") ยกเลิก
-        script(src="js/custom-file-input.js")
+                        button.btn.btn-success#uploadPicButt(type="button") Upload
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Cancel

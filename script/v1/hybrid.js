@@ -1,14 +1,15 @@
 var ObjectID = require('mongodb').ObjectID;
+var schedule = require('node-schedule');
 
 module.exports = function (app, db, post) {
 
-    var schedule = require('node-schedule');
     const MODE_ADD_HYBRID = 1;
     const MODE_REMOVE_HYBRID = 2;
 
     var quarterDB = db.collection('quarter');
     var studentHybridDB = db.collection('hybridStudent');
     var hybridPendingDB = db.collection('hybridPending');
+    var configDB = db.collection('config');
 
     /**
      * Function for initialize when server start
@@ -137,14 +138,13 @@ module.exports = function (app, db, post) {
         studentHybridDB.update({
             _id: ObjectID(req.body.hybridID)
         }, {
-                $push: {
-                    student: {
-                        studentID: parseInt(req.body.studentID),
-                        subject: req.body.subject
-                    }
+            $push: {
+                student: {
+                    studentID: parseInt(req.body.studentID),
+                    subject: req.body.subject
                 }
             }
-        );
+        });
         res.status(200).send('OK')
     });
 
@@ -167,13 +167,12 @@ module.exports = function (app, db, post) {
         studentHybridDB.update({
             _id: ObjectID(req.body.hybridID)
         }, {
-                $pull: {
-                    student: {
-                        studentID: parseInt(req.body.studentID)
-                    }
+            $pull: {
+                student: {
+                    studentID: parseInt(req.body.studentID)
                 }
             }
-        );
+        });
         res.status(200).send('OK')
     });
 
@@ -239,6 +238,29 @@ module.exports = function (app, db, post) {
                 }
                 res.status(200).send(result);
             });
+        });
+    });
+
+    // write by TAO temp
+    post('/post/v1/studentHybridSubject', function (req, res) {
+        if (req.body.studentID === undefined || req.body.hybridID === undefined) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        studentHybridDB.findOne({
+            _id: ObjectID(req.body.hybridID),
+        }).then((data) => {
+            let result = {};
+            result.hybridID = data._id;
+            for (let i in data.student) {
+                if (data.student[i].studentID === parseInt(req.body.studentID)) {
+                    result.studentID = data.student[i].studentID;
+                    result.subject = data.student[i].subject
+                }
+            }
+            res.status(200).send(result);
         });
     });
 
@@ -325,6 +347,61 @@ module.exports = function (app, db, post) {
         });
     });
 
+    post('/post/v1/checkStudentHybrid', function (req, res) {
+        if (!(req.body.studentID && req.body.subject)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        configDB.findOne({
+            _id: 'config'
+        }).then(config => {
+            var quarter, year;
+            if (req.body.quarter && req.body.year) {
+                quarter = parseInt(req.body.quarter);
+                year = parseInt(req.body.year);
+            } else {
+                quarter = config.defaultQuarter.quarter.quarter;
+                year = config.defaultQuarter.quarter.year;
+            }
+            var quarterID = year + ((('' + quarter).length == 1) ? '0' + quarter : quarter);
+            studentHybridDB.find({
+                quarterID: quarterID,
+                student: {
+                    $elemMatch: {
+                        studentID: parseInt(req.body.studentID),
+                        subject: req.body.subject
+                    }
+                }
+            }).toArray().then(data => {
+                if (data.length == 0) {
+                    return res.status(200).send({
+                        hasHybrid: false
+                    });
+                } else {
+                    return res.status(200).send({
+                        hasHybrid: true
+                    });
+                }
+            })
+        });
+    });
+
+    post('/post/v1/listHybridInfo', function (req, res) {
+        if (!req.body.hybridID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        studentHybridDB.findOne({
+            _id: ObjectID(req.body.hybridID)
+        }).then((data) => {
+            res.status(200).send(data)
+        });
+    });
+
     /**
      * Function which execute when the input time is reached 
      * Execute method has 2 mode add and remove selected by MODE_ADD_HYBRID, MODE_REMOVE_HYBRID
@@ -343,26 +420,24 @@ module.exports = function (app, db, post) {
                 executeFunction = () => studentHybridDB.update({
                     _id: ObjectID(hybridID)
                 }, {
-                        $push: {
-                            student: {
-                                studentID: parseInt(studentID),
-                                subject: subject
-                            }
+                    $push: {
+                        student: {
+                            studentID: parseInt(studentID),
+                            subject: subject
                         }
                     }
-                );
+                });
                 break;
             case MODE_REMOVE_HYBRID:
                 executeFunction = () => studentHybridDB.update({
                     _id: ObjectID(hybridID)
                 }, {
-                        $pull: {
-                            student: {
-                                studentID: parseInt(studentID)
-                            }
+                    $pull: {
+                        student: {
+                            studentID: parseInt(studentID)
                         }
                     }
-                );
+                });
                 break;
         }
         console.log('[HYBRID] Request created, Ref_id = ' + id);

@@ -1,17 +1,18 @@
-const passwordCheck = (userID, pwd) => $.post("/post/password", {
-    userID: userID,
-    password: pwd
-});
+// const passwordCheck = (userID, pwd) => $.post("/post/password", {
+//     userID: userID,
+//     password: pwd
+// });
 
-const positionCheck = (userID) => $.post("/post/position", {
-    userID: userID
-});
+// const positionCheck = (userID) => $.post("/post/position", {
+//     userID: userID
+// });
 
-const registrationStateCheck = (studentID) => $.post("post/registrationState", {
-    studentID: studentID,
-    year: 2017,
-    quarter: 4
-});
+// const registrationStateCheck = (studentID) => $.post("post/registrationState", {
+//     studentID: studentID,
+//     year: 2017,
+//     quarter: 4
+// });
+
 
 function loginSubmit() {
     "use strict";
@@ -39,80 +40,74 @@ function loginSubmit() {
 }
 
 function login(user, pwd) {
-    "use strict";
-    log("Username:" + user + ",Password:" + pwd);
-    log(encrypt(pwd).toString());
-    passwordCheck(user, encrypt(pwd).toString()).then((data) => {
-        if (data.err) {
-            log("[login()] : post/password => " + data.err);
-        } else {
-            log("[login()] : post/password => ");
-            log(data);
-            if (data.verified) {
-                writeUserCookie(user, pwd);
-                redirectLocation(user);
-            } else {
-                log("Wrong");
-                alert("ID and password do not match.");
-                clearInput();
-            }
+    console.log(pwd)
+    $.post('post/v1/login',{id:user,password:encrypt(""+pwd).toString()},data=>{
+        if(data.err) {
+            alert("ID or password is incorrect.")
+            $('#pwd').val('')
+            throw data.err
         }
-    });
+        else{
+            writeUserCookie(user, pwd)
+            this.location = data.redirect;
+        }
+    })
 }
 
-function redirectLocation(user) {
-    positionCheck(user).then((data) => {
-        if (data.err) {
-            log("[redirectLocation()] : post/position => " + data.err);
-        } else {
-            log("[redirectLocation()] : post/position => ");
-            log(data);
-            switch (data.position) {
-                case "student":
-                    studentLogin(user);
-                    break;
-                case "tutor":
-                    self.location = "/tutorCheck";
-                    break;
-                case "admin":
-                case "dev":
-                    self.location = "/adminAllstudent";
-                    break;
-                default:
-                    break
-            }
-        }
-    });
-}
+// function redirectLocation(user) {
+//     positionCheck(user).then((data) => {
+//         if (data.err) {
+//             log("[redirectLocation()] : post/position => " + data.err);
+//         } else {
+//             log("[redirectLocation()] : post/position => ");
+//             log(data);
+//             switch (data.position) {
+//                 case "student":
+//                     studentLogin(user);
+//                     break;
+//                 case "tutor":
+//                     self.location = "/tutorCheck";
+//                     break;
+//                 case "admin":
+//                 case "dev":
+//                 case "mel":
+//                     self.location = "/adminAllstudent";
+//                     break;
+//                 default:
+//                     break
+//             }
+//         }
+//     });
+// }
 
-function studentLogin(studentID) {
-    registrationStateCheck(studentID).then((data) => {
-        if (data.err) {
-            log("[studentLogin()] : post/registrationState => " + data.err);
-        } else {
-            $.post("post/studentProfile",{studentID:studentID},function(studentProf){
-                if(studentProf.status == "inactive"){
-                    self.location = "/registrationName"
-                }else{
-                    log("[studentLogin()] : post/registrationState => ");
-                    log(data);
-                        //noinspection SpellCheckingInspection
-                    if (data.registrationState === "untransferred" || data.registrationState === "rejected") {
-                        self.location = "/registrationReceipt";
-                    } else {
-                        self.location = "/home";
-                    }
-                }
-            })
-        }
-    });
-}
+// function studentLogin(studentID) {
+//     registrationStateCheck(studentID).then((data) => {
+//         if (data.err) {
+//             log("[studentLogin()] : post/registrationState => " + data.err);
+//         } else {
+//             $.post("post/studentProfile",{studentID:studentID},function(studentProf){
+//                 if(studentProf.status == "inactive"){
+//                     self.location = "/registrationName"
+//                 }else{
+//                     log("[studentLogin()] : post/registrationState => ");
+//                     log(data);
+//                         //noinspection SpellCheckingInspection
+//                     if (data.registrationState === "untransferred" || data.registrationState === "rejected") {
+//                         self.location = "/registrationReceipt";
+//                     } else {
+//                         self.location = "/home";
+//                     }
+//                 }
+//             })
+//         }
+//     });
+// }
 
-function clearInput() {
-    "use strict";
-    let pwd = document.getElementById("pwd");
-    pwd.value = ""
-}
+// function clearInput() {
+//     "use strict";
+//     let pwd = document.getElementById("pwd");
+//     pwd.value = ""
+// }
 
 function encrypt(text) {
     "use strict";

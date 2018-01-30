@@ -152,6 +152,7 @@ function loadSelectedMenu(config) {
                 quaterStatus = "protected";
                 break;
             case "dev":
+            case "mel":
                 quaterStatus = "private";
                 break;
         }
@@ -206,10 +207,15 @@ function filterData(data, quarterList, config) {
         return true;
     });
     if (status.options[status.selectedIndex].value !== "all") {
-        data = data.filter(data => {
+        if (status.options[status.selectedIndex].value === "default") {
+            data = data.filter(data => {
+                return data.status === "active" || data.status === "dropped"
+            });
+        } else {
+            data = data.filter(data => {
                 return data.status === status.options[status.selectedIndex].value
-            }
-        );
+            });
+        }
     }
     if (grade.options[grade.selectedIndex].value !== "all") {
         data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
@@ -233,9 +239,11 @@ function filterData(data, quarterList, config) {
  * Generate Html element from data
  * @param student information to fill in table
  */
-function generateStudentHtmlTable(student) {
+async function generateStudentHtmlTable(student) {
     let table = document.getElementById("allStudentTable");
     table.innerHTML = "";
+    let selectedQ = $("#quarter").val();
+    let promise = [];
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let status = student[i].status;
@@ -254,23 +262,44 @@ function generateStudentHtmlTable(student) {
         if (stage === "finished") {
             row.setAttribute("class", "table-success");
         }
+        let remark = "";
+        let remarkStr = "";
+        if (student[i].remark !== undefined) {
+            remark = student[i].remark;
+            if (remark === "1") {
+                remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
+            } else if (remark === "2") {
+                remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
+            } else if (remark === "3") {
+                remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:orange'></span>";
+            } else {
+                remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+            }
+        } else {
+            remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+        }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
         let cell2 = row.insertCell(2);
         let cell3 = row.insertCell(3);
         let cell4 = row.insertCell(4);
+        // let cell5 = row.insertCell(5);
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
-        // let cell7 = row.insertCell(7);
         // let cell8 = row.insertCell(8);
+        let cell7 = row.insertCell(7);
         cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
         cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
         cell3.innerHTML = "<td>" + student[i].nickname + "</td>";
         cell4.innerHTML = "<td>" + student[i].firstname + "</td>";
-        cell5.innerHTML = "<td>" + student[i].lastname + "</td>";
-        cell6.innerHTML = "<td>" + student[i].level + "</td>";
-        // cell7.innerHTML = "<td>" + ((student[i].inCourse) ? "✔" : "✖") + "</td>";
+        // cell5.innerHTML = "<td>" + student[i].lastname + "</td>";
+        cell5.innerHTML = "<td>" + student[i].level + "</td>";
+        promise.push($.post("post/v1/getRegistrationState", { studentID: student[i].studentID, year: selectedQ.slice(0, 4), quarter: selectedQ.slice(5) }));
+        cell6.innerHTML = "<td>-</td>";
+        cell6.id = "cell7-" + i;
+        cell7.innerHTML = "<td>" + remarkStr + "</td>";
+        cell7.id = remark;
         // cell8.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
@@ -279,9 +308,59 @@ function generateStudentHtmlTable(student) {
             //noinspection SpellCheckingInspection
             self.location = "/adminStudentprofile";
         };
-        row.onclick = clickHandler(row);
+        cell0.onclick = clickHandler(row);
+        cell1.onclick = clickHandler(row);
+        cell2.onclick = clickHandler(row);
+        cell3.onclick = clickHandler(row);
+        cell4.onclick = clickHandler(row);
+        cell5.onclick = clickHandler(row);
+        cell6.onclick = clickHandler(row);
+        let changeCheckState = (row, cell) => () => {
+            let sendData = "";
+            if (cell.id === "" || cell.id === "0") {
+                sendData = "3";
+            } else if (cell.id === "3") {
+                sendData = "1";
+            } else if (cell.id === "1") {
+                sendData = "2";
+            } else if (cell.id === "2") {
+                sendData = "0";
+            }
+            $.post("post/v1/setRemark", { studentID: row.getElementsByTagName("td")[1].innerHTML, remark: sendData }).then(() => {
+                let remarkStr = "";
+                if (cell.id === "" || cell.id === "0") {
+                    remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:orange'></span>";
+                    cell.id = "3";
+                } else if (cell.id === "1") {
+                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
+                    cell.id = "2";
+                } else if (cell.id === "2") {
+                    remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+                    cell.id = "0";
+                } else if (cell.id === "3") {
+                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
+                    cell.id = "1";
+                }
+                cell.innerHTML = "<td>" + remarkStr + "</td>";
+            });
+        };
+        cell7.onclick = changeCheckState(row, cell7);
+    }
+    let description = await Promise.all(promise);
+    for (let i = 0; i < description.length; i++) {
+        if (description[i].subRegistrationState != undefined && description[i].subRegistrationState != "-") {
+            $("#cell7-" + i).html(description[i].subRegistrationState);
+        }
     }
 }
+
+$("#checkTableColumm").click(function () {
+    if (confirm("ต้องการ reset ทั้งหมด?")) {
+        $.post("post/v1/resetRemark").then(() => {
+            location.reload();
+        });
+    }
+});
 
 function scanStudentBarcode() {
     let inputBox = document.getElementById("studentID");
