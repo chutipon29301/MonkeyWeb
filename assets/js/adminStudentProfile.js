@@ -293,9 +293,22 @@ async function genStudentTable() {
     for (let i in timeTable.hybrid) {
         let time = moment(timeTable.hybrid[i].day);
         $(".btn" + time.day() + time.hour()).html("FHB:" + timeTable.hybrid[i].subject).addClass("hb").attr("id", timeTable.hybrid[i].hybridID);
-        if (timeTable.hybrid[i].subject == "P") {
-            fhbHasPhy = true;
-        } else fhbHasMath = true;
+        switch (timeTable.hybrid[i].subject) {
+            case "M":
+                fhbHasMath = true;
+                break;
+            case "P":
+                fhbHasPhy = true;
+                break;
+            case "C":
+                fhbHasChe = true;
+                break;
+            case "E":
+                fhbHasEng = true;
+                break;
+            default:
+                break;
+        }
     }
     for (let i in timeTable.skill) {
         let time = moment(timeTable.skill[i].day);
@@ -468,6 +481,10 @@ async function genCover(type) {
         if (type == 0 && timeTable.hybrid[i].subject == "M") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         } else if (type == 1 && timeTable.hybrid[i].subject == "P") {
+            ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
+        } else if (type == 2 && timeTable.hybrid[i].subject == "C") {
+            ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
+        } else if (type == 3 && timeTable.hybrid[i].subject == "E") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
         }
     }
@@ -706,6 +723,8 @@ async function addTimeTable(idenTime) {
         if (idenTime.indexOf("btn" + time.day() + '' + time.hour()) >= 0) {
             $subjSelect.append("<option value=" + allSubj.hybrid[i].hybridID + ">FHB:M</option>");
             $subjSelect.append("<option value=" + allSubj.hybrid[i].hybridID + ">FHB:P</option>");
+            $subjSelect.append("<option value=" + allSubj.hybrid[i].hybridID + ">FHB:C</option>");
+            $subjSelect.append("<option value=" + allSubj.hybrid[i].hybridID + ">FHB:E</option>");
         }
     }
     for (let i in allSubj.course) {
