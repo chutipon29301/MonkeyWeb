@@ -179,12 +179,10 @@ module.exports = function (app, db, pasport) {
     addPugPage("permanentAdtendance", side, permission);
     permission = { status: 'active', state: ["unregistered", "rejected"] }
     addPugPage("regisPage", side, permission);
-    addPugPage("registrationCourse", side, permission);
-    addPugPage("registrationHybrid", side, permission);
-    addPugPage("registrationSkill", side, permission);
-    addPugPage("submit", side, permission);
     permission = { status: 'active', state: ["unregistered", "rejected"], quarter: "summer" }
     addPugPage("registrationSummer", side, permission);
+    permission = { status: 'active', state: "untransferred" }
+    addPugPage("registrationReceipt", side, permission);
     permission = { status: 'active', state: "untransferred", quarter: "summer" }
     addPugPage("summerReceipt", side, permission);
     side = 'staff'
