@@ -417,7 +417,7 @@ async function genCover(type) {
             barcode = document.getElementById('engBarcode');
             break;
         default:
-            overCanvas = document.getElementById('mathCover');
+            coverCanvas = document.getElementById('mathCover');
             barcode = document.getElementById('mathBarcode');
             break;
     }
