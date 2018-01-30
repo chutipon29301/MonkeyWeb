@@ -78,6 +78,7 @@ module.exports = function (app, db, pasport) {
     var addPugPage = function (page, side, permission, localObj) {
         app.get('/' + page.split('/'), auth.isLoggedIn, async function (req, res) {
             let local = {}
+            let config = await configDB.findOne({ _id: "config" })
             if(req.user){
                 if (localObj) {
                     if (typeof localObj == 'function') {
@@ -90,11 +91,12 @@ module.exports = function (app, db, pasport) {
                     lastname: req.user.lastname,
                     position: req.user.position
                 }
+                local.config = config
             }
             if (!side) res.status(200).render(page.split('/')[page.split('/').length - 1],local);
             else if (req.user) {
                 try {
-                    let config = await configDB.findOne({ _id: "config" })
+                    
                     if (auth.authorize(req.user, side, permission, config)) {
                         
                         res.status(200).render(page.split('/')[page.split('/').length - 1], local);
@@ -130,7 +132,8 @@ module.exports = function (app, db, pasport) {
                     firstname: req.user.firstname,
                     lastname: req.user.lastname,
                     position: req.user.position
-                }
+                },
+                config : await configDB.findOne({})
             }
             if (req.user.position == 'student') {
                 if (req.user.student.status == 'active'){

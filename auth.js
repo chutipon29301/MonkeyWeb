@@ -36,7 +36,7 @@ var authorizeStudent = function (user, permission, config) {
             }
             return false
         }
-        // if(!config.allowRegistration) return false;
+        if(!config.allowRegistration) return false;
         if (typeof permission.state == 'string') permission.state = [permission.state];
         if (permission.quarter) {
             if (permission.quarter == "summer" && config.defaultQuarter.registration.quarter < 11) return false;

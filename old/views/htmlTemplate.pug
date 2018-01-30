@@ -34,7 +34,8 @@ html(lang="en")
                             //- -var nowTime = new Date()
                             //- if nowTime.getTime() > startTime.getTime() && nowTime.getTime() < endTime.getTime()
                                 li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
-                            //- li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
+                            if(config.allowRegistration)
+                                li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
                             +navLink("absentAgreeForm","ลา")
                             +navLink("addAgreeForm","เพิ่ม")
                             //- +navLink("permanentAdtendance","ลา/เพิ่มตลอดไป")
