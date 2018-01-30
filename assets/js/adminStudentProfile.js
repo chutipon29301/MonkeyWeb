@@ -11,6 +11,7 @@ genQuarterSelect();
 
 // add event when change quarter
 $("#quarterSelect").change(function () {
+    writeCookie("monkeyWebSelectedQuarter", this.value);
     loadRecieptImg();
     genStudentData();
 });
@@ -140,13 +141,13 @@ async function genQuarterSelect() {
         );
     }
     let cookie = getCookieDict();
-    if (cookie.courseQuarter === undefined) {
+    if (cookie.monkeyWebSelectedQuarter === undefined) {
         let config = await getConfig();
         let str = config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter;
         $("#quarterSelect").val(str);
-        writeCookie("courseQuarter", str);
+        writeCookie("monkeyWebSelectedQuarter", str);
     } else {
-        $("#quarterSelect").val(cookie.courseQuarter);
+        $("#quarterSelect").val(cookie.monkeyWebSelectedQuarter);
     }
     genStudentData();
     loadRecieptImg();
