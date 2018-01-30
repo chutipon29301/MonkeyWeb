@@ -229,66 +229,68 @@ function clearAllCookie() {
  */
 function loadRegistrationPage() {
     let cookie = getCookieDict();
-    registrationState(cookie.monkeyWebUser, 1, 2018).then((data) => {
-        if (data.err) {
-            log("[loadRegistrationPage()] : post/registrationState => " + data.err);
+    getConfig().then((cb) => {
+        let regisQ = cb.defaultQuarter.registration;
+        let regisYear = regisQ.year;
+        let regisQuarter = regisQ.quarter;
+        if (regisQuarter > 4) {
+            registrationState(cookie.monkeyWebUser, "summer").then(data => {
+                log(data);
+                if (data.err) {
+                    log("[loadSummerRegistrationPage()] : post/registrationState => " + data.err);
+                } else {
+                    log("[loadSummerRegistrationPage()] : post/registrationState =>");
+                    log(data);
+                    switch (data.registrationState) {
+
+                        case "untransferred":
+                            log("[loadSummerRegistrationPage()] : redirection to ");
+                            self.location = "/summerReceipt";
+                            break;
+                        case "transferred":
+                        case "approved":
+                        case "pending":
+                        case "finished":
+                            log("[loadSummerRegistrationPage()] : redirection to studentProfile");
+                            self.location = "/studentProfile";
+                            break;
+                        default:
+                            log("[loadSummerRegistrationPage()] : redirection to registrationSummer");
+                            self.location = "/registrationSummer";
+                            break;
+                    }
+                }
+            });
         } else {
-            log("[loadRegistrationPage()] : post/registrationState =>");
-            log(data);
-            switch (data.registrationState) {
-                case "unregistered":
-                case "rejected":
-                    log("[loadRegistrationPage()] : redirection to registrationCourse");
-                    self.location = "/regisPage";
-                    break;
-                case "untransferred":
-                    log("[loadRegistrationPage()] : redirection to registrationReceipt");
-                    self.location = "/registrationReceipt";
-                    break;
-                case "pending":
-                case "approved":
-                case "transferred":
-                case "registered":
-                    log("[loadRegistrationPage()] : redirection to studentProfile");
-                    self.location = "/studentProfile";
-                    break;
-                default:
-                    break;
-            }
+            registrationState(cookie.monkeyWebUser, regisQuarter, regisYear).then((data) => {
+                if (data.err) {
+                    log("[loadRegistrationPage()] : post/registrationState => " + data.err);
+                } else {
+                    log("[loadRegistrationPage()] : post/registrationState =>");
+                    log(data);
+                    switch (data.registrationState) {
+                        case "unregistered":
+                        case "rejected":
+                            log("[loadRegistrationPage()] : redirection to registrationCourse");
+                            self.location = "/regisPage";
+                            break;
+                        case "untransferred":
+                            log("[loadRegistrationPage()] : redirection to registrationReceipt");
+                            self.location = "/registrationReceipt";
+                            break;
+                        case "pending":
+                        case "approved":
+                        case "transferred":
+                        case "registered":
+                            log("[loadRegistrationPage()] : redirection to studentProfile");
+                            self.location = "/studentProfile";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
         }
     });
-}
 
-/**
- * Load registration page for summer
- */
-function loadSummerRegistrationPage() {
-    let cookie = getCookieDict();
-    registrationState(cookie.monkeyWebUser, "summer").then(data => {
-        log(data);
-        if (data.err) {
-            log("[loadSummerRegistrationPage()] : post/registrationState => " + data.err);
-        } else {
-            log("[loadSummerRegistrationPage()] : post/registrationState =>");
-            log(data);
-            switch (data.registrationState) {
-
-                case "untransferred":
-                    log("[loadSummerRegistrationPage()] : redirection to ");
-                    self.location = "/summerReceipt";
-                    break;
-                case "transferred":
-                case "approved":
-                case "pending":
-                case "finished":
-                    log("[loadSummerRegistrationPage()] : redirection to studentProfile");
-                    self.location = "/studentProfile";
-                    break;
-                default:
-                    log("[loadSummerRegistrationPage()] : redirection to registrationSummer");
-                    self.location = "/registrationSummer";
-                    break;
-            }
-        }
-    });
 }
