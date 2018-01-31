@@ -1,0 +1,53 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Test Admin"
+    style.
+        .img-fluid:hover{
+            opacity: 0.5;
+        }
+block script
+    script(src="js/testAdmin.js")
+block body
+    .container-fluid#navigation
+        .row
+            .col-6.col-md-4.pt-3
+                img.myNav.userNav.img-fluid(src="images/userAdmin.png")
+            .col-6.col-md-4.pt-3
+                img.myNav.stdNav.img-fluid(src="images/studentAdmin.png")
+            .col-6.col-md-4.pt-3
+                img.myNav.crNav.img-fluid(src="images/courseAdmin.png")
+            .col-6.col-md-4.pt-3
+                img.myNav.configNav.img-fluid(src="images/configAdmin.png")
+            .col-6.col-md-4.pt-3
+                img.myNav.etcNav.img-fluid(src="images/etcAdmin.png")
+    .container-fluid.navigationIcon.pt-3
+        .row    
+            .col-12
+                button#globalBack.btn.btn-lg.btn-outline-primary
+                    span.fa.fa-lg.fa-chevron-circle-left
+                    |&nbsp;Back
+    .container-fluid.myContent.userContent
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+    .container-fluid.myContent.stdContent
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+    .container-fluid.myContent.crContent
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+    .container-fluid.myContent.configContent
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+    .container-fluid.myContent.etcContent
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
+        h1 sdadasda
