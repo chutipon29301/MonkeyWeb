@@ -219,6 +219,7 @@ module.exports = function (app, db, pasport) {
     });
     addPugPage("tutorQrGenerator", side, permission);
     permission = 'admin'
+    addPugPage("testAdmin", side, permission);
     addPugPage("adminAllstudent", side, permission);
     addPugPage("adminStudentProfileQ4", side, permission);
     addPugPage("adminConference", side, permission);
@@ -249,7 +250,6 @@ module.exports = function (app, db, pasport) {
     permission = 'mel'
     addPugPage("checkInSummary", side, permission);
     permission = 'dev'
-    addPugPage("testAdmin", side, permission);
     addPugPage("testDev", side, permission, function () {
         return new Promise((res, rej) => {
             var local = { moment: moment };
