@@ -109,6 +109,9 @@ module.exports = function (app, db, pasport) {
             } else return404(req,res);
         })
     }
+
+    app.use('/dev', require('./script/dev/index')(auth));
+
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();
         if (req.isAuthenticated()) {

@@ -157,3 +157,19 @@ const addNewCourse = () => {
         });
     }
 };
+
+var container = document.getElementById('container');
+var isTimerRunning = false;
+var i = 0;
+container.onclick = () => {
+    i++;
+    if(i === 5){
+        window.location = "/dev";
+    }
+    if(!isTimerRunning){
+        setTimeout(() => {
+            i = 0;
+            isTimerRunning = false;
+        }, 1000);
+    }
+}
