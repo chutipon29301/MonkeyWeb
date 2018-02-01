@@ -1,4 +1,4 @@
-module.exports = function (passport) {
+module.exports = function (passport, db) {
     var bodyParser = require('body-parser');
     var cookieParser = require('cookie-parser');
     var express = require('express');
@@ -10,7 +10,7 @@ module.exports = function (passport) {
         res.render('devHome');
     });
 
-    require('./task.js')(app, passport);
+    require('./task.js')(app, passport, db);
 
     app.get('/taskDB', (req, res) => {
         res.render('devTemplate');

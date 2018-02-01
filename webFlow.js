@@ -110,7 +110,7 @@ module.exports = function (app, db, pasport) {
         })
     }
 
-    app.use('/dev', require('./script/dev/index')(auth));
+    app.use('/dev', require('./script/dev/index')(auth, db));
 
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();

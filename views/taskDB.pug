@@ -1,0 +1,18 @@
+extends devTemplate
+block breadcrumb
+    li.breadcrumb-item.active Task DB
+block content
+    .container.col-12
+        table.table.table-hover.table-responsive
+            thead
+                tr
+                    th _id
+                    th Title
+                    th Detail
+            tbody
+                each task in tasks
+                    tr
+                        td= task._id
+                        td= task.title
+                        td= task.detail
+block script
