@@ -608,6 +608,7 @@ async function generateChart(type) {
     let pcrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ccrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ecrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let emptySeatReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /**
      * change day str to num index
      * @param {string} dayStr 
@@ -679,8 +680,10 @@ async function generateChart(type) {
      */
     const cvZero = (dataIn) => {
         for (let i in dataIn) {
-            if (dataIn[i] <= 0) {
+            if (dataIn[i] === 0) {
                 dataIn[i] = '';
+            } else if (dataIn[i] < 0) {
+                dataIn[i] = dataIn[i] * (-1) / 100;
             }
         }
     };
@@ -746,6 +749,9 @@ async function generateChart(type) {
             }
         }
     }
+    for (let i in emptySeatReal) {
+        emptySeatReal[i] = maxSeat[i] - mhbReal[i] - phbReal[i] - mcrReal[i] - pcrReal[i] - ccrReal[i] - ecrReal[i];
+    }
     cvZero(mhbStatic);
     cvZero(phbStatic);
     cvZero(mcrStatic);
@@ -759,6 +765,7 @@ async function generateChart(type) {
     cvZero(pcrReal);
     cvZero(ccrReal);
     cvZero(ecrReal);
+    cvZero(emptySeatReal);
     let dataset = [];
     /**
      * add Dataset for chart
@@ -857,6 +864,8 @@ async function generateChart(type) {
                 formatter: function (value, context) {
                     if (value === '') {
                         return '';
+                    } else if (value < 1) {
+                        return '( -' + value * 100 + ' )';
                     } else {
                         return '( ' + value + ' )';
                     }
@@ -869,6 +878,34 @@ async function generateChart(type) {
         addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
         addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
         addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
+        dataset.push({
+            type: 'bar',
+            label: "Remaining(Real)",
+            stack: 'Stack 1',
+            data: emptySeatReal,
+            backgroundColor: "rgba(0,0,0,0)",
+            borderColor: "rgba(0,0,0,0)",
+            borderWidth: 2,
+            datalabels: {
+                font: {
+                    style: 'bold',
+                    size: 16
+                },
+                color: "#efec2d",
+                anchor: "start",
+                align: "end",
+                offset: 1,
+                formatter: function (value, context) {
+                    if (value === '') {
+                        return '';
+                    } else if (value < 1) {
+                        return '( -' + value * 100 + ' )';
+                    } else {
+                        return '( ' + value + ' )';
+                    }
+                }
+            }
+        });
         var ctx = document.getElementById("fhbChart").getContext('2d');
         myChart = new Chart(ctx, {
             type: 'bar',
@@ -934,6 +971,8 @@ async function generateChart(type) {
                         formatter: function (value, context) {
                             if (value === '') {
                                 return '';
+                            } else if (value < 1) {
+                                return '( -' + value * 100 + ' )';
                             } else {
                                 return '( ' + value + ' )';
                             }
@@ -970,6 +1009,8 @@ async function generateChart(type) {
                         formatter: function (value, context) {
                             if (value === '') {
                                 return '';
+                            } else if (value < 1) {
+                                return '( -' + value * 100 + ' )';
                             } else {
                                 return '( ' + value + ' )';
                             }
@@ -983,6 +1024,34 @@ async function generateChart(type) {
                 addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
                 addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
                 addDataSet("Eng(Real)", ecrReal, 1, "rgba(0,0,0,0)", "#9e9e9e", "#9e9e9e");
+                dataset.push({
+                    type: 'bar',
+                    label: "Remaining(Real)",
+                    stack: 'Stack 1',
+                    data: emptySeatReal,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "rgba(0,0,0,0)",
+                    borderWidth: 2,
+                    datalabels: {
+                        font: {
+                            style: 'bold',
+                            size: 16
+                        },
+                        color: "#efec2d",
+                        anchor: "start",
+                        align: "end",
+                        offset: 1,
+                        formatter: function (value, context) {
+                            if (value === '') {
+                                return '';
+                            } else if (value < 1) {
+                                return '( -' + value * 100 + ' )';
+                            } else {
+                                return '( ' + value + ' )';
+                            }
+                        }
+                    }
+                });
                 updateArray(myChart.data.datasets, dataset);
                 myChart.update();
                 break;

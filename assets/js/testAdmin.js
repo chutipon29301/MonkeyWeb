@@ -157,3 +157,88 @@ const addNewCourse = () => {
         });
     }
 };
+$("#editCourseQuarterSelect").change(function () {
+    if (this.value !== "0") {
+        let year = this.value.slice(0, 4);
+        let quarter = this.value.slice(5);
+        $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
+            for (let i in cb) {
+                $("#editCourseSelect").append(
+                    "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
+                    " (" + moment(cb[i].day).format("ddd H" + ")") + "</option>"
+                );
+            }
+        });
+    }
+});
+$("#editCourseSelect").change(function () {
+    if (this.value !== "0") {
+        let year = $("#editCourseQuarterSelect").val().slice(0, 4);
+        let quarter = $("#editCourseQuarterSelect").val().slice(5);
+        $.post("post/courseInfo", { year: year, quarter: quarter, courseID: this.value }).then(cb => {
+            if (cb.courseName.slice(0, 1) === "S") {
+                $("#editCourseSubjectSelect").val(cb.courseName.slice(0, 3));
+            } else {
+                $("#editCourseSubjectSelect").val(cb.courseName.slice(0, 1));
+            }
+            $("#editCourseLevel").val(cb.courseName.slice(-1));
+            $("#editCourseDaySelect").val(cb.day);
+            $("#editCourseTutorSelect").val(cb.tutor[0]);
+            $("#editCourseRoomSelect").val(cb.room);
+            $("#editCourseDescription").val(cb.description);
+        });
+    }
+});
+const editCourse = () => {
+    if ($(".editCourseCheck:checked").length <= 0) {
+        alert("Please select at least 1 grade!");
+    } else if (confirm("Are you sure to edit this course?")) {
+        let courseID = $("#editCourseSelect").val();
+        let subj = $("#editCourseSubjectSelect").val();
+        let grade = $(".editCourseCheck:checked").map(function () {
+            return this.value;
+        }).get();
+        let level = $("#editCourseLevel").val();
+        let day = $("#editCourseDaySelect").val();
+        let tutor = $("#editCourseTutorSelect").val();
+        let room = $("#editCourseRoomSelect").val();
+        let description = $("#editCourseDescription").val();
+        $.post("post/editCourse", {
+            courseID: courseID,
+            subject: subj,
+            grade: grade,
+            level: level,
+            day: day,
+            tutor: [tutor],
+            description: description,
+            room: room
+        }).then(cb => {
+            log("OK => " + cb);
+            alert("Complete to edit course.");
+        });
+    }
+};
+$("#removeCourseQuarterSelect").change(function () {
+    if (this.value !== "0") {
+        let year = this.value.slice(0, 4);
+        let quarter = this.value.slice(5);
+        $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
+            for (let i in cb) {
+                $("#removeCourseSelect").append(
+                    "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
+                    " (" + moment(cb[i].day).format("ddd H" + ")") + "</option>"
+                );
+            }
+        });
+    }
+});
+const removeCourse = () => {
+    if ($("#removeCourseSelect").val() !== "0") {
+        if (confirm("Are you sure to delete " + $("#removeCourseSelect").val())) {
+            $.post("post/removeCourse", { courseID: $("#removeCourseSelect").val() }).then(cb => {
+                log("OK => " + cb);
+                alert("Complete to remove course.");
+            });
+        }
+    }
+};
