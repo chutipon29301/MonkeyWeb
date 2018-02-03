@@ -4,7 +4,11 @@ async function verify(id,pwd){
         pwd:CryptoJS.SHA3(pwd)
     })
     if(!v.verified) alert('Authorize failed')
-    else location.reload()
+    else {
+        writeCookie('vid',id)
+        writeCookie('vpw',pwd)
+        location.reload()
+    }
 }
 
 $(documen).ready(function(){
