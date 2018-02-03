@@ -4,14 +4,12 @@ module.exports = function (app, db, post) {
 
     var taskDB = db.collection('task');
 
+    const NONE = -1;
     const TODO = 0;
     const ON_PROCESS = 1;
     const ASSIGN = 2;
     const DONE = 3;
     const COMPLETE = 4;
-
-    const CALENDAR = 0;
-    const TASK = 1;
 
     post('/post/v1/addTask', function (req, res) {
         if (!(req.body.assigner && req.body.title && req.body.detail)) {
@@ -31,7 +29,9 @@ module.exports = function (app, db, post) {
             modifyBy: parseInt(req.body.assigner),
             ancestors: [],
             parent: null,
-            status: TODO
+            status: TODO,
+            order: -1,
+            remark: ''
         };
 
         if (req.body.dueDate) {
@@ -58,7 +58,9 @@ module.exports = function (app, db, post) {
                     errInfo: err
                 });
             }
-            res.status(200).send('OK');
+            res.status(200).send({
+                msg: 'OK'
+            });
         });
     });
 
@@ -98,18 +100,12 @@ module.exports = function (app, db, post) {
             _id: ObjectID(req.body.taskID)
         }).then(task => {
             return taskDB.updateMany({
-                ancestors: {
-                    $in: task.ancestors.map(ancestor => ObjectID(ancestor))
-                }
-            });
+                ancestors: task.ancestors[0]
+            }, newValue);
         }).then((err, result) => {
-            if (err) {
-                return res.status(500).send({
-                    err: 0,
-                    errInfo: err
-                });
-            }
-            res.status(200).send('OK')
+            res.status(200).send({
+                msg: 'OK'
+            });
         });
     });
 
@@ -125,62 +121,212 @@ module.exports = function (app, db, post) {
             assignees = [assignees];
         }
 
+        assignees = assignees.map(assignee => parseInt(assignee));
 
-        if (req.body.dueDate) {
-            task.dueDate = new Date(parseInt(req.body.dueDate));
-            task.hasDueDate = true;
-        } else {
-            rstask.hasDueDate = false;
+        taskDB.findOne({
+            _id: ObjectID(req.body.taskID)
+        }).then(parentTask => {
+            var ancestors = parentTask.ancestors;
+            ancestors.push(parentTask._id);
+            var insertObject = assignees.map(assignee => {
+                var temp = {
+                    createOn: new Date(),
+                    lastModified: new Date(),
+                    title: parentTask.title,
+                    detail: parentTask.detail,
+                    owner: assignee,
+                    createBy: parseInt(req.body.assigner),
+                    modifyBy: parseInt(req.body.assigner),
+                    ancestors: ancestors,
+                    parent: parentTask._id,
+                    status: TODO,
+                    hasDueDate: parentTask.hasDueDate,
+                    tags: parentTask.tags,
+                    order: -1,
+                    remark: ''
+                }
+                if (parentTask.hasDueDate) {
+                    temp.dueDate = parentTask.dueDate;
+                }
+                return temp;
+            });
+
+            return Promise.all([
+                taskDB.insertMany(insertObject),
+                taskDB.updateOne({
+                    _id: ObjectID(req.body.taskID)
+                }, {
+                    $set: {
+                        status: ASSIGN
+                    }
+                })
+            ])
+
+            return;
+        }).then(values => {
+            res.status(200).send({
+                msg: 'OK'
+            });
+        });
+    });
+
+    post('/post/v1/changeTaskStatus', function (req, res) {
+        if (!(req.body.taskID && req.body.taskStatus)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
         }
 
-        // if (req.body.tags) {
-        //     if (Array.isArray(req.body.tags)) {
-        //         task.tags = req.body.tags;
-        //     } else {
-        //         task.tags = [req.body.tags];
-        //     }
-        // } else {
-        //     task.tags = [];
-        // }
-
+        var changeStatus = (task, childStatus) => {
+            return Promise.all([
+                taskDB.updateOne({
+                    _id: ObjectID(task._id)
+                }, {
+                    $set: {
+                        status: childStatus
+                    }
+                }),
+                taskDB.updateOne({
+                    _id: ObjectID(task.parent)
+                }, {
+                    $set: {
+                        childStatus: childStatus
+                    }
+                })
+            ])
+        }
 
         taskDB.findOne({
             _id: ObjectID(req.body.taskID)
         }).then(task => {
-            var ancestors = task.ancestors;
-            ancestors.push(task._id)
-            return Promise.all(assignees.map(assignee => {
-                var insertObject = {
-                    createOn: new Date(),
-                    lastModified: new Date(),
-                    title: task.title,
-                    detail: task.detail,
-                    owner: parseInt(assignee),
-                    createBy: parseInt(req.body.assigner),
-                    modifyBy: parseInt(req.body.assigner),
-                    ancestors: ancestors,
-                    parent: task._id,
-                    status: TODO,
-                    hasDueDate: task.hasDueDate
-                };
-
-                if (task.hasDueDate) {
-                    insertObject.dueDate = task.dueDate;
+            if (parseInt(req.body.taskStatus) === DONE) {
+                if (task.parent === null) {
+                    return taskDB.findOne({
+                        _id: ObjectID(task._id)
+                    }).then(task => {
+                        return taskDB.updateMany({
+                            $or: [{
+                                ancestors: ObjectID(task._id)
+                            }, {
+                                _id: task._id
+                            }]
+                        }, {
+                            $set: {
+                                status: COMPLETE
+                            }
+                        });
+                    }).catch(err => {
+                        throw (err);
+                    });
+                } else {
+                    return taskDB.find({
+                        parent: task.parent
+                    }).toArray().then(tasks => {
+                        var doneTask = tasks.filter(task => task.status === DONE);
+                        if (doneTask.length >= tasks.length - 1) {
+                            return Promise.all([
+                                taskDB.updateMany({
+                                    ancestors: ObjectID(task.parent)
+                                }, {
+                                    $set: {
+                                        childStatus: DONE
+                                    }
+                                }),
+                                taskDB.updateOne({
+                                    _id: task._id
+                                }, {
+                                    $set: {
+                                        status: DONE
+                                    }
+                                })
+                            ]);
+                        } else {
+                            return taskDB.updateOne({
+                                _id: ObjectID(task._id)
+                            }, {
+                                $set: {
+                                    status: DONE
+                                }
+                            });
+                        }
+                    })
                 }
-
-                return taskDB.insertOne(insertObject);
-            }));
-        }).then(result => {
-            res.status(200).send('OK');
+            } else {
+                return changeStatus(task, parseInt(req.body.taskStatus));
+            }
+        }).then(values => {
+            return res.status(200).send({
+                msg: 'OK'
+            });
+        }).catch(err => {
+            return res.status(400).send(err);
         });
     });
 
+    post('/post/v1/deleteTask', function (req, res) {
+        if (!req.body.taskID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
 
-    // function findHead() {
+        taskDB.findOne({
+            _id: ObjectID(req.body.taskID)
+        }).then(task => {
+            if (task.parent !== null) {
+                throw ({
+                    err: -1,
+                    msg: 'Non-head task cannot be delete'
+                });
+            }
+            return taskDB.deleteMany({
+                $or: [{
+                    ancestors: task._id
+                }, {
+                    _id: ObjectID(task._id)
+                }]
+            });
+        }).then(() => {
+            return res.status(200).send({
+                msg: 'OK'
+            });
+        }).catch(err => {
+            return res.status(400).send(err);
+        });
+    });
 
-    // }
-
-    // function deleteChild() {
-
-    // }
+    post('/post/v1/listUserTask', function (req, res) {
+        if (!req.body.userID) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        taskDB.aggregate([{
+            $match: {
+                owner: parseInt(req.body.userID),
+                status: {
+                    $ne: COMPLETE
+                }
+            }
+        }, {
+            $lookup: {
+                from: 'user',
+                localField: 'createBy',
+                foreignField: '_id',
+                as: 'createBy'
+            }
+        }]).toArray().then(tasks => {
+            res.status(200).send({
+                tasks: tasks.map(task => {
+                    task.taskID = task._id;
+                    task.createBy = task.createBy[0].nicknameEn
+                    delete task._id;
+                    return task;
+                })
+            });
+        });
+    });
 }

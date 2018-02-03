@@ -78,6 +78,7 @@ module.exports = function (app, db, pasport) {
     var addPugPage = function (page, side, permission, localObj) {
         app.get('/' + page.split('/'), auth.isLoggedIn, async function (req, res) {
             let local = {}
+            let config = await configDB.findOne({ _id: "config" })
             if(req.user){
                 if (localObj) {
                     if (typeof localObj == 'function') {
@@ -90,11 +91,12 @@ module.exports = function (app, db, pasport) {
                     lastname: req.user.lastname,
                     position: req.user.position
                 }
+                local.config = config
             }
             if (!side) res.status(200).render(page.split('/')[page.split('/').length - 1],local);
             else if (req.user) {
                 try {
-                    let config = await configDB.findOne({ _id: "config" })
+                    
                     if (auth.authorize(req.user, side, permission, config)) {
                         
                         res.status(200).render(page.split('/')[page.split('/').length - 1], local);
@@ -120,7 +122,7 @@ module.exports = function (app, db, pasport) {
         next()
     })
     app.get('/test',function(req,res){
-        res.status(200).render('test')
+        res.status(200).render('test',{})
     })
     app.get('/',async function (req, res) {
         if (req.isAuthenticated()) {
@@ -130,7 +132,8 @@ module.exports = function (app, db, pasport) {
                     firstname: req.user.firstname,
                     lastname: req.user.lastname,
                     position: req.user.position
-                }
+                },
+                config : await configDB.findOne({})
             }
             if (req.user.position == 'student') {
                 if (req.user.student.status == 'active'){
@@ -143,7 +146,7 @@ module.exports = function (app, db, pasport) {
                         }
                     return res.status(200).render('home', local);
                 } 
-                if (req.user.student.status == 'inactive') return res.status(200).render('registrationName');
+                if (req.user.student.status == 'inactive') return res.status(200).render('registrationName',local);
             }
             else return res.status(200).render('adminHome', local);
         }
@@ -180,12 +183,10 @@ module.exports = function (app, db, pasport) {
     addPugPage("permanentAdtendance", side, permission);
     permission = { status: 'active', state: ["unregistered", "rejected"] }
     addPugPage("regisPage", side, permission);
-    addPugPage("registrationCourse", side, permission);
-    addPugPage("registrationHybrid", side, permission);
-    addPugPage("registrationSkill", side, permission);
-    addPugPage("submit", side, permission);
     permission = { status: 'active', state: ["unregistered", "rejected"], quarter: "summer" }
     addPugPage("registrationSummer", side, permission);
+    permission = { status: 'active', state: "untransferred" }
+    addPugPage("registrationReceipt", side, permission);
     permission = { status: 'active', state: "untransferred", quarter: "summer" }
     addPugPage("summerReceipt", side, permission);
     side = 'staff'
@@ -193,6 +194,7 @@ module.exports = function (app, db, pasport) {
     addPugPage("adminHome", side, permission);
     addPugPage("adminAllcourse", side, permission);
     addPugPage("adminCoursedescription", side, permission);
+    addPugPage("adminHybridInfo", side, permission);
     addPugPage("tutorCommentStudent", side, permission);
     addPugPage("tutorEditProfile", side, permission);
     addPugPage("adminStudentAttendanceModifier", side, permission);
@@ -222,6 +224,7 @@ module.exports = function (app, db, pasport) {
     });
     addPugPage("tutorQrGenerator", side, permission);
     permission = 'admin'
+    addPugPage("testAdmin", side, permission);
     addPugPage("adminAllstudent", side, permission);
     addPugPage("adminStudentProfileQ4", side, permission);
     addPugPage("adminConference", side, permission);
