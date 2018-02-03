@@ -164,6 +164,8 @@ module.exports = function (app, db, pasport) {
                 do not check if field is undefined
         - localObject is an object that will pass to pug page or can be a function which return promise that resolve to object
     */
+
+    app.get('/adminChat',function(req,res){return res.status(200).render('adminChat')})
     addPugPage("login");
     addPugPage("studentDocument");
     let side = 'student'
