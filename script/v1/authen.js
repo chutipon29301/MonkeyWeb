@@ -34,10 +34,11 @@ module.exports = function(app,db,post,passport){
     post('/post/v1/verifyRegisUser',async function(req,res){
         if(!(req.body.id && req.body.pwd)) res.status(401).send({verified:false})
         try {
-            let user = await userDB.findOne({_id:Number(req.body.id) , password:req.body.user.pwd})
+            let user = await userDB.findOne({_id:Number(req.body.id) , password:req.body.pwd})
             if(user.position && user.position!='student') return res.status(200).send({verified:true})
             else return res.status(401).send({verified:false})    
         } catch (error) {
+            console.log(err)
             return res.status(400).send({err:error})   
         }
     })

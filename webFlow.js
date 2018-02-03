@@ -288,9 +288,17 @@ module.exports = function (app, db, pasport) {
             if(local.config.allowRegistration){
                 return res.status(200).render('regisPage',local)    
             }else if(req.cookies.vid&&req.cookies.vpw){
-                let user = await userDB.findOne({_id:Number(req.cookies.vid),password:req.cookies.vpw})
-                if(user.position && user.position!='student') return res.status(200).render('regisPage',local)
-                else res.status(200).render('verifyRegisUser',local)
+                try {
+                    let user = await userDB.findOne({_id:parseInt(req.cookies.vid),password:req.cookies.vpw})
+                    if(user.position && user.position!='student'){
+                        res.clearCookie('vid')
+                        res.clearCookie('vpw')
+                        return res.status(200).render('regisPage',local)
+                    }
+                    else res.status(200).render('verifyRegisUser',local)
+                } catch (error) {
+                    return return404(req,res)   
+                }
             }else res.status(200).render('verifyRegisUser',local)
         } else return404(req,res)
     })
@@ -343,7 +351,7 @@ module.exports = function (app, db, pasport) {
             },
             config : await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred", quarter: "summer" },local.config)) return res.status(200).render('adminHome',local)
+        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminHome',local)
         else return404(req,res)
     })
     app.get('/adminChat',function(req,res){return res.status(200).render('adminCHat')})
