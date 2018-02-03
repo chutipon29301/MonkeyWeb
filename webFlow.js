@@ -167,26 +167,194 @@ module.exports = function (app, db, pasport) {
                 do not check if field is undefined
         - localObject is an object that will pass to pug page or can be a function which return promise that resolve to object
     */
-    addPugPage("login");
-    addPugPage("studentDocument");
-    let side = 'student'
-    let permission = { status: 'active' }
-    addPugPage("studentProfile", side, permission);
-    addPugPage("summerAbsentForm", side, permission);
-    permission = { status: 'active', state: 'finished' }
-    addPugPage("absentAgreeForm", side, permission);
-    addPugPage("absentForm", side, permission);
-    addPugPage("addForm", side, permission);
-    addPugPage("addAgreeForm", side, permission);
-    addPugPage("permanentAdtendance", side, permission);
-    permission = { status: 'active', state: ["unregistered", "rejected"] }
-    addPugPage("regisPage", side, permission);
-    permission = { status: 'active', state: ["unregistered", "rejected"], quarter: "summer" }
-    addPugPage("registrationSummer", side, permission);
-    permission = { status: 'active', state: "untransferred" }
-    addPugPage("registrationReceipt", side, permission);
-    permission = { status: 'active', state: "untransferred", quarter: "summer" }
-    addPugPage("summerReceipt", side, permission);
+    app.get('/login',function(req,res){
+        return res.status(200).render('login')
+    })
+    app.get('/studentDocument',auth.isLoggedIn,async function(req,res){
+        console.log(req.query)
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        return res.status(200).render('studentDocument',local)
+    })
+    app.get("/studentProfile",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{status:'active'},local.config)) return res.status(200).render('studentProfile',local)
+        else return404(req,res)
+    })
+    app.get("/summerAbsentForm",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{status:'active'},local.config)) return res.status(200).render('summerAbsentForm',local)
+        else return404(req,res)
+    })
+    app.get("/absentAgreeForm",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('absentAgreeForm',local)
+        else return404(req,res)
+    })
+    app.get("/absentForm",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('absentForm',local)
+        else return404(req,res)
+    })
+    app.get("/addForm",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('addForm',local)
+        else return404(req,res)
+    })
+    app.get("/addAgreeForm",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('addAgreeForm',local)
+        else return404(req,res)
+    })
+    app.get("/permanentAdtendance",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('permanentAdtendance',local)
+        else return404(req,res)
+    })
+    app.get("/regisPage",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{ status: 'active', state: ["unregistered", "rejected"] },local.config)){
+            if(local.config.allowRegistration){
+                return res.status(200).render('regisPage',local)    
+            }else if(req.cookies.vid&&req.cookies.vpw){
+                try {
+                    let user = await userDB.findOne({_id:parseInt(req.cookies.vid),password:req.cookies.vpw})
+                    if(user.position && user.position!='student'){
+                        res.clearCookie('vid')
+                        res.clearCookie('vpw')
+                        return res.status(200).render('regisPage',local)
+                    }
+                    else res.status(200).render('verifyRegisUser',local)
+                } catch (error) {
+                    return return404(req,res)   
+                }
+            }else res.status(200).render('verifyRegisUser',local)
+        } else return404(req,res)
+    })
+    app.get("/registrationSummer",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{ status: 'active', state: ["unregistered", "rejected"], quarter: "summer" },local.config)) return res.status(200).render('registrationSummer',local)
+        else return404(req,res)
+    })
+    app.get("/registrationReceipt",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred" },local.config)) return res.status(200).render('registrationReceipt',local)
+        else return404(req,res)
+    })
+    app.get("/summerReceipt",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred", quarter: "summer" },local.config)) return res.status(200).render('summerReceipt',local)
+        else return404(req,res)
+    })
+    app.get("/adminHome",auth.isLoggedIn,async function(req,res){
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config : await configDB.findOne({})
+        }
+        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminHome',local)
+        else return404(req,res)
+    })
+    app.get('/adminChat',function(req,res){return res.status(200).render('adminCHat')})
     side = 'staff'
     permission = 'tutor'
     addPugPage("adminHome", side, permission);
