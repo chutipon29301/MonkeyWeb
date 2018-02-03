@@ -225,17 +225,22 @@ module.exports = function (app, db, post) {
                     }).toArray().then(tasks => {
                         var doneTask = tasks.filter(task => task.status === DONE);
                         if (doneTask.length >= tasks.length - 1) {
-                            return taskDB.updateMany({
-                                $or: [{
+                            return Promise.all([
+                                taskDB.updateMany({
                                     ancestors: ObjectID(task.parent)
                                 }, {
-                                    _id: ObjectID(task.parent)
-                                }]
-                            }, {
-                                $set: {
-                                    childStatus: DONE
-                                }
-                            });
+                                    $set: {
+                                        childStatus: DONE
+                                    }
+                                }),
+                                taskDB.updateOne({
+                                    _id: task._id
+                                }, {
+                                    $set: {
+                                        status: DONE
+                                    }
+                                })
+                            ]);
                         } else {
                             return taskDB.updateOne({
                                 _id: ObjectID(task._id)

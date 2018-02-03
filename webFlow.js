@@ -336,6 +336,7 @@ module.exports = function (app, db, pasport) {
     });
     addPugPage("tutorQrGenerator", side, permission);
     permission = 'admin'
+    addPugPage("testAdmin", side, permission);
     addPugPage("adminAllstudent", side, permission);
     addPugPage("adminStudentProfileQ4", side, permission);
     addPugPage("adminConference", side, permission);

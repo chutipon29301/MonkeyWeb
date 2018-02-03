@@ -100,28 +100,34 @@ $("#uploadBtn").click(function () {
     $("#uploadModal").modal('show');
 });
 $("#slideFile").change(function () {
-    $("#fileLabel").html(this.files[0].name);
+    $("#fileLabel").html(this.files.length + " files selected.");
 });
 $("#submitUploadBtn").click(function () {
-    let file = $("#slideFile");
-    let ext = file.val().split('.').pop().toLowerCase();
+    let ufile = $("#slideFile");
+    let ext = ufile.val().split('.').pop().toLowerCase();
     if ($.inArray(ext, ['png', 'jpg', 'jpeg']) === -1) {
         alert('กรุณาอัพไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
     } else {
         let str = "Old files will be replace, continue?";
         if (confirm(str)) {
-            let formData = new FormData();
-            formData.append('files', file, file.name);
-            $.ajax({
-                url: 'post/updateStudentSlideshow',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function () {
-                    location.reload();
+            let files = ufile.get(0).files;
+            if (files.length > 0) {
+                let formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    formData.append('file[]', file, file.name);
                 }
-            });
+                $.ajax({
+                    url: 'post/updateStudentSlideshow',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+                        location.reload();
+                    }
+                });
+            }
         }
     }
 });
