@@ -13,7 +13,7 @@ mixin card(task)
 			.header.bg-blue-grey
 				h2
 					= task.title
-					small 
+					small= task.createBy
 				ul.header-dropdown.m-r--5
 					li.dropdown
 						a.dropdown-toggle(href='javascript:void(0);', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
