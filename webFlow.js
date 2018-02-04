@@ -300,7 +300,10 @@ module.exports = function (app, db, pasport) {
         if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminHome',local)
         else return404(req,res)
     })
-    app.get('/adminChat',function(req,res){return res.status(200).render('adminCHat')})
+    app.get('/adminChat',function(req,res){
+        console.log(req.query)
+        return res.status(200).render('adminChat')
+    })
     app.get("/adminAllcourse",auth.isLoggedIn,async function(req,res){
         let local = {
             webUser: {
