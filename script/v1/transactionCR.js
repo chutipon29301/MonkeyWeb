@@ -1,7 +1,11 @@
 let allField = {_id : "ObjectID", studentID : "number", courseID:"string", timestamp : "Date",  value : "number", sender : "number", reason : "string", remark : "string"}
+let checkoutHrs = {9:8,10:8,11:12,12:12,13:12,14:13,15:13,16:17,17:17,18:19,19:19,20:19}
 var ObjectID = require('mongodb').ObjectID;
 module.exports = function(app, db, post){
     let transactionCR = db.collection('transactionCR')
+    let configDB = db.collection('config')
+    let courseDB = db.collection('course')
+    let userDB = db.collection('user')
     /**
      * each obj has these parameter
      * {
@@ -33,20 +37,48 @@ module.exports = function(app, db, post){
                 msg: 'Bad Reqeust'
             });
         }
-        let studentID = parseInt(req.body.studentID)
+        let allsbj = ['','M','P','C','E','B']
+        let studentID = parseInt(req.body.studentID.slice(0,5))
         let value = parseInt(req.body.value)
+        let date = new Date()
+        let day = date.getDay()
+        let hr = date.getHours()
         try{
-            await transactionCR.insertOne({
-                studentID : studentID,
-                timestamp : new Date(),
-                subject : req.body.subject[0].toUpperCase(),
-                value : value,
-                sender : studentID,
-                reason : "CheckoutCR",
-                remark : "",
-                hybridID : req.body.hybridID
-            })
-            return res.status(200).send({msg:"ok"})
+            let config = await configDB.findOne({})
+            let quarter
+            if(day>0 && day<6 && hr<16) quarter = config.defaultQuarter.summer;
+            else quarter = config.defaultQuarter.quarter;
+            let possibleCourse = await courseDB.find({
+                student:{$elemMatch:{studentID}},
+                subject:allsbj[req.body.studentID[5]],
+                quarter:quarter.quarter,
+                year:quarter.year,
+                tutor:99000
+            }).toArray()
+            let courseID;
+            for(let i in possibleCourse){
+                let courseDate = new Date(possibleCourse[i].day)
+                let courseDay = courseDate.getDay()
+                let courseHr = courseDate.getHours()
+                if(checkoutHrs[hr] == courseHr && courseDay == day){
+                    courseID = possibleCourse[i]._id
+                    break
+                }
+            }
+            if(courseID){
+                await transactionCR.insertOne({
+                    studentID : studentID,
+                    timestamp : new Date(),
+                    courseID : courseID,
+                    value : value,
+                    sender : studentID,
+                    reason : "CheckoutCR",
+                    remark : "",
+                })
+                return res.status(200).send({msg:"ok"})
+            }else{
+                return res.status(400).send({err:400,msg:'Cannot find course at this time'})
+            }
         }catch(e){
             return res.status(500).send({err:e})
         }
@@ -77,7 +109,7 @@ module.exports = function(app, db, post){
                 studentID : parseInt(req.body.studentID),
                 timestamp : req.body.timestamp?new Date(parseInt(req.body.timestamp)):new Date(),
                 value : parseInt(req.body.value),
-                subject : req.body.courseID,
+                courseID : req.body.courseID,
                 sender : parseInt(req.body.sender),
                 reason : req.body.reason,
                 remark : req.body.remark?req.body.remark:""
