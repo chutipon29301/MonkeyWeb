@@ -157,6 +157,22 @@ const addNewCourse = () => {
         });
     }
 };
+
+var container = document.getElementById('container');
+var isTimerRunning = false;
+var i = 0;
+container.onclick = () => {
+    i++;
+    if(i === 5){
+        window.location = "/dev";
+    }
+    if(!isTimerRunning){
+        setTimeout(() => {
+            i = 0;
+            isTimerRunning = false;
+        }, 1000);
+    }
+}
 $("#editCourseQuarterSelect").change(function () {
     if (this.value !== "0") {
         let year = this.value.slice(0, 4);

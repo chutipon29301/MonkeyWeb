@@ -68,6 +68,8 @@ module.exports = function (app, db, pasport) {
             res.status(404).sendFile(path.join(__dirname, "old/404.html"));
         }
     };
+    
+    app.use('/dev', require('./script/dev/index')(auth, db));
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();
         if (req.isAuthenticated()) {
