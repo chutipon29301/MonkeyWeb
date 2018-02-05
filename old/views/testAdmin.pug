@@ -265,6 +265,32 @@ block body
                 .col
                     button.float-right.btn.btn-primary(onclick="listCourseSuggest();") List
     .container-fluid.myContent.configContent
-        h1 Under Construction
+        +dropdownCard("listQuarterPane","List all quarter","post/listQuarter")
+            .row
+                .col
+                    button.btn.btn-primary(onclick="listAllQuarter();") List
+            .table-responsive
+                table.table.table-hover.table-bordered.mt-3
+                    thead
+                        tr
+                            th.text-center QuarterID
+                            th.text-center Name
+                            th.text-center Year
+                            th.text-center Quarter
+                            th.text-center Max seat
+                            th.text-center Week
+                            th.text-center Status
+                    tbody#allQuarterTableBody
+        +dropdownCard("addQuarterPane","Add quarter","post/addQuarter")
+            .row
+                .col-12.col-md-4
+                    input#addQuarterYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-4
+                    input#addQuarterQuarterInput.form-control(type="text" placeholder="Quarter")
+                .col-12.col-md-4
+                    input#addQuarterNameInput.form-control(type="text" placeholder="CRxxQx")
+            .row.mt-3
+                .col
+                    button.btn.btn-success.float-right(onclick="addNewQuarter();") Add +
     .container-fluid.myContent.etcContent
         h1 Under Construction

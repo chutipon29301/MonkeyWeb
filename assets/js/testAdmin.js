@@ -157,7 +157,6 @@ const addNewCourse = () => {
         });
     }
 };
-
 var container = document.getElementById('container');
 var isTimerRunning = false;
 var i = 0;
@@ -370,6 +369,44 @@ const listCourseSuggest = () => {
                     }
                 }
             });
+        });
+    }
+};
+// config pane function
+const listAllQuarter = () => {
+    listQuarter("private").then(cb => {
+        let data = cb.quarter;
+        for (let i in data) {
+            $("#allQuarterTableBody").append(
+                "<tr>" +
+                "<td class='text-center'>" + data[i].quarterID + "</td>" +
+                "<td class='text-center'>" + data[i].name + "</td>" +
+                "<td class='text-center'>" + data[i].year + "</td>" +
+                "<td class='text-center'>" + data[i].quarter + "</td>" +
+                "<td class='text-center'>" + data[i].maxSeat + "</td>" +
+                "<td class='text-center'>" + data[i].week + "</td>" +
+                "<td class='text-center'>" + data[i].status + "</td>" +
+                "</tr>"
+            );
+        }
+    });
+};
+const addNewQuarter = () => {
+    if ($("#addQuarterYearInput").val().length <= 0) {
+        alert("Please input year.");
+    } else if ($("#addQuarterQuarterInput").val().length <= 0) {
+        alert("Please input quarter.");
+    } else if ($("#addQuarterNameInput").val().length <= 0) {
+        alert("Please input name.");
+    } else {
+        $.post("post/addQuarter", {
+            year: $("#addQuarterYearInput").val(),
+            quarter: $("#addQuarterQuarterInput").val(),
+            name: $("#addQuarterNameInput").val(),
+            status: "public"
+        }).then(cb => {
+            log("OK " + cb);
+            alert("Complete to add quarter.");
         });
     }
 };
