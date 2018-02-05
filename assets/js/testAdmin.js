@@ -157,16 +157,15 @@ const addNewCourse = () => {
         });
     }
 };
-
 var container = document.getElementById('container');
 var isTimerRunning = false;
 var i = 0;
 container.onclick = () => {
     i++;
-    if(i === 5){
+    if (i === 5) {
         window.location = "/dev";
     }
-    if(!isTimerRunning){
+    if (!isTimerRunning) {
         setTimeout(() => {
             i = 0;
             isTimerRunning = false;
@@ -178,6 +177,7 @@ $("#editCourseQuarterSelect").change(function () {
         let year = this.value.slice(0, 4);
         let quarter = this.value.slice(5);
         $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
+            $("#editCourseSelect").empty();
             for (let i in cb) {
                 $("#editCourseSelect").append(
                     "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
@@ -239,6 +239,7 @@ $("#removeCourseQuarterSelect").change(function () {
         let year = this.value.slice(0, 4);
         let quarter = this.value.slice(5);
         $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
+            $("#removeCourseSelect").empty();
             for (let i in cb) {
                 $("#removeCourseSelect").append(
                     "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
@@ -256,5 +257,156 @@ const removeCourse = () => {
                 alert("Complete to remove course.");
             });
         }
+    }
+};
+$("#addCourseSuggestQuarterSelect").change(function () {
+    if (this.value !== "0") {
+        let year = this.value.slice(0, 4);
+        let quarter = this.value.slice(5);
+        $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
+            $("#addCourseSuggestSelect").empty();
+            for (let i in cb) {
+                $("#addCourseSuggestSelect").append(
+                    "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
+                    " (" + moment(cb[i].day).format("ddd H" + ")") + "</option>"
+                );
+            }
+        });
+    }
+});
+const addCourseSuggest = () => {
+    if ($("#addCourseSuggestQuarterSelect").val() === "0" ||
+        $("#addCourseSuggestSelect").val() === "0" ||
+        $("#addCourseSuggestGradeSelect").val() === "0" ||
+        $("#addCourseSuggestLevelInput").val().length <= 0) {
+        alert("Incorrect input, please check again.");
+    } else {
+        let year = $("#addCourseSuggestQuarterSelect").val().slice(0, 4);
+        let quarter = $("#addCourseSuggestQuarterSelect").val().slice(5);
+        $.post("post/addCourseSuggestion", {
+            year: year,
+            quarter: quarter,
+            grade: $("#addCourseSuggestGradeSelect").val(),
+            level: $("#addCourseSuggestLevelInput").val(),
+            courseID: $("#addCourseSuggestSelect").val()
+        }).then(cb => {
+            log("OK " + cb);
+            alert("Cpmplete to add course suggestion.");
+        });
+    }
+};
+$("#removeCourseSuggestQuarterSelect").change(function () {
+    if (this.value !== "0") {
+        let year = this.value.slice(0, 4);
+        let quarter = this.value.slice(5);
+        $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
+            $("#removeCourseSuggestSelect").empty();
+            for (let i in cb) {
+                $("#removeCourseSuggestSelect").append(
+                    "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
+                    " (" + moment(cb[i].day).format("ddd H" + ")") + "</option>"
+                );
+            }
+        });
+    }
+});
+const removeCourseSuggest = () => {
+    if ($("#removeCourseSuggestQuarterSelect").val() === "0" ||
+        $("#removeCourseSuggestSelect").val() === "0" ||
+        $("#removeCourseSuggestGradeSelect").val() === "0" ||
+        $("#removeCourseSuggestLevelInput").val().length <= 0) {
+        alert("Incorrect input, please check again.");
+    } else {
+        let year = $("#removeCourseSuggestQuarterSelect").val().slice(0, 4);
+        let quarter = $("#removeCourseSuggestQuarterSelect").val().slice(5);
+        $.post("post/removeCourseSuggestion", {
+            year: year,
+            quarter: quarter,
+            grade: $("#removeCourseSuggestGradeSelect").val(),
+            level: $("#removeCourseSuggestLevelInput").val(),
+            courseID: $("#removeCourseSuggestSelect").val()
+        }).then(cb => {
+            log("OK " + cb);
+            alert("Cpmplete to remove course suggestion.");
+        });
+    }
+};
+const listCourseSuggest = () => {
+    if ($("#listCourseSuggestQuarterSelect").val() === "0" || $("#listCourseSuggestGradeSelect").val() === "0") {
+        alert("Please select quarter & grade.");
+    } else {
+        let year = $("#listCourseSuggestQuarterSelect").val().slice(0, 4);
+        let quarter = $("#listCourseSuggestQuarterSelect").val().slice(5);
+        $.post("post/listCourseSuggestion", {
+            year: year,
+            quarter: quarter,
+            grade: $("#listCourseSuggestGradeSelect").val()
+        }).then(cb => {
+            let data = cb.course;
+            $("#listCourseSuggestTable").empty();
+            $("#listCourseSuggestTable").append(
+                "<thead><tr></tr></thead>" +
+                "<tbody><tr></tr></tbody>"
+            );
+            let promise = [];
+            for (let i in data) {
+                for (let j in data[i].courseID) {
+                    promise.push(courseInfo(data[i].courseID[j]));
+                }
+            }
+            Promise.all(promise).then(cb2 => {
+                for (let i in data) {
+                    $("#listCourseSuggestTable thead tr").append(
+                        "<th class='text-center'>" + data[i].level + "</th>"
+                    );
+                    $("#listCourseSuggestTable tbody tr").append(
+                        "<td class='text-center' id='listCourseSuggestTableBody" + i + "'></td>"
+                    );
+                    for (let j in data[i].courseID) {
+                        $("#listCourseSuggestTableBody" + i).html(
+                            $("#listCourseSuggestTableBody" + i).html() + cb2[j].courseName + "<BR>"
+                        );
+                    }
+                }
+            });
+        });
+    }
+};
+// config pane function
+const listAllQuarter = () => {
+    listQuarter("private").then(cb => {
+        let data = cb.quarter;
+        for (let i in data) {
+            $("#allQuarterTableBody").append(
+                "<tr>" +
+                "<td class='text-center'>" + data[i].quarterID + "</td>" +
+                "<td class='text-center'>" + data[i].name + "</td>" +
+                "<td class='text-center'>" + data[i].year + "</td>" +
+                "<td class='text-center'>" + data[i].quarter + "</td>" +
+                "<td class='text-center'>" + data[i].maxSeat + "</td>" +
+                "<td class='text-center'>" + data[i].week + "</td>" +
+                "<td class='text-center'>" + data[i].status + "</td>" +
+                "</tr>"
+            );
+        }
+    });
+};
+const addNewQuarter = () => {
+    if ($("#addQuarterYearInput").val().length <= 0) {
+        alert("Please input year.");
+    } else if ($("#addQuarterQuarterInput").val().length <= 0) {
+        alert("Please input quarter.");
+    } else if ($("#addQuarterNameInput").val().length <= 0) {
+        alert("Please input name.");
+    } else {
+        $.post("post/addQuarter", {
+            year: $("#addQuarterYearInput").val(),
+            quarter: $("#addQuarterQuarterInput").val(),
+            name: $("#addQuarterNameInput").val(),
+            status: "public"
+        }).then(cb => {
+            log("OK " + cb);
+            alert("Complete to add quarter.");
+        });
     }
 };
