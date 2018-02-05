@@ -60,7 +60,7 @@ module.exports = function (app, db, post) {
                             courseID: courseID,
                             upload: new Date(),
                             displayDate: date
-                        }, function (err, result) {});
+                        }, function (err, result) { });
                     } catch (err) {
                         if (error === undefined) {
                             error = [];
@@ -278,7 +278,7 @@ module.exports = function (app, db, post) {
         });
     });
 
-    app.get('/get/v1/attendanceDocument', function(req,res){
+    app.get('/get/v1/attendanceDocument', function (req, res) {
         if (!req.query.k) {
             return res.status(400).send({
                 err: 0,
@@ -289,6 +289,22 @@ module.exports = function (app, db, post) {
             _id: 'config'
         }).then(config => {
             res.sendFile(config.attendanceDocumentPath + '/' + req.query.k);
+        });
+    });
+
+    post('/post/v1/countAnnouncement', function (req, res) {
+        configDB.findOne({
+            _id: 'config'
+        }).then(config => {
+            fs.readdir(config.studentSlideshowPath, function (err, files) {
+                if (err) {
+                    return res.status(400).send({
+                        err: 0,
+                        msg: 'Bad Reqeust'
+                    });
+                }
+                return res.status(200).send(files);
+            });
         });
     });
 }

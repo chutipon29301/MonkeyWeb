@@ -113,7 +113,7 @@ module.exports = function(app, db, post){
         if(req.body.endDate) time.$lte = new Date(parseInt(req.body.endDate));
         if(time.$gte || time.$lte) findObj.timestamp = time;
         try{
-            let arr = await transactionFHB.find(findObj).toArray()
+            let arr = await transactionFHB.find(findObj).sort({timestamp:1}).toArray()
             return res.status(200).send( arr )
         }catch(e){
             return res.status(500).send({err:e})
@@ -144,9 +144,10 @@ module.exports = function(app, db, post){
                 let total = await transactionFHB.aggregate([
                     {$match : {studentID : parseInt(req.body.studentID) , subject : req.body.subject[0].toUpperCase()}},
                     {$group : { _id : {studentID:"$studentID",subject:"$subject"} , total : { $sum : "$value" } , lastUpdate : {$max : "$timestamp"} }},
-                    {$project : {_id:0 , studentID:"$_id.studentID" , subject:"$_id.subject" , total:"$total" , lastUpdate:"$lastUpdate"}}
+                    {$project : {_id:0 , studentID:"$_id.studentID" , subject:"$_id.subject" , total:"$total" , lastUpdate:"$lastUpdate"}},
                 ]).toArray()
-                return res.status(200).send(total[0])
+                if(total.length == 0) return res.status(200).send({studentID:Number(req.body.studentID.slice(0,5)),subject:req.body.subject[0].toUpperCase(),total:0,lastUpdate: new Date(0)})
+                else return res.status(200).send(total[0])
             } catch (error) {
                 console.log(error)
                 return res.status(500).send({err : error})
@@ -155,11 +156,13 @@ module.exports = function(app, db, post){
             try {
                 let total = []
                 for(i in req.body.studentArr){
-                    total.push((await transactionFHB.aggregate([
+                    let temp = (await transactionFHB.aggregate([
                         {$match : {studentID : parseInt(req.body.studentArr[i].studentID) , subject : req.body.studentArr[i].subject[0].toUpperCase()} },
                         {$group : { _id : {studentID:"$studentID",subject:"$subject"} , total : { $sum : "$value" } , lastUpdate : {$max : "$timestamp"} }},
                         {$project : { _id:0 , studentID:"$_id.studentID" , subject:"$_id.subject" , total:"$total" , lastUpdate:"$lastUpdate"}}
-                    ]).toArray())[0] )
+                    ]).toArray())[0]
+                    if(!temp)total.push({studentID:Number(req.body.studentID.slice(0,5)),subject:req.body.subject[0].toUpperCase(),total:0,lastUpdate: new Date(0)})
+                    else total.push(temp)
                 }
                 return res.status(200).send(total)
             } catch (error) {

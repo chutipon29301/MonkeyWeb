@@ -32,7 +32,6 @@ app.use(function(req,res,next){
     res.header("Expires","0");
     next();
 });
-app.use('/v2', require('./script/v2/index')());
 // Allow render from pug files
 app.set("views",path.join(__dirname,"old/views"));
 app.set("view engine","pug");
