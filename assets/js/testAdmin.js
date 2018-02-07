@@ -45,6 +45,23 @@ async function initGlobalData() {
     log(config);
     log(allQuarter);
     log(allTutor);
+    // Init some data with config
+    $("#setDefaultQYearInput").attr("placeholder", config.defaultQuarter.quarter.year);
+    $("#setDefaultQQuarterInput").attr("placeholder", config.defaultQuarter.quarter.quarter);
+    $("#setSummerQYearInput").attr("placeholder", config.defaultQuarter.summer.year);
+    $("#setSummerQQuarterInput").attr("placeholder", config.defaultQuarter.summer.quarter);
+    $("#setRegisQYearInput").attr("placeholder", config.defaultQuarter.registration.year);
+    $("#setRegisQQuarterInput").attr("placeholder", config.defaultQuarter.registration.quarter);
+    $("#allowRegisConfigOption").val((config.allowRegistration) ? "1" : "0");
+    $("#configProfilePicPathInput").val(config.profilePicturePath);
+    $("#configReceiptPathInput").val(config.receiptPath);
+    $("#configSlideShowPathInput").val(config.studentSlideshowPath);
+    $("#configStdCommentPathInput").val(config.studentCommentPicturePath);
+    $("#configCrMaterialPathInput").val(config.courseMaterialPath);
+    $("#configDocPathInput").val(config.documentPath);
+    $("#configAttendDocPathInput").val(config.attendanceDocumentPath);
+    $("#configNxtStd").val(config.nextStudentID);
+    $("#configNxtTutor").val(config.nextTutorID);
     for (let i in allQuarter.quarter) {
         $(".quarterSelect").prepend(
             "<option value=" + allQuarter.quarter[i].year + "-" + allQuarter.quarter[i].quarter + ">" + allQuarter.quarter[i].name + "</option>"
@@ -376,6 +393,7 @@ const listCourseSuggest = () => {
 const listAllQuarter = () => {
     listQuarter("private").then(cb => {
         let data = cb.quarter;
+        $("#allQuarterTableBody").empty();
         for (let i in data) {
             $("#allQuarterTableBody").append(
                 "<tr>" +
@@ -409,4 +427,35 @@ const addNewQuarter = () => {
             alert("Complete to add quarter.");
         });
     }
+};
+const setDefaultQuarter = () => {
+    let reqBody = {};
+    if ($("#setDefaultQYearInput").val().length > 0 && $("#setDefaultQQuarterInput").val().length > 0) {
+        reqBody.quarter = { year: $("#setDefaultQYearInput").val(), quarter: $("#setDefaultQQuarterInput").val() };
+    }
+    if ($("#setSummerQYearInput").val().length > 0 && $("#setSummerQQuarterInput").val().length > 0) {
+        reqBody.summer = { year: $("#setSummerQYearInput").val(), quarter: $("#setSummerQQuarterInput").val() };
+    }
+    if ($("#setRegisQYearInput").val().length > 0 && $("#setRegisQQuarterInput").val().length > 0) {
+        reqBody.registration = { year: $("#setRegisQYearInput").val(), quarter: $("#setRegisQQuarterInput").val() };
+    }
+    $.post("post/v1/editDefaultQuarter", reqBody).then(cb => {
+        log(cb);
+    });
+};
+const editDBConfig = () => {
+    let reqBody = {};
+    reqBody.allowRegistration = ($("#allowRegisConfigOption").val() === "0" ? false : true);
+    reqBody.profilePicturePath = $("#configProfilePicPathInput").val();
+    reqBody.receiptPath = $("#configReceiptPathInput").val();
+    reqBody.studentSlideshowPath = $("#configSlideShowPathInput").val();
+    reqBody.studentCommentPicturePath = $("#configStdCommentPathInput").val();
+    reqBody.courseMaterialPath = $("#configCrMaterialPathInput").val();
+    reqBody.documentPath = $("#configDocPathInput").val();
+    reqBody.attendanceDocumentPath = $("#configAttendDocPathInput").val();
+    reqBody.nextStudentID = $("#configNxtStd").val();
+    reqBody.nextTutorID = $("#configNxtTutor").val();
+    $.post("post/v1/editConfig", reqBody).then(cb => {
+        log(cb);
+    });
 };

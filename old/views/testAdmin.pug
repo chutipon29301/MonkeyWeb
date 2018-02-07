@@ -292,5 +292,63 @@ block body
             .row.mt-3
                 .col
                     button.btn.btn-success.float-right(onclick="addNewQuarter();") Add +
+        +dropdownCard("setDefaultQuarterPane","Set default quarter","post/v1/editDefaultQuarter")
+            .row
+                label.col-12 Default quarter:
+                .col-12.col-md-6
+                    input#setDefaultQYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-6
+                    input#setDefaultQQuarterInput.form-control(type="text" placeholder="Quarter")
+            .row
+                label.col-12.mt-3 Summer quarter:
+                .col-12.col-md-6
+                    input#setSummerQYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-6
+                    input#setSummerQQuarterInput.form-control(type="text" placeholder="Quarter")
+            .row
+                label.col-12.mt-3 Registration quarter:
+                .col-12.col-md-6
+                    input#setRegisQYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-6
+                    input#setRegisQQuarterInput.form-control(type="text" placeholder="Quarter")
+            .row.mt-3
+                .col
+                    button.btn.btn-primary.float-right(onclick="setDefaultQuarter();") Update
+        +dropdownCard("editConfigPane","Configuration","post/v1/editConfig")
+            .form-group
+                label Allow registration:
+                select#allowRegisConfigOption.custom-select
+                    option(value=1) Allow
+                    option(value=0) Not Allow
+            .form-group
+                label Profile pictures path:
+                input#configProfilePicPathInput.form-control(type="text")
+            .form-group
+                label Receipt path:
+                input#configReceiptPathInput.form-control(type="text")
+            .form-group
+                label Home pictures path:
+                input#configSlideShowPathInput.form-control(type="text")
+            .form-group
+                label Student comment pictures path:
+                input#configStdCommentPathInput.form-control(type="text")
+            .form-group
+                label Course material path:
+                input#configCrMaterialPathInput.form-control(type="text")
+            .form-group
+                label Documents path:
+                input#configDocPathInput.form-control(type="text")
+            .form-group
+                label Attendance documents path:
+                input#configAttendDocPathInput.form-control(type="text")
+            .form-group
+                label Next student:
+                input#configNxtStd.form-control(type="number")
+            .form-group
+                label Next tutor:
+                input#configNxtTutor.form-control(type="number")
+            .row.mt-3
+                .col
+                    button.btn.btn-primary.float-right(onclick="editDBConfig();") Config
     .container-fluid.myContent.etcContent
         h1 Under Construction
