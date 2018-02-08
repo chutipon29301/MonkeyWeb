@@ -441,6 +441,7 @@ const setDefaultQuarter = () => {
     }
     $.post("post/v1/editDefaultQuarter", reqBody).then(cb => {
         log(cb);
+        alert("Complete to edit config.");
     });
 };
 const editDBConfig = () => {
@@ -457,5 +458,6 @@ const editDBConfig = () => {
     reqBody.nextTutorID = $("#configNxtTutor").val();
     $.post("post/v1/editConfig", reqBody).then(cb => {
         log(cb);
+        alert("Complete to edit config.");
     });
 };
