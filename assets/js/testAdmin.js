@@ -305,7 +305,7 @@ const addCourseSuggest = () => {
             quarter: quarter,
             grade: $("#addCourseSuggestGradeSelect").val(),
             level: $("#addCourseSuggestLevelInput").val(),
-            courseID: $("#addCourseSuggestSelect").val()
+            courseID: [$("#addCourseSuggestSelect").val()]
         }).then(cb => {
             log("OK " + cb);
             alert("Cpmplete to add course suggestion.");
