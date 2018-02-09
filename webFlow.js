@@ -235,13 +235,13 @@ module.exports = function (app, db, pasport) {
         }
         if(auth.authorize(req.user,'student',{ status: 'active', state: ["unregistered", "rejected"] },local.config)){
             if(local.config.allowRegistration){
-                if(local.config.defaultQuarter.registration > 10) return res.status(200).render('registrationSummer')
+                if(local.config.defaultQuarter.registration.quarter > 10) return res.status(200).render('registrationSummer',local)
                 return res.status(200).render('regisPage',local)    
             }else if(req.cookies.vid&&req.cookies.vpw){
                 try {
                     let user = await userDB.findOne({_id:parseInt(req.cookies.vid),password:req.cookies.vpw})
                     if(user.position && user.position!='student'){
-                        if(local.config.defaultQuarter.registration > 10) return res.status(200).render('registrationSummer')
+                        if(local.config.defaultQuarter.registration.quarter > 10) return res.status(200).render('registrationSummer',local)
                         return res.status(200).render('regisPage',local)
                     }
                     else res.status(200).render('verifyRegisUser',local)
