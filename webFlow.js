@@ -230,6 +230,9 @@ module.exports = function (app, db, pasport) {
             },
             config : await configDB.findOne({})
         }
+        if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred" },local.config)){
+            return res.status(200).render('registrationReceipt',local)    
+        }
         if(auth.authorize(req.user,'student',{ status: 'active', state: ["unregistered", "rejected"] },local.config)){
             if(local.config.allowRegistration){
                 if(local.config.defaultQuarter.registration > 10) return res.status(200).render('registrationSummer')
