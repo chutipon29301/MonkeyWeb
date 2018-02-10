@@ -10,9 +10,7 @@ This site is for using in [Monkey](https://monkey-monkey.com)
 
 ### Installing
 After clone or pull from [My GitHub](https://github.com/monkey-monkey/MonkeyWeb). You must run this before
-```
-npm install
-```
+`npm install`
 And run this on your directory
 ```
 mongod
@@ -21,7 +19,7 @@ node .
 
 ## Add new web page
 For generate page from add this code at web flow.
-```
+```javascript
 app.get(URL,[option],function(req,res){
 	func...
 	return res.status(xxx).render(Page,[option]);
