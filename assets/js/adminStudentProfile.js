@@ -62,12 +62,12 @@ $("#commentViewButt").click(function () {
     $("#viewCommentModal").modal('show');
 });
 
-// add event when click addSubRegisStateButt
-$("#addSubRegisStateButt").click(function () {
-    $("#addSubStateModal").modal("show");
+// add event when click add chat
+$("#addChatBtn").click(function () {
+    $("#addChatModal").modal("show");
 });
-$("#addSubStateButt").click(function () {
-    changeSubState();
+$("#addNewChatButt").click(function () {
+    addNewChat();
 });
 
 // add event when click download butt
@@ -151,6 +151,7 @@ async function genQuarterSelect() {
     }
     genStudentData();
     loadRecieptImg();
+    showChatData();
 }
 
 // gen student info function
@@ -222,7 +223,6 @@ async function genStatusPanel(status, quarter) {
         "<a class='dropdown-item' onclick=\"changeStudentStatus(\'dropped\')\">DROP</a>"
         // "<a class='dropdown-item' onclick=\"changeStudentStatus(\'terminated\')\">TERMINATE</a>"
     );
-    genSubRegisState();
     let str = cookie.courseQuarter;
     if (quarter != undefined) {
         let iden = true;
@@ -239,14 +239,6 @@ async function genStatusPanel(status, quarter) {
         let data = await studentProfile(ID);
         quarter = data.quarter;
         genStatusPanel(status, quarter);
-    }
-}
-async function genSubRegisState() {
-    let str = $("#quarterSelect").val();
-    let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
-    if (studentFullState.subRegistrationState != undefined && studentFullState.subRegistrationState != "-") {
-        let oldHtml = $(".subButt-" + studentFullState.registrationState).html();
-        $(".subButt-" + studentFullState.registrationState).html(oldHtml + "<br>" + studentFullState.subRegistrationState + "</br>");
     }
 }
 async function genStudentTable() {
@@ -643,22 +635,40 @@ function changeStudentState(state) {
     }
 }
 
-// change sub state function
-async function changeSubState() {
-    let str = $("#quarterSelect").val();
-    let cookie = getCookieDict();
-    let tutorName = "";
-    if (cookie.monkeyWebUser == "99001") {
-        tutorName = "Mel";
-    } else if (cookie.monkeyWebUser == "99002") {
-        tutorName = "GG";
+// add chat func
+function addNewChat() {
+    let reqBody = {};
+    if ($("#chatMsg").val().length > 0) {
+        reqBody.msg = $("#chatMsg").val();
+        reqBody.studentID = ID;
+        $.post("post/v1/addChat", reqBody).then(cb => {
+            log(cb);
+            showChatData();
+        });
     } else {
-        tutorName = await name(cookie.monkeyWebUser);
-        tutorName = tutorName.nicknameEn;
+        alert("Please input some text.");
     }
-    let studentFullState = await $.post("post/v1/getRegistrationState", { studentID: ID, quarter: str.slice(5), year: str.slice(0, 4) });
-    await $.post("post/v1/updateStudentRegistrationState", { studentID: ID, registrationState: studentFullState.registrationState, subRegistrationState: tutorName + "-" + $("#subState").val(), quarter: str.slice(5), year: str.slice(0, 4) });
-    location.reload();
+}
+
+// show chat data
+async function showChatData() {
+    let reqBody = {};
+    reqBody.studentID = ID;
+    reqBody.limit = 3;
+    let chatData = await $.post("post/v1/listChat", reqBody);
+    let cookie = getCookieDict();
+    let myID = cookie.monkeyWebUser;
+    let chats = chatData.chats;
+    $("#chatButt").empty();
+    for (let i in chats) {
+        if (chats[i].sender._id === parseInt(myID)) {
+            $("#chatButt").append("<p class='mb-0'><small><span class='fa fa-user-secret'></span>&nbsp;me</small></p>");
+            $("#chatButt").append("<button class='btn btn-primary col-10'>" + chats[i].msg + "</button>");
+        }else{
+            $("#chatButt").append("<p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fa fa-user'></span></small>&nbsp;</p>");
+            $("#chatButt").append("<button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button>");
+        }
+    }
 }
 
 // remove timeTable function
