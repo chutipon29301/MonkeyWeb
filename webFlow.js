@@ -238,6 +238,10 @@ module.exports = function (app, db, pasport) {
                     year:local.config.defaultQuarter.registration.year,
                     student:parseInt(req.user._id),
                 }).toArray()).length
+                local.qname = (await quarterDB.findOne({
+                    quarter:local.config.defaultQuarter.registration.quarter,
+                    year:local.config.defaultQuarter.registration.year
+                })).name
                 return res.status(200).render('registrationReceipt',local)    
             } catch (error) {
                 return return404(req,res)
