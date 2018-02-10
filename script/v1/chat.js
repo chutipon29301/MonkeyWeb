@@ -45,7 +45,7 @@ module.exports = function (app, db, post) {
             }
         }, {
             $sort: {
-                timestamp: 1
+                timestamp: -1
             }
         },{
             $limit: limit
