@@ -5,7 +5,7 @@ block content
 	each chat in chats
 		+card(chat)
 block script
-		script(src='dev/js/chat.js')
+		script(src='dev/js/chatDetail.js')
 mixin card(chat)
 	.col-lg-4.col-md-4.col-sm-6.col-xs-12
 		.card
@@ -19,5 +19,5 @@ mixin card(chat)
 							i.material-icons more_vert
 						ul.dropdown-menu.pull-right
 							li
-								a(href='javascript:deleteTask("' + chat.chatID + '");') Delete
+								a(href='javascript:deleteChat("' + chat.chatID + '");') Delete
 			.body= chat.msg
