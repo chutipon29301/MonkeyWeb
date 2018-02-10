@@ -319,13 +319,27 @@ module.exports = function (app, db, post) {
                 as: 'createBy'
             }
         }]).toArray().then(tasks => {
-            res.status(200).send({
-                tasks: tasks.map(task => {
-                    task.taskID = task._id;
-                    task.createBy = task.createBy[0].nicknameEn
-                    delete task._id;
-                    return task;
-                })
+            Promise.all(tasks.map(task => {
+                console.log(task);
+                return taskDB.findOne({
+                    parent: task._id
+                });
+            })).then(values => {
+                for (let i = 0; i < values.length; i++) {
+                    if (values[i] === null) {
+                        tasks[i].childStatus = -1;
+                    } else {
+                        tasks[i].childStatus = values[i].status;
+                    }
+                }
+                res.status(200).send({
+                    tasks: tasks.map(task => {
+                        task.taskID = task._id;
+                        task.createBy = task.createBy[0].nicknameEn
+                        delete task._id;
+                        return task;
+                    })
+                });
             });
         });
     });

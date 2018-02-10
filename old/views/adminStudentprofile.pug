@@ -38,7 +38,7 @@ block body
                                 label
                                     span.fa.fa-lg.fa-th-large &nbsp;
                                     |Quarter
-                                select.form-control#quarterSelect
+                                select.custom-select#quarterSelect
                 .row
                     .col-12.col-md-5
                         .row
@@ -115,7 +115,7 @@ block body
                     .col-6.col-md-3
                         button.col.btn.btn-outline-info#commentViewButt(type='button') Comment
                     .col-6.col-md-3
-                        button.col.btn.btn-outline-info#addSubRegisStateButt(type='button') Description
+                        button.col.btn.btn-outline-info#addChatBtn(type='button') Chat
                 .row
                     .col
                         canvas#mathCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
@@ -130,6 +130,8 @@ block body
                     .dropdown-menu#statusDropdown
                 hr
                 #statusSubButton
+                hr
+                #chatButt
         //- Modal for add subj
         #addSubjModal.modal.fade
             .modal-dialog
@@ -144,19 +146,19 @@ block body
                     .modal-footer
                         button.btn.btn-success#addSubjButt(type="button") Add
                         button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
-        //- Modal for add sub state
-        #addSubStateModal.modal.fade
+        //- Modal for add chat
+        #addChatModal.modal.fade
             .modal-dialog
                 .modal-content
                     .modal-header
-                        h4.modal-title Add state description
+                        h4.modal-title Add chat
                         button.close(type="button" data-dismiss="modal") &times;
                     .modal-body
                         .form-group
                             label.sr-only &nbsp;
-                            input.form-control#subState(type="text")
+                            input.form-control#chatMsg(type="text")
                     .modal-footer
-                        button.btn.btn-success#addSubStateButt(type="button") Add
+                        button.btn.btn-success#addNewChatButt(type="button") Add
                         button.btn.btn-danger(type="button" data-dismiss="modal") Cancel
         //- Modal for Upload Pic
         #uploadPicModal.modal.fade

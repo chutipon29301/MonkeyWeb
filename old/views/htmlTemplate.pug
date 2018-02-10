@@ -16,7 +16,7 @@ html(lang="en")
         link(rel="apple-touch-icon" sizes="144x144" href="/images/ios_icon144x144.png")
         block head
         title= pageTitle?pageTitle:"Monkey-Monkey Official Website"
-    body
+    body#container
         block header
         if(!hideNavbar)
             nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.sticky-top
@@ -29,16 +29,10 @@ html(lang="en")
                 .collapse.navbar-collapse#navbarContent
                     ul.navbar-nav.mr-auto
                         if(webUser.position=="student")
-                            //- -var startTime = new Date(1512558000000)
-                            //- -var endTime = new Date(1512568800000)
-                            //- -var nowTime = new Date()
-                            //- if nowTime.getTime() > startTime.getTime() && nowTime.getTime() < endTime.getTime()
-                                li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
                             if(config.allowRegistration)
-                                li.nav-item: a.nav-link(href="#" onclick="loadRegistrationPage()") ลงทะเบียน
+                                li.nav-item: a.nav-link(href="/regisPage") ลงทะเบียน
                             +navLink("absentAgreeForm","ลา")
                             +navLink("addAgreeForm","เพิ่ม")
-                            //- +navLink("permanentAdtendance","ลา/เพิ่มตลอดไป")
                         else
                             if(webUser.position!="tutor")
                                 +navLink("adminAllStudent","All Student")

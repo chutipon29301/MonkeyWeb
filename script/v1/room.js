@@ -145,6 +145,11 @@ module.exports = function (app, db, post, gradeBitToString) {
                                     $arrayElemAt: [
                                         '$studentInfo.student.quarter', 0
                                     ]
+                                },
+                                status: {
+                                    $arrayElemAt: [
+                                        '$studentInfo.student.status', 0
+                                    ]
                                 }
                             }
                         }
@@ -171,7 +176,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                                         quarter: quarter.quarter,
                                         year: quarter.year,
                                         registrationState: 'finished'
-                                    }) !== -1;
+                                    }) !== -1 && o.student.status === 'active';
                                 }).length;
                                 response[field]['room' + values[i][j].room].studentCount += studentNum;
                                 response[field]['room' + values[i][j].room].maxStudent = quarter.maxSeat[values[i][j].room]
@@ -202,7 +207,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                                         quarter: quarter.quarter,
                                         year: quarter.year,
                                         registrationState: 'finished'
-                                    }) !== -1;
+                                    }) !== -1 && o.status === 'active';
                                 }).length;
                                 response[field]['room0'].maxStudent = quarter.maxSeat[0];
                                 response[field]['room0'].studentCount += studentNum;
@@ -214,14 +219,14 @@ module.exports = function (app, db, post, gradeBitToString) {
                                             quarter: quarter.quarter,
                                             year: quarter.year,
                                             registrationState: 'finished'
-                                        }) !== -1 && (o.subject === 'P');
+                                        }) !== -1 && (o.subject === 'P') && o.status === 'active';
                                     }).length,
                                     numMath: _.filter(values[i][j].student, o => {
                                         return _.findIndex(o.registrationState, {
                                             quarter: quarter.quarter,
                                             year: quarter.year,
                                             registrationState: 'finished'
-                                        }) !== -1 && o.subject === 'M';
+                                        }) !== -1 && o.subject === 'M' && o.status === 'active';
                                     }).length
                                 });
                             }

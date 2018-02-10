@@ -1,6 +1,7 @@
 extends htmlTemplate
 block head
     -const pageTitle = "Summer Absent Form"
+block script
     script(src="js/summerAbsentForm.min.js")
 block body
     mixin tablebody(startDay,type)
@@ -21,87 +22,86 @@ block body
             +butt(day,type)
     mixin butt(day,type)
         if(day<10)
-            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-08") 8
-            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-10") 10
-            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+"0"+day+"-13") 13
+            button.disabled.btn.btn-light.col-12.col-md-4.btn-8.btn-a(type="button" id=type+"0"+day+"-08") 8
+            button.disabled.btn.btn-light.col-12.col-md-4.btn-10.btn-a(type="button" id=type+"0"+day+"-10") 10
+            button.disabled.btn.btn-light.col-12.col-md-4.btn-13.btn-a(type="button" id=type+"0"+day+"-13") 13
         else
-            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-08") 8
-            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-10") 10
-            button.disabled.btn.btn-default.col-sm-4.col-xs-12(type="button" id=type+day+"-13") 13
-    .container
-        .row: .col-xs-12: h3(style="color:red") หากไม่ต้องการลาสามารถกดยืนยันได้ทันที
-        .row: .col-xs-12
-            h3 แบบฟอร์มลา CR60OCT ล่วงหน้า
+            button.disabled.btn.btn-light.col-12.col-md-4.btn-8.btn-a(type="button" id=type+day+"-08") 8
+            button.disabled.btn.btn-light.col-12.col-md-4.btn-10.btn-a(type="button" id=type+day+"-10") 10
+            button.disabled.btn.btn-light.col-12.col-md-4.btn-13.btn-a(type="button" id=type+day+"-13") 13
+    .container-fluid
+        .row.mt-3: .col: h4(style="color:red") หากไม่ต้องการลาสามารถกดยืนยันได้ทันที
+        .row: .col
+            h4#absentHeader แบบฟอร์มลา CR61MAR
             p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่ต้องการลา
-        form.form-horizontal
-            .form-group
-                label.control-label.col-sm-1 ผู้แจ้ง :
-                .col-sm-11: input#sender.form-control(type="text")
+        .form-group
+            label ผู้แจ้ง :
+            input#sender.form-control(type="text")
         .table-responsive
             table.table.table-bordered
                 tbody
-                    +tablebody(9,"a")
-                    +tablebody(16,"a")
-                    +tablebody(23,"a")
-        hr
-        .row: .col-xs-12
-            h3 แบบฟอร์มชดเชย CR60OCT ล่วงหน้า
-            p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่สะดวกมาชดเชย
-            p(style="color:red") *แต่ทาง รร จะจัดชดเชยให้ตามสมควร
-        .table-responsive
-            table.table.table-bordered
-                tbody
-                    tr
-                        th.text-center Mon 9
-                        th.text-center Tue 10
-                        th.text-center Wed 11
-                        th.text-center Thu 12
-                        th.text-center Fri 13
-                    tr
-                        td
-                            button#p09-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p10-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p11-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p12-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p13-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                    tr
-                        th.text-center Mon 16
-                        th.text-center Tue 17
-                        th.text-center Wed 18
-                        th.text-center Thu 19
-                        th.text-center Fri 20
-                    tr
-                        td
-                            button#p16-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p17-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p18-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p19-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p20-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                    tr
-                        th.text-center Mon 23
-                        th.text-center Tue 24
-                        th.text-center Wed 25
-                        th.text-center Thu 26
-                        th.text-center Fri 27
-                    tr
-                        td
-                            button#p23-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p24-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p25-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p26-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
-                        td
-                            button#p27-15.btn.btn-default.col-sm-12.col-xs-12(type="button") 15
+                    +tablebody(12,"a")
+                    +tablebody(19,"a")
+                    +tablebody(26,"a")
+        //- hr
+        //- .row: .col
+        //-     h4 แบบฟอร์มชดเชย CR61MAR
+        //-     p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่สะดวกมาชดเชย
+        //-     p(style="color:red") *แต่ทาง รร จะจัดชดเชยให้ตามสมควร
+        //- .table-responsive
+        //-     table.table.table-bordered
+        //-         tbody
+        //-             tr
+        //-                 th.text-center Mon 12
+        //-                 th.text-center Tue 13
+        //-                 th.text-center Wed 14
+        //-                 th.text-center Thu 15
+        //-                 th.text-center Fri 16
+        //-             tr
+        //-                 td
+        //-                     button#p12-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p13-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p14-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p15-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p16-15.btn.btn-light.col.btn-p(type="button") 15
+        //-             tr
+        //-                 th.text-center Mon 19
+        //-                 th.text-center Tue 20
+        //-                 th.text-center Wed 21
+        //-                 th.text-center Thu 22
+        //-                 th.text-center Fri 23
+        //-             tr
+        //-                 td
+        //-                     button#p19-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p20-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p21-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p22-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p23-15.btn.btn-light.col.btn-p(type="button") 15
+        //-             tr
+        //-                 th.text-center Mon 26
+        //-                 th.text-center Tue 27
+        //-                 th.text-center Wed 28
+        //-                 th.text-center Thu 29
+        //-                 th.text-center Fri 30
+        //-             tr
+        //-                 td
+        //-                     button#p26-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p27-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p28-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p29-15.btn.btn-light.col.btn-p(type="button") 15
+        //-                 td
+        //-                     button#p30-15.btn.btn-light.col.btn-p(type="button") 15
         .row
-            .col-xs-12.text-right
-                button#submit.btn.btn-success ยืนยัน
+            .col
+                button#submit.btn.btn-success.float-right ยืนยัน
