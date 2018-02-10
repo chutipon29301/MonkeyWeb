@@ -219,14 +219,14 @@ module.exports = function (app, db, post, gradeBitToString) {
                                             quarter: quarter.quarter,
                                             year: quarter.year,
                                             registrationState: 'finished'
-                                        }) !== -1 && (o.subject === 'P');
+                                        }) !== -1 && (o.subject === 'P') && o.status === 'active';
                                     }).length,
                                     numMath: _.filter(values[i][j].student, o => {
                                         return _.findIndex(o.registrationState, {
                                             quarter: quarter.quarter,
                                             year: quarter.year,
                                             registrationState: 'finished'
-                                        }) !== -1 && o.subject === 'M';
+                                        }) !== -1 && o.subject === 'M' && o.status === 'active';
                                     }).length
                                 });
                             }
