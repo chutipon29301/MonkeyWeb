@@ -114,7 +114,6 @@ module.exports = function (app, db, pasport) {
         }
         return res.redirect('/login')
     })
-<<<<<<< HEAD
 
     /*  *********************************************************************************************************
         *********** home , registrationReceipt , registrationName are handled in get '/' above ******************
@@ -130,44 +129,7 @@ module.exports = function (app, db, pasport) {
                 do not check if field is undefined
         - localObject is an object that will pass to pug page or can be a function which return promise that resolve to object
     */
-
     app.get('/adminChat',function(req,res){return res.status(200).render('adminChat')})
-    addPugPage("login");
-    addPugPage("studentDocument");
-    let side = 'student'
-    let permission = { status: 'active' }
-    addPugPage("studentProfile", side, permission);
-    addPugPage("summerAbsentForm", side, permission);
-    permission = { status: 'active', state: 'finished' }
-    addPugPage("absentAgreeForm", side, permission);
-    addPugPage("absentForm", side, permission);
-    addPugPage("addForm", side, permission);
-    addPugPage("addAgreeForm", side, permission);
-    addPugPage("permanentAdtendance", side, permission);
-    permission = { status: 'active', state: ["unregistered", "rejected"] }
-    addPugPage("regisPage", side, permission);
-    permission = { status: 'active', state: ["unregistered", "rejected"], quarter: "summer" }
-    addPugPage("registrationSummer", side, permission);
-    permission = { status: 'active', state: "untransferred" }
-    addPugPage("registrationReceipt", side, permission);
-    permission = { status: 'active', state: "untransferred", quarter: "summer" }
-    addPugPage("summerReceipt", side, permission);
-    side = 'staff'
-    permission = 'tutor'
-    addPugPage("adminHome", side, permission);
-    addPugPage("adminAllcourse", side, permission);
-    addPugPage("adminCoursedescription", side, permission);
-    addPugPage("adminHybridInfo", side, permission);
-    addPugPage("tutorCommentStudent", side, permission);
-    addPugPage("tutorEditProfile", side, permission);
-    addPugPage("adminStudentAttendanceModifier", side, permission);
-    addPugPage("tutorCheckInHistory", side, permission);
-    addPugPage("tutorCheckInActivity", side, permission);
-    addPugPage("tutorCheck", side, permission);
-    addPugPage("tutorCourseMaterial", side, permission, function (req) {
-        return new Promise((res, rej) => {
-            var local = { moment: moment };
-=======
     app.get('/login', function (req, res) {
         return res.status(200).render('login')
     })
@@ -474,7 +436,6 @@ module.exports = function (app, db, pasport) {
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) {
             local.moment = moment;
->>>>>>> 9546b515817170bd359c695b7311ec064f1b4073
             getQuarter(req.query.year, req.query.quarter, function (err, quarter) {
                 if (err) res.send(err);
                 else {
