@@ -1,6 +1,7 @@
 let cookie = getCookieDict();
 let ID = cookie.monkeyWebUser;
-
+let year;
+let quarter;
 loadProfileImg();
 genQuarterSelect();
 
@@ -11,14 +12,14 @@ $("#quarterSelect").change(function () {
 });
 
 // add event when click Img for upload pic
-$("#profileImg").click(function () {
-    // $("#uploadPicModal").modal('show');
-});
-$("#uploadPicButt").click(function () {
-    if (confirm("ยืนยันการ upload?")) {
-        uploadImg();
-    }
-});
+// $("#profileImg").click(function () {
+//     // $("#uploadPicModal").modal('show');
+// });
+// $("#uploadPicButt").click(function () {
+//     if (confirm("ยืนยันการ upload?")) {
+//         uploadImg();
+//     }
+// });
 
 // load profileImg function
 async function loadProfileImg() {
@@ -41,13 +42,15 @@ async function loadProfileImg() {
 
 // gen quarter select func
 async function genQuarterSelect() {
-    let allQ = await listQuarter("public");
+    let [allQ, config] = await Promise.all([listQuarter("public"), getConfig()]);
     let $quarterSelect = $("#quarterSelect");
     for (let i in allQ.quarter) {
         $quarterSelect.append(
             "<option value='" + allQ.quarter[i].quarterID + "'>" + allQ.quarter[i].name + "</option>"
         );
     }
+    year = config.defaultQuarter.registration.year;
+    quarter = config.defaultQuarter.registration.quarter;
     $quarterSelect.val(year + ((quarter >= 10) ? "" : "0") + quarter);
     genStudentData();
     genStudentTimeTable();

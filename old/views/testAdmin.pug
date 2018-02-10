@@ -6,7 +6,7 @@ block head
             opacity: 0.5;
         }
 block script
-    script(src="js/testAdmin.js")
+    script(src="js/testAdmin.min.js")
 mixin dropdownCard(id,head,subhead)
     .card
         .card-header
@@ -217,7 +217,141 @@ block body
             .row.mt-3
                 .col
                     button.float-right.btn.btn-danger(onclick="removeCourse();") Remove -
+        +dropdownCard("addCourseSuggestPane","Add course suggestion","post/addCourseSuggestion")
+            .row 
+                .col-12.col-md-6
+                    select#addCourseSuggestQuarterSelect.quarterSelect.custom-select
+                        option(selected value=0) Select Quarter
+                .col-12.col-md-6
+                    select#addCourseSuggestSelect.custom-select
+                        option(selected value=0) Select Course
+            .row 
+                .col
+                    select#addCourseSuggestGradeSelect.gradeSelect.custom-select
+                        option(selected value=0) Select Grade
+                .col
+                    input#addCourseSuggestLevelInput.form-control(type="text" placeholder="Level")
+            .row.mt-3
+                .col
+                    button.float-right.btn.btn-success(onclick="addCourseSuggest();") Add +
+        +dropdownCard("removeCourseSuggestPane","Remove course suggestion","post/removeCourseSuggestion")
+            .row 
+                .col-12.col-md-6
+                    select#removeCourseSuggestQuarterSelect.quarterSelect.custom-select
+                        option(selected value=0) Select Quarter
+                .col-12.col-md-6
+                    select#removeCourseSuggestSelect.custom-select
+                        option(selected value=0) Select Course
+            .row 
+                .col-12.col-md-6
+                    select#removeCourseSuggestGradeSelect.gradeSelect.custom-select
+                        option(selected value=0) Select Grade
+                .col-12.col-md-6
+                    input#removeCourseSuggestLevelInput.form-control(type="text" placeholder="Level")
+            .row.mt-3
+                .col
+                    button.float-right.btn.btn-danger(onclick="removeCourseSuggest();") Remove -
+        +dropdownCard("listCourseSuggestPane","List course suggestion","post/listCourseSuggestion")
+            .row 
+                .col-12.col-md-6
+                    select#listCourseSuggestQuarterSelect.quarterSelect.custom-select
+                        option(selected value=0) Select Quarter
+                .col-12.col-md-6
+                    select#listCourseSuggestGradeSelect.gradeSelect.custom-select
+                        option(selected value=0) Select Grade
+            .table-responsive
+                table#listCourseSuggestTable.table.table-hover.table-bordered.mt-3
+            .row.mt-3
+                .col
+                    button.float-right.btn.btn-primary(onclick="listCourseSuggest();") List
     .container-fluid.myContent.configContent
-        h1 Under Construction
+        +dropdownCard("listQuarterPane","List all quarter","post/listQuarter")
+            .row
+                .col
+                    button.btn.btn-primary(onclick="listAllQuarter();") List
+            .table-responsive
+                table.table.table-hover.table-bordered.mt-3
+                    thead
+                        tr
+                            th.text-center QuarterID
+                            th.text-center Name
+                            th.text-center Year
+                            th.text-center Quarter
+                            th.text-center Max seat
+                            th.text-center Week
+                            th.text-center Status
+                    tbody#allQuarterTableBody
+        +dropdownCard("addQuarterPane","Add quarter","post/addQuarter")
+            .row
+                .col-12.col-md-4
+                    input#addQuarterYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-4
+                    input#addQuarterQuarterInput.form-control(type="text" placeholder="Quarter")
+                .col-12.col-md-4
+                    input#addQuarterNameInput.form-control(type="text" placeholder="CRxxQx")
+            .row.mt-3
+                .col
+                    button.btn.btn-success.float-right(onclick="addNewQuarter();") Add +
+        +dropdownCard("setDefaultQuarterPane","Set default quarter","post/v1/editDefaultQuarter")
+            .row
+                label.col-12 Default quarter:
+                .col-12.col-md-6
+                    input#setDefaultQYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-6
+                    input#setDefaultQQuarterInput.form-control(type="text" placeholder="Quarter")
+            .row
+                label.col-12.mt-3 Summer quarter:
+                .col-12.col-md-6
+                    input#setSummerQYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-6
+                    input#setSummerQQuarterInput.form-control(type="text" placeholder="Quarter")
+            .row
+                label.col-12.mt-3 Registration quarter:
+                .col-12.col-md-6
+                    input#setRegisQYearInput.form-control(type="text" placeholder="Year")
+                .col-12.col-md-6
+                    input#setRegisQQuarterInput.form-control(type="text" placeholder="Quarter")
+            .row.mt-3
+                .col
+                    button.btn.btn-primary.float-right(onclick="setDefaultQuarter();") Update
+        +dropdownCard("editConfigPane","Configuration","post/v1/editConfig")
+            .form-group
+                label Allow registration:
+                select#allowRegisConfigOption.custom-select
+                    option(value=1) Allow
+                    option(value=0) Not Allow
+            .form-group
+                label Profile pictures path:
+                input#configProfilePicPathInput.form-control(type="text")
+            .form-group
+                label Receipt path:
+                input#configReceiptPathInput.form-control(type="text")
+            .form-group
+                label Home pictures path:
+                input#configSlideShowPathInput.form-control(type="text")
+            .form-group
+                label Student comment pictures path:
+                input#configStdCommentPathInput.form-control(type="text")
+            .form-group
+                label Course material path:
+                input#configCrMaterialPathInput.form-control(type="text")
+            .form-group
+                label Documents path:
+                input#configDocPathInput.form-control(type="text")
+            .form-group
+                label Attendance documents path:
+                input#configAttendDocPathInput.form-control(type="text")
+            .form-group
+                label Course Price:
+                input#configCrPrice.form-control(type="number")
+            .form-group
+                label Next student:
+                input#configNxtStd.form-control(type="number")
+            .form-group
+                label Next tutor:
+                input#configNxtTutor.form-control(type="number")
+            .row.mt-3
+                .col
+                    button.btn.btn-primary.float-right(onclick="editDBConfig();") Config
     .container-fluid.myContent.etcContent
         h1 Under Construction
