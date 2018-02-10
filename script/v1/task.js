@@ -320,12 +320,17 @@ module.exports = function (app, db, post) {
             }
         }]).toArray().then(tasks => {
             Promise.all(tasks.map(task => {
+                console.log(task);
                 return taskDB.findOne({
-                    _id: task._id
+                    parent: task._id
                 });
             })).then(values => {
                 for (let i = 0; i < values.length; i++) {
-                    tasks[i].childStatus = values[i].status;
+                    if (values[i] === null) {
+                        tasks[i].childStatus = -1;
+                    } else {
+                        tasks[i].childStatus = values[i].status;
+                    }
                 }
                 res.status(200).send({
                     tasks: tasks.map(task => {
