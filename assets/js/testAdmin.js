@@ -60,6 +60,7 @@ async function initGlobalData() {
     $("#configCrMaterialPathInput").val(config.courseMaterialPath);
     $("#configDocPathInput").val(config.documentPath);
     $("#configAttendDocPathInput").val(config.attendanceDocumentPath);
+    $("#configCrPrice").val(config.coursePrice);
     $("#configNxtStd").val(config.nextStudentID);
     $("#configNxtTutor").val(config.nextTutorID);
     for (let i in allQuarter.quarter) {
@@ -454,6 +455,7 @@ const editDBConfig = () => {
     reqBody.courseMaterialPath = $("#configCrMaterialPathInput").val();
     reqBody.documentPath = $("#configDocPathInput").val();
     reqBody.attendanceDocumentPath = $("#configAttendDocPathInput").val();
+    reqBody.coursePrice = $("#configCrPrice").val();
     reqBody.nextStudentID = $("#configNxtStd").val();
     reqBody.nextTutorID = $("#configNxtTutor").val();
     $.post("post/v1/editConfig", reqBody).then(cb => {
