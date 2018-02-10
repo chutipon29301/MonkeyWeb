@@ -2,7 +2,6 @@ var ObjectID = require("mongodb").ObjectID;
 
 module.exports = function (app, passport, db) {
     app.get('/taskDB', passport.isLoggedIn, (req, res) => {
-        if(req.user.position !== 'dev') return res.render('404');
         db.collection('task').find({
             parent: null
         }).sort({
@@ -15,7 +14,6 @@ module.exports = function (app, passport, db) {
     });
 
     app.get('/taskDetail', passport.isLoggedIn, (req, res) => {
-        if(req.user.position !== 'dev') return res.render('404');
         Promise.all([
             db.collection('task').findOne({
                 _id: ObjectID(req.query.id)
