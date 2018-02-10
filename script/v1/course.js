@@ -60,7 +60,8 @@ module.exports = function (app, db, post, gradeBitToString, gradeBitToArray) {
                         tutorName: values[i].nicknameEn,
                         studentCount: allCourse[i].student.length,
                         room: allCourse[i].room,
-                        grade: gradeBitToArray(allCourse[i].grade)
+                        grade: gradeBitToArray(allCourse[i].grade),
+                        description: allCourse[i].description
                     });
                 }
                 res.status(200).send(response);

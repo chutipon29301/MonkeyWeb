@@ -68,7 +68,7 @@ module.exports = function (app, db, pasport) {
             res.status(404).sendFile(path.join(__dirname, "old/404.html"));
         }
     };
-    
+
     app.use('/dev', require('./script/dev/index')(auth, db));
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();
@@ -82,10 +82,10 @@ module.exports = function (app, db, pasport) {
         }
         next()
     })
-    app.get('/test',function(req,res){
-        res.status(200).render('test',{})
+    app.get('/test', function (req, res) {
+        res.status(200).render('test', {})
     })
-    app.get('/',async function (req, res) {
+    app.get('/', async function (req, res) {
         if (req.isAuthenticated()) {
             let local = {
                 webUser: {
@@ -94,29 +94,29 @@ module.exports = function (app, db, pasport) {
                     lastname: req.user.lastname,
                     position: req.user.position
                 },
-                config : await configDB.findOne({})
+                config: await configDB.findOne({})
             }
             if (req.user.position == 'student') {
-                if (req.user.student.status == 'active'){
-                    let config = await configDB.findOne({_id:"config"})
-                    for(let i in req.user.student.quarter)
-                        if ( req.user.student.quarter[i].year == config.defaultQuarter.registration.year
-                            && req.user.student.quarter[i].quarter == config.defaultQuarter.registration.quarter ){
-                            if("untransferred" == req.user.student.quarter[i].registrationState)
+                if (req.user.student.status == 'active') {
+                    let config = await configDB.findOne({ _id: "config" })
+                    for (let i in req.user.student.quarter)
+                        if (req.user.student.quarter[i].year == config.defaultQuarter.registration.year
+                            && req.user.student.quarter[i].quarter == config.defaultQuarter.registration.quarter) {
+                            if ("untransferred" == req.user.student.quarter[i].registrationState)
                                 return res.status(200).render('registrationReceipt', local);
                         }
                     return res.status(200).render('home', local);
-                } 
-                if (req.user.student.status == 'inactive') return res.status(200).render('registrationName',local);
+                }
+                if (req.user.student.status == 'inactive') return res.status(200).render('registrationName', local);
             }
             else return res.status(200).render('adminHome', local);
         }
         return res.redirect('/login')
     })
-    app.get('/login',function(req,res){
+    app.get('/login', function (req, res) {
         return res.status(200).render('login')
     })
-    app.get('/studentDocument',auth.isLoggedIn,async function(req,res){
+    app.get('/studentDocument', auth.isLoggedIn, async function (req, res) {
         console.log(req.query)
         let local = {
             webUser: {
@@ -125,11 +125,11 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        return res.status(200).render('studentDocument',local)
+        return res.status(200).render('studentDocument', local)
     })
-    app.get("/studentProfile",auth.isLoggedIn,async function(req,res){
+    app.get("/studentProfile", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -137,12 +137,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{status:'active'},local.config)) return res.status(200).render('studentProfile',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active' }, local.config)) return res.status(200).render('studentProfile', local)
+        else return404(req, res)
     })
-    app.get("/summerAbsentForm",auth.isLoggedIn,async function(req,res){
+    app.get("/summerAbsentForm", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -150,12 +150,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{status:'active'},local.config)) return res.status(200).render('summerAbsentForm',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active' }, local.config)) return res.status(200).render('summerAbsentForm', local)
+        else return404(req, res)
     })
-    app.get("/absentAgreeForm",auth.isLoggedIn,async function(req,res){
+    app.get("/absentAgreeForm", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -163,12 +163,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('absentAgreeForm',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: 'finished' }, local.config)) return res.status(200).render('absentAgreeForm', local)
+        else return404(req, res)
     })
-    app.get("/absentForm",auth.isLoggedIn,async function(req,res){
+    app.get("/absentForm", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -176,12 +176,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('absentForm',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: 'finished' }, local.config)) return res.status(200).render('absentForm', local)
+        else return404(req, res)
     })
-    app.get("/addForm",auth.isLoggedIn,async function(req,res){
+    app.get("/addForm", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -189,12 +189,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('addForm',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: 'finished' }, local.config)) return res.status(200).render('addForm', local)
+        else return404(req, res)
     })
-    app.get("/addAgreeForm",auth.isLoggedIn,async function(req,res){
+    app.get("/addAgreeForm", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -202,12 +202,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('addAgreeForm',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: 'finished' }, local.config)) return res.status(200).render('addAgreeForm', local)
+        else return404(req, res)
     })
-    app.get("/permanentAdtendance",auth.isLoggedIn,async function(req,res){
+    app.get("/permanentAdtendance", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -215,12 +215,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{status:'active',state:'finished'},local.config)) return res.status(200).render('permanentAdtendance',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: 'finished' }, local.config)) return res.status(200).render('permanentAdtendance', local)
+        else return404(req, res)
     })
-    app.get("/regisPage",auth.isLoggedIn,async function(req,res){
+    app.get("/regisPage", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -228,7 +228,7 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
         if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred" },local.config)){
             return res.status(200).render('registrationReceipt',local)    
@@ -244,14 +244,14 @@ module.exports = function (app, db, pasport) {
                         if(local.config.defaultQuarter.registration.quarter > 10) return res.status(200).render('registrationSummer',local)
                         return res.status(200).render('regisPage',local)
                     }
-                    else res.status(200).render('verifyRegisUser',local)
+                    else res.status(200).render('verifyRegisUser', local)
                 } catch (error) {
-                    return return404(req,res)   
+                    return return404(req, res)
                 }
-            }else res.status(200).render('verifyRegisUser',local)
-        } else return404(req,res)
+            } else res.status(200).render('verifyRegisUser', local)
+        } else return404(req, res)
     })
-    app.get("/registrationSummer",auth.isLoggedIn,async function(req,res){
+    app.get("/registrationSummer", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -259,12 +259,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{ status: 'active', state: ["unregistered", "rejected"], quarter: "summer" },local.config)) return res.status(200).render('registrationSummer',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: ["unregistered", "rejected"], quarter: "summer" }, local.config)) return res.status(200).render('registrationSummer', local)
+        else return404(req, res)
     })
-    app.get("/registrationReceipt",auth.isLoggedIn,async function(req,res){
+    app.get("/registrationReceipt", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -272,12 +272,15 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred" },local.config)) return res.status(200).render('registrationReceipt',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: "untransferred" }, local.config)) return res.status(200).render('registrationReceipt', local)
+        else return404(req, res)
     })
-    app.get("/summerReceipt",auth.isLoggedIn,async function(req,res){
+    app.get("/summerReceipt", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let quarter = await getQuarter(config.defaultQuarter.summer.year, config.defaultQuarter.summer.quarter);
+        console.log(quarter);
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -285,12 +288,13 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: config,
+            quarter: quarter
         }
-        if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred", quarter: "summer" },local.config)) return res.status(200).render('summerReceipt',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'student', { status: 'active', state: "untransferred", quarter: "summer" }, local.config)) return res.status(200).render('summerReceipt', local)
+        else return404(req, res)
     })
-    app.get("/adminHome",auth.isLoggedIn,async function(req,res){
+    app.get("/adminHome", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -298,16 +302,16 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminHome',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminHome', local)
+        else return404(req, res)
     })
-    app.get('/adminChat',function(req,res){
+    app.get('/adminChat', function (req, res) {
         console.log(req.query)
         return res.status(200).render('adminChat')
     })
-    app.get("/adminAllcourse",auth.isLoggedIn,async function(req,res){
+    app.get("/adminAllcourse", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -315,12 +319,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminAllcourse',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllcourse', local)
+        else return404(req, res)
     })
-    app.get("/adminCoursedescription",auth.isLoggedIn,async function(req,res){
+    app.get("/adminCoursedescription", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -328,12 +332,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminCoursedescription',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminCoursedescription', local)
+        else return404(req, res)
     })
-    app.get("/adminHybridInfo",auth.isLoggedIn,async function(req,res){
+    app.get("/adminHybridInfo", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -341,12 +345,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminHybridInfo',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminHybridInfo', local)
+        else return404(req, res)
     })
-    app.get("/tutorCommentStudent",auth.isLoggedIn,async function(req,res){
+    app.get("/tutorCommentStudent", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -354,12 +358,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('tutorCommentStudent',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorCommentStudent', local)
+        else return404(req, res)
     })
-    app.get("/tutorEditProfile",auth.isLoggedIn,async function(req,res){
+    app.get("/tutorEditProfile", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -367,12 +371,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('tutorEditProfile',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorEditProfile', local)
+        else return404(req, res)
     })
-    app.get("/adminStudentAttendanceModifier",auth.isLoggedIn,async function(req,res){
+    app.get("/adminStudentAttendanceModifier", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -380,12 +384,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('adminStudentAttendanceModifier',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminStudentAttendanceModifier', local)
+        else return404(req, res)
     })
-    app.get("/tutorCheckInHistory",auth.isLoggedIn,async function(req,res){
+    app.get("/tutorCheckInHistory", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -393,12 +397,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('tutorCheckInHistory',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorCheckInHistory', local)
+        else return404(req, res)
     })
-    app.get("/tutorCheckInActivity",auth.isLoggedIn,async function(req,res){
+    app.get("/tutorCheckInActivity", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -406,12 +410,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('tutorCheckInActivity',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorCheckInActivity', local)
+        else return404(req, res)
     })
-    app.get("/tutorCheck",auth.isLoggedIn,async function(req,res){
+    app.get("/tutorCheck", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -419,12 +423,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('tutorCheck',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorCheck', local)
+        else return404(req, res)
     })
-    app.get("/tutorCourseMaterial",auth.isLoggedIn,async function(req,res){
+    app.get("/tutorCourseMaterial", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -432,9 +436,9 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)){
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) {
             local.moment = moment;
             getQuarter(req.query.year, req.query.quarter, function (err, quarter) {
                 if (err) res.send(err);
@@ -446,16 +450,16 @@ module.exports = function (app, db, pasport) {
                             Object.assign(local, { config: result });
                             post("post/listQuarter", { status: "protected" }, function (result) {
                                 Object.assign(local, { protectedQuarter: result.quarter });
-                                res.status(200).render('tutorCourseMaterial',local);
+                                res.status(200).render('tutorCourseMaterial', local);
                             });
                         });
                     });
                 }
             });
-        } 
-        else return404(req,res)
+        }
+        else return404(req, res)
     })
-    app.get("/tutorQrGenerator",auth.isLoggedIn,async function(req,res){
+    app.get("/tutorQrGenerator", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -463,12 +467,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)) return res.status(200).render('tutorQrGenerator',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorQrGenerator', local)
+        else return404(req, res)
     })
-    app.get("/testAdmin",auth.isLoggedIn,async function(req,res){
+    app.get("/testAdmin", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -476,12 +480,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','admin',local.config)) return res.status(200).render('testAdmin',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('testAdmin', local)
+        else return404(req, res)
     })
-    app.get("/adminAllstudent",auth.isLoggedIn,async function(req,res){
+    app.get("/adminAllstudent", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -489,12 +493,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','admin',local.config)) return res.status(200).render('adminAllstudent',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('adminAllstudent', local)
+        else return404(req, res)
     })
-    app.get("/adminStudentProfileQ4",auth.isLoggedIn,async function(req,res){
+    app.get("/adminStudentProfileQ4", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -502,12 +506,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','admin',local.config)) return res.status(200).render('adminStudentProfileQ4',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('adminStudentProfileQ4', local)
+        else return404(req, res)
     })
-    app.get("/adminConference",auth.isLoggedIn,async function(req,res){
+    app.get("/adminConference", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -515,12 +519,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','admin',local.config)) return res.status(200).render('adminConference',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('adminConference', local)
+        else return404(req, res)
     })
-    app.get("/adminCourseRoom",auth.isLoggedIn,async function(req,res){
+    app.get("/adminCourseRoom", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -528,12 +532,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','admin',local.config)) return res.status(200).render('adminCourseRoom',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('adminCourseRoom', local)
+        else return404(req, res)
     })
-    app.get("/adminCourseTable",auth.isLoggedIn,async function(req,res){
+    app.get("/adminCourseTable", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -541,12 +545,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','admin',local.config)) return res.status(200).render('adminCourseTable',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('adminCourseTable', local)
+        else return404(req, res)
     })
-    app.get("/adminStudentprofile",auth.isLoggedIn,async function(req,res){
+    app.get("/adminStudentprofile", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -554,12 +558,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','admin',local.config)) return res.status(200).render('adminStudentprofile',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('adminStudentprofile', local)
+        else return404(req, res)
     })
-    app.get("/adminCourseMaterial",auth.isLoggedIn,async function(req,res){
+    app.get("/adminCourseMaterial", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -567,9 +571,9 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','tutor',local.config)){
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) {
             local.moment = moment;
             getQuarter(req.query.year, req.query.quarter, function (err, quarter) {
                 if (err) res.send(err);
@@ -581,16 +585,16 @@ module.exports = function (app, db, pasport) {
                             Object.assign(local, { config: result });
                             post("post/listQuarter", { status: "protected" }, function (result) {
                                 Object.assign(local, { protectedQuarter: result.quarter });
-                                res.status(200).render('adminCourseMaterial',local);
+                                res.status(200).render('adminCourseMaterial', local);
                             });
                         });
                     });
                 }
             });
-        } 
-        else return404(req,res)
+        }
+        else return404(req, res)
     })
-    app.get("/checkInSummary",auth.isLoggedIn,async function(req,res){
+    app.get("/checkInSummary", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -598,12 +602,12 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','mel',local.config)) return res.status(200).render('checkInSummary',local)
-        else return404(req,res)
+        if (auth.authorize(req.user, 'staff', 'mel', local.config)) return res.status(200).render('checkInSummary', local)
+        else return404(req, res)
     })
-    app.get("/testDev",auth.isLoggedIn,async function(req,res){
+    app.get("/testDev", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -611,20 +615,20 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config : await configDB.findOne({})
+            config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'staff','dev',local.config)){
+        if (auth.authorize(req.user, 'staff', 'dev', local.config)) {
             local.moment = moment
             post("post/allCourse", { quarter: "all" }, function (result) {
                 Object.assign(local, result);
                 userDB.find({ position: { $ne: "student" } }).sort({ _id: 1 }).toArray(function (err, result) {
                     Object.assign(local, { tutor: result });
-                    return res.status(200).render('testDev',local)
+                    return res.status(200).render('testDev', local)
                 });
             });
-            
+
         }
-        else return404(req,res)
+        else return404(req, res)
     })
     app.all("*", return404);
 }
