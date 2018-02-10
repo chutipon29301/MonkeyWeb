@@ -5,8 +5,13 @@ getData();
 async function getData() {
     let cookies = getCookieDict();
     let stdID = cookies.monkeyWebUser;
-    let [config, stdProfile] = await Promise.all([getConfig(), studentProfile(stdID)]);
+    let [config, stdProfile, allQ] = await Promise.all([getConfig(), studentProfile(stdID), listQuarter("public")]);
     regisQ = config.defaultQuarter.registration;
+    for (let i in allQ.quarter) {
+        if (allQ.quarter[i].year === regisQ.year && allQ.quarter[i].quarter === regisQ.quarter) {
+            $("#regisHead").html("ลงทะเบียน " + allQ.quarter[i].name);
+        }
+    }
     grade = stdProfile.level.slice(0, -1);
     level = stdProfile.level.slice(-1);
     genButton();
