@@ -8,6 +8,7 @@ module.exports = function (app, db, pasport) {
     var configDB = db.collection("config");
     var quarterDB = db.collection("quarter");
     var auth = require('./auth.js');
+    var courseDB = db.collection('course')
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -103,7 +104,7 @@ module.exports = function (app, db, pasport) {
                         if (req.user.student.quarter[i].year == config.defaultQuarter.registration.year
                             && req.user.student.quarter[i].quarter == config.defaultQuarter.registration.quarter) {
                             if ("untransferred" == req.user.student.quarter[i].registrationState)
-                                return res.status(200).render('registrationReceipt', local);
+                                return res.redirect('/regisPage') 
                         }
                     return res.status(200).render('home', local);
                 }
@@ -231,7 +232,16 @@ module.exports = function (app, db, pasport) {
             config: await configDB.findOne({})
         }
         if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred" },local.config)){
-            return res.status(200).render('registrationReceipt',local)    
+            try {
+                local.courseNumber = (await courseDB.find({
+                    quarter:local.config.defaultQuarter.registration.quarter,
+                    year:local.config.defaultQuarter.registration.year,
+                    student:parseInt(req.user._id),
+                }).toArray()).length
+                return res.status(200).render('registrationReceipt',local)    
+            } catch (error) {
+                return return404(req,res)
+            }
         }
         if(auth.authorize(req.user,'student',{ status: 'active', state: ["unregistered", "rejected"] },local.config)){
             if(local.config.allowRegistration){
@@ -252,47 +262,13 @@ module.exports = function (app, db, pasport) {
         } else return404(req, res)
     })
     app.get("/registrationSummer", auth.isLoggedIn, async function (req, res) {
-        let local = {
-            webUser: {
-                userID: parseInt(req.user._id),
-                firstname: req.user.firstname,
-                lastname: req.user.lastname,
-                position: req.user.position
-            },
-            config: await configDB.findOne({})
-        }
-        if (auth.authorize(req.user, 'student', { status: 'active', state: ["unregistered", "rejected"], quarter: "summer" }, local.config)) return res.status(200).render('registrationSummer', local)
-        else return404(req, res)
+        return res.redirect('/regisPage')
     })
-    app.get("/registrationReceipt", auth.isLoggedIn, async function (req, res) {
-        let local = {
-            webUser: {
-                userID: parseInt(req.user._id),
-                firstname: req.user.firstname,
-                lastname: req.user.lastname,
-                position: req.user.position
-            },
-            config: await configDB.findOne({})
-        }
-        if (auth.authorize(req.user, 'student', { status: 'active', state: "untransferred" }, local.config)) return res.status(200).render('registrationReceipt', local)
-        else return404(req, res)
+    app.get("/registrationReceipt", auth.isLoggedIn, function (req, res) {
+        return res.redirect('/regisPage')
     })
-    app.get("/summerReceipt", auth.isLoggedIn, async function (req, res) {
-        let config = await configDB.findOne({});
-        let quarter = await getQuarter(config.defaultQuarter.summer.year, config.defaultQuarter.summer.quarter);
-        console.log(quarter);
-        let local = {
-            webUser: {
-                userID: parseInt(req.user._id),
-                firstname: req.user.firstname,
-                lastname: req.user.lastname,
-                position: req.user.position
-            },
-            config: config,
-            quarter: quarter
-        }
-        if (auth.authorize(req.user, 'student', { status: 'active', state: "untransferred", quarter: "summer" }, local.config)) return res.status(200).render('summerReceipt', local)
-        else return404(req, res)
+    app.get("/summerReceipt", auth.isLoggedIn, function (req, res) {
+        return res.redirect('/regisPage')
     })
     app.get("/adminHome", auth.isLoggedIn, async function (req, res) {
         let local = {
