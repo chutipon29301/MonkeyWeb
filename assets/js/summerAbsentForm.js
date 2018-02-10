@@ -1,70 +1,69 @@
-$(document).ready(function () {
-    var cookie = getCookieDict();
-    $.post("post/studentProfile", { studentID: cookie.monkeyWebUser }).then((data) => {
-        log(data.courseID)
-        $.post("post/gradeCourse", { grade: data.grade, quarter: "summer" }).then((cr) => {
-            log(cr.course)
-            for (let i = 0; i < data.courseID.length; i++) {
-                for (let j = 0; j < cr.course.length; j++) {
-                    // log(moment(cr.course[j].day).hour())
-                    // log(data.courseID[i] === cr.course[j].courseID)
-                    if (data.courseID[i] === cr.course[j].courseID) {
-                        // log($(".btn-default").length)
-                        let temp = moment(cr.course[j].day).hour();
-                        let btn = $(".btn-default");
-                        for (let k = 0; k < btn.length; k++) {
-                            // log(temp)
-                            if (("" + temp).length > 1) {
-                                if (btn[k].id.slice(4, 6) == temp) {
-                                    $(btn[k]).removeClass("disabled")
-                                }
-                            } else {
-                                if (btn[k].id.slice(4, 6) == "0" + temp) {
-                                    $(btn[k]).removeClass("disabled")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
-    })
-    $(".btn").click(function () {
-        if (this.className.indexOf("disabled") < 0) {
-            if (this.id.slice(0, 1) === "a") {
-                if (this.className.indexOf("btn-default") >= 0) {
-                    this.className = this.className.replace("btn-default", "btn-danger");
-                } else this.className = this.className.replace("btn-danger", "btn-default");
-            } else {
-                if (this.className.indexOf("btn-default") >= 0) {
-                    this.className = this.className.replace("btn-default", "btn-info");
-                } else this.className = this.className.replace("btn-info", "btn-default");
+let year;
+let quarter;
+let timeTable;
+getCourse();
+async function getCourse() {
+    let cookies = getCookieDict();
+    let [config, allQ] = await Promise.all([getConfig(), listQuarter("public")]);
+    year = config.defaultQuarter.registration.year;
+    quarter = config.defaultQuarter.registration.quarter;
+    for (let i in allQ.quarter) {
+        if (allQ.quarter[i].year === year && allQ.quarter[i].quarter === quarter) {
+            $("#absentHeader").html("แบบฟอร์มลา " + allQ.quarter[i].name);
+        }
+    }
+    let stdTable = await $.post("post/v1/studentTimeTable", { year: year, quarter: quarter, studentID: cookies.monkeyWebUser });
+    timeTable = stdTable;
+    enableBtn(stdTable);
+}
+function enableBtn(table) {
+    for (let i in table.course) {
+        let t = moment(table.course[i].day);
+        $(".btn-" + t.hour()).removeClass("disabled");
+    }
+}
+$(".btn-a").click(function () {
+    if (!$(this).hasClass("disabled")) {
+        $(this).toggleClass("btn-light btn-danger");
+    }
+});
+$(".btn-p").click(function () {
+    if (!$(this).hasClass("disabled")) {
+        $(this).toggleClass("btn-light btn-info");
+    }
+});
+$("#submit").click(function () {
+    if ($(".btn-danger").length > 0) {
+        if ($("#sender").val().length > 0) {
+            sendData();
+        } else {
+            alert("กรุณาใส่ชื่อผู้แจ้ง");
+        }
+    } else {
+        self.location = "/studentProfile";
+    }
+});
+async function sendData() {
+    let body = {};
+    let cookies = getCookieDict();
+    let promise = [];
+    body.userID = cookies.monkeyWebUser;
+    body.reason = "SummerAbsent";
+    body.sender = $("#sender").val();
+    for (let i = 0; i < $(".btn-danger").length; i++) {
+        let str = $(".btn-danger")[i].id;
+        let t = moment(0);
+        t.date(parseInt(str.slice(1, 3))).month(2).year(2018).hour(parseInt(str.slice(-2)));
+        body.date = t.valueOf();
+        for (let j in timeTable.course) {
+            let time = moment(timeTable.course[j].day);
+            if (time.hour() === t.hour()) {
+                body.courseID = timeTable.course[j].courseID;
             }
         }
-    });
-    $("#submit").click(function () {
-        var cookie = getCookieDict();
-        var ID = cookie.monkeyWebUser;
-        let day = [];
-        let pre = [];
-        if ($(".btn-danger").length > 0) {
-            if ($("#sender").val().length > 0) {
-                for (let i = 0; i < $(".btn-danger").length; i++) {
-                    let temp = moment(0).hour($(".btn-danger")[i].id.slice(4, 6)).minute(0).date($(".btn-danger")[i].id.slice(1, 3)).month(9).year(2017);
-                    day.push(temp.valueOf());
-                }
-                if ($(".btn-info").length > 0) {
-                    for (let i = 0; i < $(".btn-info").length; i++) {
-                        let temp = moment(0).hour($(".btn-info")[i].id.slice(4, 6)).minute(0).date($(".btn-info")[i].id.slice(1, 3)).month(9).year(2017);
-                        pre.push(temp.valueOf());
-                    }
-                }
-                $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "ลา", sender: $("#sender").val(), day: day }).then((data) => {
-                    $.post("post/addStudentAbsenceModifier", { studentID: ID, reason: "เพิ่ม", sender: $("#sender").val(), day: pre }).then((data) => {
-                        self.location = 'summerReceipt';
-                    })
-                })
-            } else alert("กรุณาใส่ชื่อผู้ส่ง");
-        } else self.location = 'summerReceipt';
-    })
-});
+        promise.push($.post("post/v1/addStudentAbsent", body));
+    }
+    let cb = await Promise.all(promise);
+    log(cb);
+    self.location = "/registrationReceipt"
+}
