@@ -44,11 +44,11 @@ module.exports = function (app, db, post) {
                 studentID: parseInt(req.body.studentID)
             }
         }, {
-            $limit: limit
-        },{
             $sort: {
-                timestamp: -1
+                timestamp: 1
             }
+        },{
+            $limit: limit
         }, {
             $lookup: {
                 from: 'user',
