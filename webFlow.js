@@ -104,7 +104,7 @@ module.exports = function (app, db, pasport) {
                         if (req.user.student.quarter[i].year == config.defaultQuarter.registration.year
                             && req.user.student.quarter[i].quarter == config.defaultQuarter.registration.quarter) {
                             if ("untransferred" == req.user.student.quarter[i].registrationState)
-                                return res.redirect('/regisPage')
+                                return res.redirect('/regisPage') 
                         }
                     return res.status(200).render('home', local);
                 }
