@@ -70,7 +70,9 @@ $("#submitBtn").click(function () {
         let stdID = cookies.monkeyWebUser;
         addStudentCourse(stdID, crID).then(cb => {
             log(cb);
-            self.location = "/summerAbsentForm";
+            changeRegistrationState(stdID, "untransferred", { year: regisQ.year, quarter: regisQ.quarter }).then(() => {
+                self.location = "/summerAbsentForm";
+            });
         });
     }
 });
