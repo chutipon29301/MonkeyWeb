@@ -6,13 +6,19 @@ module.exports = function (passport, db) {
     var app = express();
 
     app.use(express.static('assets'));
-    app.use(morgan('tiny'))
+    app.use(morgan('tiny'));
+
+    app.get('*', passport.isLoggedIn, (req,res,next) => {
+        if(req.user.position !== 'dev') return res.render('404');
+        next();
+    })
 
     app.get('/', passport.isLoggedIn, (req, res) => {
         res.render('devHome');
     });
 
     require('./task.js')(app, passport, db);
+    require('./chat.js')(app, passport, db);
 
     app.get('/taskDB', (req, res) => {
         res.render('devTemplate');
