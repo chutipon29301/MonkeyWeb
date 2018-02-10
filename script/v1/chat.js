@@ -83,10 +83,7 @@ module.exports = function (app, db, post) {
         }
         chatDB.deleteOne({
             _id: ObjectID(req.body.chatID)
-        }).then((err, result) => {
-            if(err){
-                return res.status(500).send(err);
-            }
+        }).then(_ => {
             res.status(200).send({
                 msg: 'OK'
             });
