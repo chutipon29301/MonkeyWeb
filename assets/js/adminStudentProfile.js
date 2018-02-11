@@ -644,6 +644,8 @@ function addNewChat() {
         $.post("post/v1/addChat", reqBody).then(cb => {
             log(cb);
             showChatData();
+            $("#chatMsg").val("");
+            $("#addChatModal").modal('hide');
         });
     } else {
         alert("Please input some text.");
@@ -662,11 +664,9 @@ async function showChatData() {
     $("#chatButt").empty();
     for (let i in chats) {
         if (chats[i].sender._id === parseInt(myID)) {
-            $("#chatButt").append("<p class='mb-0'><small><span class='fa fa-user-secret'></span>&nbsp;me</small></p>");
-            $("#chatButt").append("<button class='btn btn-primary col-10'>" + chats[i].msg + "</button>");
-        }else{
-            $("#chatButt").append("<p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fa fa-user'></span></small>&nbsp;</p>");
-            $("#chatButt").append("<button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button>");
+            $("#chatButt").append("<row><p class='mb-0'><small><span class='fa fa-user-secret'></span>&nbsp;me</small></p><button class='btn btn-primary col-10'>" + chats[i].msg + "</button></row>");
+        } else {
+            $("#chatButt").append("<row><p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fa fa-user'></span></small>&nbsp;</p><button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button></row>");
         }
     }
 }
