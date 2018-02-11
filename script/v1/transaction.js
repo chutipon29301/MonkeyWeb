@@ -2,13 +2,19 @@ let allFieldFHB = {_id : "ObjectID",subject : "string", studentID : "number", ti
 let allFieldCR = {_id : "ObjectID", studentID : "number", courseID:"string", timestamp : "Date",  value : "number", sender : "number", reason : "string", remark : "string"}
 let checkoutHrs = {9:8,10:8,11:12,12:12,13:12,14:13,15:13,16:17,17:17,18:19,19:19,20:19}
 var ObjectID = require('mongodb').ObjectID;
+let transactionCR
+let transactionFHB
+let hybridStudentDB
+let configDB
+let courseDB
+let userDB
 module.exports = function(app, db, post){
-    let transactionCR = db.collection('transactionCR')
-    let transactionFHB = db.collection('transactionFHB')
-    let hybridStudentDB = db.collection('hybridStudent')
-    let configDB = db.collection('config')
-    let courseDB = db.collection('course')
-    let userDB = db.collection('user')
+    transactionCR = db.collection('transactionCR')
+    transactionFHB = db.collection('transactionFHB')
+    hybridStudentDB = db.collection('hybridStudent')
+    configDB = db.collection('config')
+    courseDB = db.collection('course')
+    userDB = db.collection('user')
     /**
      * each obj has these parameter
      * {
@@ -37,7 +43,66 @@ module.exports = function(app, db, post){
         /**
          *  make a decision to checkout FHB or CR
          * */
-    })
+        if(!req.body.studentID) return res.status(400).send({
+            err : 400,
+            msg : 'bad request'
+        })
+        //check FHB
+        let now = new Date()
+        try {
+            let config = await configDB.findOne()
+            let hybrid = await hybridStudentDB.find({
+                quarterID:config.defaultQuarter.quarter.year+'0'+config.defaultQuarter.quarter.quarter,
+                student:{$elemMatch:{studentID:parseInt(req.body.studentID)}}
+            }).toArray()
+            let studentID = parseInt(req.body.studentID)
+            for(let i in hybrid){
+                let hybridTime = new Date(hybrid[i].day)
+                if(hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()){
+                    req.body.hybridID = hybrid[i]._id;
+                    for(let j in hybrid[i].student){
+                        if(hybrid[i].student[j].studentID == studentID){
+                            req.body.subject = hybrid[i].student[j].subject[0].toUpperCase()
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            if(req.body.hybridID && req.body.subject) return checkoutFHB(req,res)
+            
+            // check CR */
+            let quarter;
+            if(now.getDay()>0 && now.getDay()<6 && now.getHours()<16) quarter = config.defaultQuarter.summer;
+            else quarter = config.defaultQuarter.quarter;
+            let possibleCourse = await courseDB.find({
+                student:studentID,
+                quarter:quarter.quarter,
+                year:quarter.year,
+                tutor:99000
+            }).toArray()
+            for(let i in possibleCourse){
+                let courseDate = new Date(possibleCourse[i].day)
+                let courseDay = courseDate.getDay()
+                let courseHr = courseDate.getHours()
+                if(checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 0 && now.getDay() > 0 && now.getDay() < 6))){
+                    req.body.courseID = possibleCourse[i]._id
+                    return checkoutCR(req,res)
+                    break
+                }
+            }
+
+            //***** check Attendance */
+
+
+
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({err:500 , msg:error})
+        }
+        
+    })    
     
     post('/post/v1/checkoutFHB',function(req,res){
         return checkoutFHB(req,res)
@@ -407,14 +472,35 @@ function parseTransactionFHB(key,value){
     return value;
 }
 async function checkoutFHB(req,res){
-    if(!(req.body.studentID && req.body.value && req.body.subject && req.body.hybridID)) {
+    if(!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
             msg: 'Bad Reqeust'
         });
     }
+    let hybridID
+    if(!req.body.hybridID){
+        let now = new Date()
+        let config = await configDB.findOne()
+        let hybrid = await hybridStudentDB.find({
+            quarterID:config.defaultQuarter.quarter.year+'0'+config.defaultQuarter.quarter.quarter,
+            student:{$elemMatch:{studentID:parseInt(req.body.studentID)}}
+        }).toArray()
+        for(let i in hybrid){
+            let hybridTime = new Date(hybrid[i].day)
+            if(hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()){
+                hybridID = hybrid[i]._id;
+                break
+            }
+        }
+        if(hybridID) req.body.hybridID = hybridID;
+        else return res.status(400).send({
+            err: 400,
+            msg: 'Bad Reqeust'
+        })
+    }
     let studentID = parseInt(req.body.studentID)
-    let value = parseInt(req.body.value)
+    let value = parseInt(req.body.value?req.body.value:-800)
     try{
         await transactionFHB.insertOne({
             studentID : studentID,
@@ -428,6 +514,7 @@ async function checkoutFHB(req,res){
         })
         return res.status(200).send({msg:"ok"})
     }catch(e){
+        console.log(e)
         return res.status(500).send({err:e})
     }
 }
@@ -443,9 +530,8 @@ async function checkoutCR(req,res){
             msg: 'Bad Reqeust'
         });
     }
-    let allsbj = ['','M','P','C','E','B']
     let studentID = parseInt(req.body.studentID.slice(0,5))
-    let value = 1
+    let value = -1
     let date = new Date()
     let day = date.getDay()
     let hr = date.getHours()
@@ -456,12 +542,12 @@ async function checkoutCR(req,res){
         else quarter = config.defaultQuarter.quarter;
         if(req.body.courseID){
             let courseID = req.body.courseID
-            let ensureCR = await courseDB.findOne({_id : ObjectID(courseID)})
+            let ensureCR = await courseDB.findOne({_id : courseID})
             if(ensureCR){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : courseID,
+                    courseID : ObjectID(courseID),
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",
@@ -474,7 +560,6 @@ async function checkoutCR(req,res){
         }else{
             let possibleCourse = await courseDB.find({
                 student:studentID,
-                subject:allsbj[req.body.studentID[5]],
                 quarter:quarter.quarter,
                 year:quarter.year,
                 tutor:99000
@@ -484,7 +569,7 @@ async function checkoutCR(req,res){
                 let courseDate = new Date(possibleCourse[i].day)
                 let courseDay = courseDate.getDay()
                 let courseHr = courseDate.getHours()
-                if(checkoutHrs[hr] == courseHr && courseDay == day){
+                if(checkoutHrs[hr] == courseHr && (courseDay == day || (courseDay == 0 && day > 0 && day < 6))){
                     courseID = possibleCourse[i]._id
                     break
                 }
@@ -493,7 +578,7 @@ async function checkoutCR(req,res){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : courseID,
+                    courseID : ObjectID(courseID),
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",
