@@ -37,6 +37,40 @@ module.exports = function(app, db, post){
         /**
          *  make a decision to checkout FHB or CR
          * */
+        if(!req.body.studentID) return res.status(400).send({
+            err : 400,
+            msg : 'bad request'
+        })
+        //***** check Attendance */
+
+
+        //***** check CR */
+
+
+
+
+        //check FHB
+        let now = new Date()
+        let config = await configDB.findOne()
+        let hybrid = await hybridStudentDB.find({
+            quarterID:config.defaultQuarter.quarter.year+'0'+config.defaultQuarter.quarter.quarter,
+            student:{$elemMatch:{studentID:parseInt(req.body.studentID)}}
+        }).toArray()
+        let studentID = parseInt(req.body.studentID)
+        for(let i in hybrid){
+            let hybridTime = new Date(hybrid[i].day)
+            if(hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()){
+                req.body.hybridID = hybrid[i]._id;
+                for(let j in hybrid[i].student){
+                    if(hybrid[i].student[j].studentID == studentID){
+                        req.body.subject = hybrid[i].student[j].subject[0].toUpperCase()
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if(req.body.hybridID && req.body.subject) return checkoutFHB(req.res)
     })
     
     post('/post/v1/checkoutFHB',function(req,res){
@@ -407,14 +441,35 @@ function parseTransactionFHB(key,value){
     return value;
 }
 async function checkoutFHB(req,res){
-    if(!(req.body.studentID && req.body.value && req.body.subject && req.body.hybridID)) {
+    if(!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
             msg: 'Bad Reqeust'
         });
     }
+    let hybridID
+    if(!req.body.hybridID){
+        let now = new Date()
+        let config = await configDB.findOne()
+        let hybrid = await hybridStudentDB.find({
+            quarterID:config.defaultQuarter.quarter.year+'0'+config.defaultQuarter.quarter.quarter,
+            student:{$elemMatch:{studentID:parseInt(req.body.studentID)}}
+        }).toArray()
+        for(let i in hybrid){
+            let hybridTime = new Date(hybrid[i].day)
+            if(hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()){
+                hybridID = hybrid[i]._id;
+                break
+            }
+        }
+        if(hybridID) req.body.hybridID = hybridID;
+        else return res.status(400).send({
+            err: 400,
+            msg: 'Bad Reqeust'
+        })
+    }
     let studentID = parseInt(req.body.studentID)
-    let value = parseInt(req.body.value)
+    let value = parseInt(req.body.value?req.body.value:-800)
     try{
         await transactionFHB.insertOne({
             studentID : studentID,
@@ -445,7 +500,7 @@ async function checkoutCR(req,res){
     }
     let allsbj = ['','M','P','C','E','B']
     let studentID = parseInt(req.body.studentID.slice(0,5))
-    let value = 1
+    let value = -1
     let date = new Date()
     let day = date.getDay()
     let hr = date.getHours()
@@ -484,7 +539,7 @@ async function checkoutCR(req,res){
                 let courseDate = new Date(possibleCourse[i].day)
                 let courseDay = courseDate.getDay()
                 let courseHr = courseDate.getHours()
-                if(checkoutHrs[hr] == courseHr && courseDay == day){
+                if(checkoutHrs[hr] == courseHr && (courseDay == day || (courseDay == 0 && day > 0 && day < 6))){
                     courseID = possibleCourse[i]._id
                     break
                 }
