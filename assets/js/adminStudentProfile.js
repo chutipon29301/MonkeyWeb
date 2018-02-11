@@ -91,6 +91,9 @@ $("#engCoverDowload").click(function () {
         genCover(3);
     }
 });
+$("#smCoverDowload").click(function () {
+    genSummerCover();
+});
 
 // load profileImg function
 async function loadProfileImg() {
@@ -170,6 +173,19 @@ async function genStudentData() {
         "<h5><span class='fa fa-phone'></span> Student: " + studentData.phone + "</h5>" +
         "<h5><span class='fa fa-phone'></span> Parent: " + studentData.phoneParent + "</h5>"
     );
+    if (parseInt(str.slice(5)) > 10) {
+        $("#smCoverDowload").show();
+        $("#mathCoverDowload").hide();
+        $("#phyCoverDowload").hide();
+        $("#cheCoverDowload").hide();
+        $("#engCoverDowload").hide();
+    } else {
+        $("#smCoverDowload").hide();
+        $("#mathCoverDowload").show();
+        $("#phyCoverDowload").show();
+        $("#cheCoverDowload").show();
+        $("#engCoverDowload").show();
+    }
     genStatusPanel(studentData.status, studentData.quarter);
     genStudentTable();
     genChangeInfoModal(studentData);
@@ -248,7 +264,7 @@ async function genStudentTable() {
     let fhbHasEng = false;
     let str = $("#quarterSelect").val();
     $(".selector").html("ADD SUBJ").removeClass("cr hb sk");
-    if (parseInt(str.slice(5)) > 4) {
+    if (parseInt(str.slice(5)) > 10) {
         $("#mainTable").collapse("hide");
         $("#summerTable").collapse("show");
     } else {
@@ -361,10 +377,8 @@ async function genTableTemplate(hasMath, hasPhy, hasChe, hasEng) {
         $("#tableTemplate").attr("src", "images/mp" + state + ".png");
     } else if (hasMath) {
         $("#tableTemplate").attr("src", "images/m" + state + ".png");
-        // $("#phyCoverDownloadButt").addClass("disabled");
     } else if (hasPhy) {
         $("#tableTemplate").attr("src", "images/p" + state + ".png");
-        // $("#mathCoverDownloadButt").addClass("disabled");
     } else {
         $("#tableTemplate").attr("src", "images/mp" + state + ".png");
     }
@@ -554,6 +568,32 @@ const hourIndex = (day) => {
             return 3;
         case 17:
             return 4;
+    }
+}
+async function genSummerCover() {
+    let str = $("#quarterSelect").val();
+    let [allQ, timeTable] = await Promise.all([listQuarter("private"), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
+    let thisQ;
+    for (let i in allQ.quarter) {
+        if (allQ.quarter[i].year === parseInt(str.slice(0, 4)) && allQ.quarter[i].quarter === parseInt(str.slice(5))) {
+            thisQ = allQ.quarter[i]
+        }
+    }
+    let coverCanvas = document.getElementById('smCover');
+    let ctx = coverCanvas.getContext('2d');
+    let template = document.getElementById('smTableTemplate');
+    ctx.drawImage(template, 0, 0, 1244, 1760);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "bold 180px Cordia New";
+    ctx.fillText(thisQ.name, 340, 88);
+    ctx.font = "bold 80px Cordia New";
+    ctx.fillText(ID, 1100, 65);
+    let thisCr = timeTable.course;
+    let hIndex = [235, 335, 435];
+    ctx.textAlign = "left";
+    for (let i in thisCr) {
+        ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, 370, hIndex[i]);
     }
 }
 function downloadCanvas(type) {
