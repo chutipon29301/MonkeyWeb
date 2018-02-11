@@ -547,7 +547,7 @@ async function checkoutCR(req,res){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : ObjectID(courseID),
+                    courseID : courseID,
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",
@@ -578,7 +578,7 @@ async function checkoutCR(req,res){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : ObjectID(courseID),
+                    courseID : courseID,
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",
