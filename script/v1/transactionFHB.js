@@ -2,6 +2,8 @@ let allField = {_id : "ObjectID",subject : "string", studentID : "number", times
 var ObjectID = require('mongodb').ObjectID;
 module.exports = function(app, db, post){
     let transactionFHB = db.collection('transactionFHB')
+    let hybridStudentDB = db.collection('hybridStudent')
+    let configDB = db.collection('config')
     /**
      * each obj has these parameter
      * {
@@ -188,12 +190,39 @@ module.exports = function(app, db, post){
      */
     post('/post/v1/getUnder2500',async function(req,res){
         try {
+            let config = await configDB.findOne()
+            let query = {quarterID:(config.defaultQuarter.quarter.year) +'0' + (config.defaultQuarter.quarter.quarter)}
+            let fhb = await hybridStudentDB.find(query).toArray()
             let under2500 = await transactionFHB.aggregate([
                 {$group : {_id:{studentID:"$studentID",subject:"$subject"} , total:{$sum:"$value"} , lastUpdate:{$max:"$timestamp"}}},
                 {$match : {total:{$lte:2500}}},
-                {$project : {studentID:"$_id.studentID",subject:"$_id.subject",total:"$total",lastUpdate:"$lastUpdate"}}
+                {$project : {studentID:"$_id.studentID",subject:"$_id.subject",total:"$total",lastUpdate:"$lastUpdate"}},
+                {$lookup : {
+                    from : 'user',
+                    localField : 'studentID',
+                    foreignField : '_id',
+                    as : "user"
+                }},
+                {$match : {"user.student.status":"active"}},
+                {$unwind : "$user"},
+                {$project : {_id:0 , studentID:"$studentID",subject:"$subject",total:"$total",lastUpdate:"$lastUpdate", firstname : "$user.firstname" , lastname : "$user.lastname" , nickname : "$user.nickname"}},
             ]).toArray()
-            return res.status(200).send(under2500)
+            let ans = [];
+            for(let i in under2500){
+                for(let j in fhb){
+                    let f = false;
+                    for(let k in fhb[j].student){
+                        if(under2500[i].studentID == fhb[j].student[k].studentID && under2500[i].subject == fhb[j].student[k].subject){
+                            ans.push(under2500[i])
+                            f = true
+                            break;
+                        }
+                    }
+                    if(f) break;
+                }
+            }
+            let y = new Date()
+            return res.status(200).send({arr : ans})
         } catch (error) {
             return res.status(500).send({err:error})
         }
