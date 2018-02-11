@@ -23,7 +23,7 @@ This website use:
 To add new page add the following code in `webflow.js` or the corresponding file.
 ```javascript
 app.get('/yourLink', [middleWareOptions], function(req, res) {
-	// TODO:do some magic here
+	// Do some magic here
 	
 	// For rendering pug page use the following code
 	return res.status(200).render('YourPageName', {

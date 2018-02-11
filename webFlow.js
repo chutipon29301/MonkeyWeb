@@ -71,6 +71,7 @@ module.exports = function (app, db, pasport) {
     };
 
     app.use('/dev', require('./script/dev/index')(auth, db));
+    app.use('/v2', require('./script/v2/index')(auth, db));
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();
         if (req.isAuthenticated()) {
@@ -114,6 +115,22 @@ module.exports = function (app, db, pasport) {
         }
         return res.redirect('/login')
     })
+
+    /*  *********************************************************************************************************
+        *********** home , registrationReceipt , registrationName are handled in get '/' above ******************
+        *********************************************************************************************************
+
+        addPugPage(pageURL,side,permission,localObject)
+    
+        - pageURL can be aaaa/bbbb/cccc/dddd which return pug page "dddd"(the last one by spliting slash)
+        - side can be "staff" or "student"
+        - permission
+            -for staff , bigger or equal position can access this page
+            -for student , permission have to be an object with status , state , quarter
+                do not check if field is undefined
+        - localObject is an object that will pass to pug page or can be a function which return promise that resolve to object
+    */
+    app.get('/adminChat',function(req,res){return res.status(200).render('adminChat')})
     app.get('/login', function (req, res) {
         return res.status(200).render('login')
     })
