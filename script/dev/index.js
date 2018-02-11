@@ -11,7 +11,7 @@ module.exports = function (passport, db) {
     app.get('*', passport.isLoggedIn, (req,res,next) => {
         if(req.user.position !== 'dev') return res.render('404');
         next();
-    })
+    });
 
     app.get('/', passport.isLoggedIn, (req, res) => {
         res.render('devHome');
@@ -20,10 +20,6 @@ module.exports = function (passport, db) {
     require('./task.js')(app, passport, db);
     require('./chat.js')(app, passport, db);
     require('./quota.js')(app, passport, db);
-
-    app.get('/taskDB', (req, res) => {
-        res.render('devTemplate');
-    });
 
     app.all('/*',(req,res) => {
         res.render('404');
