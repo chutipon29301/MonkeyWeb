@@ -71,6 +71,7 @@ module.exports = function (app, db, pasport) {
     };
 
     app.use('/dev', require('./script/dev/index')(auth, db));
+    app.use('/v2', require('./script/v2/index')(auth, db));
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();
         if (req.isAuthenticated()) {
