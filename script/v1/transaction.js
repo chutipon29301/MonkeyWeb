@@ -99,7 +99,7 @@ module.exports = function(app, db, post){
 
         } catch (error) {
             console.log(error)
-            return res.status(500).send(err:500 , msg:error)
+            return res.status(500).send({err:500 , msg:error})
         }
         
     })    
