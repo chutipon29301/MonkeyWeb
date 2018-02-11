@@ -10,6 +10,7 @@ module.exports = function (app, db, post, gradeBitToString) {
     var configDB = db.collection('config');
     var userDB = db.collection('user');
     var attendanceDocumentDB = db.collection('attendanceDocument');
+    var chatDB = db.collection('chat');
 
     const NONE = 0;
     const ABSENT = 1;
@@ -20,11 +21,10 @@ module.exports = function (app, db, post, gradeBitToString) {
             attendanceDB.updateOne({
                 _id: ObjectID(attendances[i]._id)
             }, {
-                    $set: {
-                        hybridID: ObjectID(attendances[i].hybridID)
-                    }
+                $set: {
+                    hybridID: ObjectID(attendances[i].hybridID)
                 }
-            );
+            });
         }
     });
 
@@ -171,7 +171,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                         $first: '$subject'
                     }
                 }
-            },{
+            }, {
                 $sort: {
                     timestamp: -1
                 }
@@ -356,12 +356,12 @@ module.exports = function (app, db, post, gradeBitToString) {
             userDB.updateOne({
                 _id: parseInt(req.body.studentID)
             }, {
-                    $set: {
-                        'student.quarter': stateObject
-                    }
-                }).then(result => {
-                    return res.status(200).send('OK');
-                });
+                $set: {
+                    'student.quarter': stateObject
+                }
+            }).then(result => {
+                return res.status(200).send('OK');
+            });
         });
     });
 
@@ -433,6 +433,119 @@ module.exports = function (app, db, post, gradeBitToString) {
                 });
             }
             res.status(200).send('OK');
+        });
+    });
+
+    post('/post/v1/allStudent', function (req, res) {
+        configDB.findOne({
+            _id: 'config'
+        }).then(config => {
+            var quarterID;
+            var quarterObj = {}
+            if (req.body.quarter && req.body.year) {
+                quarter = req.body.quarter;
+                year = req.body.year;
+                quarterObj.quarter = parseInt(quarter);
+                quarterObj.year = parseInt(year);
+                quarter += '';
+                if (quarter.length < 2) {
+                    quarter = '0' + quarter;
+                }
+                quarterID = year + quarter;
+            } else {
+                quarter = config.defaultQuarter.quarter.quarter;
+                year = config.defaultQuarter.quarter.year;
+                quarterObj.quarter = parseInt(quarter);
+                quarterObj.year = parseInt(year);
+                quarter += '';
+                if (quarter.length < 2) {
+                    quarter = '0' + quarter;
+                }
+                quarterID = year + quarter;
+            }
+            userDB.aggregate([{
+                $match: {
+                    position: 'student'
+                }
+            }, {
+                $sort: {
+                    _id: 1
+                }
+            }, {
+                $lookup: {
+                    from: 'course',
+                    localField: '_id',
+                    foreignField: 'student',
+                    as: 'course'
+                }
+            }, {
+                $lookup: {
+                    from: 'hybridStudent',
+                    localField: '_id',
+                    foreignField: 'student.studentID',
+                    as: 'hybrid'
+                }
+            }, {
+                $lookup: {
+                    from: 'skillStudent',
+                    localField: '_id',
+                    foreignField: 'student.studentID',
+                    as: 'skill'
+                }
+            }]).toArray().then(users => {
+                users.map(user => {
+                    user.course = _.filter(user.course, o => {
+                        return o.quarter === quarterObj.quarter && o.year === quarterObj.year;
+                    });
+                    user.hybrid = _.filter(user.hybrid, o => {
+                        return o.quarterID === quarterID
+                    });
+                    user.skill = _.filter(user.skill, o => {
+                        return o.quarterID === quarterID
+                    });
+                    user.inCourse = user.course.length !== 0;
+                    user.inHybrid = user.hybrid.length !== 0;
+                    user.inSkill = user.skill.length !== 0;
+                    user.studentID = user._id;
+                    user.grade = user.student.grade;
+                    user.status = user.student.status;
+                    user.quarter = user.student.quarter;
+                    delete user._id;
+                    delete user.password;
+                    delete user.position;
+                    delete user.firstnameEn;
+                    delete user.lastnameEn;
+                    delete user.nicknameEn;
+                    delete user.email;
+                    delete user.student;
+                    delete user.phone;
+                    delete user.course;
+                    delete user.hybrid;
+                    delete user.skill;
+                });
+                Promise.all(users.map(user => {
+                    return chatDB.aggregate([{
+                        $match: {
+                            studentID: parseInt(user._id)
+                        }
+                    }, {
+                        $sort: {
+                            timestamp: -1
+                        }
+                    }, {
+                        $limit: 3
+                    }]).toArray();
+                })).then(chats => {
+                    for (let i = 0; i < users.length; i++) {
+                        if (chats[i] != null) {
+                            users[i].chats = chats[i];
+                        }
+                    }
+                    res.status(200).send({
+                        users: users
+                    });
+                });
+            });
         });
     });
 }
