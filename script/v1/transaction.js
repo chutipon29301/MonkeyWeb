@@ -96,7 +96,7 @@ module.exports = function(app, db, post){
 
 
 
-            
+
         } catch (error) {
             console.log(error)
             return res.status(500).send(err:500 , msg:error)
@@ -547,7 +547,7 @@ async function checkoutCR(req,res){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : courseID,
+                    courseID : ObjectID(courseID),
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",
@@ -578,7 +578,7 @@ async function checkoutCR(req,res){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : courseID,
+                    courseID : ObjectID(courseID),
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",
