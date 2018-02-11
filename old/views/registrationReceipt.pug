@@ -4,13 +4,12 @@ block head
     link(href="css/component.css", rel="stylesheet")
 block script
     script(src="js/custom-file-input.js")
-    script(src="js/constRegisQuarter.js")
-    //- script(src="js/regRc.min.js")
+    script(src="js/regRc.min.js")
 block body
     .container-fluid
         .row
             .col
-                h2#receiptHead='รายละเอียดการโอนเงินคอร์ส '+qname
+                h2.mt-2#receiptHead='รายละเอียดการโอนเงินคอร์ส '+qname
                 h5(style="color:red") *โปรดอ่านขั้นตอนการโอนเงินอย่างละเอียด*
         .row
             .col.col-md-4
