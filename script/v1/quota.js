@@ -5,7 +5,7 @@ module.exports = function (app, db, post) {
     var configDB = db.collection('config');
 
     post('/post/v1/addQuota', function (req, res) {
-        if (!(req.body.studentID && req.body.subject)) {
+        if (!(req.body.studentID && req.body.subject && req.body.value)) {
             return res.status(400).send({
                 err: 0,
                 msg: 'Bad Request'
@@ -30,7 +30,8 @@ module.exports = function (app, db, post) {
                 studentID: parseInt(req.body.studentID),
                 subject: req.body.subject,
                 timestamp: new Date(),
-                quarterID: parseInt(quarterID)
+                quarterID: parseInt(quarterID),
+                value: parseInt(req.body.value)
             }).then(_ => {
                 res.status(200).send({
                     msg: 'OK'
@@ -57,7 +58,7 @@ module.exports = function (app, db, post) {
     });
 
     post('/post/v1/listQuota', function (req, res) {
-        if (!(req.body.studentID && req.body.subject)) {
+        if (!req.body.studentID) {
             return res.status(400).send({
                 err: 0,
                 msg: 'Bad Request'
@@ -78,13 +79,21 @@ module.exports = function (app, db, post) {
                 }
                 quarterID = year + quarter;
             }
-            quotaDB.find({
-                studentID: parseInt(req.body.studentID),
-                quarterID: parseInt(quarterID),
-                subject: req.body.subject
-            }).toArray().then(quota => {
+            quotaDB.aggregate([{
+                $match: {
+                    studentID: parseInt(req.body.studentID),
+                    quarterID: parseInt(quarterID)
+                }
+            },{
+                $group: {
+                    _id: '$subject',
+                    value: {
+                        $sum: '$value'
+                    }
+                }
+            }]).toArray().then(quota => {
                 res.status(200).send({
-                    quotaCount: quota.length
+                    quotaCount: quota
                 });
             });
         });
