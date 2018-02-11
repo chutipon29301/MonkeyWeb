@@ -16,6 +16,7 @@ var server = app.listen(8080)
 var io = require('socket.io')(server);
 // Accept object notation in POST method
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
 app.use(cookieParser());
 //Temp folder for uploading
 app.use(multer({dest:"/tmp/"}).any());
