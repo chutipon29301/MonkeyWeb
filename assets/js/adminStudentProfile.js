@@ -745,7 +745,6 @@ function changeStudentState(state) {
     if (confirm("ต้องการเปลี่ยน state?")) {
         if (state == "rejected") {
             genCover(4);
-            // removeAllTimeTable();
         } else if (state == "finished") {
             genCover(5);
         }
@@ -826,29 +825,31 @@ function removeSkill(skID) {
     }
 }
 async function removeAllTimeTable() {
-    let crPromise = [];
-    let fhbPromise = [];
-    let skPromise = [];
-    if ($(".cr").length > 0) {
-        for (let i = 0; i < $(".cr").length; i++) {
-            crPromise.push($(".cr")[i].id);
+    if (confirm("Are you sure to clear timetable?")) {
+        let crPromise = [];
+        let fhbPromise = [];
+        let skPromise = [];
+        if ($(".cr").length > 0) {
+            for (let i = 0; i < $(".cr").length; i++) {
+                crPromise.push($(".cr")[i].id);
+            }
+            await removeStudentCourse(ID, crPromise);
         }
-        await removeStudentCourse(ID, crPromise);
-    }
-    if ($(".hb").length > 0) {
-        for (let i = 0; i < $(".hb").length; i++) {
-            fhbPromise.push(removeHybridStudent(ID, $(".hb")[i].id));
+        if ($(".hb").length > 0) {
+            for (let i = 0; i < $(".hb").length; i++) {
+                fhbPromise.push(removeHybridStudent(ID, $(".hb")[i].id));
+            }
+            await Promise.all(fhbPromise);
         }
-        await Promise.all(fhbPromise);
-    }
-    if ($(".sk").length > 0) {
-        for (let i = 0; i < $(".sk").length; i++) {
-            skPromise.push(removeSkillStudent(ID, $(".sk")[i].id));
+        if ($(".sk").length > 0) {
+            for (let i = 0; i < $(".sk").length; i++) {
+                skPromise.push(removeSkillStudent(ID, $(".sk")[i].id));
+            }
+            await Promise.all(skPromise);
         }
-        await Promise.all(skPromise);
+        log("Finish to delete all data");
+        genStudentData();
     }
-    log("Finish to delete all data");
-    genStudentData();
 }
 
 // add timeTable function

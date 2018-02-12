@@ -50,6 +50,9 @@ block body
                     .col-12.col-md-7
                         img.img-fluid.img-thumbnail.float-right#recieptImg(src="images/noImage.svg")
                 .row
+                    .col-12
+                        button.btn.btn-danger(onclick="removeAllTimeTable();") Clear table
+                .row
                     .col-12.collapse#mainTable
                         .table-responsive
                             table.table.table-bordered
