@@ -28,6 +28,7 @@ block body
     canvas#engBarcode(hidden='true')
     img#tableTemplate(src="#" hidden='true')
     img#smTableTemplate(src="images/summer.png" hidden='true')
+    img#smReceiptTemplate(src="images/summerReceiptTemplate.png" hidden='true')
     .container-fluid
         .row
             .col-12.col-md-9.col-xl-10
@@ -126,6 +127,7 @@ block body
                         canvas#smCover(style="border:1px solid black" width="1244" height="1760" hidden='true')
                         canvas#appRejCover1(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#appRejCover2(style="border:1px solid black" width="1654" height="1170" hidden='true')
+                        canvas#smAppRejCover(style="border:1px solid black" width="1244" height="1760" hidden='true')
             .col-12.offset-md-9.col-md-3.offset-xl-10.col-xl-2.p-0#statusSidebar
                 .dropdown
                     button.col-12.btn.dropdown-toggle#statusButton(type="button" data-toggle="dropdown") STATUS

@@ -402,6 +402,14 @@ async function genTableTemplate(hasMath, hasPhy, hasChe, hasEng) {
  */
 async function genCover(type) {
     let str = $("#quarterSelect").val();
+    if ((type === 4 || type === 5) && parseInt(str.slice(5)) > 10) {
+        if (type === 4) {
+            genSmAppRej(1);
+        } else {
+            genSmAppRej(2);
+        }
+        return;
+    }
     let [profile, timeTable] = await Promise.all([studentProfile(ID), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
     let coverCanvas;
     let barcode;
@@ -601,10 +609,11 @@ async function genSummerCover() {
     ctx.font = "bold 80px Cordia New";
     ctx.fillText(ID, 1100, 65);
     let thisCr = timeTable.course;
-    let hIndex = [235, 335, 435];
+    let hIndex = { 8: 235, 10: 335, 13: 435 };
     ctx.textAlign = "left";
     for (let i in thisCr) {
-        ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, 370, hIndex[i]);
+        let t = moment(thisCr[i].day);
+        ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, 370, hIndex[t.hour()]);
     }
     ctx.textAlign = "center";
     ctx.font = "bold 65px Cordia New";
@@ -628,6 +637,44 @@ async function genSummerCover() {
         }
     }
     downloadCanvas(6);
+}
+async function genSmAppRej(type) {
+    let str = $("#quarterSelect").val();
+    let timeTable = await $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) });
+    let smAppRejCanvas = document.getElementById('smAppRejCover');
+    let img = document.getElementById('recieptImg');
+    smAppRejCanvas.width = img.width;
+    smAppRejCanvas.height = img.height;
+    let h = img.height;
+    let w = img.width;
+    let ctx = smAppRejCanvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    let template = document.getElementById('smReceiptTemplate');
+    ctx.globalAlpha = 0.6;
+    let templateH = (template.height / template.width) * w;
+    ctx.drawImage(template, 0, 0, w, templateH);
+    ctx.font = "bold 60px Cordia New";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    let hIndex = { 8: 1 * templateH / 5, 10: 1.5 * templateH / 3, 13: 10 * templateH / 13 };
+    let thisCr = timeTable.course;
+    for (let i in thisCr) {
+        let t = moment(thisCr[i].day);
+        ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, w / 3, hIndex[t.hour()]);
+    }
+    ctx.globalAlpha = 1;
+    ctx.textAlign = "center";
+    ctx.font = "bold 120px Cordia New";
+    ctx.rotate(Math.PI / 6);
+    let ray = Math.sqrt(Math.pow(w / 2, 2) + Math.pow(h / 2, 2));
+    if (type === 1) {
+        ctx.fillStyle = "red";
+        ctx.fillText("REJECT", ray, 0);
+    } else if (type === 2) {
+        ctx.fillStyle = "green";
+        ctx.fillText("FINISHED", ray, 0);
+    }
+    downloadCanvas(7);
 }
 function downloadCanvas(type) {
     let text = ""
@@ -660,6 +707,10 @@ function downloadCanvas(type) {
         case 6:
             canvas = document.getElementById('smCover');
             text += ID + "sm.png";
+            break;
+        case 7:
+            canvas = document.getElementById('smAppRejCover');
+            text += ID + ".png";
             break;
         default:
             break;
