@@ -572,7 +572,18 @@ const hourIndex = (day) => {
 }
 async function genSummerCover() {
     let str = $("#quarterSelect").val();
-    let [allQ, timeTable] = await Promise.all([listQuarter("private"), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
+    let startT = moment(0);
+    startT.date(12).month(2).year(2018).hour(3);
+    let endT = moment(0);
+    endT.date(30).month(2).year(2018).hour(23);
+    let [allQ, timeTable, attend] = await Promise.all([
+        listQuarter("private"),
+        $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) }),
+        $.post("post/v1/listAttendance", { studentStartDate: startT.valueOf(), studentEndDate: endT.valueOf(), studentID: ID })
+    ]);
+    attend.sort((a, b) => {
+        return a.date - b.date;
+    });
     let thisQ;
     for (let i in allQ.quarter) {
         if (allQ.quarter[i].year === parseInt(str.slice(0, 4)) && allQ.quarter[i].quarter === parseInt(str.slice(5))) {
@@ -595,6 +606,28 @@ async function genSummerCover() {
     for (let i in thisCr) {
         ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, 370, hIndex[i]);
     }
+    ctx.textAlign = "center";
+    ctx.font = "bold 65px Cordia New";
+    let temp = moment(0);
+    let index = -1;
+    for (let i in attend) {
+        let initH = 696;
+        let initW = { 8: 380, 10: 470, 13: 560 };
+        if (attend[i].reason === 'SummerAbsent') {
+            let t = moment(attend[i].date);
+            if (temp.date() === t.date() && temp.month() === t.month() && temp.year() === t.year()) {
+                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+            } else {
+                index += 1;
+                ctx.fillText(t.date(), 120, initH + 69 * index);
+                ctx.fillText(t.month() + 1, 200, initH + 69 * index);
+                ctx.fillText((t.year() + '').slice(2), 280, initH + 69 * index);
+                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+            }
+            temp = t;
+        }
+    }
+    downloadCanvas(6);
 }
 function downloadCanvas(type) {
     let text = ""
@@ -623,6 +656,10 @@ function downloadCanvas(type) {
         case 5:
             canvas = document.getElementById('appRejCover2');
             text += ID + ".png";
+            break;
+        case 6:
+            canvas = document.getElementById('smCover');
+            text += ID + "sm.png";
             break;
         default:
             break;
