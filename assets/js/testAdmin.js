@@ -74,6 +74,17 @@ async function initGlobalData() {
         );
     }
 }
+// student pane function
+const addStudentGrade = () => {
+    if ($("#upgradeSizeInput").val()) {
+        if (confirm("Are you sure to upgrade all student by " + $("#upgradeSizeInput").val())) {
+            $.post("post/addStudentGrade", { toAdd: $("#upgradeSizeInput").val() }).then(cb => {
+                log(cb);
+                alert("Complete to upgrade all student by " + $("#upgradeSizeInput").val());
+            });
+        }
+    }
+};
 // course pane function
 const listAllCourse = () => {
     let year = $("#allCourseQuarterSelect").val().slice(0, 4);

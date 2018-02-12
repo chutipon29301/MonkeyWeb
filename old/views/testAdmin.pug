@@ -42,7 +42,12 @@ block body
     .container-fluid.myContent.userContent
         h1 Under Construction
     .container-fluid.myContent.stdContent
-        h1 Under Construction
+        +dropdownCard("addStudentGradePane","Upgrade all student","post/addStudentGrade")
+            .row
+                .col-10
+                    input#upgradeSizeInput.form-control(type="number" placeholder='How many level? ex. 1') 
+                .col-2
+                    button.col.btn.btn-success(onclick="addStudentGrade();") Add +
     .container-fluid.myContent.crContent
         +dropdownCard("allCoursePane","List all course","post/v1/allCourse")
             .row 
