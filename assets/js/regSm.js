@@ -79,7 +79,7 @@ $("#submitBtn").click(function () {
             addStudentCourse(stdID, crID).then(cb => {
                 log(cb);
                 changeRegistrationState(stdID, "untransferred", { year: regisQ.year, quarter: regisQ.quarter }).then(() => {
-                    self.location = "/summerAbsentForm";
+                    self.location = "/";
                 });
             });
         }
