@@ -43,7 +43,7 @@ async function genButton() {
             crIndex[2] += 1;
         }
         if (gradeCR[i].description.length > 0 && gradeCR[i].description !== "-") {
-            $("#crDescription").append("<p>" + gradeCR[i].courseName + " " + gradeCR[i].description + "</p>");
+            $("#crDescription").append("<p>" + gradeCR[i].courseName + ": " + gradeCR[i].description + "</p>");
         }
     }
     for (let i in crSuggest.course) {
