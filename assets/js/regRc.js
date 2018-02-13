@@ -12,7 +12,7 @@ $("#file-1").change(function () {
 });
 
 $("#submit").click(function () {
-    if ($("#preview").attr("src") == "images/noImage.svg") {
+    if ($("#preview").attr("src") == "images/nopic.png") {
         alert("กรุณา Upload ใบโอน");
     } else {
         if (state == "pending") {
@@ -85,7 +85,7 @@ async function loadPreview() {
                 $("#preview").attr("src", path + ".jpeg");
             }).fail(() => {
                 log("can't find picture");
-                $("#preview").attr("src", "images/noImage.svg");
+                $("#preview").attr("src", "images/nopic.png");
             });
         });
     });
