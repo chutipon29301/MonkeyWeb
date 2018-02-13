@@ -195,7 +195,7 @@ module.exports = function(app, db, post){
         if(req.body.endDate) time.$lte = new Date(parseInt(req.body.endDate));
         if(time.$gte || time.$lte) findObj.timestamp = time;
         try{
-            let arr = await transactionFHB.find(findObj).sort({timestamp:1}).toArray()
+            let arr = await transactionFHB.find(findObj).sort({timestamp:-1}).toArray()
             return res.status(200).send( {transactionArr : arr} )
         }catch(e){
             return res.status(500).send({err:e})

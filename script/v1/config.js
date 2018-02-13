@@ -28,7 +28,7 @@ module.exports = function(app,db,post,auth){
         }
         try{
             let config = await configDB.findOne({_id:"config"})
-            for(let i in req.body) if(config[i]) config[i] = parseConfig(i,req.body[i]);
+            for(let i in req.body) if(config[i] != undefined) config[i] = parseConfig(i,req.body[i]);
             await configDB.updateOne({},{$set : config})
         }catch(e){
             return res.status(400).send({err:400 , msg:e})
