@@ -458,6 +458,7 @@ function uploadAdtendPic() {
         });
     }
 }
+
 // admin add attend function
 $("#addType").change(function () {
     loadAdtendPage();
@@ -586,6 +587,10 @@ async function sendAddAdtendData() {
 let firstTimeGen = true;
 var myChart;
 generateChart();
+/**
+ * generate real-time chart
+ * @param {number} type 1:Static,2:real,3:Compare
+ */
 async function generateChart(type) {
     let allRoom = await $.post("post/v1/allRoom");
     let allHbRoom = {};
@@ -689,14 +694,38 @@ async function generateChart(type) {
     };
     let now = moment();
     now.hour(0).minute(0).second(0).millisecond(0);
+    let addition;
+    switch (now.day()) {
+        case 0:
+            addition = [0, 2, 4, 6];
+            break;
+        case 1:
+            addition = [6, 1, 3, 5];
+            break;
+        case 2:
+            addition = [5, 0, 2, 4];
+            break;
+        case 3:
+            addition = [4, 6, 1, 3];
+            break;
+        case 4:
+            addition = [3, 5, 0, 2];
+            break;
+        case 5:
+            addition = [2, 4, 6, 1];
+            break;
+        case 6:
+            addition = [1, 3, 5, 0];
+            break;
+    }
     let sunDay = moment(now);
-    sunDay.date(sunDay.date() - sunDay.day());
-    let tueDay = moment(sunDay);
-    tueDay.date(sunDay.date() + 2);
-    let thuDay = moment(sunDay);
-    thuDay.date(sunDay.date() + 4);
-    let satDay = moment(sunDay);
-    satDay.date(sunDay.date() + 6);
+    sunDay.date(now.date() + addition[0]);
+    let tueDay = moment(now);
+    tueDay.date(now.date() + addition[1]);
+    let thuDay = moment(now);
+    thuDay.date(now.date() + addition[2]);
+    let satDay = moment(now);
+    satDay.date(now.date() + addition[3]);
     let promise = [
         $.post("post/v1/listAttendance", { date: sunDay.valueOf() }),
         $.post("post/v1/listAttendance", { date: tueDay.valueOf() }),
@@ -910,7 +939,18 @@ async function generateChart(type) {
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['tue', 'thu', 'sat8', 'sat10', 'sat13', 'sat15', 'sun8', 'sun10', 'sun13', 'sun15'],
+                labels: [
+                    'tue (' + tueDay.format('DD/MM') + ')',
+                    'thu (' + thuDay.format('DD/MM') + ')',
+                    'sat8 (' + satDay.format('DD/MM') + ')',
+                    'sat10 (' + satDay.format('DD/MM') + ')',
+                    'sat13 (' + satDay.format('DD/MM') + ')',
+                    'sat15 (' + satDay.format('DD/MM') + ')',
+                    'sun8 (' + sunDay.format('DD/MM') + ')',
+                    'sun10 (' + sunDay.format('DD/MM') + ')',
+                    'sun13 (' + sunDay.format('DD/MM') + ')',
+                    'sun15 (' + sunDay.format('DD/MM') + ')'
+                ],
                 datasets: dataset
             },
             options: {

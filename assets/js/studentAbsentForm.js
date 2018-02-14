@@ -147,7 +147,15 @@ async function getHistory() {
     editQuota();
 }
 
-function editQuota() {
+async function editQuota() {
+    let quota = await $.post("post/v1/listQuota", { studentID: studentID });
+    for (let i in quota.quotaCount) {
+        if (quota.quotaCount[i]._id === "M") {
+            mHbFound -= quota.quotaCount[i].value;
+        } else if (quota.quotaCount[i]._id === "P") {
+            pHbFound -= quota.quotaCount[i].value;
+        }
+    }
     $("#mQuota").html("โควต้าลา FHB:M " + (mHbMax - mHbFound) + "/" + mHbMax);
     $("#pQuota").html("โควต้าลา FHB:P " + (pHbMax - pHbFound) + "/" + pHbMax);
 }

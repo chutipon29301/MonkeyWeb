@@ -17,8 +17,9 @@ block body
         li.nav-item: a.nav-link.active(data-toggle="tab" href="#chartContent") Chart
         li.nav-item: a.nav-link(data-toggle="tab" href="#hbContent") HB
         li.nav-item: a.nav-link(data-toggle="tab" href="#crContent") CR
+        li.nav-item: a.nav-link(data-toggle="tab" href="#summerContent") Summer
         li.nav-item: a.nav-link(data-toggle="tab" href="#activityContent") Activity
-        li.nav-item: a.nav-link(data-toggle="tab" href="#addAttendContent") Add
+        li.nav-item: a.nav-link(data-toggle="tab" href="#addAttendContent") Admin
     .tab-content
         //- chart tabs content
         #chartContent.tab-pane.container-fluid.active
@@ -108,6 +109,11 @@ block body
                                     th.text-center.remarkReset Remark
                                     th.text-center ลบ
                             tbody#crAbsentTable
+        //- Summer tab content
+        #summerContent.tab-pane.container-fluid
+            .row
+                .col
+                    h1 Building...
         //- Activity tab content
         #activityContent.tab-pane.container-fluid
             br
@@ -163,7 +169,9 @@ block body
             .row
                 .col
                     button.btn.btn-success.float-right#addNewAttend ADD ATTEND
-
+            .row
+                .col
+                    h1 Upgrading soon.
     //- Modal for show pic
     #picModal.modal.fade
         .modal-dialog

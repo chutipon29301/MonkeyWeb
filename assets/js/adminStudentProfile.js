@@ -1039,3 +1039,59 @@ function editComment(type, commentID, param) {
     }
     genCommentViewBody();
 }
+$("#absentViewButt").click(function () {
+    showStudentAbsentHistory();
+});
+async function showStudentAbsentHistory() {
+    let str = $("#quarterSelect").val();
+    let table = $("#absentHistoryTableBody");
+    let today = moment();
+    let startDay = moment(0).year(today.year()).month(today.month() - 3).date(today.date());
+    let endDay = moment(0).year(today.year()).month(today.month() + 3).date(today.date());
+    let [history, quota, timetable] = await Promise.all([
+        $.post('post/v1/listAttendance', { studentStartDate: startDay.valueOf(), studentEndDate: endDay.valueOf(), studentID: ID }),
+        $.post('post/v1/listQuota', { studentID: ID }),
+        $.post('post/v1/studentTimeTable', { year: str.slice(0, 4), quarter: str.slice(5), studentID: ID })
+    ]);
+    let stdHB = timetable.hybrid;
+    let maxP = 0;
+    let maxM = 0;
+    let nowP = 0;
+    let nowM = 0;
+    for (let i in stdHB) {
+        if (stdHB[i].subject === "M") {
+            maxM += 3;
+        } else if (stdHB[i].subject === "P") {
+            maxP += 3;
+        }
+    }
+    for (let i in history) {
+        if (history[i].courseName === undefined) {
+            if (history[i].hybridSubject === "M") {
+                nowM += 1;
+            } else if (history[i].hybridSubject === "P") {
+                nowP += 1;
+            }
+        }
+        let t1 = moment(history[i].date);
+        let t2 = moment(history[i].timestamp);
+        table.append(
+            "<tr class='" + ((history[i].type === 1) ? 'table-danger' : 'table-success') + "'>" +
+            "<td class='text-center'>" + t1.format('ddd DD/MM/YY HH:00') + "</td>" +
+            "<td class='text-center'>" + ((history[i].courseName === undefined) ? 'FHB:' + history[i].hybridSubject : history[i].courseName) + "</td>" +
+            "<td class='text-center'>" + ((history[i].type === 1) ? history[i].reason : "-") + "</td>" +
+            "<td class='text-center'>" + t2.format('ddd DD/MM/YY HH:mm') + "</td>" +
+            "</tr>"
+        )
+    }
+    for (let i in quota.quotaCount) {
+        if (quota.quotaCount[i]._id === "M") {
+            nowM -= quota.quotaCount[i].value;
+        } else if (quota.quotaCount[i]._id === "P") {
+            nowP -= quota.quotaCount[i].value;
+        }
+    }
+    $("#absentHistoryMQuota").html((maxM - nowM) + "/" + maxM);
+    $("#absentHistoryPQuota").html((maxP - nowP) + "/" + maxP);
+    $("#viewAbsentModal").modal('show');
+}

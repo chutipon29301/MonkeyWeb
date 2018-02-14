@@ -109,7 +109,7 @@ block body
                                     +tdButt("selector btn110")
                                     +tdButt("selector btn113")
                 .row
-                    .dropdown.col-12.col-md-6
+                    .dropdown.col-6.col-md-3
                         button.col.btn.btn-outline-info.dropdown-toggle(type='button' data-toggle="dropdown") Download cover
                         .dropdown-menu
                             a#mathCoverDowload.dropdown-item.disabled(href="#") Math cover
@@ -119,6 +119,8 @@ block body
                             a#smCoverDowload.dropdown-item(href="#") Summer cover
                     .col-6.col-md-3
                         button.col.btn.btn-outline-info#commentViewButt(type='button') Comment
+                    .col-6.col-md-3
+                        button.col.btn.btn-outline-info#absentViewButt(type='button') Absent
                     .col-6.col-md-3
                         button.col.btn.btn-outline-info#addChatBtn(type='button') Chat
                 .row
@@ -251,5 +253,32 @@ block body
                         button.close(type="button" data-dismiss="modal") &times;
                     .modal-body
                         #commentContentBody
+                    .modal-footer
+                        button.btn.btn-danger(type="button" data-dismiss="modal") Close
+        //- Modal for view student absent
+        #viewAbsentModal.modal.fade
+            .modal-dialog.modal-lg
+                .modal-content
+                    .modal-header
+                        h4.modal-title Student Absent
+                        button.close(type="button" data-dismiss="modal") &times;
+                    .modal-body
+                        .row
+                            .col-12
+                                h5 Absent Quota
+                            .col-6
+                                buttun#absentHistoryMQuota.col.btn.btn-outline-primary Math
+                            .col-6
+                                buttun#absentHistoryPQuota.col.btn.btn-outline-primary Phy
+                        hr
+                        .table-responsive
+                            table.table.table-bordered
+                                thead.thead-dark
+                                    tr
+                                        th.text-center Day
+                                        th.text-center Subject
+                                        th.text-center Reason
+                                        th.text-center Timestamp
+                                tbody#absentHistoryTableBody
                     .modal-footer
                         button.btn.btn-danger(type="button" data-dismiss="modal") Close
