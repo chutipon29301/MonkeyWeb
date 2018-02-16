@@ -37,7 +37,7 @@ block body
                 button.btn.btn-light.col.btn-15(type="button" id=type+day+"-15" class='btn-'+type) 15
     .container-fluid
         .row.mt-3: .col
-            h4#absentHeader แบบฟอร์มลา CR61MAR
+            h4#absentHeader.bg-danger.text-white.p-2 แบบฟอร์มลา CR61MAR
             p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่ต้องการลา
         .table-responsive
             table.table.table-bordered
@@ -47,7 +47,7 @@ block body
                     +tablebody(26,"a")
         hr
         .row: .col
-            h4#presentHeader แบบฟอร์มชดเชย CR61MAR
+            h4#presentHeader.bg-info.text-white.p-2 แบบฟอร์มชดเชย CR61MAR
             p(style="color:red") คลิกเพื่อเลือกวันและเวลาที่สะดวกมาชดเชย
             p(style="color:red") *แต่ทาง รร จะจัดชดเชยให้ตามสมควร
         .table-responsive
@@ -63,7 +63,7 @@ block body
                 .modal-body
                     p โปรดรออัปเดตข้อมูลจนเสร็จ
     //- Modal for add present
-    #addPresentModal.modal.fade
+    //- #addPresentModal.modal.fade
         .modal-dialog
             .modal-content
                 .modal-header

@@ -40,7 +40,7 @@ function fillHistory(history) {
             for (let j in timeTable.course) {
                 if (history[i].courseID === timeTable.course[j].courseID) {
                     let t = moment(history[i].date);
-                    $('#p' + t.format('DD-HH')).addClass('btn-info AID' + history[i]._id).removeClass('btn-light').html(history[i].courseName);
+                    $('#p' + t.format('DD-HH')).addClass('btn-info AID' + history[i]._id).removeClass('btn-light');
                 }
             }
         }
@@ -73,12 +73,19 @@ $(".btn-a").click(function () {
 $(".btn-p").click(function () {
     if ($(this).hasClass("btn-light")) {
         let t = moment(0).year(2018).month(2).date(parseInt(this.id.slice(1, 3))).hour(parseInt(this.id.slice(4)));
-        for (let i in timeTable.course) {
-            $("#presentSubj").append(
-                "<option value=" + t.date() + "-" + timeTable.course[i].courseID + ">" + timeTable.course[i].courseName + "</option>"
-            );
+        // for (let i in timeTable.course) {
+        //     $("#presentSubj").append(
+        //         "<option value=" + t.date() + "-" + timeTable.course[i].courseID + ">" + timeTable.course[i].courseName + "</option>"
+        //     );
+        // }
+        // $("#addPresentModal").modal('show');
+        if ($(".btn-info").length >= $(".btn-danger").length) {
+            alert('ไม่สามารถเพิ่มมากกว่าจำนวนที่ลาได้');
+        } else {
+            if (confirm('ยืนยันการชดเชย?')) {
+                addPresent(timeTable.course[0].courseID, t);
+            }
         }
-        $("#addPresentModal").modal('show');
     } else if ($(this).hasClass("btn-info")) {
         if (confirm('ต้องการลบประวัติการชดเชยนี้?')) {
             let str = this.className.slice(this.className.indexOf('AID') + 3, this.className.indexOf('AID') + 27);
@@ -105,22 +112,21 @@ async function addAbsent(crID, time) {
     log(cb);
     location.reload();
 }
-$("#addPresentBtn").click(function () {
-    let str = $("#presentSubj").val();
-    let date = str.slice(0, str.indexOf('-'));
-    let id = str.slice(str.indexOf('-') + 1);
-    if (confirm('ยืนยันการชดเชย?')) {
-        addPresent(id, date);
-    }
-});
+// $("#addPresentBtn").click(function () {
+//     let str = $("#presentSubj").val();
+//     let date = str.slice(0, str.indexOf('-'));
+//     let id = str.slice(str.indexOf('-') + 1);
+//     if (confirm('ยืนยันการชดเชย?')) {
+//         addPresent(id, date);
+//     }
+// });
 async function addPresent(crID, date) {
     $("#addPresentModal").modal('hide');
     $("#waiting").modal('show');
-    let t = moment(0).year(2018).month(2).date(parseInt(date)).hour(15);
     let body = {};
     let cookies = getCookieDict();
     body.userID = cookies.monkeyWebUser;
-    body.date = t.valueOf();
+    body.date = date.valueOf();
     body.courseID = crID;
     body.sender = 'ผปค.';
     let cb = await $.post('post/v1/addStudentPresent', body);
