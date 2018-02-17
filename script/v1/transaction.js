@@ -272,7 +272,16 @@ module.exports = function(app, db, post){
             try {
                 let total = await transactionFHB.aggregate([
                     {$group : { _id : {studentID:"$studentID",subject:"$subject"} , total : { $sum : "$value" } , lastUpdate : {$max : "$timestamp"} }},
-                    {$project : {_id:0 , studentID:"$_id.studentID" , subject:"$_id.subject" , total:"$total" , lastUpdate:"$lastUpdate"}}
+                    {$project : {_id:0 , studentID:"$_id.studentID" , subject:"$_id.subject" , total:"$total" , lastUpdate:"$lastUpdate"}},
+                    {$lookup : {
+                        from : 'user',
+                        localField : 'studentID',
+                        foreignField : '_id',
+                        as : "user"
+                    }},
+                    {$match : {"user.student.status":"active"}},
+                    {$unwind : "$user"},
+                    {$project : {_id:0 , studentID:"$studentID",subject:"$subject",total:"$total",lastUpdate:"$lastUpdate",user:"$user"}}
                 ]).toArray()
                 return res.status(200).send({transactionArr : total})
             } catch (error) {
