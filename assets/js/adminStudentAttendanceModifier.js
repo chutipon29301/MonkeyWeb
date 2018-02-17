@@ -350,7 +350,7 @@ let activityIndicator = true;
 // Start time for gen activity table
 let acTime1 = moment();
 let acTime2 = moment();
-$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
+$(".nav-tabs > .nav-item:nth-child(5)").click(function () {
     if (activityIndicator) {
         genActivityTable(0);
     }
@@ -369,6 +369,7 @@ async function genActivityTable(number) {
         startDate: acTime1.valueOf(),
         endDate: acTime2.valueOf()
     });
+    log(allAdtend);
     if (allAdtend.length === 0) {
         $("#loadMoreButt").hide();
     }
@@ -389,8 +390,14 @@ async function genActivityTable(number) {
             reason = allAdtend[i].reason;
         } else {
             style = "table-success";
-            subj = "FHB:" + allAdtend[i].subject;
-            reason = "-";
+            if (allAdtend[i].courseID === undefined) {
+                subj = "FHB:" + allAdtend[i].subject;
+                reason = "-";
+            } else {
+                subj = "CR:" + allAdtend[i].courseName;
+                reason = "-";
+            }
+
         }
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
             link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
