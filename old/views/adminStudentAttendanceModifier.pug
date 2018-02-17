@@ -40,11 +40,11 @@ block body
                 .col-12.col-md-4
                     .form-group
                         label Time:
-                        select.form-control#fhbTimePick(type="text")
+                        select.form-control#fhbTimePick
                 .col-12.col-md-4
                     .form-group
                         label Filter:
-                        select.form-control#fhbFilterPick(type="text")
+                        select.form-control#fhbFilterPick
                             option ALL
                             option FHB
                             option HB
@@ -87,11 +87,11 @@ block body
                 .col-12.col-md-4
                     .form-group
                         label Time:
-                        select.form-control#crTimePick(type="text")
+                        select.form-control#crTimePick
                 .col-12.col-md-4
                     .form-group
                         label Tutor:
-                        select.form-control#crFilterPick(type="text")
+                        select.form-control#crFilterPick
                             option(value="0") All
             .row
                 .col
@@ -111,9 +111,19 @@ block body
                             tbody#crAbsentTable
         //- Summer tab content
         #summerContent.tab-pane.container-fluid
-            .row
-                .col
-                    h1 Building...
+            h1 Building...
+            //- .btn-group.mt-3(role="group")
+                button.btn.btn-outline-primary(type="button") By Day
+                button.btn.btn-outline-primary(type="button") By Course
+            //- .row
+                .col-12.col-md-6
+                    .form-group
+                        label Day:
+                        input.form-control(type="text")
+                .col-12.col-md-6
+                    .form-group
+                        label Time:
+                        select.custom-select
         //- Activity tab content
         #activityContent.tab-pane.container-fluid
             br
@@ -141,7 +151,7 @@ block body
                 .col-12
                     .form-group
                         label &nbsp;
-                        select.form-control#addType(type="text")
+                        select.form-control#addType
                             option(value=1) ลา
                             option(value=2) เพิ่ม
                 .col-12
@@ -155,7 +165,7 @@ block body
                 .col-md-6.col-12
                     .form-group
                         label Time:
-                        select.form-control#addTime(type="text")
+                        select.form-control#addTime
                 .col-12.absentContent
                     .form-group
                         label.control-label Reason:
@@ -163,7 +173,7 @@ block body
                 .col-12.addContent
                     .form-group
                         label Subject:
-                        select.form-control#addSubj(type="text")
+                        select.form-control#addSubj
                             option(value="M") FHB:M
                             option(value="P") FHB:P
             .row
