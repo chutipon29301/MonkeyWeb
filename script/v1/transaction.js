@@ -281,7 +281,8 @@ module.exports = function(app, db, post){
                     }},
                     {$match : {"user.student.status":"active"}},
                     {$unwind : "$user"},
-                    {$project : {_id:0 , studentID:"$studentID",subject:"$subject",total:"$total",lastUpdate:"$lastUpdate",user:"$user"}}
+                    {$project : {_id:0 , studentID:"$studentID",subject:"$subject",total:"$total",lastUpdate:"$lastUpdate",firstname:"$user.firstname",lastname:"$user.lastname",nickname:"$user.nickname"}},
+                    {$sort:{studentID:1 , subject:1}}
                 ]).toArray()
                 return res.status(200).send({transactionArr : total})
             } catch (error) {
