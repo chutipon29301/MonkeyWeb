@@ -139,3 +139,7 @@ div.tab button.active {
 	border: 1px solid #ccc;
 	border-top: none;
 }
+
+img {
+	image-orientation: from-image;
+}
