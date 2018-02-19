@@ -21,10 +21,10 @@ module.exports = function (app, db, post, gradeBitToString) {
             attendanceDB.updateOne({
                 _id: ObjectID(attendances[i]._id)
             }, {
-                $set: {
-                    hybridID: ObjectID(attendances[i].hybridID)
-                }
-            });
+                    $set: {
+                        hybridID: ObjectID(attendances[i].hybridID)
+                    }
+                });
         }
     });
 
@@ -356,12 +356,12 @@ module.exports = function (app, db, post, gradeBitToString) {
             userDB.updateOne({
                 _id: parseInt(req.body.studentID)
             }, {
-                $set: {
-                    'student.quarter': stateObject
-                }
-            }).then(result => {
-                return res.status(200).send('OK');
-            });
+                    $set: {
+                        'student.quarter': stateObject
+                    }
+                }).then(result => {
+                    return res.status(200).send('OK');
+                });
         });
     });
 
@@ -526,14 +526,26 @@ module.exports = function (app, db, post, gradeBitToString) {
                 Promise.all(users.map(user => {
                     return chatDB.aggregate([{
                         $match: {
-                            studentID: parseInt(user._id)
+                            studentID: parseInt(user.studentID)
                         }
                     }, {
                         $sort: {
                             timestamp: -1
                         }
                     }, {
-                        $limit: 3
+                        $limit: 1
+                    }, {
+                        $lookup: {
+                            from: 'user',
+                            localField: 'sender',
+                            foreignField: '_id',
+                            as: 'sender'
+                        }
+                    }, {
+                        $project: {
+                            studentID: 0,
+                            timestamp: 0
+                        }
                     }]).toArray();
                 })).then(chats => {
                     for (let i = 0; i < users.length; i++) {
@@ -548,4 +560,13 @@ module.exports = function (app, db, post, gradeBitToString) {
             });
         });
     });
+
+    post('/post/v1/allStudentProfilePicture',function(req,res){
+        configDB.findOne({},function(err,config){
+            require('fs').readdir(config.profilePicturePath,function(err,dir){
+                if(err) res.status(400).send({err:400,msg:"fs error occur"})
+                res.status(200).send({arr:dir})
+            })
+        })
+    })
 }

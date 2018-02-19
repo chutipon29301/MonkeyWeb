@@ -1,32 +1,49 @@
 const studentLevel = ["P1", "P2", "P3", "P4", "P5", "P6", "S1", "S2", "S3", "S4", "S5", "S6"];
 function dateToDay(date) {
-    switch (date) {
-        case 176400000:
-            return "sat8";
-            break;
-        case 183600000:
-            return "sat10";
-            break;
-        case 194400000:
-            return "sat13";
-            break;
-        case 201600000:
-            return "sat15";
-            break;
-        case 262800000:
-            return "sun8";
-            break;
-        case 270000000:
-            return "sun10";
-            break;
-        case 280800000:
-            return "sun13";
-            break;
-        case 288000000:
-            return "sun15";
-            break;
+    if (quarter < 10) {
+        switch (date) {
+            case 176400000:
+                return "sat8";
+                break;
+            case 183600000:
+                return "sat10";
+                break;
+            case 194400000:
+                return "sat13";
+                break;
+            case 201600000:
+                return "sat15";
+                break;
+            case 262800000:
+                return "sun8";
+                break;
+            case 270000000:
+                return "sun10";
+                break;
+            case 280800000:
+                return "sun13";
+                break;
+            case 288000000:
+                return "sun15";
+                break;
+        }
+    } else {
+        let t = moment(date);
+        switch (t.hour()) {
+            case 8:
+                return "sat8";
+                break
+            case 10:
+                return "sat10";
+                break
+            case 13:
+                return "sat13";
+                break
+        }
     }
 }
+let year = 2018;
+let quarter = 1;
 function sendLevel() {
     let allLevel = [];
     $('#level').find(':checked').each(function () {
@@ -43,7 +60,11 @@ function sendLevel() {
     $("#sun13").empty().append("<th style='background-color: #ffd59a;text-align: center;vertical-align: middle'>13-15</th>");
     $("#sun15").empty().append("<th style='background-color: #ffd59a;text-align: center;vertical-align: middle'>15-17</th>");
     $("#spaceRow").empty().append("<td colspan='80'></td>");
-    genTable(allLevel, 0);
+    getConfig().then(config => {
+        year = config.defaultQuarter.registration.year;
+        quarter = config.defaultQuarter.registration.quarter;
+        genTable(allLevel, 0);
+    });
 }
 function genTable(allLevel, i) {
     if (i >= allLevel.length) return;

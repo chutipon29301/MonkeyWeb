@@ -91,6 +91,9 @@ $("#engCoverDowload").click(function () {
         genCover(3);
     }
 });
+$("#smCoverDowload").click(function () {
+    genSummerCover();
+});
 
 // load profileImg function
 async function loadProfileImg() {
@@ -170,6 +173,19 @@ async function genStudentData() {
         "<h5><span class='fa fa-phone'></span> Student: " + studentData.phone + "</h5>" +
         "<h5><span class='fa fa-phone'></span> Parent: " + studentData.phoneParent + "</h5>"
     );
+    if (parseInt(str.slice(5)) > 10) {
+        $("#smCoverDowload").show();
+        $("#mathCoverDowload").hide();
+        $("#phyCoverDowload").hide();
+        $("#cheCoverDowload").hide();
+        $("#engCoverDowload").hide();
+    } else {
+        $("#smCoverDowload").hide();
+        $("#mathCoverDowload").show();
+        $("#phyCoverDowload").show();
+        $("#cheCoverDowload").show();
+        $("#engCoverDowload").show();
+    }
     genStatusPanel(studentData.status, studentData.quarter);
     genStudentTable();
     genChangeInfoModal(studentData);
@@ -248,7 +264,7 @@ async function genStudentTable() {
     let fhbHasEng = false;
     let str = $("#quarterSelect").val();
     $(".selector").html("ADD SUBJ").removeClass("cr hb sk");
-    if (parseInt(str.slice(5)) > 4) {
+    if (parseInt(str.slice(5)) > 10) {
         $("#mainTable").collapse("hide");
         $("#summerTable").collapse("show");
     } else {
@@ -361,10 +377,8 @@ async function genTableTemplate(hasMath, hasPhy, hasChe, hasEng) {
         $("#tableTemplate").attr("src", "images/mp" + state + ".png");
     } else if (hasMath) {
         $("#tableTemplate").attr("src", "images/m" + state + ".png");
-        // $("#phyCoverDownloadButt").addClass("disabled");
     } else if (hasPhy) {
         $("#tableTemplate").attr("src", "images/p" + state + ".png");
-        // $("#mathCoverDownloadButt").addClass("disabled");
     } else {
         $("#tableTemplate").attr("src", "images/mp" + state + ".png");
     }
@@ -388,6 +402,14 @@ async function genTableTemplate(hasMath, hasPhy, hasChe, hasEng) {
  */
 async function genCover(type) {
     let str = $("#quarterSelect").val();
+    if ((type === 4 || type === 5) && parseInt(str.slice(5)) > 10) {
+        if (type === 4) {
+            genSmAppRej(1);
+        } else {
+            genSmAppRej(2);
+        }
+        return;
+    }
     let [profile, timeTable] = await Promise.all([studentProfile(ID), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
     let coverCanvas;
     let barcode;
@@ -556,6 +578,104 @@ const hourIndex = (day) => {
             return 4;
     }
 }
+async function genSummerCover() {
+    let str = $("#quarterSelect").val();
+    let startT = moment(0);
+    startT.date(12).month(2).year(2018).hour(3);
+    let endT = moment(0);
+    endT.date(30).month(2).year(2018).hour(23);
+    let [allQ, timeTable, attend] = await Promise.all([
+        listQuarter("private"),
+        $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) }),
+        $.post("post/v1/listAttendance", { studentStartDate: startT.valueOf(), studentEndDate: endT.valueOf(), studentID: ID })
+    ]);
+    attend.sort((a, b) => {
+        return a.date - b.date;
+    });
+    let thisQ;
+    for (let i in allQ.quarter) {
+        if (allQ.quarter[i].year === parseInt(str.slice(0, 4)) && allQ.quarter[i].quarter === parseInt(str.slice(5))) {
+            thisQ = allQ.quarter[i]
+        }
+    }
+    let coverCanvas = document.getElementById('smCover');
+    let ctx = coverCanvas.getContext('2d');
+    let template = document.getElementById('smTableTemplate');
+    ctx.drawImage(template, 0, 0, 1244, 1760);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "bold 180px Cordia New";
+    ctx.fillText(thisQ.name, 340, 88);
+    ctx.font = "bold 80px Cordia New";
+    ctx.fillText(ID, 1100, 65);
+    let thisCr = timeTable.course;
+    let hIndex = { 8: 235, 10: 335, 13: 435 };
+    ctx.textAlign = "left";
+    for (let i in thisCr) {
+        let t = moment(thisCr[i].day);
+        ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, 370, hIndex[t.hour()]);
+    }
+    ctx.textAlign = "center";
+    ctx.font = "bold 65px Cordia New";
+    let temp = moment(0);
+    let index = -1;
+    for (let i in attend) {
+        let initH = 696;
+        let initW = { 8: 380, 10: 470, 13: 560 };
+        if (attend[i].reason === 'SummerAbsent') {
+            let t = moment(attend[i].date);
+            if (temp.date() === t.date() && temp.month() === t.month() && temp.year() === t.year()) {
+                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+            } else {
+                index += 1;
+                ctx.fillText(t.date(), 120, initH + 69 * index);
+                ctx.fillText(t.month() + 1, 200, initH + 69 * index);
+                ctx.fillText((t.year() + '').slice(2), 280, initH + 69 * index);
+                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+            }
+            temp = t;
+        }
+    }
+    downloadCanvas(6);
+}
+async function genSmAppRej(type) {
+    let str = $("#quarterSelect").val();
+    let timeTable = await $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) });
+    let smAppRejCanvas = document.getElementById('smAppRejCover');
+    let img = document.getElementById('recieptImg');
+    smAppRejCanvas.width = img.width;
+    smAppRejCanvas.height = img.height;
+    let h = img.height;
+    let w = img.width;
+    let ctx = smAppRejCanvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    let template = document.getElementById('smReceiptTemplate');
+    ctx.globalAlpha = 0.6;
+    let templateH = (template.height / template.width) * w;
+    ctx.drawImage(template, 0, 0, w, templateH);
+    ctx.font = "bold 60px Cordia New";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    let hIndex = { 8: 1 * templateH / 5, 10: 1.5 * templateH / 3, 13: 10 * templateH / 13 };
+    let thisCr = timeTable.course;
+    for (let i in thisCr) {
+        let t = moment(thisCr[i].day);
+        ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, w / 3, hIndex[t.hour()]);
+    }
+    ctx.globalAlpha = 1;
+    ctx.textAlign = "center";
+    ctx.font = "bold 120px Cordia New";
+    ctx.rotate(Math.PI / 6);
+    let ray = Math.sqrt(Math.pow(w / 2, 2) + Math.pow(h / 2, 2));
+    if (type === 1) {
+        ctx.fillStyle = "red";
+        ctx.fillText("REJECT", ray, 0);
+    } else if (type === 2) {
+        ctx.fillStyle = "green";
+        ctx.fillText("FINISHED", ray, 0);
+    }
+    downloadCanvas(7);
+}
 function downloadCanvas(type) {
     let text = ""
     let canvas;
@@ -582,6 +702,14 @@ function downloadCanvas(type) {
             break;
         case 5:
             canvas = document.getElementById('appRejCover2');
+            text += ID + ".png";
+            break;
+        case 6:
+            canvas = document.getElementById('smCover');
+            text += ID + "sm.png";
+            break;
+        case 7:
+            canvas = document.getElementById('smAppRejCover');
             text += ID + ".png";
             break;
         default:
@@ -617,7 +745,6 @@ function changeStudentState(state) {
     if (confirm("ต้องการเปลี่ยน state?")) {
         if (state == "rejected") {
             genCover(4);
-            // removeAllTimeTable();
         } else if (state == "finished") {
             genCover(5);
         }
@@ -644,6 +771,8 @@ function addNewChat() {
         $.post("post/v1/addChat", reqBody).then(cb => {
             log(cb);
             showChatData();
+            $("#chatMsg").val("");
+            $("#addChatModal").modal('hide');
         });
     } else {
         alert("Please input some text.");
@@ -662,11 +791,9 @@ async function showChatData() {
     $("#chatButt").empty();
     for (let i in chats) {
         if (chats[i].sender._id === parseInt(myID)) {
-            $("#chatButt").append("<p class='mb-0'><small><span class='fa fa-user-secret'></span>&nbsp;me</small></p>");
-            $("#chatButt").append("<button class='btn btn-primary col-10'>" + chats[i].msg + "</button>");
-        }else{
-            $("#chatButt").append("<p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fa fa-user'></span></small>&nbsp;</p>");
-            $("#chatButt").append("<button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button>");
+            $("#chatButt").append("<row><p class='mb-0'><small><span class='fa fa-user-secret'></span>&nbsp;me</small></p><button class='btn btn-primary col-10'>" + chats[i].msg + "</button></row>");
+        } else {
+            $("#chatButt").append("<row><p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fa fa-user'></span></small>&nbsp;</p><button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button></row>");
         }
     }
 }
@@ -698,29 +825,31 @@ function removeSkill(skID) {
     }
 }
 async function removeAllTimeTable() {
-    let crPromise = [];
-    let fhbPromise = [];
-    let skPromise = [];
-    if ($(".cr").length > 0) {
-        for (let i = 0; i < $(".cr").length; i++) {
-            crPromise.push($(".cr")[i].id);
+    if (confirm("Are you sure to clear timetable?")) {
+        let crPromise = [];
+        let fhbPromise = [];
+        let skPromise = [];
+        if ($(".cr").length > 0) {
+            for (let i = 0; i < $(".cr").length; i++) {
+                crPromise.push($(".cr")[i].id);
+            }
+            await removeStudentCourse(ID, crPromise);
         }
-        await removeStudentCourse(ID, crPromise);
-    }
-    if ($(".hb").length > 0) {
-        for (let i = 0; i < $(".hb").length; i++) {
-            fhbPromise.push(removeHybridStudent(ID, $(".hb")[i].id));
+        if ($(".hb").length > 0) {
+            for (let i = 0; i < $(".hb").length; i++) {
+                fhbPromise.push(removeHybridStudent(ID, $(".hb")[i].id));
+            }
+            await Promise.all(fhbPromise);
         }
-        await Promise.all(fhbPromise);
-    }
-    if ($(".sk").length > 0) {
-        for (let i = 0; i < $(".sk").length; i++) {
-            skPromise.push(removeSkillStudent(ID, $(".sk")[i].id));
+        if ($(".sk").length > 0) {
+            for (let i = 0; i < $(".sk").length; i++) {
+                skPromise.push(removeSkillStudent(ID, $(".sk")[i].id));
+            }
+            await Promise.all(skPromise);
         }
-        await Promise.all(skPromise);
+        log("Finish to delete all data");
+        genStudentData();
     }
-    log("Finish to delete all data");
-    genStudentData();
 }
 
 // add timeTable function
@@ -909,4 +1038,60 @@ function editComment(type, commentID, param) {
             break;
     }
     genCommentViewBody();
+}
+$("#absentViewButt").click(function () {
+    showStudentAbsentHistory();
+});
+async function showStudentAbsentHistory() {
+    let str = $("#quarterSelect").val();
+    let table = $("#absentHistoryTableBody");
+    let today = moment();
+    let startDay = moment(0).year(today.year()).month(today.month() - 3).date(today.date());
+    let endDay = moment(0).year(today.year()).month(today.month() + 3).date(today.date());
+    let [history, quota, timetable] = await Promise.all([
+        $.post('post/v1/listAttendance', { studentStartDate: startDay.valueOf(), studentEndDate: endDay.valueOf(), studentID: ID }),
+        $.post('post/v1/listQuota', { studentID: ID }),
+        $.post('post/v1/studentTimeTable', { year: str.slice(0, 4), quarter: str.slice(5), studentID: ID })
+    ]);
+    let stdHB = timetable.hybrid;
+    let maxP = 0;
+    let maxM = 0;
+    let nowP = 0;
+    let nowM = 0;
+    for (let i in stdHB) {
+        if (stdHB[i].subject === "M") {
+            maxM += 3;
+        } else if (stdHB[i].subject === "P") {
+            maxP += 3;
+        }
+    }
+    for (let i in history) {
+        if (history[i].courseName === undefined) {
+            if (history[i].hybridSubject === "M") {
+                nowM += 1;
+            } else if (history[i].hybridSubject === "P") {
+                nowP += 1;
+            }
+        }
+        let t1 = moment(history[i].date);
+        let t2 = moment(history[i].timestamp);
+        table.append(
+            "<tr class='" + ((history[i].type === 1) ? 'table-danger' : 'table-success') + "'>" +
+            "<td class='text-center'>" + t1.format('ddd DD/MM/YY HH:00') + "</td>" +
+            "<td class='text-center'>" + ((history[i].courseName === undefined) ? 'FHB:' + history[i].hybridSubject : history[i].courseName) + "</td>" +
+            "<td class='text-center'>" + ((history[i].type === 1) ? history[i].reason : "-") + "</td>" +
+            "<td class='text-center'>" + t2.format('ddd DD/MM/YY HH:mm') + "</td>" +
+            "</tr>"
+        )
+    }
+    for (let i in quota.quotaCount) {
+        if (quota.quotaCount[i]._id === "M") {
+            nowM -= quota.quotaCount[i].value;
+        } else if (quota.quotaCount[i]._id === "P") {
+            nowP -= quota.quotaCount[i].value;
+        }
+    }
+    $("#absentHistoryMQuota").html((maxM - nowM) + "/" + maxM);
+    $("#absentHistoryPQuota").html((maxP - nowP) + "/" + maxP);
+    $("#viewAbsentModal").modal('show');
 }

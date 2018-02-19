@@ -74,6 +74,17 @@ async function initGlobalData() {
         );
     }
 }
+// student pane function
+const addStudentGrade = () => {
+    if ($("#upgradeSizeInput").val()) {
+        if (confirm("Are you sure to upgrade all student by " + $("#upgradeSizeInput").val())) {
+            $.post("post/addStudentGrade", { toAdd: $("#upgradeSizeInput").val() }).then(cb => {
+                log(cb);
+                alert("Complete to upgrade all student by " + $("#upgradeSizeInput").val());
+            });
+        }
+    }
+};
 // course pane function
 const listAllCourse = () => {
     let year = $("#allCourseQuarterSelect").val().slice(0, 4);
@@ -196,6 +207,7 @@ $("#editCourseQuarterSelect").change(function () {
         let quarter = this.value.slice(5);
         $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
             $("#editCourseSelect").empty();
+            $("#editCourseSelect").append("<option value=0>Select Course</option>");
             for (let i in cb) {
                 $("#editCourseSelect").append(
                     "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
@@ -214,6 +226,10 @@ $("#editCourseSelect").change(function () {
                 $("#editCourseSubjectSelect").val(cb.courseName.slice(0, 3));
             } else {
                 $("#editCourseSubjectSelect").val(cb.courseName.slice(0, 1));
+            }
+            $(".editCourseCheck").prop('checked', false);
+            for (let i in cb.grade) {
+                $(".editCourseCheck:eq(" + (cb.grade[i] - 1) + ")").prop('checked', true);
             }
             $("#editCourseLevel").val(cb.courseName.slice(-1));
             $("#editCourseDaySelect").val(cb.day);
@@ -342,7 +358,7 @@ const removeCourseSuggest = () => {
             quarter: quarter,
             grade: $("#removeCourseSuggestGradeSelect").val(),
             level: $("#removeCourseSuggestLevelInput").val(),
-            courseID: $("#removeCourseSuggestSelect").val()
+            courseID: [$("#removeCourseSuggestSelect").val()]
         }).then(cb => {
             log("OK " + cb);
             alert("Cpmplete to remove course suggestion.");

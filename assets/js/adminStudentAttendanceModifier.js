@@ -350,7 +350,7 @@ let activityIndicator = true;
 // Start time for gen activity table
 let acTime1 = moment();
 let acTime2 = moment();
-$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
+$(".nav-tabs > .nav-item:nth-child(5)").click(function () {
     if (activityIndicator) {
         genActivityTable(0);
     }
@@ -389,8 +389,14 @@ async function genActivityTable(number) {
             reason = allAdtend[i].reason;
         } else {
             style = "table-success";
-            subj = "FHB:" + allAdtend[i].subject;
-            reason = "-";
+            if (allAdtend[i].courseID === undefined) {
+                subj = "FHB:" + allAdtend[i].subject;
+                reason = "-";
+            } else {
+                subj = "CR:" + allAdtend[i].courseName;
+                reason = "-";
+            }
+
         }
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
             link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
@@ -458,6 +464,7 @@ function uploadAdtendPic() {
         });
     }
 }
+
 // admin add attend function
 $("#addType").change(function () {
     loadAdtendPage();
@@ -586,6 +593,10 @@ async function sendAddAdtendData() {
 let firstTimeGen = true;
 var myChart;
 generateChart();
+/**
+ * generate real-time chart
+ * @param {number} type 1:Static,2:real,3:Compare
+ */
 async function generateChart(type) {
     let allRoom = await $.post("post/v1/allRoom");
     let allHbRoom = {};
@@ -689,14 +700,38 @@ async function generateChart(type) {
     };
     let now = moment();
     now.hour(0).minute(0).second(0).millisecond(0);
+    let addition;
+    switch (now.day()) {
+        case 0:
+            addition = [0, 2, 4, 6];
+            break;
+        case 1:
+            addition = [6, 1, 3, 5];
+            break;
+        case 2:
+            addition = [5, 0, 2, 4];
+            break;
+        case 3:
+            addition = [4, 6, 1, 3];
+            break;
+        case 4:
+            addition = [3, 5, 0, 2];
+            break;
+        case 5:
+            addition = [2, 4, 6, 1];
+            break;
+        case 6:
+            addition = [1, 3, 5, 0];
+            break;
+    }
     let sunDay = moment(now);
-    sunDay.date(sunDay.date() - sunDay.day());
-    let tueDay = moment(sunDay);
-    tueDay.date(sunDay.date() + 2);
-    let thuDay = moment(sunDay);
-    thuDay.date(sunDay.date() + 4);
-    let satDay = moment(sunDay);
-    satDay.date(sunDay.date() + 6);
+    sunDay.date(now.date() + addition[0]);
+    let tueDay = moment(now);
+    tueDay.date(now.date() + addition[1]);
+    let thuDay = moment(now);
+    thuDay.date(now.date() + addition[2]);
+    let satDay = moment(now);
+    satDay.date(now.date() + addition[3]);
     let promise = [
         $.post("post/v1/listAttendance", { date: sunDay.valueOf() }),
         $.post("post/v1/listAttendance", { date: tueDay.valueOf() }),
@@ -910,7 +945,18 @@ async function generateChart(type) {
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['tue', 'thu', 'sat8', 'sat10', 'sat13', 'sat15', 'sun8', 'sun10', 'sun13', 'sun15'],
+                labels: [
+                    'tue (' + tueDay.format('DD/MM') + ')',
+                    'thu (' + thuDay.format('DD/MM') + ')',
+                    'sat8 (' + satDay.format('DD/MM') + ')',
+                    'sat10 (' + satDay.format('DD/MM') + ')',
+                    'sat13 (' + satDay.format('DD/MM') + ')',
+                    'sat15 (' + satDay.format('DD/MM') + ')',
+                    'sun8 (' + sunDay.format('DD/MM') + ')',
+                    'sun10 (' + sunDay.format('DD/MM') + ')',
+                    'sun13 (' + sunDay.format('DD/MM') + ')',
+                    'sun15 (' + sunDay.format('DD/MM') + ')'
+                ],
                 datasets: dataset
             },
             options: {
@@ -1076,3 +1122,160 @@ $("#realChartButt").click(function () {
 $("#compareChartButt").click(function () {
     generateChart(3);
 });
+
+// summer absent function
+$('#smByDayCollapse').collapse('show');
+$('#smByCrCollapse').collapse('hide');
+$('#smByDayTapBtn').click(function () {
+    $('#smByDayCollapse').collapse('show');
+    $('#smByCrCollapse').collapse('hide');
+});
+$('#smByCrTapBtn').click(function () {
+    $('#smByDayCollapse').collapse('hide');
+    $('#smByCrCollapse').collapse('show');
+});
+$("#smDatePicker").datetimepicker({
+    format: "DD/MM/YYYY",
+    daysOfWeekDisabled: [0, 6],
+    minDate: moment(0).year(2018).month(2).date(11).hour(23),
+    maxDate: moment(0).year(2018).month(2).date(30).hour(19)
+});
+$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
+    genSmTable();
+    genSmCrPicker();
+});
+$("#smDatePicker").on("dp.change", function () {
+    // log($('#smDatePicker').data('DateTimePicker').date());
+    genSmTable();
+});
+$("#smTimePicker").change(function () {
+    genSmTable();
+});
+$("#smSortType").change(function () {
+    genSmTable();
+});
+/** function for generate summer absent/present history */
+async function genSmTable() {
+    let date = $('#smDatePicker').data('DateTimePicker').date();
+    let time = $("#smTimePicker").val();
+    date.hour(parseInt(time));
+    let sortType = $("#smSortType").val();
+    let history = await $.post('post/v1/listAttendance', {
+        date: date.valueOf()
+    });
+    let newHistory;
+    newHistory = history.filter((a) => {
+        let t = moment(a.date);
+        if (t.hour() === parseInt(time)) return true;
+        else return false;
+    });
+    switch (sortType) {
+        case '2':
+            newHistory.sort((a, b) => { return a.studentID - b.studentID });
+            break;
+        case '3':
+            newHistory.sort((a, b) => {
+                if (a.courseName > b.courseName) return 1;
+                if (a.courseName < b.courseName) return -1;
+                return 0;
+            });
+            break;
+        case '4':
+            newHistory.sort((a, b) => { return a.tutorID - b.tutorID });
+            break;
+        default:
+            break;
+    }
+    $('#smTableBody').empty();
+    for (let i in newHistory) {
+        let t = moment(newHistory[i].timestamp);
+        $('#smTableBody').append(
+            "<tr class='table-" + ((newHistory[i].type === 1) ? 'danger' : 'success') + "' id='" + newHistory[i]._id + "'>" +
+            "<td class='text-center'>" + t.format("DD/MM/YY") + "</td>" +
+            "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+            "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
+            "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
+            "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
+            "</tr>"
+        );
+    }
+}
+/** function for generate course pick option */
+async function genSmCrPicker() {
+    let config = await getConfig();
+    let smCr = await $.post('post/v1/allCourse', {
+        year: config.defaultQuarter.registration.year,
+        quarter: config.defaultQuarter.registration.quarter
+    })
+    for (let i in smCr) {
+        $('#smCrPicker').append(
+            "<option value='" + smCr[i].courseID + "'>" + smCr[i].courseName + "-" + smCr[i].tutorName + "</option>"
+        );
+    }
+}
+$('#smCrPicker').change(function () {
+    genSmByCrTable();
+});
+
+async function genSmByCrTable() {
+    let crID = $('#smCrPicker').val();
+    if (crID !== '0') {
+        let crInfo = await courseInfo(crID);
+        let promise = [];
+        let promise2 = [];
+        let startTime = moment(0).year(2018).month(2).date(12).hour(7);
+        let endTime = moment(0).year(2018).month(2).date(30).hour(20);
+        for (let i in crInfo.student) {
+            promise.push(name(crInfo.student[i]));
+            promise2.push($.post('post/v1/listAttendance', {
+                studentStartDate: startTime.valueOf(),
+                studentEndDate: endTime.valueOf(),
+                studentID: crInfo.student[i]
+            }));
+        }
+        let stdName = await Promise.all(promise);
+        $("#smCrTableBody").empty();
+        for (let i in crInfo.student) {
+            $("#smCrTableBody").append(
+                "<tr>" +
+                "<td class='text-center'>" + stdName[i].nickname + "</td>" +
+                "<td class='text-center sm12-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm13-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm14-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm15-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm16-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm19-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm20-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm21-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm22-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm23-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm26-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm27-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm28-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm29-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "<td class='text-center sm30-" + crID + "-" + crInfo.student[i] + "'></td>" +
+                "</tr>"
+            );
+        }
+        let smAllAttend = await Promise.all(promise2);
+        for (let i in smAllAttend) {
+            for (let j in smAllAttend[i]) {
+                let t = moment(smAllAttend[i][j].date);
+                let pointer = $('.sm' + t.date() + '-' + smAllAttend[i][j].courseID + '-' + smAllAttend[i][j].studentID);
+                if (smAllAttend[i][j].type === 1) {
+                    if (pointer.hasClass('table-success')) {
+                        pointer.addClass('table-warning');
+                    } else {
+                        pointer.addClass('table-danger');
+                    }
+                } else {
+                    if (pointer.hasClass('table-danger')) {
+                        pointer.addClass('table-warning');
+                    } else {
+                        pointer.addClass('table-success');
+                    }
+                }
+            }
+        }
+    }
+}

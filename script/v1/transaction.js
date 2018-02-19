@@ -195,7 +195,7 @@ module.exports = function(app, db, post){
         if(req.body.endDate) time.$lte = new Date(parseInt(req.body.endDate));
         if(time.$gte || time.$lte) findObj.timestamp = time;
         try{
-            let arr = await transactionFHB.find(findObj).sort({timestamp:1}).toArray()
+            let arr = await transactionFHB.find(findObj).sort({timestamp:-1}).toArray()
             return res.status(200).send( {transactionArr : arr} )
         }catch(e){
             return res.status(500).send({err:e})
@@ -272,7 +272,17 @@ module.exports = function(app, db, post){
             try {
                 let total = await transactionFHB.aggregate([
                     {$group : { _id : {studentID:"$studentID",subject:"$subject"} , total : { $sum : "$value" } , lastUpdate : {$max : "$timestamp"} }},
-                    {$project : {_id:0 , studentID:"$_id.studentID" , subject:"$_id.subject" , total:"$total" , lastUpdate:"$lastUpdate"}}
+                    {$project : {_id:0 , studentID:"$_id.studentID" , subject:"$_id.subject" , total:"$total" , lastUpdate:"$lastUpdate"}},
+                    {$lookup : {
+                        from : 'user',
+                        localField : 'studentID',
+                        foreignField : '_id',
+                        as : "user"
+                    }},
+                    {$match : {"user.student.status":"active"}},
+                    {$unwind : "$user"},
+                    {$project : {_id:0 , studentID:"$studentID",subject:"$subject",total:"$total",lastUpdate:"$lastUpdate",firstname:"$user.firstname",lastname:"$user.lastname",nickname:"$user.nickname"}},
+                    {$sort:{studentID:1 , subject:1}}
                 ]).toArray()
                 return res.status(200).send({transactionArr : total})
             } catch (error) {
@@ -547,7 +557,7 @@ async function checkoutCR(req,res){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : ObjectID(courseID),
+                    courseID : courseID,
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",
@@ -578,7 +588,7 @@ async function checkoutCR(req,res){
                 await transactionCR.insertOne({
                     studentID : studentID,
                     timestamp : new Date(),
-                    courseID : ObjectID(courseID),
+                    courseID : courseID,
                     value : value,
                     sender : studentID,
                     reason : "CheckoutCR",

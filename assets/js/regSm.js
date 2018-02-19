@@ -42,7 +42,9 @@ async function genButton() {
             $(".select13-" + crIndex[2]).html(gradeCR[i].courseName + " - " + gradeCR[i].tutorName).removeClass("disabled").attr("id", gradeCR[i].courseID);
             crIndex[2] += 1;
         }
-        $("#crDescription").append("<p>" + gradeCR[i].courseName + " คือคอร์ส" + gradeCR[i].description + "</p>");
+        if (gradeCR[i].description.length > 0 && gradeCR[i].description !== "-") {
+            $("#crDescription").append("<p>" + gradeCR[i].courseName + ": " + gradeCR[i].description + "</p>");
+        }
     }
     for (let i in crSuggest.course) {
         if (crSuggest.course[i].level === level) {
@@ -67,17 +69,19 @@ $("#submitBtn").click(function () {
     if ($(".btn-primary").length <= 0) {
         alert("กรุณาเลือกวิชา");
     } else {
-        let crID = [];
-        for (let i = 0; i < $(".btn-primary").length; i++) {
-            crID.push($(".btn-primary")[i].id);
-        }
-        let cookies = getCookieDict();
-        let stdID = cookies.monkeyWebUser;
-        addStudentCourse(stdID, crID).then(cb => {
-            log(cb);
-            changeRegistrationState(stdID, "untransferred", { year: regisQ.year, quarter: regisQ.quarter }).then(() => {
-                self.location = "/summerAbsentForm";
+        if (confirm("กรุณาตรวจสอบข้อมูลอย่างละเอียด หากกด 'ยืนยัน' แล้วจะไม่สามารถแก้ไขได้")) {
+            let crID = [];
+            for (let i = 0; i < $(".btn-primary").length; i++) {
+                crID.push($(".btn-primary")[i].id);
+            }
+            let cookies = getCookieDict();
+            let stdID = cookies.monkeyWebUser;
+            addStudentCourse(stdID, crID).then(cb => {
+                log(cb);
+                changeRegistrationState(stdID, "untransferred", { year: regisQ.year, quarter: regisQ.quarter }).then(() => {
+                    self.location = "/";
+                });
             });
-        });
+        }
     }
 });

@@ -50,52 +50,6 @@ function getAllStudentContent() {
     getConfig().then(config => {
         document.getElementById("currentStudentLabel").innerHTML = "Current Student: " + (config.nextStudentID - 1);
         loadSelectedMenu(config);
-        studentForSearch = [];
-        allStudent().then((data) => {
-            if (data.err) {
-                log("[getAllStudentContent()] : post/allStudent => " + data.err);
-            } else {
-                log("[getAllStudentContent()] : post/allStudent => ");
-                log(data);
-
-                // for typeahead predict
-                for (let i = 0; i < data.student.length; i++) {
-                    studentForSearch.push({
-                        name: data.student[i].nickname + " " + data.student[i].firstname,
-                        id: data.student[i].studentID,
-                    })
-                }
-                const $typeahead = $('.typeahead');
-                $typeahead.typeahead({
-                    source: studentForSearch,
-                    autoSelect: true
-                });
-                $typeahead.change(function () {
-                    let current = $typeahead.typeahead("getActive");
-                    if (current) {
-                        writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
-                        self.location = "/adminStudentprofile";
-                    }
-                });
-
-                // for generate table data
-                position(getCookieDict().monkeyWebUser).then(quarterData => {
-                    let quaterStatus = "public";
-                    switch (quarterData.position) {
-                        case "tutor":
-                        case "admin":
-                            quaterStatus = "protected";
-                            break;
-                        case "dev":
-                            quaterStatus = "private";
-                            break;
-                    }
-                    listQuarter(quaterStatus).then(quarterList => {
-                        generateStudentHtmlTable(filterData(data.student, quarterList, config));
-                    });
-                });
-            }
-        })
     });
 }
 
@@ -165,6 +119,52 @@ function loadSelectedMenu(config) {
             } else {
                 quarter.value = cookie.monkeyWebSelectedQuarter;
             }
+            let selectedQ = $("#quarter").val();
+            $.post("post/v1/allStudent", { year: selectedQ.slice(0, 4), quarter: selectedQ.slice(5) }).then((data) => {
+                if (data.err) {
+                    log("[getAllStudentContent()] : post/allStudent => " + data.err);
+                } else {
+                    log("[getAllStudentContent()] : post/allStudent => ");
+                    log(data);
+
+                    // for typeahead predict
+                    for (let i = 0; i < data.users.length; i++) {
+                        studentForSearch.push({
+                            name: data.users[i].nickname + " " + data.users[i].firstname,
+                            id: data.users[i].studentID,
+                        })
+                    }
+                    const $typeahead = $('.typeahead');
+                    $typeahead.typeahead({
+                        source: studentForSearch,
+                        autoSelect: true
+                    });
+                    $typeahead.change(function () {
+                        let current = $typeahead.typeahead("getActive");
+                        if (current) {
+                            writeCookie("monkeyWebAdminAllstudentSelectedUser", current.id);
+                            self.location = "/adminStudentprofile";
+                        }
+                    });
+
+                    // for generate table data
+                    position(getCookieDict().monkeyWebUser).then(quarterData => {
+                        let quaterStatus = "public";
+                        switch (quarterData.position) {
+                            case "tutor":
+                            case "admin":
+                                quaterStatus = "protected";
+                                break;
+                            case "dev":
+                                quaterStatus = "private";
+                                break;
+                        }
+                        listQuarter(quaterStatus).then(quarterList => {
+                            generateStudentHtmlTable(filterData(data.users, quarterList, config));
+                        });
+                    });
+                }
+            })
         })
     });
 }
@@ -242,8 +242,6 @@ function filterData(data, quarterList, config) {
 async function generateStudentHtmlTable(student) {
     let table = document.getElementById("allStudentTable");
     table.innerHTML = "";
-    let selectedQ = $("#quarter").val();
-    let promise = [];
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let status = student[i].status;
@@ -283,29 +281,25 @@ async function generateStudentHtmlTable(student) {
         let cell2 = row.insertCell(2);
         let cell3 = row.insertCell(3);
         let cell4 = row.insertCell(4);
-        // let cell5 = row.insertCell(5);
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
-        // let cell8 = row.insertCell(8);
         let cell7 = row.insertCell(7);
         cell0.innerHTML = "<td>" + (i + 1) + "</td>";
         cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
         cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
         cell3.innerHTML = "<td>" + student[i].nickname + "</td>";
         cell4.innerHTML = "<td>" + student[i].firstname + "</td>";
-        // cell5.innerHTML = "<td>" + student[i].lastname + "</td>";
         cell5.innerHTML = "<td>" + student[i].level + "</td>";
-        promise.push($.post("post/v1/getRegistrationState", { studentID: student[i].studentID, year: selectedQ.slice(0, 4), quarter: selectedQ.slice(5) }));
-        cell6.innerHTML = "<td>-</td>";
-        cell6.id = "cell7-" + i;
+        let chatStr = '';
+        if (student[i].chats.length > 0) {
+            chatStr = student[i].chats[0].sender[0].nicknameEn + "-" + student[i].chats[0].msg;
+        }
+        cell6.innerHTML = "<td>" + chatStr + "</td>";
         cell7.innerHTML = "<td>" + remarkStr + "</td>";
         cell7.id = remark;
-        // cell8.innerHTML = "<td>" + ((student[i].inHybrid) ? "✔" : "✖") + "</td>";
 
         let clickHandler = (row) => () => {
-            //noinspection SpellCheckingInspection
             writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
-            //noinspection SpellCheckingInspection
             self.location = "/adminStudentprofile";
         };
         cell0.onclick = clickHandler(row);
@@ -345,12 +339,6 @@ async function generateStudentHtmlTable(student) {
             });
         };
         cell7.onclick = changeCheckState(row, cell7);
-    }
-    let description = await Promise.all(promise);
-    for (let i = 0; i < description.length; i++) {
-        if (description[i].subRegistrationState != undefined && description[i].subRegistrationState != "-") {
-            $("#cell7-" + i).html(description[i].subRegistrationState);
-        }
     }
 }
 

@@ -5,7 +5,12 @@ async function loadHomeCarousel() {
     let [config, allPic] = await Promise.all([getConfig(), $.post("post/v1/countAnnouncement")]);
     let path = config.studentSlideshowPath;
     path = path.slice(path.indexOf("MonkeyWebData") + 14);
-    let pic = allPic.filter(data => { return data.slice(0, 1).indexOf('p') >= 0 });
+    let pic;
+    if (window.innerWidth > window.innerHeight) {
+        pic = allPic.filter(data => { return data.slice(0, 1).indexOf('l') >= 0 });
+    } else {
+        pic = allPic.filter(data => { return data.slice(0, 1).indexOf('p') >= 0 });
+    }
     pic.sort((a, b) => {
         return parseInt(a.slice(1, -4)) - parseInt(b.slice(1, -4));
     });
@@ -22,6 +27,9 @@ async function loadHomeCarousel() {
         }
     });
 }
+window.addEventListener("orientationchange", function () {
+    location.reload();
+}, false);
 
 /**
  * For load slideshow on admin home
