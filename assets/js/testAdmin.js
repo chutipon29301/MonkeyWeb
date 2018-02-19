@@ -358,7 +358,7 @@ const removeCourseSuggest = () => {
             quarter: quarter,
             grade: $("#removeCourseSuggestGradeSelect").val(),
             level: $("#removeCourseSuggestLevelInput").val(),
-            courseID: $("#removeCourseSuggestSelect").val()
+            courseID: [$("#removeCourseSuggestSelect").val()]
         }).then(cb => {
             log("OK " + cb);
             alert("Cpmplete to remove course suggestion.");
