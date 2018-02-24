@@ -438,19 +438,19 @@ module.exports = function(app, db, post){
     
     /**
      *  req.body = {
-     *  hybridID : string
+     *  _id : string
      * }
      * 
      */
     post('/post/v1/deleteTransactionFHB',async function(req,res){
-        if(!req.body.hybridID){
+        if(!req.body._id){
             return res.status(400).send({
                 err: 400,
                 msg: 'Bad Reqeust'
             });
         }
         try {
-            await transactionFHB.remove({_id : ObjectID(req.body.hybridID)})
+            await transactionFHB.remove({_id : ObjectID(req.body._id)})
             return res.status(200).send({msg:"ok"})
         } catch (error) {
             return res.status(500).send({msg:error})
