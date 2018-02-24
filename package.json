@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/monkey-monkey/MonkeyWeb#readme",
   "dependencies": {
+    "apn": "^2.2.0",
     "body-parser": "^1.17.1",
     "chalk": "^1.1.3",
     "connect-flash": "^0.1.1",
