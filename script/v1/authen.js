@@ -42,4 +42,25 @@ module.exports = function(app,db,post,passport){
             return res.status(400).send({err:error})   
         }
     })
+    
+    app.get('/testpostmanrequestlogin',function(req,res,next){
+        passport.authenticate('local', function(err,user){    
+            if(err) throw err;
+            if(!user) res.status(202).send({
+                err : 202,
+                msg : "This ID or password do not match."
+            });
+            else{
+                req.logIn(user , function(err){
+                    if(err) throw err;
+                    let redirect
+                    if(user.position == 'student') redirect = '/';
+                    else if(user.position == 'tutor') redirect = 'tutorCheck';
+                    else{ redirect = 'adminAllStudent' }
+                    res.status(200).send({msg : 'ok' , redirect : redirect , status : req.isAuthenticated()})
+                    // res.location('/test')
+                })
+            }
+        })(req,res,next)
+    });
 }

@@ -111,19 +111,57 @@ block body
                             tbody#crAbsentTable
         //- Summer tab content
         #summerContent.tab-pane.container-fluid
-            h1 Building...
-            //- .btn-group.mt-3(role="group")
-                button.btn.btn-outline-primary(type="button") By Day
-                button.btn.btn-outline-primary(type="button") By Course
-            //- .row
-                .col-12.col-md-6
-                    .form-group
-                        label Day:
-                        input.form-control(type="text")
-                .col-12.col-md-6
-                    .form-group
-                        label Time:
-                        select.custom-select
+            .btn-group.mt-3(role="group")
+                button#smByDayTapBtn.btn.btn-outline-primary(type="button") By Day
+                button#smByCrTapBtn.btn.btn-outline-primary(type="button") By Course
+            .row
+                .col-12#smByDayCollapse.collapse
+                    .row
+                        .col-12.col-md-4
+                            .form-group
+                                label Day:
+                                input.form-control#smDatePicker(type="text")
+                        .col-12.col-md-4
+                            .form-group
+                                label Time:
+                                select#smTimePicker.custom-select
+                                    option(value="8") 8.00-10.00
+                                    option(value="10") 10.00-12.00
+                                    option(value="13") 13.00-15.00
+                                    option(value="15") 15.00-17.00
+                        .col-12.col-md-4
+                            .form-group
+                                label Sort by:
+                                select#smSortType.custom-select
+                                    option(value="1") Time
+                                    option(value="2") Student
+                                    option(value="3") Subject
+                                    option(value="4") Tutor
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead.thead-dark
+                                tr
+                                    th.text-center Time
+                                    th.text-center Name
+                                    th.text-center Subject
+                                    th.text-center Tutor
+                                    th.text-center ลบ
+                            tbody#smTableBody
+                .col-12#smByCrCollapse.collapse
+                    .row
+                        .col-12
+                            .form-group
+                                label Course:
+                                select#smCrPicker.custom-select
+                                    option(value="0") Select Course
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead.thead-dark
+                                tr
+                                    th.text-center Name
+                                    - for (var x = 1; x < 16; x++)
+                                        th.text-center=x
+                            tbody#smCrTableBody
         //- Activity tab content
         #activityContent.tab-pane.container-fluid
             br
@@ -131,7 +169,7 @@ block body
                 .col-12
                     .table-responsive
                         table.table.table-bordered.table-hover
-                            thead.thead-light
+                            thead.thead-dark
                                 tr
                                     th.text-center Timestamp
                                     th.text-center Name

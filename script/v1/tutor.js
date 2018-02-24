@@ -508,7 +508,7 @@ module.exports = function (app, db, post) {
             tutorCheckHistoryDB.distinct('tutorID').then(ids => {
                 ids = ids.sort().filter(x => x !== null);
                 var responseObject = {};
-                for(let i = 0; i < ids.length;i++){
+                for (let i = 0; i < ids.length; i++) {
                     responseObject[ids[i]] = values[i];
                 }
                 res.status(200).send(responseObject);
@@ -998,7 +998,7 @@ module.exports = function (app, db, post) {
         }
     }
 
-    function calculateTutorCredit(tutorID, startDate, endDate){
+    function calculateTutorCredit(tutorID, startDate, endDate) {
         return tutorCheckHistoryDB.find({
             tutorID: parseInt(tutorID),
             checkIn: {
@@ -1017,6 +1017,7 @@ module.exports = function (app, db, post) {
             response.summary = [0, 0, 0, 0, 0, 0, 0];
             response.hour = [0, 0, 0, 0, 0, 0, 0];
             for (let i = 0; i < result.length; i++) {
+                var checkInTime = result[i].checkIn
                 result[i].historyID = result[i]._id;
                 result[i].checkIn = new Date(result[i].checkIn).valueOf();
                 result[i].checkOut = new Date(result[i].checkOut).valueOf();
@@ -1028,6 +1029,10 @@ module.exports = function (app, db, post) {
                 }
                 var sum = 0;
                 for (let j = 0; j < result[i].detail.length; j++) {
+                    if (checkInTime.getHours() >= 19) {
+                        result[i].detail[j] = description[result[i].detail[j] + 1].name;
+                        continue;
+                    }
                     if (j === startIndex && j === endIndex) {
                         var date1 = new Date(result[i].checkIn);
                         var date2 = new Date(result[i].checkOut);
