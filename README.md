@@ -78,7 +78,7 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 
 	This function is use to delete quota transaction
 
-	**Note:** This is destruction function and should not be use. This function will delete the history of adding quota
+	**Note:** This is destructive function and should not be use. This function will delete the history of adding quota
 	- request path `/post/v1/deleteQuota`
 	- request body
 		```javascript
@@ -115,7 +115,28 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 		}
 		```
 
+#### DeviceToken
+- This function is use for register iOS device to recieve notification
+
+- RegisteriOSDeviceToken
+
+	This function is use to add token and specify user who own that token
+	- request path `/post/v1/registeriOSDeviceToken`
+	- request budy
+		```javascript
+		req.body = {
+			id: 99000,
+			token: '3w4mo7hmrwa48vhrawpjcrmpwpvau3crw34r'
+		}
+		```
+	- response body
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
 ### Phase I
-~~Under creating.~~
+~~Under construction.~~
 ## TODO
-~~Under creating.~~
+~~Under construction.~~

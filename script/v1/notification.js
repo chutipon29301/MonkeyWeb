@@ -21,8 +21,10 @@ module.exports = function (app, db, post) {
             }
         }, {
             upsert: true
-        }).then( _ => {
-            res.status(200).send('OK');
+        }).then(_ => {
+            res.status(200).send({
+                msg: 'OK'
+            });
         });
     });
 
