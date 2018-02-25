@@ -57,7 +57,29 @@ module.exports = function (app, passport, db) {
         });
     });
 
-    app.post('/editTask', passport.isLoggedIn, (req, res) => {
+    app.post('/editTaskHeader', passport.isLoggedIn, (req, res) => {
+        if (!(req.body.taskID && req.body.title)) {
+            return res.status(400), send({
+                err: 0,
+                msg: 'Bad Request'
+            });
+        }
+        //TODO: Check if the task is header
+        db.collection('task').updateOne({
+            _id: ObjectID(req.body.taskID)
+        }, {
+            $set: {
+                title: req.body.title
+            }
+        }).then(_ => {
+            res.status(200).send({
+                msg: 'OK'
+            });
+        });
+    });
+
+    app.post('/editTaskDetail', passport.isLoggedIn, (req, res) => {
+        // TODO: Implement the edit task function
         res.status(200).send('OK');
     });
 

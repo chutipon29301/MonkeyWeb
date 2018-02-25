@@ -201,6 +201,12 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 		}
 		```
 
+- editHeaderTask
+	This function is use for wdit the title of the task, only head task can be send into this function
+
+	
+
+
 
 ### Phase I
 ~~Under construction.~~
