@@ -41,6 +41,7 @@ module.exports = function (app, passport, db) {
                 });
             }
             db.collection('task').insertOne({
+                header: false,
                 status: NOTE,
                 timestamp: new Date(),
                 owner: req.user._id,
@@ -49,7 +50,9 @@ module.exports = function (app, passport, db) {
                 parent: response.insertedId,
                 ancestors: [response.insertedId]
             }).then(_ => {
-                res.status(200).send('OK');
+                res.status(200).send({
+                    msg: 'OK'
+                });
             });
         });
     });
@@ -59,7 +62,40 @@ module.exports = function (app, passport, db) {
     });
 
     app.post('/deleteTask', passport.isLoggedIn, (req, res) => {
-        // db.collection('task').
-        res.status(200).send('OK');
+        if (!req.body.taskID) {
+            return res.status(400).send({
+                err: 0,
+                msg: 'Bad Request'
+            });
+        }
+        db.collection('task').findOne({
+            _id: ObjectID(req.body.taskID)
+        }).then(task => {
+            if (!task.header) {
+                throw ({
+                    err: 1,
+                    msg: 'Non-head task cannot be delete'
+                });
+            }
+            if (task.createdBy !== req.user._id) {
+                throw ({
+                    err: 2,
+                    msg: 'Only owner can delete this task'
+                });
+            }
+            return db.collection('task').deleteMany({
+                $or: [{
+                    ancestors: task._id
+                }, {
+                    _id: task._id
+                }]
+            });
+        }).then(result => {
+            res.status(200).send({
+                mgs: 'OK'
+            });
+        }).catch(err => {
+            res.status(400).send(err);
+        });
     });
 }

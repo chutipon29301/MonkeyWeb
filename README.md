@@ -122,7 +122,7 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 
 	This function is use to add token and specify user who own that token
 	- request path `/post/v1/registeriOSDeviceToken`
-	- request budy
+	- request body
 		```javascript
 		req.body = {
 			id: 99000,
@@ -135,6 +135,72 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 			msg: 'OK'
 		}
 		```
+
+### Phase III (V2) (universal platform development API)
+
+#### Task
+- Function using to modify about task.
+- This API need authentication with username and password through `/post/v1/login` and also use authorization of `tutor or above`
+- There are 7 possible status of the task node
+	- none			-> State that the task is in unknown state
+	- note			-> State that the task is in note state which is the initial state of create task
+	- todo			-> State that the task is in todo state the state where task is assigned to the others will be sent
+	- inprogress	-> State that the task is in working process
+	- assign		-> State that the task is assigned to the others 
+	- done			-> State that the assigned task is done
+	- complete		-> State that all of the task is done
+
+- addTask
+
+	This function use to add as task to the database by creating 2 object head node and non-head node.
+	- Head Node
+		Contain information about task which cannot be change.
+	- Non-head Node
+		Contain information which can be change all the way which task is assign or change state.
+
+	- request path `/v2/addTask`
+	- request body
+		```javascript
+		req.body = {
+			title: 'Hello World',
+			detail: 'Your task detail here',
+			subtitle: 'Subtitle of the task'
+		}
+		```
+	- response body
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
+- deleteTask
+
+	This function is use for deleting the whole task, only head task can be send into this function
+
+	- request path `/v2/deleteTask`
+	- request body
+		```javascript
+		req.body = {
+			taskID: 'u24q09nf78aybepq8n9w4mavufbsvyes5'
+		}
+		```
+	- response body
+		if not error
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
+		if error
+		```javascript
+		res.body = {
+			err: 0, /* error number */
+			msg: 'Error Detail'
+		}
+		```
+
 
 ### Phase I
 ~~Under construction.~~
