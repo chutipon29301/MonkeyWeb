@@ -563,6 +563,7 @@ module.exports = function (app, db, post, gradeBitToString) {
 
     post('/post/v1/allStudentProfilePicture',function(req,res){
         configDB.findOne({},function(err,config){
+            if(err) res.status(500).send({err:500,msg:'db error'})
             require('fs').readdir(config.profilePicturePath,function(err,dir){
                 if(err) res.status(400).send({err:400,msg:"fs error occur"})
                 res.status(200).send({arr:dir})

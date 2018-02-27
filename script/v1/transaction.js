@@ -470,6 +470,8 @@ module.exports = function(app, db, post){
             return res.status(500).send({msg:error})
         }
     })
+
+    
 }
 function checkBodyFHB(bd){
     for(i in bd) if(!allFieldFHB[i]) return false;
