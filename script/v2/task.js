@@ -20,6 +20,15 @@ module.exports = function (app, passport, db) {
     });
 
     app.post('/addTask', passport.isLoggedIn, (req, res) => {
+        db.collection('task').insertOne({
+
+        }).then(_ => {
+            res.status(200).send('OK');
+        });
+    });
+
+    app.post('/editTask', passport.isLoggedIn, (req,res) => {
+
         if (!(req.body.title && req.body.detail, req.body.subtitle)) {
             return res.status(400).send({
                 err: 0,
@@ -54,9 +63,6 @@ module.exports = function (app, passport, db) {
         });
     });
 
-    app.post('/editTask', passport.isLoggedIn, (req, res) => {
-        res.status(200).send('OK');
-    });
 
     app.post('/deleteTask', passport.isLoggedIn, (req, res) => {
         // db.collection('task').
