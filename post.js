@@ -242,9 +242,9 @@ module.exports = function (app, db, passport) {
             //             console.log(chalk.black.bgRed("\terror.detail", "=>", prettify(arguments[0])));
             //         }
             //     }
-            //     callback(req, res);
+                callback(req, res);
             // });
-            callback(req, res); // <----- dont forget to delete this!!!
+            
         });
     };
     // User Information
