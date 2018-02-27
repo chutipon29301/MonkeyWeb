@@ -1,8 +1,11 @@
 var ObjectID = require("mongodb").ObjectID;
+var apn = require('apn');
 
 module.exports = function (app, db, post) {
 
     var taskDB = db.collection('task');
+    var userDB = db.collection('user');
+    var deviceTokenDB = db.collection('deviceToken');
 
     const NONE = -1;
     const TODO = 0;
@@ -10,6 +13,16 @@ module.exports = function (app, db, post) {
     const ASSIGN = 2;
     const DONE = 3;
     const COMPLETE = 4;
+
+    var keyPath = __dirname.substring(0, __dirname.indexOf('script')) + 'key/MonkeyTutorNotification.p8';
+    var apnProvider = new apn.Provider({
+        token: {
+            key: keyPath,
+            keyId: 'GPJR9B9WJ6',
+            teamId: 'S4F5J66T3H'
+        },
+        production: false
+    });
 
     post('/post/v1/addTask', function (req, res) {
         if (!(req.body.assigner && req.body.title && req.body.detail)) {
@@ -160,10 +173,32 @@ module.exports = function (app, db, post) {
                         status: ASSIGN
                     }
                 })
-            ])
-
-            return;
+            ]);
         }).then(values => {
+            return Promise.all([
+                userDB.findOne({
+                    _id: parseInt(req.body.assigner)
+                }),
+                deviceTokenDB.find({
+                    userID: {
+                        $in: req.body.assignees.map(id => parseInt(id))
+                    }
+                }).toArray()  
+            ]);
+        }).then(data => {
+            return Promise.all(data[1].map(token => {
+                var notification = new apn.Notification();
+                notification.topic = 'com.monkey-monkey.tutor';
+                notification.expiry = Math.floor(Date.now() / 1000) + 86400;
+                notification.badge = 1;
+                notification.sound = 'ping.aiff';
+                notification.alert = data[0].nicknameEn + ' assign you a task.';
+                notification.payload = {
+                    id: 123
+                };
+                return apnProvider.send(notification, token._id);
+            }));
+        }).then(results => {
             res.status(200).send({
                 msg: 'OK'
             });
@@ -306,10 +341,7 @@ module.exports = function (app, db, post) {
         }
         taskDB.aggregate([{
             $match: {
-                owner: parseInt(req.body.userID),
-                status: {
-                    $ne: COMPLETE
-                }
+                owner: parseInt(req.body.userID)
             }
         }, {
             $lookup: {
@@ -320,7 +352,6 @@ module.exports = function (app, db, post) {
             }
         }]).toArray().then(tasks => {
             Promise.all(tasks.map(task => {
-                console.log(task);
                 return taskDB.findOne({
                     parent: task._id
                 });

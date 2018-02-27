@@ -3,6 +3,7 @@ console.log("[START] index.js");
 var bodyParser=require("body-parser");
 var chalk=require("chalk");
 var cookieParser=require("cookie-parser");
+var compression = require('compression')
 var express=require("express");
 var fs=require("fs-extra");
 var MongoClient=require("mongodb").MongoClient;
@@ -14,6 +15,7 @@ var flash = require('connect-flash');
 var app=express();
 var server = app.listen(8080)
 var io = require('socket.io')(server);
+app.use(compression());
 // Accept object notation in POST method
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
