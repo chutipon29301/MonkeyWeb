@@ -34,7 +34,9 @@ async function checkIn() {
                 '</div>'
             );
             let subPos = tutorName.subPosition;
-            if (subPos.trim().toLowerCase() === "trainee") {
+            if (subPos === undefined) {
+                await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
+            } else if (subPos.trim().toLowerCase() === "trainee") {
                 await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
             } else {
                 await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
@@ -118,7 +120,9 @@ async function checkOutSubmit() {
             slot5: slot[5]
         });
         let subPos = tutorName.subPosition;
-        if (subPos.trim().toLowerCase() === "trainee") {
+        if (subPos === undefined) {
+            await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
+        } else if (subPos.trim().toLowerCase() === "trainee") {
             await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
         } else {
             await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
