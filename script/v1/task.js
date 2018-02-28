@@ -13,16 +13,19 @@ module.exports = function (app, db, post) {
     const ASSIGN = 2;
     const DONE = 3;
     const COMPLETE = 4;
-
-    var keyPath = __dirname.substring(0, __dirname.indexOf('script')) + 'key/MonkeyTutorNotification.p8';
-    var apnProvider = new apn.Provider({
-        token: {
-            key: keyPath,
-            keyId: 'GPJR9B9WJ6',
-            teamId: 'S4F5J66T3H'
-        },
-        production: false
-    });
+    try {
+        var keyPath = __dirname.substring(0, __dirname.indexOf('script')) + 'key/MonkeyTutorNotification.p8';
+        var apnProvider = new apn.Provider({
+            token: {
+                key: keyPath,
+                keyId: 'GPJR9B9WJ6',
+                teamId: 'S4F5J66T3H'
+            },
+            production: false
+        });
+    } catch (error) {
+        console.log('cant find keyPath')
+    }
 
     post('/post/v1/addTask', function (req, res) {
         if (!(req.body.assigner && req.body.title && req.body.detail)) {
