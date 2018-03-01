@@ -1124,25 +1124,11 @@ $("#compareChartButt").click(function () {
 });
 
 // summer absent function
-$('#smByDayCollapse').collapse('show');
-$('#smByCrCollapse').collapse('hide');
-$('#smByDayTapBtn').click(function () {
-    $('#smByDayCollapse').collapse('show');
-    $('#smByCrCollapse').collapse('hide');
-});
-$('#smByCrTapBtn').click(function () {
-    $('#smByDayCollapse').collapse('hide');
-    $('#smByCrCollapse').collapse('show');
-});
 $("#smDatePicker").datetimepicker({
     format: "DD/MM/YYYY",
     daysOfWeekDisabled: [0, 6],
     minDate: moment(0).year(2018).month(2).date(11).hour(23),
     maxDate: moment(0).year(2018).month(2).date(30).hour(19)
-});
-$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
-    genSmTable();
-    genSmCrPicker();
 });
 $("#smDatePicker").on("dp.change", function () {
     // log($('#smDatePicker').data('DateTimePicker').date());
@@ -1151,131 +1137,68 @@ $("#smDatePicker").on("dp.change", function () {
 $("#smTimePicker").change(function () {
     genSmTable();
 });
-$("#smSortType").change(function () {
+$("#smFilter").change(function () {
+    filterSmData();
+});
+$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
     genSmTable();
 });
-/** function for generate summer absent/present history */
 async function genSmTable() {
     let date = $('#smDatePicker').data('DateTimePicker').date();
     let time = $("#smTimePicker").val();
-    date.hour(parseInt(time));
-    let sortType = $("#smSortType").val();
+    if (parseInt(time) !== 0) {
+        date.hour(parseInt(time));
+    }
     let history = await $.post('post/v1/listAttendance', {
         date: date.valueOf()
     });
     let newHistory;
-    newHistory = history.filter((a) => {
-        let t = moment(a.date);
-        if (t.hour() === parseInt(time)) return true;
-        else return false;
-    });
-    switch (sortType) {
-        case '2':
-            newHistory.sort((a, b) => { return a.studentID - b.studentID });
-            break;
-        case '3':
-            newHistory.sort((a, b) => {
-                if (a.courseName > b.courseName) return 1;
-                if (a.courseName < b.courseName) return -1;
-                return 0;
-            });
-            break;
-        case '4':
-            newHistory.sort((a, b) => { return a.tutorID - b.tutorID });
-            break;
-        default:
-            break;
+    if (parseInt(time) !== 0) {
+        newHistory = history.filter((a) => {
+            let t = moment(a.date);
+            if (t.hour() === parseInt(time)) return true;
+            else return false;
+        });
+    } else {
+        newHistory = history;
     }
-    $('#smTableBody').empty();
+    $("#smAbsentTableBody").empty();
+    $("#smPresentTableBody").empty();
     for (let i in newHistory) {
-        let t = moment(newHistory[i].timestamp);
-        $('#smTableBody').append(
-            "<tr class='table-" + ((newHistory[i].type === 1) ? 'danger' : 'success') + "' id='" + newHistory[i]._id + "'>" +
-            "<td class='text-center'>" + t.format("DD/MM/YY") + "</td>" +
-            "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
-            "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
-            "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
-            "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
-            "</tr>"
-        );
-    }
-}
-/** function for generate course pick option */
-async function genSmCrPicker() {
-    let config = await getConfig();
-    let smCr = await $.post('post/v1/allCourse', {
-        year: config.defaultQuarter.registration.year,
-        quarter: config.defaultQuarter.registration.quarter
-    })
-    for (let i in smCr) {
-        $('#smCrPicker').append(
-            "<option value='" + smCr[i].courseID + "'>" + smCr[i].courseName + "-" + smCr[i].tutorName + "</option>"
-        );
-    }
-}
-$('#smCrPicker').change(function () {
-    genSmByCrTable();
-});
-
-async function genSmByCrTable() {
-    let crID = $('#smCrPicker').val();
-    if (crID !== '0') {
-        let crInfo = await courseInfo(crID);
-        let promise = [];
-        let promise2 = [];
-        let startTime = moment(0).year(2018).month(2).date(12).hour(7);
-        let endTime = moment(0).year(2018).month(2).date(30).hour(20);
-        for (let i in crInfo.student) {
-            promise.push(name(crInfo.student[i]));
-            promise2.push($.post('post/v1/listAttendance', {
-                studentStartDate: startTime.valueOf(),
-                studentEndDate: endTime.valueOf(),
-                studentID: crInfo.student[i]
-            }));
-        }
-        let stdName = await Promise.all(promise);
-        $("#smCrTableBody").empty();
-        for (let i in crInfo.student) {
-            $("#smCrTableBody").append(
-                "<tr>" +
-                "<td class='text-center'>" + stdName[i].nickname + "</td>" +
-                "<td class='text-center sm12-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm13-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm14-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm15-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm16-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm19-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm20-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm21-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm22-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm23-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm26-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm27-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm28-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm29-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm30-" + crID + "-" + crInfo.student[i] + "'></td>" +
+        let type = (newHistory[i].tutorID === 99000) ? 'HB' : 'CR';
+        if (newHistory[i].type === 1) {
+            $("#smAbsentTableBody").append(
+                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
+                "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
+                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
+                "</tr>"
+            );
+        } else if (newHistory[i].type === 2) {
+            $("#smPresentTableBody").append(
+                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
                 "</tr>"
             );
         }
-        let smAllAttend = await Promise.all(promise2);
-        for (let i in smAllAttend) {
-            for (let j in smAllAttend[i]) {
-                let t = moment(smAllAttend[i][j].date);
-                let pointer = $('.sm' + t.date() + '-' + smAllAttend[i][j].courseID + '-' + smAllAttend[i][j].studentID);
-                if (smAllAttend[i][j].type === 1) {
-                    if (pointer.hasClass('table-success')) {
-                        pointer.addClass('table-warning');
-                    } else {
-                        pointer.addClass('table-danger');
-                    }
-                } else {
-                    if (pointer.hasClass('table-danger')) {
-                        pointer.addClass('table-warning');
-                    } else {
-                        pointer.addClass('table-success');
-                    }
-                }
-            }
-        }
+    }
+    filterSmData();
+}
+function filterSmData() {
+    switch ($("#smFilter").val()) {
+        case '2':
+            $(".smrow-HB").hide();
+            $(".smrow-CR").show();
+            break;
+        case '3':
+            $(".smrow-HB").show();
+            $(".smrow-CR").hide();
+            break;
+        default:
+            $(".smrow-HB").show();
+            $(".smrow-CR").show();
+            break;
     }
 }
