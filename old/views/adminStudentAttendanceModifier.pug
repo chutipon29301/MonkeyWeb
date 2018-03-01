@@ -1,12 +1,12 @@
 extends htmlTemplate
 block head
     - var pageTitle = "Student Attendance Modifier"
-    //- link(rel="stylesheet", href="css/typeaheadjs.css")
+    link(rel="stylesheet", href="css/typeaheadjs.css")
     link(rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css")
     link(href="css/component.css", rel="stylesheet")
 block script
     script(src="js/admin.min.js")
-    //- script(src="js/bootstrap3-typeahead.min.js")
+    script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/bootstrap-datetimepicker4.min.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js")
     script(src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels")
@@ -111,11 +111,8 @@ block body
                             tbody#crAbsentTable
         //- Summer tab content
         #summerContent.tab-pane.container-fluid
-            .btn-group.mt-3(role="group")
-                button#smByDayTapBtn.btn.btn-outline-primary(type="button") By Day
-                button#smByCrTapBtn.btn.btn-outline-primary(type="button") By Course
             .row
-                .col-12#smByDayCollapse.collapse
+                .col-12#smByDayCollapse
                     .row
                         .col-12.col-md-4
                             .form-group
@@ -125,43 +122,39 @@ block body
                             .form-group
                                 label Time:
                                 select#smTimePicker.custom-select
+                                    option(value="0") All Time
                                     option(value="8") 8.00-10.00
                                     option(value="10") 10.00-12.00
                                     option(value="13") 13.00-15.00
                                     option(value="15") 15.00-17.00
                         .col-12.col-md-4
                             .form-group
-                                label Sort by:
-                                select#smSortType.custom-select
-                                    option(value="1") Time
-                                    option(value="2") Student
-                                    option(value="3") Subject
-                                    option(value="4") Tutor
-                    .table-responsive
-                        table.table.table-bordered.table-hover
-                            thead.thead-dark
-                                tr
-                                    th.text-center Time
-                                    th.text-center Name
-                                    th.text-center Subject
-                                    th.text-center Tutor
-                                    th.text-center ลบ
-                            tbody#smTableBody
-                .col-12#smByCrCollapse.collapse
+                                label Filter:
+                                select#smFilter.custom-select
+                                    option(value="1") All
+                                    option(value="2") CR
+                                    option(value="3") HB
                     .row
-                        .col-12
-                            .form-group
-                                label Course:
-                                select#smCrPicker.custom-select
-                                    option(value="0") Select Course
-                    .table-responsive
-                        table.table.table-bordered.table-hover
-                            thead.thead-dark
-                                tr
-                                    th.text-center Name
-                                    - for (var x = 1; x < 16; x++)
-                                        th.text-center=x
-                            tbody#smCrTableBody
+                        .table-responsive.col-8
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr.table-danger
+                                        th.text-center(colspan='4') Absent
+                                    tr
+                                        th.text-center Name
+                                        th.text-center Subject
+                                        th.text-center Tutor
+                                        th.text-center ลบ
+                                tbody#smAbsentTableBody
+                        .table-responsive.col-4
+                            table.table.table-bordered.table-hover
+                                thead
+                                    tr.table-success
+                                        th.text-center(colspan='4') Present
+                                    tr
+                                        th.text-center Name
+                                        th.text-center ลบ
+                                tbody#smPresentTableBody
         //- Activity tab content
         #activityContent.tab-pane.container-fluid
             br
@@ -186,40 +179,64 @@ block body
         //- Add tab content
         #addAttendContent.tab-pane.container
             .row
-                .col-12
+                .col-12.col-md-3
                     .form-group
-                        label &nbsp;
-                        select.form-control#addType
-                            option(value=1) ลา
-                            option(value=2) เพิ่ม
-                .col-12
+                        label Quarter:
+                        select#addAttendQuarterSelect.custom-select
+                .col-12.col-md-9
                     .form-group
-                        label.control-label StudentID:
-                        input.form-control#addStdID(type="text")
-                .col-md-6.col-12
+                        label Student:
+                        input#addStdTypeahead.typeahead.form-control(type="text" data-provide='typeahead')
+            .row
+                .col: h3 Add new attendance
+            hr.my-0
+            .row
+                .col-12.col-md-6
                     .form-group
-                        label.control-label Day:
-                        input.form-control#addDatePicker(type="text")
-                .col-md-6.col-12
+                        label Type:
+                        select#addAttendTypeSelect.custom-select
+                            option(value="1") ลา
+                            option(value="2") เพิ่ม
+                .col-12.col-md-6
                     .form-group
-                        label Time:
-                        select.form-control#addTime
-                .col-12.absentContent
-                    .form-group
-                        label.control-label Reason:
-                        input.form-control#addReason(type="text")
-                .col-12.addContent
+                        label Day:
+                        input#addAttendDatePicker.form-control(type="text")
+                .col-12.col-md-6
                     .form-group
                         label Subject:
-                        select.form-control#addSubj
-                            option(value="M") FHB:M
-                            option(value="P") FHB:P
+                        select#addAttendSubjSelect.custom-select
+                .col-12.col-md-6#addAttendTimeContainer
+                    .form-group
+                        label Time:
+                        select#addAttendTimeSelect.custom-select
+                            option(value="8") 8-10
+                            option(value="10") 10-12
+                            option(value="13") 13-15
+                            option(value="15") 15-17
+                            option(value="17") 17-19
+                .col-12.col-md-6#addAttendReasonContainer
+                    .form-group
+                        label Reason:
+                        input#addAttendReasonInput.form-control(type="text")
             .row
-                .col
-                    button.btn.btn-success.float-right#addNewAttend ADD ATTEND
+                .col: button#addAttendBtn.btn.btn-success.float-right Add+
             .row
-                .col
-                    h1 Upgrading soon.
+                .col: h3 Add student quota
+            hr.my-0
+            .row
+                .col-6
+                    button#mathQuotaBtn.btn.btn-outline-dark.col FHB:M
+                .col-6
+                    button#phyQuotaBtn.btn.btn-outline-dark.col FHB:P
+            .row.mt-3
+                .col-12
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead.thead-dark
+                                tr
+                                    th.text-center Subject
+                                    th.text-center Value
+                            tbody#addQuotaTableBody
     //- Modal for show pic
     #picModal.modal.fade
         .modal-dialog
@@ -253,3 +270,36 @@ block body
                 .modal-footer
                     button.btn.btn-success#uploadPicButt(type="button") Upload
                     button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+    //- Modal for add math quota
+    #addMQuotaModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Add math quota
+                    button.close(type="button" data-dismiss="modal") &times;
+                .modal-body
+                    input#addMQuotaInput.form-control(type="number")
+                .modal-footer
+                    button#addMQuotaBtn.btn.btn-success(type="button") Add+
+    //- Modal for add phy quota
+    #addPQuotaModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Add physic quota
+                    button.close(type="button" data-dismiss="modal") &times;
+                .modal-body
+                    input#addPQuotaInput.form-control(type="number")
+                .modal-footer
+                    button#addPQuotaBtn.btn.btn-success(type="button") Add+
+
+    //- Modal for waiting
+    #waitingModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Send data to server, please wait.
+                .modal-body
+                    .progress
+                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:100%") Sending...
