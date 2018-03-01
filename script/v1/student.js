@@ -438,7 +438,6 @@ module.exports = function (app, db, post, gradeBitToString) {
 
     post('/post/v1/allStudent',async function (req, res) {
         try {
-            console.time('time')
             let time = new Date()
             let config = await configDB.findOne({_id: 'config'})
             var quarterID;
@@ -518,9 +517,9 @@ module.exports = function (app, db, post, gradeBitToString) {
                     {$group:{_id:"$studentID",data:{$push:{msg:"$msg",sender:"$senderObj",_id:"$_id"}}}}
                 ]).toArray()
             ])
-            let courseSet = new Set(course[0].student)
-            let fhbSet = new Set(hybrid[0].student)
-            let skillSet = new Set(skill[0].student)
+            let courseSet = new Set(course[0]?course[0].student:[])
+            let fhbSet = new Set(hybrid[0]?hybrid[0].student:[])
+            let skillSet = new Set(skill[0]?skill[0].student:[])
             student = student.map((user)=>{
                 user.inCourse = courseSet.has(user._id)
                 user.inHybrid = fhbSet.has(user._id)
