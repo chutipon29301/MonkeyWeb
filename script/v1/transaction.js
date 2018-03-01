@@ -8,6 +8,7 @@ let hybridStudentDB
 let configDB
 let courseDB
 let userDB
+let attendanceDB
 module.exports = function(app, db, post){
     transactionCR = db.collection('transactionCR')
     transactionFHB = db.collection('transactionFHB')
@@ -15,6 +16,7 @@ module.exports = function(app, db, post){
     configDB = db.collection('config')
     courseDB = db.collection('course')
     userDB = db.collection('user')
+    attendanceDB = db.collection('attendance')
     /**
      * each obj has these parameter
      * {
@@ -93,8 +95,19 @@ module.exports = function(app, db, post){
             }
 
             //***** check Attendance */
-
-
+            let findDate = new Date()
+            findDate.setHours(checkoutHrs[findDate.getHours()],0,0,0)
+            let attend = await attendanceDB.findOne({userID:studentID , date:findDate.getTime() , type:2})
+            if(attend){
+                if(attend.courseID != 0){
+                    req.body.courseID = attend.courseID
+                    return checkoutCR(req,res)
+                }else{
+                    req.body.subject = attend.subject
+                    req.body.hybridID = attend.hybridID
+                    return checkBodyFHB(req,res)
+                }
+            }
 
 
         } catch (error) {
