@@ -465,130 +465,6 @@ function uploadAdtendPic() {
     }
 }
 
-// admin add attend function
-$("#addType").change(function () {
-    loadAdtendPage();
-});
-loadAdtendPage();
-function loadAdtendPage() {
-    let type = $("#addType").val();
-    if (type === "1") {
-        $(".absentContent").show();
-        $(".addContent").hide();
-    } else {
-        $(".absentContent").hide();
-        $(".addContent").show();
-    }
-}
-$("#addDatePicker").datetimepicker({
-    format: "DD/MM/YYYY",
-    daysOfWeekDisabled: [1, 3, 5]
-});
-genAddAdtendTimePicker();
-$("#addDatePicker").on("dp.change", function () {
-    genAddAdtendTimePicker();
-});
-function genAddAdtendTimePicker() {
-    $("#addTime").empty();
-    let pickDate = $('#addDatePicker').data('DateTimePicker').date();
-    if (pickDate.day() === 2 || pickDate.day() === 4) {
-        $("#addTime").append(
-            "<option value=" + 17 + ">17-19</option>"
-        );
-    } else {
-        $("#addTime").append(
-            "<option value=" + 8 + ">8-10</option>" +
-            "<option value=" + 10 + ">10-12</option>" +
-            "<option value=" + 13 + ">13-15</option>" +
-            "<option value=" + 15 + ">15-17</option>"
-        );
-    }
-}
-$("#addNewAttend").click(function () {
-    let type = $("#addType").val();
-    if ($("#addStdID").val() === "") {
-        alert("Input studentID");
-    } else if ($("#addStdID").val().length !== 5) {
-        alert("Incorrect studentID");
-    } else {
-        if (type === "1") {
-            if ($("#addReason").val() === "") {
-                alert("Input reason");
-            } else {
-                if (confirm("ยืนยันการลา?")) {
-                    sendAddAdtendData();
-                }
-            }
-        } else {
-            if (confirm("ยืนยันการเพิ่ม?")) {
-                sendAddAdtendData();
-            }
-        }
-    }
-});
-const roundTime = (time, round) => {
-    let result = moment(0);
-    result.year(time.year()).month(time.month()).date(time.date()).hour(parseInt(round));
-    return result.valueOf();
-};
-async function sendAddAdtendData() {
-    let pickDate = $('#addDatePicker').data('DateTimePicker').date();
-    let type = $("#addType").val();
-    let hour = parseInt($("#addTime").val());
-    let studentID = $("#addStdID").val();
-    let subj = $("#addSubj").val();
-    if (type === "1") {
-        let promise = [];
-        let timetable = await $.post("post/v1/studentTimeTable", { year: year, quarter: quarter, studentID: studentID });
-        let cr = timetable.course;
-        for (let i in cr) {
-            let t = moment(cr[i].day);
-            if (t.day() === pickDate.day() && t.hour() === hour) {
-                promise.push($.post("post/v1/addStudentAbsent", {
-                    userID: studentID,
-                    date: roundTime(pickDate, hour),
-                    courseID: cr[i].courseID,
-                    reason: $("#addReason").val(),
-                    sender: "Admin"
-                }));
-            }
-        }
-        let hb = timetable.hybrid;
-        for (let i in hb) {
-            let t = moment(hb[i].day);
-            if (t.day() === pickDate.day() && t.hour() === hour) {
-                promise.push($.post("post/v1/addStudentAbsent", {
-                    userID: studentID,
-                    date: roundTime(pickDate, hour),
-                    hybridID: hb[i].hybridID,
-                    reason: $("#addReason").val(),
-                    sender: "Admin"
-                }));
-            }
-        }
-        let cb = await Promise.all(promise);
-        log(cb);
-        location.reload();
-    } else {
-        let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
-        let hybridID;
-        for (let i in allHB) {
-            let t = moment(allHB[i].day);
-            if (t.day() === pickDate.day() && t.hour() === hour) {
-                hybridID = allHB[i].hybridID;
-            }
-        }
-        await $.post("post/v1/addStudentPresent", {
-            userID: studentID,
-            date: roundTime(pickDate, hour),
-            hybridID: hybridID,
-            subject: subj,
-            sender: "Admin"
-        });
-        location.reload();
-    }
-}
-
 // generate fhb room chart
 let firstTimeGen = true;
 var myChart;
@@ -1200,5 +1076,208 @@ function filterSmData() {
             $(".smrow-HB").show();
             $(".smrow-CR").show();
             break;
+    }
+}
+
+// Admin function
+$("#addAttendDatePicker").datetimepicker({
+    format: "DD/MM/YYYY",
+    defaultDate: moment()
+});
+$("#addAttendTypeSelect").change(function () {
+    if (this.value === '1') {
+        $("#addAttendReasonContainer").show();
+        $("#addAttendTimeContainer").hide();
+        genAddAbsentSubj();
+    } else if (this.value === '2') {
+        $("#addAttendReasonContainer").hide();
+        $("#addAttendTimeContainer").show();
+        genAddPresentSubj();
+    }
+});
+$("#addStdTypeahead").change(function () {
+    if ($("#addAttendTypeSelect").val() === '1') {
+        genAddAbsentSubj();
+    } else {
+        genAddPresentSubj();
+    }
+});
+$("#addAttendDatePicker").on("dp.change", function () {
+    if ($("#addAttendTypeSelect").val() === '1') {
+        genAddAbsentSubj();
+    } else {
+        genAddPresentSubj();
+    }
+});
+$("#addAttendQuarterSelect").change(function () {
+    if ($("#addAttendTypeSelect").val() === '1') {
+        genAddAbsentSubj();
+    } else {
+        genAddPresentSubj();
+    }
+});
+initAddAttendData();
+async function initAddAttendData() {
+    $("#addAttendReasonContainer").show();
+    $("#addAttendTimeContainer").hide();
+    let allStd;
+    let config;
+    try {
+        [allStd, config] = await Promise.all([allStudent(), getConfig()]);
+        let stdForSearch = [];
+        for (let i in allStd.student) {
+            stdForSearch.push({
+                name: allStd.student[i].nickname + " " + allStd.student[i].firstname + " (" + allStd.student[i].studentID + ")",
+                id: allStd.student[i].studentID,
+            });
+        }
+        $("#addStdTypeahead").typeahead({
+            source: stdForSearch,
+            autoSelect: true
+        });
+        $("#addAttendQuarterSelect").append(
+            "<option value='" + config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter + "'>Default</option>" +
+            "<option value='" + config.defaultQuarter.summer.year + "-" + config.defaultQuarter.summer.quarter + "'>Summer</option>"
+        );
+    } catch (error) {
+        log("post/allStudent||post/getConfig is error.");
+    }
+}
+async function genAddAbsentSubj() {
+    let selectStd = $("#addStdTypeahead").typeahead("getActive");
+    if (selectStd !== undefined) {
+        let selectQ = $("#addAttendQuarterSelect").val();
+        let timetable = await $.post("post/v1/studentTimeTable", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5), studentID: selectStd.id });
+        $("#addAttendSubjSelect").empty();
+        let pickDate = $('#addAttendDatePicker').data('DateTimePicker').date();
+        if (parseInt(selectQ.slice(5)) < 10) {
+            for (let i in timetable.hybrid) {
+                let t = moment(timetable.hybrid[i].day);
+                if (t.day() === pickDate.day()) {
+                    $("#addAttendSubjSelect").append(
+                        "<option value='" + timetable.hybrid[i].hybridID + "'>FHB:" + timetable.hybrid[i].subject + " (" + t.format("HH:00") + ")" + "</option>"
+                    );
+                }
+            }
+            for (let i in timetable.course) {
+                let t = moment(timetable.course[i].day);
+                if (t.day() === pickDate.day()) {
+                    $("#addAttendSubjSelect").append(
+                        "<option value='" + timetable.course[i].courseID + "'>" + timetable.course[i].courseName + "-" + timetable.course[i].tutorName + " (" + t.format("HH:00") + ")" + "</option>"
+                    );
+                }
+            }
+        } else {
+            for (let i in timetable.course) {
+                let t = moment(timetable.course[i].day);
+                if (pickDate.day() !== 0 && pickDate.day() !== 6) {
+                    $("#addAttendSubjSelect").append(
+                        "<option value='" + timetable.course[i].courseID + "'>" + timetable.course[i].courseName + "-" + timetable.course[i].tutorName + " (" + t.format("HH:00") + ")" + "</option>"
+                    );
+                }
+            }
+        }
+    }
+}
+async function genAddPresentSubj() {
+    let selectStd = $("#addStdTypeahead").typeahead("getActive");
+    if (selectStd !== undefined) {
+        let pickDate = $('#addAttendDatePicker').data('DateTimePicker').date();
+        let selectQ = $("#addAttendQuarterSelect").val();
+        let timetable = await $.post("post/v1/studentTimeTable", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5), studentID: selectStd.id });
+        $("#addAttendSubjSelect").empty();
+        if (parseInt(selectQ.slice(5)) < 10) {
+            if (pickDate.day() === 0 || pickDate.day() === 2 || pickDate.day() === 4 || pickDate.day() === 6) {
+                $("#addAttendSubjSelect").append(
+                    "<option value='0'>FHB:M</option>" +
+                    "<option value='0'>FHB:P</option>"
+                );
+            }
+        }
+        for (let i in timetable.course) {
+            let t = moment(timetable.course[i].day);
+            $("#addAttendSubjSelect").append(
+                "<option value='" + timetable.course[i].courseID + "'>" + timetable.course[i].courseName + "-" + timetable.course[i].tutorName + " (" + t.format("HH:00") + ")" + "</option>"
+            );
+        }
+    }
+}
+$("#addAttendBtn").click(function () {
+    if ($("#addAttendTypeSelect").val() === '1') {
+        if ($("#addStdTypeahead").typeahead("getActive") === undefined) {
+            alert("Please input student.");
+        } else if ($("#addAttendSubjSelect").val() === null) {
+            alert("Please input subject.");
+        } else if ($("#addAttendReasonInput").val().length <= 0) {
+            alert("Please input reason.");
+        } else {
+            if (confirm("Are you sure to add this absent?")) {
+                addNewAbsentAttend();
+            }
+        }
+    } else if ($("#addAttendTypeSelect").val() === '2') {
+        if ($("#addStdTypeahead").typeahead("getActive") === undefined) {
+            alert("Please input student.");
+        } else if ($("#addAttendSubjSelect").val() === null) {
+            alert("Please input subject.");
+        } else {
+            if (confirm("Are you sure to add this present?")) {
+                addNewPresentAttend();
+            }
+        }
+    }
+});
+async function addNewAbsentAttend() {
+    $("#waitingModal").modal('show');
+    let body = {};
+    body.userID = $("#addStdTypeahead").typeahead("getActive").id;
+    body.reason = $("#addAttendReasonInput").val();
+    body.sender = "Admin";
+    let pickdate = $('#addAttendDatePicker').data('DateTimePicker').date();
+    let className = $("#addAttendSubjSelect option:selected").html();
+    let classID = $("#addAttendSubjSelect").val();
+    let hour = parseInt(className.slice(className.indexOf("(") + 1, -4));
+    body.date = pickdate.hour(hour).valueOf();
+    if (className.indexOf("FHB") >= 0) {
+        body.hybridID = classID;
+    } else {
+        body.courseID = classID;
+    }
+    let cb = await $.post("post/v1/addStudentAbsent", body);
+    log(cb);
+    location.reload();
+}
+async function addNewPresentAttend() {
+    $("#waitingModal").modal('show');
+    let body = {};
+    let selectQ = $("#addAttendQuarterSelect").val();
+    body.userID = $("#addStdTypeahead").typeahead("getActive").id;
+    body.sender = "Admin";
+    let pickdate = $('#addAttendDatePicker').data('DateTimePicker').date();
+    let className = $("#addAttendSubjSelect option:selected").html();
+    let classID = $("#addAttendSubjSelect").val();
+    let hour = $("#addAttendTimeSelect").val();
+    body.date = pickdate.hour(parseInt(hour)).valueOf();
+    let sendData = true;
+    if (className.indexOf("FHB") >= 0) {
+        body.subject = className.slice(4, 5);
+        let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5) });
+        for (let i in allHB) {
+            let t = moment(allHB[i].day);
+            if (t.day() === pickdate.day() && t.hour() === parseInt(hour)) {
+                body.hybridID = allHB[i].hybridID;
+            }
+        }
+        if (body.hybridID === undefined) {
+            alert("Please correct selected time.");
+            sendData = false;
+        }
+    } else {
+        body.courseID = classID;
+    }
+    if (sendData) {
+        let cb = await $.post("post/v1/addStudentPresent", body);
+        log(cb);
+        location.reload();
     }
 }
