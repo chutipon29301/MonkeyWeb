@@ -223,6 +223,20 @@ block body
             .row
                 .col: h3 Add student quota
             hr.my-0
+            .row
+                .col-6
+                    button#mathQuotaBtn.btn.btn-outline-dark.col FHB:M
+                .col-6
+                    button#phyQuotaBtn.btn.btn-outline-dark.col FHB:P
+            .row.mt-3
+                .col-12
+                    .table-responsive
+                        table.table.table-bordered.table-hover
+                            thead.thead-dark
+                                tr
+                                    th.text-center Subject
+                                    th.text-center Value
+                            tbody#addQuotaTableBody
     //- Modal for show pic
     #picModal.modal.fade
         .modal-dialog
@@ -256,6 +270,29 @@ block body
                 .modal-footer
                     button.btn.btn-success#uploadPicButt(type="button") Upload
                     button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+    //- Modal for add math quota
+    #addMQuotaModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Add math quota
+                    button.close(type="button" data-dismiss="modal") &times;
+                .modal-body
+                    input#addMQuotaInput.form-control(type="number")
+                .modal-footer
+                    button#addMQuotaBtn.btn.btn-success(type="button") Add+
+    //- Modal for add phy quota
+    #addPQuotaModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Add physic quota
+                    button.close(type="button" data-dismiss="modal") &times;
+                .modal-body
+                    input#addPQuotaInput.form-control(type="number")
+                .modal-footer
+                    button#addPQuotaBtn.btn.btn-success(type="button") Add+
 
     //- Modal for waiting
     #waitingModal.modal.fade
