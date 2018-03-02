@@ -161,7 +161,7 @@ module.exports = function(app,db,post){
                 for(let j in attendanceObj[i]){
                     if(attendanceObj[i][j].type == 2){
                         attendanceObj[i][j].date = new Date(attendanceObj[i][j].date)
-                        let each = {studentID:attendanceObj[i][j].userID , type:(attendanceObj[i][j].courseID==0)?'fhb':'cr'}
+                        let each = {studentID:attendanceObj[i][j].userID , type:(attendanceObj[i][j].courseID==0)?'fhb':'cr' , status:'add'}
                         if(each.type == 'fhb') each.subject = attendanceObj[i][j].subject
                         else if(each.type == 'cr') each.subject = (await courseDB.findOne({_id:attendanceObj[i][j].courseID})).subject
                         let findCheckout = checkoutObj[attendanceObj[i][j].date.getHours()].find(check=>{return check.studentID == each.studentID && check.subject == each.subject})
