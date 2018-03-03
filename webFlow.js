@@ -62,11 +62,11 @@ module.exports = function (app, db, pasport) {
             let positionColor = logPosition(req.user)
             console.log(chalk.black.bgYellow("[404 REQUEST]", req.method, req.originalUrl, "FROM", req.ip, positionColor("#" + req.cookies.monkeyWebUser), moment().format("@ dddDDMMMYYYY HH:mm:ss")));
             console.log("\treq.body", "=>", req.body);
-            res.status(404).sendFile(path.join(__dirname, "old/404.html"));
+            res.status(404).sendFile(path.join(__dirname, "../old/404.html"));
         } else {
             console.log(chalk.black.bgYellow("[404 REQUEST]", req.method, req.originalUrl, "FROM", req.ip, moment().format("@ dddDDMMMYYYY HH:mm:ss")));
             console.log("\treq.body", "=>", req.body);
-            res.status(404).sendFile(path.join(__dirname, "old/404.html"));
+            res.status(404).sendFile(path.join(__dirname, "../old/404.html"));
         }
     };
 

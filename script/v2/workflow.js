@@ -22,12 +22,13 @@ module.exports = function (app, passport, db) {
         next();
     });
 
-    // app.post('/test', passport.isLoggedIn, (req, res) => {
-    //     var header = new Header(db.collection('workflow'), 'test', '99009', 'Other');
-    //     header.save().then(_ => {
-    //         res.status(200).send('OK');
-    //     });
-    // });
+    app.post('/test', passport.isLoggedIn, (req, res) => {
+        res.status(200).send('OK');
+        // var header = new Header(db.collection('workflow'), 'test', '99009', 'Other');
+        // header.save().then(_ => {
+        //     res.status(200).send('OK');
+        // });
+    });
 
     app.post('/addWorkflow', passport.isLoggedIn, (req, res) => {
         if (!(req.body.title && req.body.detail, req.body.subtitle)) {
