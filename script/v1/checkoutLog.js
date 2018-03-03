@@ -70,7 +70,6 @@ module.exports = function(app,db,post){
      */
     post('/post/v1/getCheckout',async function(req,res){
         try {
-            
             let start = req.body.date?new Date(req.body.date):new Date()
             let end = req.body.date?new Date(req.body.date):new Date()
             start.setHours(0,0,0,0)

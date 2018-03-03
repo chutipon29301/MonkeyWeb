@@ -9,7 +9,7 @@ let configDB
 let courseDB
 let userDB
 let attendanceDB
-module.exports = function(app, db, post){
+module.exports = function(app, db, post,io){
     transactionCR = db.collection('transactionCR')
     transactionFHB = db.collection('transactionFHB')
     hybridStudentDB = db.collection('hybridStudent')
@@ -17,6 +17,13 @@ module.exports = function(app, db, post){
     courseDB = db.collection('course')
     userDB = db.collection('user')
     attendanceDB = db.collection('attendance')
+
+    post('/post/v1/testSocket',function(req,res){
+        console.log('test socket')
+        io.emit('updateCheckout')
+        res.status(200).send('ok')
+    })
+
     /**
      * each obj has these parameter
      * {
@@ -71,7 +78,7 @@ module.exports = function(app, db, post){
                     break;
                 }
             }
-            if(req.body.hybridID && req.body.subject) return checkoutFHB(req,res)
+            if(req.body.hybridID && req.body.subject) return checkoutFHB(req,res,io,true)
             
             // check CR */
             let quarter;
@@ -89,7 +96,7 @@ module.exports = function(app, db, post){
                 let courseHr = courseDate.getHours()
                 if(checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 0 && now.getDay() > 0 && now.getDay() < 6))){
                     req.body.courseID = possibleCourse[i]._id
-                    return checkoutCR(req,res)
+                    return checkoutCR(req,res,io,true)
                     break
                 }
             }
@@ -105,7 +112,7 @@ module.exports = function(app, db, post){
                 }else{
                     req.body.subject = attend.subject
                     req.body.hybridID = attend.hybridID
-                    return checkBodyFHB(req,res)
+                    return checkBodyFHB(req,res,io,true)
                 }
             }
 
@@ -496,7 +503,7 @@ function parseTransactionFHB(key,value){
     if(allFieldFHB[key] == "ObjectID") return ObjectID(value);
     return value;
 }
-async function checkoutFHB(req,res){
+async function checkoutFHB(req,res,io,ioEmit){
     if(!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
@@ -537,6 +544,7 @@ async function checkoutFHB(req,res){
             remark : "",
             hybridID : req.body.hybridID
         })
+        if(ioEmit)io.emit('updateCheckout')
         return res.status(200).send({msg:"ok"})
     }catch(e){
         console.log(e)
@@ -548,7 +556,7 @@ async function checkoutFHB(req,res){
  * @param {studentID : int , courseID : string(optional)} req 
  * @param {*} res 
  */
-async function checkoutCR(req,res){
+async function checkoutCR(req,res,io,ioEmit){
     if(!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
@@ -578,6 +586,7 @@ async function checkoutCR(req,res){
                     reason : "CheckoutCR",
                     remark : req.body.remark?req.body.remark:"",
                 })
+                if(ioEmit)io.emit('updateCheckout')
                 return res.status(200).send({msg:"ok"})
             }else{
                 return res.status(400).send({err:400,msg:'Cannot find this courseID'})
@@ -609,6 +618,7 @@ async function checkoutCR(req,res){
                     reason : "CheckoutCR",
                     remark : req.body.remark?req.body.remark:"",
                 })
+                if(ioEmit)io.emit('updateCheckout')
                 return res.status(200).send({msg:"ok"})
             }else{
                 return res.status(400).send({err:400,msg:'Cannot find course at this time'})
