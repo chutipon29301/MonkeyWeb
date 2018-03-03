@@ -1,4 +1,7 @@
 var ObjectID = require("mongodb").ObjectID;
+var apn = require('apn');
+var notification = require('./classes/NotificationManager');
+// var Header = require('./classes/WorkflowHeaderNode');
 
 module.exports = function (app, passport, db) {
 
@@ -10,7 +13,7 @@ module.exports = function (app, passport, db) {
     const DONE = 'done';
     const COMPLETE = 'complete';
 
-    db.collection('task').createIndex({
+    db.collection('workflow').createIndex({
         header: 1
     });
 
@@ -19,19 +22,33 @@ module.exports = function (app, passport, db) {
         next();
     });
 
-    app.post('/addTask', passport.isLoggedIn, (req, res) => {
+    // app.post('/test', passport.isLoggedIn, (req, res) => {
+    //     var header = new Header(db.collection('workflow'), 'test', '99009', 'Other');
+    //     header.save().then(_ => {
+    //         res.status(200).send('OK');
+    //     });
+    // });
+
+    app.post('/addWorkflow', passport.isLoggedIn, (req, res) => {
         if (!(req.body.title && req.body.detail, req.body.subtitle)) {
             return res.status(400).send({
                 err: 0,
                 msg: 'Bad Request'
             });
         }
-        var tags = [];
-        db.collection('task').insertOne({
+
+        var tag;
+        if (req.body.tag) {
+            tag = req.body.tag;
+        } else {
+            tag = 'Other';
+        }
+
+        db.collection('workflow').insertOne({
             header: true,
             createdBy: req.user._id,
             title: req.body.title,
-            tags: tags,
+            tag: tag,
             timestamp: new Date(),
         }).then((err, response) => {
             if (err) {
@@ -40,7 +57,7 @@ module.exports = function (app, passport, db) {
                     msg: 'Internal server error'
                 });
             }
-            db.collection('task').insertOne({
+            db.collection('workflow').insertOne({
                 header: false,
                 status: NOTE,
                 timestamp: new Date(),
@@ -50,66 +67,77 @@ module.exports = function (app, passport, db) {
                 parent: response.insertedId,
                 ancestors: [response.insertedId]
             }).then(_ => {
-                res.status(200).send({
+                return res.status(200).send({
                     msg: 'OK'
                 });
             });
         });
     });
 
-    app.post('/editTaskHeader', passport.isLoggedIn, (req, res) => {
-        if (!(req.body.taskID && req.body.title)) {
+    app.post('/editWorkflowHeader', passport.isLoggedIn, (req, res) => {
+        if (!(req.body.workflowID && req.body.title)) {
             return res.status(400), send({
                 err: 0,
                 msg: 'Bad Request'
             });
         }
-        //TODO: Check if the task is header
-        db.collection('task').updateOne({
-            _id: ObjectID(req.body.taskID)
-        }, {
-            $set: {
-                title: req.body.title
+        db.collection('workflow').findOne({
+            _id: ObjectID(req.body.workflowID)
+        }).then(workflow => {
+            if (!workflow.header) {
+                throw ({
+                    err: 2,
+                    msg: 'Non header node do not have header'
+                });
             }
+            return db.collection('workflow').updateOne({
+                _id: workflow._id
+            }, {
+                $set: {
+                    title: req.body.title
+                }
+            });
         }).then(_ => {
-            res.status(200).send({
+            return res.status(200).send({
                 msg: 'OK'
             });
+        }).catch(err => {
+            return res.status(400).send(err);
         });
     });
 
-    app.post('/editTaskDetail', passport.isLoggedIn, (req, res) => {
+    app.post('/editWorkflowDetail', passport.isLoggedIn, (req, res) => {
         // TODO: Implement the edit task function
         res.status(200).send('OK');
     });
 
-    app.post('/deleteTask', passport.isLoggedIn, (req, res) => {
-        if (!req.body.taskID) {
+    app.post('/deleteWorkflow', passport.isLoggedIn, (req, res) => {
+        if (!req.body.workflowID) {
             return res.status(400).send({
                 err: 0,
                 msg: 'Bad Request'
             });
         }
-        db.collection('task').findOne({
-            _id: ObjectID(req.body.taskID)
-        }).then(task => {
-            if (!task.header) {
+        db.collection('workflow').findOne({
+            _id: ObjectID(req.body.workflowID)
+        }).then(workflow => {
+            if (!workflow.header) {
                 throw ({
                     err: 1,
                     msg: 'Non-head task cannot be delete'
                 });
             }
-            if (task.createdBy !== req.user._id) {
+            if (workflow.createdBy !== req.user._id) {
                 throw ({
                     err: 2,
                     msg: 'Only owner can delete this task'
                 });
             }
-            return db.collection('task').deleteMany({
+            return db.collection('workflow').deleteMany({
                 $or: [{
-                    ancestors: task._id
+                    ancestors: workflow._id
                 }, {
-                    _id: task._id
+                    _id: workflow._id
                 }]
             });
         }).then(result => {
@@ -120,4 +148,6 @@ module.exports = function (app, passport, db) {
             res.status(400).send(err);
         });
     });
+
+    // app.post('')
 }
