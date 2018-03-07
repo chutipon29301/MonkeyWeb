@@ -3,7 +3,7 @@ var nodeExternals = require('webpack-node-externals');
 const NodemonPlugin = require('nodemon-webpack-plugin')
 
 module.exports = {
-    entry: './index.js',
+    entry: './src/index.js',
     output: {
         filename: 'bundle.js',
         path: path.join(__dirname, 'dist')

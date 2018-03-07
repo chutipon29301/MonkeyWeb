@@ -14,7 +14,7 @@ module.exports = function (app, db, post) {
     const DONE = 3;
     const COMPLETE = 4;
 
-    var keyPath = __dirname.substring(0, __dirname.indexOf('script')) + 'key/MonkeyTutorNotification.p8';
+    var keyPath = __dirname.substring(0, __dirname.indexOf('dist')) + 'key/MonkeyTutorNotification.p8';
     var apnProvider = new apn.Provider({
         token: {
             key: keyPath,
