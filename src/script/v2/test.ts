@@ -5,3 +5,8 @@ export function lowercase(val:string) {
 export function uppercase(val:string) {
     return val.toUpperCase();
 }
+
+export function print(){
+    console.log('Hello World');
+    return;
+}

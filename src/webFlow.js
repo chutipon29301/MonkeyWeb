@@ -1,5 +1,6 @@
 console.log("[START] webFlow.js");
 module.exports = function (app, db, pasport) {
+    require('typescript-require');
     var chalk = require("chalk");
     var moment = require("moment");
     var path = require("path");
@@ -71,7 +72,7 @@ module.exports = function (app, db, pasport) {
     };
 
     app.use('/dev', require('./script/dev/index')(auth, db));
-    app.use('/v2', require('./script/v2/index')(auth));
+    app.use('/v2', require('./script/v2/index.ts').app(auth));
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();
         if (req.isAuthenticated()) {
