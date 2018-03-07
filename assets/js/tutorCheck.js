@@ -35,15 +35,15 @@ async function checkIn() {
             );
             let subPos = tutorName.subPosition;
             if (subPos === undefined) {
-                await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
-            } else if (subPos.trim().toLowerCase() === "trainee") {
-                await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
-            } else {
-                if (tutorName.position === "mel") {
+                if (tutorName.position.trim().toLowerCase() === "mel") {
                     await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
                 } else {
                     await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
                 }
+            } else if (subPos.trim().toLowerCase() === "trainee") {
+                await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
+            } else {
+                await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckin:" + moment(date).format("DD/MM/YY HH:mm:ss"));
             }
             $('#checkInModal').modal('show');
         }
@@ -125,16 +125,15 @@ async function checkOutSubmit() {
         });
         let subPos = tutorName.subPosition;
         if (subPos === undefined) {
-            await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
-        } else if (subPos.trim().toLowerCase() === "trainee") {
-            await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
-        } else {
-            if (tutorName.position === "mel") {
+            if (tutorName.position.trim().toLowerCase() === "mel") {
                 await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
             } else {
                 await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
             }
-
+        } else if (subPos.trim().toLowerCase() === "trainee") {
+            await lineNotify("MonkeyTrainee", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
+        } else {
+            await lineNotify("MonkeyStaff", "\n" + tutorName.firstname + ' ' + tutorName.nickname + "\nCheckout:" + moment(checkOutDate).format("DD/MM/YY HH:mm:ss"));
         }
         $('#checkOutSummaryModal').modal('hide');
     } catch (error) {
