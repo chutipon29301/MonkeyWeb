@@ -112,7 +112,11 @@ block body
         //- Summer tab content
         #summerContent.tab-pane.container-fluid
             .row
-                .col-12#smByDayCollapse
+                .col
+                    button#smByDayTab.btn.btn-outline-dark By Day
+                    button#smByCrTab.btn.btn-outline-dark By Course
+            .row.collapse#smByDayCollapse
+                .col-12
                     .row
                         .col-12.col-md-4
                             .form-group
@@ -155,6 +159,22 @@ block body
                                         th.text-center Name
                                         th.text-center ลบ
                                 tbody#smPresentTableBody
+            .row#smByCrCollapse
+                .col-12
+                    .row
+                        .col-12
+                            .form-group
+                                label Course:
+                                select#smCoursePicker.custom-select
+                    .row
+                        .table-responsive.col-12
+                            table.table.table-bordered.table-hover
+                                thead.thead-light
+                                    tr
+                                        th.text-center Name
+                                        - for(let i=1;i<16;i++)
+                                            th.text-center= i
+                                tbody#smByCrTableBody
         //- Activity tab content
         #activityContent.tab-pane.container-fluid
             br

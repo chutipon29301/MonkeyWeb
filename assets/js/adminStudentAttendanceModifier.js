@@ -620,42 +620,44 @@ async function generateChart(type) {
         for (let j in attend) {
             if (attend[j].type === 1) {
                 let t = moment(attend[j].date).format("dddH").toLowerCase();
-                if (attend[j].courseID === undefined) {
-                    if (attend[j].hybridSubject === "M") {
-                        mhbReal[dayIndex(t)] -= 1;
-                    } else if (attend[j].hybridSubject === "P") {
-                        phbReal[dayIndex(t)] -= 1;
-                    }
-                } else {
-                    if (attend[j].tutorID === 99000) {
-                        for (let i in allHbRoom[t].course) {
-                            if (allHbRoom[t].course[i].courseID === attend[j].courseID) {
-                                switch (attend[j].courseName.slice(0, 1)) {
-                                    case "M":
-                                        mcrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    case "P":
-                                        pcrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    case "C":
-                                        ccrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    case "E":
-                                        ecrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    default:
-                                        break;
+                if (t !== 'tue8' && t !== 'tue10' && t !== 'tue13' && t !== 'thu8' && t !== 'thu10' && t !== 'thu13') {
+                    if (attend[j].courseID === undefined) {
+                        if (attend[j].hybridSubject === "M") {
+                            mhbReal[dayIndex(t)] -= 1;
+                        } else if (attend[j].hybridSubject === "P") {
+                            phbReal[dayIndex(t)] -= 1;
+                        }
+                    } else {
+                        if (attend[j].tutorID === 99000) {
+                            for (let i in allHbRoom[t].course) {
+                                if (allHbRoom[t].course[i].courseID === attend[j].courseID) {
+                                    switch (attend[j].courseName.slice(0, 1)) {
+                                        case "M":
+                                            mcrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        case "P":
+                                            pcrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        case "C":
+                                            ccrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        case "E":
+                                            ecrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            } else if (attend[j].type === 2) {
-                let t = moment(attend[j].date).format("dddH").toLowerCase();
-                if (attend[j].subject === "M") {
-                    mhbReal[dayIndex(t)] += 1;
-                } else if (attend[j].subject === "P") {
-                    phbReal[dayIndex(t)] += 1;
+                } else if (attend[j].type === 2) {
+                    let t = moment(attend[j].date).format("dddH").toLowerCase();
+                    if (attend[j].subject === "M") {
+                        mhbReal[dayIndex(t)] += 1;
+                    } else if (attend[j].subject === "P") {
+                        phbReal[dayIndex(t)] += 1;
+                    }
                 }
             }
         }
@@ -1000,6 +1002,16 @@ $("#compareChartButt").click(function () {
 });
 
 // summer absent function
+$("#smByDayCollapse").collapse('show');
+$("#smByCrCollapse").collapse('hide');
+$("#smByDayTab").click(function () {
+    $("#smByDayCollapse").collapse('show');
+    $("#smByCrCollapse").collapse('hide');
+});
+$("#smByCrTab").click(function () {
+    $("#smByDayCollapse").collapse('hide');
+    $("#smByCrCollapse").collapse('show');
+});
 $("#smDatePicker").datetimepicker({
     format: "DD/MM/YYYY",
     daysOfWeekDisabled: [0, 6],
@@ -1018,6 +1030,7 @@ $("#smFilter").change(function () {
 });
 $(".nav-tabs > .nav-item:nth-child(4)").click(function () {
     genSmTable();
+    genSmCrSelectOption();
 });
 async function genSmTable() {
     let date = $('#smDatePicker').data('DateTimePicker').date();
@@ -1076,6 +1089,75 @@ function filterSmData() {
             $(".smrow-HB").show();
             $(".smrow-CR").show();
             break;
+    }
+}
+async function genSmCrSelectOption() {
+    let config = await getConfig();
+    let smQ = config.defaultQuarter.summer;
+    let allSmCr = await $.post("post/v1/allCourse", { year: smQ.year, quarter: smQ.quarter });
+    $("#smCoursePicker").append("<option value='0'>Select course</option>")
+    for (let i in allSmCr) {
+        $("#smCoursePicker").append(
+            "<option value=" + allSmCr[i].courseID + ">" + allSmCr[i].courseName + "-" + allSmCr[i].tutorName + "</option>"
+        );
+    }
+}
+$("#smCoursePicker").change(function () {
+    if (this.value !== "0") {
+        genSmByCrTable();
+    }
+});
+async function genSmByCrTable() {
+    let pointer = $("#smByCrTableBody");
+    pointer.empty()
+    let selectCr = $("#smCoursePicker").val();
+    let crInfo = await courseInfo(selectCr);
+    let promise = [];
+    let startT = moment("2018/03/12", "YYYY/MM/DD").utcOffset(7);
+    let endT = moment("2018/03/30 23", "YYYY/MM/DD HH").utcOffset(7);
+    for (let i in crInfo.student) {
+        promise.push($.post("post/v1/listAttendance", { studentStartDate: startT.valueOf(), studentEndDate: endT.valueOf(), studentID: crInfo.student[i] }));
+    }
+    let allAttend = await Promise.all(promise);
+    for (let i in allAttend) {
+        let name;
+        let crNum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (let j in allAttend[i]) {
+            let t = moment(allAttend[i][j].date);
+            if (allAttend[i][j].type === 2 && t.hour() === 15) {
+                crNum[smDayToNo(t.date())] = 1;
+            } else if (allAttend[i][j].type === 1 && allAttend[i][j].courseID === selectCr) {
+                crNum[smDayToNo(t.date())] = -1;
+            }
+        }
+        if (allAttend[i].length > 0) {
+            name = allAttend[i][0].nickname + " " + allAttend[i][0].firstname;
+            let str = "";
+            for (let i in crNum) {
+                if (crNum[i] === -1) {
+                    str = str + "<td class='table-danger'></td>"
+                } else if (crNum[i] === 0) {
+                    str = str + "<td></td>"
+                } else if (crNum[i] === 1) {
+                    str = str + "<td class='table-success'></td>"
+                }
+            }
+            pointer.append(
+                "<tr>" +
+                "<td>" + name + "</td>" +
+                str +
+                "</tr>"
+            );
+        }
+    }
+}
+function smDayToNo(day) {
+    if (day < 17) {
+        return day - 12;
+    } else if (day < 24) {
+        return day - 14;
+    } else {
+        return day - 16;
     }
 }
 
