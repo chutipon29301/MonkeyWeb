@@ -23,6 +23,7 @@ module.exports = function (app, passport, db) {
     });
 
     app.post('/test', passport.isLoggedIn, (req, res) => {
+        console.log(req.user);
         res.status(200).send('OK');
         // var header = new Header(db.collection('workflow'), 'test', '99009', 'Other');
         // header.save().then(_ => {

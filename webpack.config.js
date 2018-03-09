@@ -1,14 +1,14 @@
 const path = require('path');
 var nodeExternals = require('webpack-node-externals');
-const NodemonPlugin = require('nodemon-webpack-plugin')
+const NodemonPlugin = require('nodemon-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
-    devtool: 'inline-source-map',
     module: {
         rules: [{
             test: /\.tsx?$/,
-            use: 'ts-loader',
+            use: ['ts-loader'],
+            enforce: 'pre',
             exclude: /node_modules/
         }]
     },
