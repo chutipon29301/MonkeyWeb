@@ -129,7 +129,7 @@ async function loadRecieptImg() {
                 $("#recieptImg").attr("src", path + ".jpeg");
             }).fail(() => {
                 log("can't find picture");
-                $("#recieptImg").attr("src", "images/noImage.svg");
+                $("#recieptImg").attr("src", "images/nopic.png");
             });
         });
     });
@@ -619,6 +619,7 @@ async function genSummerCover() {
     ctx.font = "bold 65px Cordia New";
     let temp = moment(0);
     let index = -1;
+    let initH2 = 696;
     for (let i in attend) {
         let initH = 696;
         let initW = { 8: 380, 10: 470, 13: 560 };
@@ -634,6 +635,14 @@ async function genSummerCover() {
                 ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
             }
             temp = t;
+        } else if (attend[i].type === 2) {
+            let t = moment(attend[i].date);
+            if (t.hour() === 15) {
+                ctx.fillText(t.date(), 660, initH2);
+                ctx.fillText(t.month() + 1, 750, initH2);
+                ctx.fillText((t.year() + '').slice(2), 840, initH2);
+                initH2 = initH2 + 69;
+            }
         }
     }
     downloadCanvas(6);

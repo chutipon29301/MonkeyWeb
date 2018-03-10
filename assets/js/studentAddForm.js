@@ -146,14 +146,12 @@ async function getHistory() {
     $("#absentTableBody").empty();
     $("#presentTableBody").empty();
     let pickDate = $('#addDate').data('DateTimePicker').date();
-    let startDate = moment(0);
-    let endDate = moment(0);
-    startDate.year(pickDate.year()).month(pickDate.month() - 3).date(pickDate.date());
-    endDate.year(pickDate.year()).month(pickDate.month() + 3).date(pickDate.date());
+    let startDate = pickDate.valueOf() - 7776000000;
+    let endDate = pickDate.valueOf() + 7776000000;
     let history = await $.post("post/v1/listAttendance", {
         studentID: studentID,
-        studentStartDate: startDate.valueOf(),
-        studentEndDate: endDate.valueOf()
+        studentStartDate: startDate,
+        studentEndDate: endDate
     });
     for (let i = 0; i < history.length; i++) {
         let t = moment(history[i].date).format("DD/MM/YY - HH:mm");

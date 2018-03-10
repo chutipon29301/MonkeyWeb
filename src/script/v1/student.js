@@ -11,7 +11,7 @@ module.exports = function (app, db, post, gradeBitToString) {
     var userDB = db.collection('user');
     var attendanceDocumentDB = db.collection('attendanceDocument');
     var chatDB = db.collection('chat');
-
+    var skillStudentDB = db.collection('skillStudent');
     const NONE = 0;
     const ABSENT = 1;
     const PRESENT = 2;
@@ -436,12 +436,13 @@ module.exports = function (app, db, post, gradeBitToString) {
         });
     });
 
-    post('/post/v1/allStudent', function (req, res) {
-        configDB.findOne({
-            _id: 'config'
-        }).then(config => {
+    post('/post/v1/allStudent',async function (req, res) {
+        try {
+            let time = new Date()
+            let config = await configDB.findOne({_id: 'config'})
             var quarterID;
             var quarterObj = {}
+            let quarter , year
             if (req.body.quarter && req.body.year) {
                 quarter = req.body.quarter;
                 year = req.body.year;
@@ -463,106 +464,101 @@ module.exports = function (app, db, post, gradeBitToString) {
                 }
                 quarterID = year + quarter;
             }
-            userDB.aggregate([{
-                $match: {
-                    position: 'student'
-                }
-            }, {
-                $sort: {
-                    _id: 1
-                }
-            }, {
-                $lookup: {
-                    from: 'course',
-                    localField: '_id',
-                    foreignField: 'student',
-                    as: 'course'
-                }
-            }, {
-                $lookup: {
-                    from: 'hybridStudent',
-                    localField: '_id',
-                    foreignField: 'student.studentID',
-                    as: 'hybrid'
-                }
-            }, {
-                $lookup: {
-                    from: 'skillStudent',
-                    localField: '_id',
-                    foreignField: 'student.studentID',
-                    as: 'skill'
-                }
-            }]).toArray().then(users => {
-                users.map(user => {
-                    user.course = _.filter(user.course, o => {
-                        return o.quarter === quarterObj.quarter && o.year === quarterObj.year;
-                    });
-                    user.hybrid = _.filter(user.hybrid, o => {
-                        return o.quarterID === quarterID
-                    });
-                    user.skill = _.filter(user.skill, o => {
-                        return o.quarterID === quarterID
-                    });
-                    user.inCourse = user.course.length !== 0;
-                    user.inHybrid = user.hybrid.length !== 0;
-                    user.inSkill = user.skill.length !== 0;
-                    user.studentID = user._id;
-                    user.grade = user.student.grade;
-                    user.status = user.student.status;
-                    user.quarter = user.student.quarter;
-                    delete user._id;
-                    delete user.password;
-                    delete user.position;
-                    delete user.firstnameEn;
-                    delete user.lastnameEn;
-                    delete user.nicknameEn;
-                    delete user.email;
-                    delete user.student;
-                    delete user.phone;
-                    delete user.course;
-                    delete user.hybrid;
-                    delete user.skill;
-                });
-                Promise.all(users.map(user => {
-                    return chatDB.aggregate([{
-                        $match: {
-                            studentID: parseInt(user.studentID)
-                        }
-                    }, {
-                        $sort: {
-                            timestamp: -1
-                        }
-                    }, {
-                        $limit: 1
-                    }, {
-                        $lookup: {
-                            from: 'user',
-                            localField: 'sender',
-                            foreignField: '_id',
-                            as: 'sender'
-                        }
-                    }, {
-                        $project: {
-                            studentID: 0,
-                            timestamp: 0
-                        }
-                    }]).toArray();
-                })).then(chats => {
-                    for (let i = 0; i < users.length; i++) {
-                        if (chats[i] != null) {
-                            users[i].chats = chats[i];
+            let [student,course,hybrid,skill,chat] = await Promise.all([
+                userDB.find({position:'student'}).sort({_id:1}).toArray(),
+                courseDB.aggregate([
+                    {$match:{quarter:quarterObj.quarter,year:quarterObj.year}},
+                    {$group:{_id: null , student:{$push:"$student"}}},
+                    {
+                        $project:{
+                            student: {
+                                $reduce: {
+                                    "input": "$student",
+                                    "initialValue": [],
+                                    "in": { "$setUnion": ["$$value", "$$this"] }
+                                }
+                            }
                         }
                     }
-                    res.status(200).send({
-                        users: users
-                    });
-                });
-            });
-        });
+                ]).toArray(),
+                studentHybridDB.aggregate([
+                    {$match:{quarterID:quarterID}},
+                    {$group:{_id: null , student:{$push:"$student.studentID"}}},
+                    {
+                        $project:{
+                            student: {
+                                $reduce: {
+                                    "input": "$student",
+                                    "initialValue": [],
+                                    "in": { "$setUnion": ["$$value", "$$this"] }
+                                }
+                            }
+                        }
+                    }
+                ]).toArray(),
+                skillStudentDB.aggregate([
+                    {$match:{quarterID:quarterID}},
+                    {$group:{_id: null , student:{$push:"$student.studentID"}}},
+                    {
+                        $project:{
+                            student: {
+                                $reduce: {
+                                    "input": "$student",
+                                    "initialValue": [],
+                                    "in": { "$setUnion": ["$$value", "$$this"] }
+                                }
+                            }
+                        }
+                    }
+                ]).toArray(),
+                chatDB.aggregate([
+                    {$sort:{timestamp:-1}},
+                    {$lookup:{from:'user',localField:'sender',foreignField:'_id',as:'senderObj'}},
+                    {$group:{_id:"$studentID",data:{$push:{msg:"$msg",sender:"$senderObj",_id:"$_id"}}}}
+                ]).toArray()
+            ])
+            let courseSet = new Set(course[0]?course[0].student:[])
+            let fhbSet = new Set(hybrid[0]?hybrid[0].student:[])
+            let skillSet = new Set(skill[0]?skill[0].student:[])
+            student = student.map((user)=>{
+                user.inCourse = courseSet.has(user._id)
+                user.inHybrid = fhbSet.has(user._id)
+                user.inSkill = skillSet.has(user._id)
+                user.chats = []
+                for(let i in chat){
+                    if(chat[i]._id == user._id){
+                        user.chats = chat[i].data
+                        break
+                    }
+                }
+                user.studentID = user._id;
+                user.grade = user.student.grade;
+                user.status = user.student.status;
+                user.quarter = user.student.quarter;
+                delete user._id;
+                delete user.password;
+                delete user.position;
+                delete user.firstnameEn;
+                delete user.lastnameEn;
+                delete user.nicknameEn;
+                delete user.email;
+                delete user.student;
+                delete user.phone;
+                delete user.course;
+                delete user.hybrid;
+                delete user.skill;
+                return user
+            })
+            res.status(200).send({users:student}) 
+        } catch (error) {
+            res.status(500).send({err:500,msg:'find db error'})
+        }
+        
     });
 
     post('/post/v1/allStudentProfilePicture',function(req,res){
         configDB.findOne({},function(err,config){
+            if(err) res.status(500).send({err:500,msg:'db error'})
             require('fs').readdir(config.profilePicturePath,function(err,dir){
                 if(err) res.status(400).send({err:400,msg:"fs error occur"})
                 res.status(200).send({arr:dir})

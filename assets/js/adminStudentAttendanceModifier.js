@@ -465,130 +465,6 @@ function uploadAdtendPic() {
     }
 }
 
-// admin add attend function
-$("#addType").change(function () {
-    loadAdtendPage();
-});
-loadAdtendPage();
-function loadAdtendPage() {
-    let type = $("#addType").val();
-    if (type === "1") {
-        $(".absentContent").show();
-        $(".addContent").hide();
-    } else {
-        $(".absentContent").hide();
-        $(".addContent").show();
-    }
-}
-$("#addDatePicker").datetimepicker({
-    format: "DD/MM/YYYY",
-    daysOfWeekDisabled: [1, 3, 5]
-});
-genAddAdtendTimePicker();
-$("#addDatePicker").on("dp.change", function () {
-    genAddAdtendTimePicker();
-});
-function genAddAdtendTimePicker() {
-    $("#addTime").empty();
-    let pickDate = $('#addDatePicker').data('DateTimePicker').date();
-    if (pickDate.day() === 2 || pickDate.day() === 4) {
-        $("#addTime").append(
-            "<option value=" + 17 + ">17-19</option>"
-        );
-    } else {
-        $("#addTime").append(
-            "<option value=" + 8 + ">8-10</option>" +
-            "<option value=" + 10 + ">10-12</option>" +
-            "<option value=" + 13 + ">13-15</option>" +
-            "<option value=" + 15 + ">15-17</option>"
-        );
-    }
-}
-$("#addNewAttend").click(function () {
-    let type = $("#addType").val();
-    if ($("#addStdID").val() === "") {
-        alert("Input studentID");
-    } else if ($("#addStdID").val().length !== 5) {
-        alert("Incorrect studentID");
-    } else {
-        if (type === "1") {
-            if ($("#addReason").val() === "") {
-                alert("Input reason");
-            } else {
-                if (confirm("ยืนยันการลา?")) {
-                    sendAddAdtendData();
-                }
-            }
-        } else {
-            if (confirm("ยืนยันการเพิ่ม?")) {
-                sendAddAdtendData();
-            }
-        }
-    }
-});
-const roundTime = (time, round) => {
-    let result = moment(0);
-    result.year(time.year()).month(time.month()).date(time.date()).hour(parseInt(round));
-    return result.valueOf();
-};
-async function sendAddAdtendData() {
-    let pickDate = $('#addDatePicker').data('DateTimePicker').date();
-    let type = $("#addType").val();
-    let hour = parseInt($("#addTime").val());
-    let studentID = $("#addStdID").val();
-    let subj = $("#addSubj").val();
-    if (type === "1") {
-        let promise = [];
-        let timetable = await $.post("post/v1/studentTimeTable", { year: year, quarter: quarter, studentID: studentID });
-        let cr = timetable.course;
-        for (let i in cr) {
-            let t = moment(cr[i].day);
-            if (t.day() === pickDate.day() && t.hour() === hour) {
-                promise.push($.post("post/v1/addStudentAbsent", {
-                    userID: studentID,
-                    date: roundTime(pickDate, hour),
-                    courseID: cr[i].courseID,
-                    reason: $("#addReason").val(),
-                    sender: "Admin"
-                }));
-            }
-        }
-        let hb = timetable.hybrid;
-        for (let i in hb) {
-            let t = moment(hb[i].day);
-            if (t.day() === pickDate.day() && t.hour() === hour) {
-                promise.push($.post("post/v1/addStudentAbsent", {
-                    userID: studentID,
-                    date: roundTime(pickDate, hour),
-                    hybridID: hb[i].hybridID,
-                    reason: $("#addReason").val(),
-                    sender: "Admin"
-                }));
-            }
-        }
-        let cb = await Promise.all(promise);
-        log(cb);
-        location.reload();
-    } else {
-        let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
-        let hybridID;
-        for (let i in allHB) {
-            let t = moment(allHB[i].day);
-            if (t.day() === pickDate.day() && t.hour() === hour) {
-                hybridID = allHB[i].hybridID;
-            }
-        }
-        await $.post("post/v1/addStudentPresent", {
-            userID: studentID,
-            date: roundTime(pickDate, hour),
-            hybridID: hybridID,
-            subject: subj,
-            sender: "Admin"
-        });
-        location.reload();
-    }
-}
-
 // generate fhb room chart
 let firstTimeGen = true;
 var myChart;
@@ -744,42 +620,44 @@ async function generateChart(type) {
         for (let j in attend) {
             if (attend[j].type === 1) {
                 let t = moment(attend[j].date).format("dddH").toLowerCase();
-                if (attend[j].courseID === undefined) {
-                    if (attend[j].hybridSubject === "M") {
-                        mhbReal[dayIndex(t)] -= 1;
-                    } else if (attend[j].hybridSubject === "P") {
-                        phbReal[dayIndex(t)] -= 1;
-                    }
-                } else {
-                    if (attend[j].tutorID === 99000) {
-                        for (let i in allHbRoom[t].course) {
-                            if (allHbRoom[t].course[i].courseID === attend[j].courseID) {
-                                switch (attend[j].courseName.slice(0, 1)) {
-                                    case "M":
-                                        mcrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    case "P":
-                                        pcrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    case "C":
-                                        ccrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    case "E":
-                                        ecrReal[dayIndex(t)] -= 1;
-                                        break;
-                                    default:
-                                        break;
+                if (t !== 'tue8' && t !== 'tue10' && t !== 'tue13' && t !== 'thu8' && t !== 'thu10' && t !== 'thu13') {
+                    if (attend[j].courseID === undefined) {
+                        if (attend[j].hybridSubject === "M") {
+                            mhbReal[dayIndex(t)] -= 1;
+                        } else if (attend[j].hybridSubject === "P") {
+                            phbReal[dayIndex(t)] -= 1;
+                        }
+                    } else {
+                        if (attend[j].tutorID === 99000) {
+                            for (let i in allHbRoom[t].course) {
+                                if (allHbRoom[t].course[i].courseID === attend[j].courseID) {
+                                    switch (attend[j].courseName.slice(0, 1)) {
+                                        case "M":
+                                            mcrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        case "P":
+                                            pcrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        case "C":
+                                            ccrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        case "E":
+                                            ecrReal[dayIndex(t)] -= 1;
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            } else if (attend[j].type === 2) {
-                let t = moment(attend[j].date).format("dddH").toLowerCase();
-                if (attend[j].subject === "M") {
-                    mhbReal[dayIndex(t)] += 1;
-                } else if (attend[j].subject === "P") {
-                    phbReal[dayIndex(t)] += 1;
+                } else if (attend[j].type === 2) {
+                    let t = moment(attend[j].date).format("dddH").toLowerCase();
+                    if (attend[j].subject === "M") {
+                        mhbReal[dayIndex(t)] += 1;
+                    } else if (attend[j].subject === "P") {
+                        phbReal[dayIndex(t)] += 1;
+                    }
                 }
             }
         }
@@ -1124,25 +1002,21 @@ $("#compareChartButt").click(function () {
 });
 
 // summer absent function
-$('#smByDayCollapse').collapse('show');
-$('#smByCrCollapse').collapse('hide');
-$('#smByDayTapBtn').click(function () {
-    $('#smByDayCollapse').collapse('show');
-    $('#smByCrCollapse').collapse('hide');
+$("#smByDayCollapse").collapse('show');
+$("#smByCrCollapse").collapse('hide');
+$("#smByDayTab").click(function () {
+    $("#smByDayCollapse").collapse('show');
+    $("#smByCrCollapse").collapse('hide');
 });
-$('#smByCrTapBtn').click(function () {
-    $('#smByDayCollapse').collapse('hide');
-    $('#smByCrCollapse').collapse('show');
+$("#smByCrTab").click(function () {
+    $("#smByDayCollapse").collapse('hide');
+    $("#smByCrCollapse").collapse('show');
 });
 $("#smDatePicker").datetimepicker({
     format: "DD/MM/YYYY",
     daysOfWeekDisabled: [0, 6],
     minDate: moment(0).year(2018).month(2).date(11).hour(23),
     maxDate: moment(0).year(2018).month(2).date(30).hour(19)
-});
-$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
-    genSmTable();
-    genSmCrPicker();
 });
 $("#smDatePicker").on("dp.change", function () {
     // log($('#smDatePicker').data('DateTimePicker').date());
@@ -1151,131 +1025,489 @@ $("#smDatePicker").on("dp.change", function () {
 $("#smTimePicker").change(function () {
     genSmTable();
 });
-$("#smSortType").change(function () {
-    genSmTable();
+$("#smFilter").change(function () {
+    filterSmData();
 });
-/** function for generate summer absent/present history */
+$(".nav-tabs > .nav-item:nth-child(4)").click(function () {
+    genSmTable();
+    genSmCrSelectOption();
+});
 async function genSmTable() {
     let date = $('#smDatePicker').data('DateTimePicker').date();
     let time = $("#smTimePicker").val();
-    date.hour(parseInt(time));
-    let sortType = $("#smSortType").val();
+    if (parseInt(time) !== 0) {
+        date.hour(parseInt(time));
+    }
     let history = await $.post('post/v1/listAttendance', {
         date: date.valueOf()
     });
     let newHistory;
-    newHistory = history.filter((a) => {
-        let t = moment(a.date);
-        if (t.hour() === parseInt(time)) return true;
-        else return false;
-    });
-    switch (sortType) {
-        case '2':
-            newHistory.sort((a, b) => { return a.studentID - b.studentID });
-            break;
-        case '3':
-            newHistory.sort((a, b) => {
-                if (a.courseName > b.courseName) return 1;
-                if (a.courseName < b.courseName) return -1;
-                return 0;
-            });
-            break;
-        case '4':
-            newHistory.sort((a, b) => { return a.tutorID - b.tutorID });
-            break;
-        default:
-            break;
+    if (parseInt(time) !== 0) {
+        newHistory = history.filter((a) => {
+            let t = moment(a.date);
+            if (t.hour() === parseInt(time)) return true;
+            else return false;
+        });
+    } else {
+        newHistory = history;
     }
-    $('#smTableBody').empty();
+    $("#smAbsentTableBody").empty();
+    $("#smPresentTableBody").empty();
     for (let i in newHistory) {
-        let t = moment(newHistory[i].timestamp);
-        $('#smTableBody').append(
-            "<tr class='table-" + ((newHistory[i].type === 1) ? 'danger' : 'success') + "' id='" + newHistory[i]._id + "'>" +
-            "<td class='text-center'>" + t.format("DD/MM/YY") + "</td>" +
-            "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
-            "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
-            "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
-            "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
-            "</tr>"
-        );
-    }
-}
-/** function for generate course pick option */
-async function genSmCrPicker() {
-    let config = await getConfig();
-    let smCr = await $.post('post/v1/allCourse', {
-        year: config.defaultQuarter.registration.year,
-        quarter: config.defaultQuarter.registration.quarter
-    })
-    for (let i in smCr) {
-        $('#smCrPicker').append(
-            "<option value='" + smCr[i].courseID + "'>" + smCr[i].courseName + "-" + smCr[i].tutorName + "</option>"
-        );
-    }
-}
-$('#smCrPicker').change(function () {
-    genSmByCrTable();
-});
-
-async function genSmByCrTable() {
-    let crID = $('#smCrPicker').val();
-    if (crID !== '0') {
-        let crInfo = await courseInfo(crID);
-        let promise = [];
-        let promise2 = [];
-        let startTime = moment(0).year(2018).month(2).date(12).hour(7);
-        let endTime = moment(0).year(2018).month(2).date(30).hour(20);
-        for (let i in crInfo.student) {
-            promise.push(name(crInfo.student[i]));
-            promise2.push($.post('post/v1/listAttendance', {
-                studentStartDate: startTime.valueOf(),
-                studentEndDate: endTime.valueOf(),
-                studentID: crInfo.student[i]
-            }));
-        }
-        let stdName = await Promise.all(promise);
-        $("#smCrTableBody").empty();
-        for (let i in crInfo.student) {
-            $("#smCrTableBody").append(
-                "<tr>" +
-                "<td class='text-center'>" + stdName[i].nickname + "</td>" +
-                "<td class='text-center sm12-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm13-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm14-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm15-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm16-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm19-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm20-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm21-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm22-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm23-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm26-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm27-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm28-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm29-" + crID + "-" + crInfo.student[i] + "'></td>" +
-                "<td class='text-center sm30-" + crID + "-" + crInfo.student[i] + "'></td>" +
+        let type = (newHistory[i].tutorID === 99000) ? 'HB' : 'CR';
+        if (newHistory[i].type === 1) {
+            $("#smAbsentTableBody").append(
+                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
+                "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
+                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
+                "</tr>"
+            );
+        } else if (newHistory[i].type === 2) {
+            $("#smPresentTableBody").append(
+                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
                 "</tr>"
             );
         }
-        let smAllAttend = await Promise.all(promise2);
-        for (let i in smAllAttend) {
-            for (let j in smAllAttend[i]) {
-                let t = moment(smAllAttend[i][j].date);
-                let pointer = $('.sm' + t.date() + '-' + smAllAttend[i][j].courseID + '-' + smAllAttend[i][j].studentID);
-                if (smAllAttend[i][j].type === 1) {
-                    if (pointer.hasClass('table-success')) {
-                        pointer.addClass('table-warning');
-                    } else {
-                        pointer.addClass('table-danger');
-                    }
-                } else {
-                    if (pointer.hasClass('table-danger')) {
-                        pointer.addClass('table-warning');
-                    } else {
-                        pointer.addClass('table-success');
-                    }
+    }
+    filterSmData();
+}
+function filterSmData() {
+    switch ($("#smFilter").val()) {
+        case '2':
+            $(".smrow-HB").hide();
+            $(".smrow-CR").show();
+            break;
+        case '3':
+            $(".smrow-HB").show();
+            $(".smrow-CR").hide();
+            break;
+        default:
+            $(".smrow-HB").show();
+            $(".smrow-CR").show();
+            break;
+    }
+}
+async function genSmCrSelectOption() {
+    let config = await getConfig();
+    let smQ = config.defaultQuarter.summer;
+    let allSmCr = await $.post("post/v1/allCourse", { year: smQ.year, quarter: smQ.quarter });
+    $("#smCoursePicker").append("<option value='0'>Select course</option>")
+    for (let i in allSmCr) {
+        $("#smCoursePicker").append(
+            "<option value=" + allSmCr[i].courseID + ">" + allSmCr[i].courseName + "-" + allSmCr[i].tutorName + "</option>"
+        );
+    }
+}
+$("#smCoursePicker").change(function () {
+    if (this.value !== "0") {
+        genSmByCrTable();
+    }
+});
+async function genSmByCrTable() {
+    let pointer = $("#smByCrTableBody");
+    pointer.empty()
+    let selectCr = $("#smCoursePicker").val();
+    let crInfo = await courseInfo(selectCr);
+    let promise = [];
+    let startT = moment("2018/03/12", "YYYY/MM/DD").utcOffset(7);
+    let endT = moment("2018/03/30 23", "YYYY/MM/DD HH").utcOffset(7);
+    for (let i in crInfo.student) {
+        promise.push($.post("post/v1/listAttendance", { studentStartDate: startT.valueOf(), studentEndDate: endT.valueOf(), studentID: crInfo.student[i] }));
+    }
+    let allAttend = await Promise.all(promise);
+    for (let i in allAttend) {
+        let name;
+        let crNum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (let j in allAttend[i]) {
+            let t = moment(allAttend[i][j].date);
+            if (allAttend[i][j].type === 2 && t.hour() === 15) {
+                crNum[smDayToNo(t.date())] = 1;
+            } else if (allAttend[i][j].type === 1 && allAttend[i][j].courseID === selectCr) {
+                crNum[smDayToNo(t.date())] = -1;
+            }
+        }
+        if (allAttend[i].length > 0) {
+            name = allAttend[i][0].nickname + " " + allAttend[i][0].firstname;
+            let str = "";
+            for (let i in crNum) {
+                if (crNum[i] === -1) {
+                    str = str + "<td class='table-danger'></td>"
+                } else if (crNum[i] === 0) {
+                    str = str + "<td></td>"
+                } else if (crNum[i] === 1) {
+                    str = str + "<td class='table-success'></td>"
                 }
             }
+            pointer.append(
+                "<tr>" +
+                "<td>" + name + "</td>" +
+                str +
+                "</tr>"
+            );
         }
     }
 }
+function smDayToNo(day) {
+    if (day < 17) {
+        return day - 12;
+    } else if (day < 24) {
+        return day - 14;
+    } else {
+        return day - 16;
+    }
+}
+
+// Admin function
+$("#addAttendDatePicker").datetimepicker({
+    format: "DD/MM/YYYY",
+    defaultDate: moment()
+});
+$("#addAttendTypeSelect").change(function () {
+    if (this.value === '1') {
+        $("#addAttendReasonContainer").show();
+        $("#addAttendTimeContainer").hide();
+        genAddAbsentSubj();
+    } else if (this.value === '2') {
+        $("#addAttendReasonContainer").hide();
+        $("#addAttendTimeContainer").show();
+        genAddPresentSubj();
+    }
+});
+$("#addStdTypeahead").change(function () {
+    calStdQuota();
+    if ($("#addAttendTypeSelect").val() === '1') {
+        genAddAbsentSubj();
+    } else {
+        genAddPresentSubj();
+    }
+});
+$("#addAttendDatePicker").on("dp.change", function () {
+    if ($("#addAttendTypeSelect").val() === '1') {
+        genAddAbsentSubj();
+    } else {
+        genAddPresentSubj();
+    }
+});
+$("#addAttendQuarterSelect").change(function () {
+    if ($("#addAttendTypeSelect").val() === '1') {
+        genAddAbsentSubj();
+    } else {
+        genAddPresentSubj();
+    }
+});
+initAddAttendData();
+async function initAddAttendData() {
+    $("#addAttendReasonContainer").show();
+    $("#addAttendTimeContainer").hide();
+    let allStd;
+    let config;
+    try {
+        [allStd, config] = await Promise.all([allStudent(), getConfig()]);
+        let stdForSearch = [];
+        for (let i in allStd.student) {
+            stdForSearch.push({
+                name: allStd.student[i].nickname + " " + allStd.student[i].firstname + " (" + allStd.student[i].studentID + ")",
+                id: allStd.student[i].studentID,
+            });
+        }
+        $("#addStdTypeahead").typeahead({
+            source: stdForSearch,
+            autoSelect: true
+        });
+        $("#addAttendQuarterSelect").append(
+            "<option value='" + config.defaultQuarter.quarter.year + "-" + config.defaultQuarter.quarter.quarter + "'>Default</option>" +
+            "<option value='" + config.defaultQuarter.summer.year + "-" + config.defaultQuarter.summer.quarter + "'>Summer</option>"
+        );
+    } catch (error) {
+        log("post/allStudent||post/getConfig is error.");
+    }
+}
+async function genAddAbsentSubj() {
+    let selectStd = $("#addStdTypeahead").typeahead("getActive");
+    if (selectStd !== undefined) {
+        let selectQ = $("#addAttendQuarterSelect").val();
+        try {
+            let timetable = await $.post("post/v1/studentTimeTable", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5), studentID: selectStd.id });
+            $("#addAttendSubjSelect").empty();
+            let pickDate = $('#addAttendDatePicker').data('DateTimePicker').date();
+            if (parseInt(selectQ.slice(5)) < 10) {
+                for (let i in timetable.hybrid) {
+                    let t = moment(timetable.hybrid[i].day);
+                    if (t.day() === pickDate.day()) {
+                        $("#addAttendSubjSelect").append(
+                            "<option value='" + timetable.hybrid[i].hybridID + "'>FHB:" + timetable.hybrid[i].subject + " (" + t.format("HH:00") + ")" + "</option>"
+                        );
+                    }
+                }
+                for (let i in timetable.course) {
+                    let t = moment(timetable.course[i].day);
+                    if (t.day() === pickDate.day()) {
+                        $("#addAttendSubjSelect").append(
+                            "<option value='" + timetable.course[i].courseID + "'>" + timetable.course[i].courseName + "-" + timetable.course[i].tutorName + " (" + t.format("HH:00") + ")" + "</option>"
+                        );
+                    }
+                }
+            } else {
+                for (let i in timetable.course) {
+                    let t = moment(timetable.course[i].day);
+                    if (pickDate.day() !== 0 && pickDate.day() !== 6) {
+                        $("#addAttendSubjSelect").append(
+                            "<option value='" + timetable.course[i].courseID + "'>" + timetable.course[i].courseName + "-" + timetable.course[i].tutorName + " (" + t.format("HH:00") + ")" + "</option>"
+                        );
+                    }
+                }
+            }
+        } catch (error) {
+            log("post/v1/studentTimeTable is error.");
+        }
+    }
+}
+async function genAddPresentSubj() {
+    let selectStd = $("#addStdTypeahead").typeahead("getActive");
+    if (selectStd !== undefined) {
+        let pickDate = $('#addAttendDatePicker').data('DateTimePicker').date();
+        let selectQ = $("#addAttendQuarterSelect").val();
+        try {
+            let timetable = await $.post("post/v1/studentTimeTable", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5), studentID: selectStd.id });
+            $("#addAttendSubjSelect").empty();
+            if (parseInt(selectQ.slice(5)) < 10) {
+                if (pickDate.day() === 0 || pickDate.day() === 2 || pickDate.day() === 4 || pickDate.day() === 6) {
+                    $("#addAttendSubjSelect").append(
+                        "<option value='0'>FHB:M</option>" +
+                        "<option value='0'>FHB:P</option>"
+                    );
+                }
+            }
+            for (let i in timetable.course) {
+                let t = moment(timetable.course[i].day);
+                $("#addAttendSubjSelect").append(
+                    "<option value='" + timetable.course[i].courseID + "'>" + timetable.course[i].courseName + "-" + timetable.course[i].tutorName + " (" + t.format("HH:00") + ")" + "</option>"
+                );
+            }
+        } catch (error) {
+            log("post/v1/studentTimeTable is error.");
+        }
+    }
+}
+$("#addAttendBtn").click(function () {
+    if ($("#addAttendTypeSelect").val() === '1') {
+        if ($("#addStdTypeahead").typeahead("getActive") === undefined) {
+            alert("Please input student.");
+        } else if ($("#addAttendSubjSelect").val() === null) {
+            alert("Please input subject.");
+        } else if ($("#addAttendReasonInput").val().length <= 0) {
+            alert("Please input reason.");
+        } else {
+            if (confirm("Are you sure to add this absent?")) {
+                addNewAbsentAttend();
+            }
+        }
+    } else if ($("#addAttendTypeSelect").val() === '2') {
+        if ($("#addStdTypeahead").typeahead("getActive") === undefined) {
+            alert("Please input student.");
+        } else if ($("#addAttendSubjSelect").val() === null) {
+            alert("Please input subject.");
+        } else {
+            if (confirm("Are you sure to add this present?")) {
+                addNewPresentAttend();
+            }
+        }
+    }
+});
+async function addNewAbsentAttend() {
+    $("#waitingModal").modal('show');
+    let body = {};
+    body.userID = $("#addStdTypeahead").typeahead("getActive").id;
+    body.reason = $("#addAttendReasonInput").val();
+    body.sender = "Admin";
+    let pickdate = $('#addAttendDatePicker').data('DateTimePicker').date();
+    let className = $("#addAttendSubjSelect option:selected").html();
+    let classID = $("#addAttendSubjSelect").val();
+    let hour = parseInt(className.slice(className.indexOf("(") + 1, -4));
+    body.date = pickdate.hour(hour).valueOf();
+    if (className.indexOf("FHB") >= 0) {
+        body.hybridID = classID;
+    } else {
+        body.courseID = classID;
+    }
+    try {
+        let cb = await $.post("post/v1/addStudentAbsent", body);
+        log(cb);
+        location.reload();
+    } catch (error) {
+        log("post/v1/addStudentAbsent is error.");
+    }
+
+}
+async function addNewPresentAttend() {
+    $("#waitingModal").modal('show');
+    let body = {};
+    let selectQ = $("#addAttendQuarterSelect").val();
+    body.userID = $("#addStdTypeahead").typeahead("getActive").id;
+    body.sender = "Admin";
+    let pickdate = $('#addAttendDatePicker').data('DateTimePicker').date();
+    let className = $("#addAttendSubjSelect option:selected").html();
+    let classID = $("#addAttendSubjSelect").val();
+    let hour = $("#addAttendTimeSelect").val();
+    body.date = pickdate.hour(parseInt(hour)).valueOf();
+    let sendData = true;
+    if (className.indexOf("FHB") >= 0) {
+        body.subject = className.slice(4, 5);
+        try {
+            let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5) });
+            for (let i in allHB) {
+                let t = moment(allHB[i].day);
+                if (t.day() === pickdate.day() && t.hour() === parseInt(hour)) {
+                    body.hybridID = allHB[i].hybridID;
+                }
+            }
+            if (body.hybridID === undefined) {
+                alert("Please correct selected time.");
+                sendData = false;
+            }
+        } catch (error) {
+            log("post/v1/listHybridDayInQuarter is error.");
+            sendData = false;
+        }
+
+    } else {
+        body.courseID = classID;
+    }
+    if (sendData) {
+        try {
+            let cb = await $.post("post/v1/addStudentPresent", body);
+            log(cb);
+            location.reload();
+        } catch (error) {
+            log("post/v1/addStudentPresent is error.");
+        }
+    }
+}
+async function calStdQuota() {
+    let selectStd = $("#addStdTypeahead").typeahead("getActive");
+    if (selectStd !== undefined) {
+        let selectQ = $("#addAttendQuarterSelect").val();
+        let now = moment();
+        let startDate = now.valueOf() - 7776000000;
+        let endDate = now.valueOf() + 7776000000;
+        try {
+            let [timetable, quota, stdAttend] = await Promise.all([
+                $.post("post/v1/studentTimeTable", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5), studentID: selectStd.id }),
+                $.post("post/v1/listQuota", { studentID: selectStd.id }),
+                $.post("post/v1/listAttendance", { studentStartDate: startDate, studentEndDate: endDate, studentID: selectStd.id })
+            ]);
+            let maxM = 0;
+            let maxP = 0;
+            let useM = 0;
+            let useP = 0;
+            for (let i in timetable.hybrid) {
+                switch (timetable.hybrid[i].subject) {
+                    case "M":
+                        maxM += 3;
+                        break;
+                    case "P":
+                        maxP += 3;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            for (let i in stdAttend) {
+                if (stdAttend[i].type === 1) {
+                    switch (stdAttend[i].hybridSubject) {
+                        case "M":
+                            useM += 1;
+                            break;
+                        case "P":
+                            useP += 1;
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (stdAttend[i].type === 2) {
+                    switch (stdAttend[i].hybridSubject) {
+                        case "M":
+                            useM -= 1;
+                            break;
+                        case "P":
+                            useP -= 1;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            $("#addQuotaTableBody").empty();
+            for (let i in quota.quotaCount) {
+                switch (quota.quotaCount[i]._id) {
+                    case "M":
+                        useM -= quota.quotaCount[i].value;
+                        break;
+                    case "P":
+                        useP -= quota.quotaCount[i].value;
+                        break;
+                    default:
+                        break;
+                }
+                $("#addQuotaTableBody").append(
+                    "<tr>" +
+                    "<td class='text-center'>" + quota.quotaCount[i]._id + "</td>" +
+                    "<td class='text-center'>" + quota.quotaCount[i].value + "</td>" +
+                    "</tr>"
+                );
+            }
+            $("#mathQuotaBtn").html("FHB:M " + (maxM - useM) + "/" + maxM);
+            $("#phyQuotaBtn").html("FHB:P " + (maxP - useP) + "/" + maxP);
+        } catch (error) {
+            log("Request error.");
+        }
+    }
+}
+$("#mathQuotaBtn").click(function () {
+    if ($(this).html().length > 5) {
+        $("#addMQuotaModal").modal('show');
+    }
+});
+$("#phyQuotaBtn").click(function () {
+    if ($(this).html().length > 5) {
+        $("#addPQuotaModal").modal('show');
+    }
+});
+$("#addMQuotaBtn").click(function () {
+    if ($("#addMQuotaInput").val().match(/^[-+]?[0-9]+$/)) {
+        let selectStd = $("#addStdTypeahead").typeahead("getActive");
+        let body = {};
+        body.studentID = selectStd.id;
+        body.subject = "M";
+        body.value = $("#addMQuotaInput").val();
+        $.post("post/v1/addQuota", body).then(cb => {
+            log(cb);
+            calStdQuota();
+            $("#addMQuotaModal").modal('hide');
+        }).catch((err) => {
+            log("post/v1/addQuota is error.");
+            $("#addMQuotaModal").modal('hide');
+        });
+    }
+});
+$("#addPQuotaBtn").click(function () {
+    if ($("#addPQuotaInput").val().match(/^[-+]?[0-9]+$/)) {
+        let selectStd = $("#addStdTypeahead").typeahead("getActive");
+        let body = {};
+        body.studentID = selectStd.id;
+        body.subject = "P";
+        body.value = $("#addPQuotaInput").val();
+        $.post("post/v1/addQuota", body).then(cb => {
+            log(cb);
+            calStdQuota();
+            $("#addPQuotaModal").modal('hide');
+        }).catch((err) => {
+            log("post/v1/addQuota is error.");
+            $("#addPQuotaModal").modal('hide');
+        });
+    }
+});
