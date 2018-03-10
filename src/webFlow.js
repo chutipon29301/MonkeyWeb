@@ -1,5 +1,6 @@
 console.log("[START] webFlow.js");
 module.exports = function (app, db, pasport) {
+    require('typescript-require');
     var chalk = require("chalk");
     var moment = require("moment");
     var path = require("path");
@@ -62,16 +63,16 @@ module.exports = function (app, db, pasport) {
             let positionColor = logPosition(req.user)
             console.log(chalk.black.bgYellow("[404 REQUEST]", req.method, req.originalUrl, "FROM", req.ip, positionColor("#" + req.cookies.monkeyWebUser), moment().format("@ dddDDMMMYYYY HH:mm:ss")));
             console.log("\treq.body", "=>", req.body);
-            res.status(404).sendFile(path.join(__dirname, "old/404.html"));
+            res.status(404).sendFile(path.join(__dirname, "../old/404.html"));
         } else {
             console.log(chalk.black.bgYellow("[404 REQUEST]", req.method, req.originalUrl, "FROM", req.ip, moment().format("@ dddDDMMMYYYY HH:mm:ss")));
             console.log("\treq.body", "=>", req.body);
-            res.status(404).sendFile(path.join(__dirname, "old/404.html"));
+            res.status(404).sendFile(path.join(__dirname, "../old/404.html"));
         }
     };
 
     app.use('/dev', require('./script/dev/index')(auth, db));
-    app.use('/v2', require('./script/v2/index')(auth, db));
+    app.use('/v2', require('./script/v2/index.ts').app(auth));
     app.get('*', function (req, res, next) {
         if (req.url == '/login') req.logOut();
         if (req.isAuthenticated()) {
