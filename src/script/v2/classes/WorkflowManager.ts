@@ -181,7 +181,8 @@ export class WorkflowManager {
     static editNode(userID: number, workflowID: string, subtitle: string): Promise<UpdateResponse> {
         return NodeModel.updateOne({
             _id: Types.ObjectId(workflowID),
-            header: false
+            header: false,
+            createdBy: userID
         }, {
                 $set: {
                     subtitle: subtitle
@@ -190,4 +191,5 @@ export class WorkflowManager {
         );
     }
 
+    
 }

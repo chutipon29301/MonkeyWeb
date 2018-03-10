@@ -27,6 +27,25 @@ router.post('/add', (req, res) => {
     });
 });
 
+router.post('/delete', (req, res) => {
+    if (!(req.body.workflowID)) {
+        return res.status(400).send({
+            err: 0,
+            msg: 'OK'
+        });
+    }
+    WorkflowManager.deleteWorkflow(req.user._id, req.body.workflowID).then(_ => {
+        return res.status(200).send({
+            msg: 'OK'
+        });
+    }).catch(err => {
+        return res.status(500).send({
+            err: 1,
+            msg: err.toString()
+        });
+    });
+});
+
 router.post('/editHeader', (req, res) => {
     if (!(req.body.workflowID && req.body.title)) {
         return res.status(400).send({
@@ -44,25 +63,6 @@ router.post('/editHeader', (req, res) => {
                 msg: 'OK'
             });
         }
-    });
-});
-
-router.post('/delete', (req, res) => {
-    if (!(req.body.workflowID)) {
-        return res.status(400).send({
-            err: 0,
-            msg: 'OK'
-        });
-    }
-    WorkflowManager.deleteWorkflow(req.user._id, req.body.workflowID).then(_ => {
-        return res.status(200).send({
-            msg: 'OK'
-        });
-    }).catch(err => {
-        return res.status(500).send({
-            err: 1,
-            msg: err.toString()
-        });
     });
 });
 
@@ -84,4 +84,8 @@ router.post('/editNode', (req, res) => {
             });
         }
     });
+});
+
+router.post('/addNode',(req,res) => {
+    
 });
