@@ -73,12 +73,18 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 var io = require('socket.io')(server);
 /**@method test */
+let connectCounter = 0;
 io.on('connection', (client) => {
+    connectCounter++
     client.on('subscribeToTimer', () => {
         client.emit('timer', new Date())
     });
+    client.on('discon',()=>{client.disconnect()})
+    client.on('disconnect',()=>{
+        connectCounter--
+    })
+    // console.log(connectCounter)
 });
-
 
 
 

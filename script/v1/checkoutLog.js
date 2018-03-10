@@ -1,5 +1,5 @@
 var ObjectID = require('mongodb').ObjectID;
-module.exports = function(app,db,post){
+module.exports = function(app,db,post,io){
     let checkoutLog = db.collection('checkoutLog')
     let userDB = db.collection('user')
     let hybridStudent = db.collection('hybridStudent')
@@ -39,15 +39,12 @@ module.exports = function(app,db,post){
             res.status(400).send({err:400 , msg:'bad request'})
         }
         try {
-            let studentID = req.body.studentID
-            let subject = req.body.subject
+            let studentID = parseInt(req.body.studentID)
+            let subject = req.body.subject[0].toUpperCase()
             let recheckDate = new Date()
-            let log = await checkoutLog.find().sort({timestamp:-1}).limit(1).toArray()[0]
-            if(log){
-                await checkoutLog.updateOne(log,{$set:{recheck:true , recheckDate:recheckDate}})
-                res.status(200).send({msg:'ok'})
-            }
-            else res.status(200).send({msg:'ไม่พบประวัติการ Checkout'})
+            await checkoutLog.updateMany({studentID:studentID , subject:subject , recheck:false} , {$set:{recheck:true , recheckDate:recheckDate}})
+            io.emit('updateCheckout')
+            res.status(200).send({msg:'ok'})
         } catch (error) {
             res.status(500).send({err:500,msg:'recheck failed'})
         }
@@ -85,7 +82,7 @@ module.exports = function(app,db,post){
                 courseDB.find({year:year , quarter:quarter , tutor:99000}).toArray(),
                 Promise.all([
                     checkoutLog.find({checkoutDate:{$gte: time[9], $lt:time[11]}}).toArray(),
-                    checkoutLog.find({checkoutDate:{$gte: time[11], $lt:time[13]}}).toArray(),
+                    checkoutLog.find({checkoutDate:{$gte: time[11], $lt:time[14]}}).toArray(),
                     checkoutLog.find({checkoutDate:{$gte: time[14], $lt:time[16]}}).toArray(),
                     checkoutLog.find({checkoutDate:{$gte: time[16], $lt:time[18]}}).toArray(),
                     checkoutLog.find({checkoutDate:{$gte: time[18], $lt:time[20]}}).toArray(),
@@ -111,7 +108,7 @@ module.exports = function(app,db,post){
                         e.type = "fhb"
                         let findCheckout = checkoutObj[fhb[i].day.getHours()].find(check=>{return check.studentID == e.studentID && check.subject == e.subject})
                         if(findCheckout){
-                            e.checkout = findCheckout.checkout
+                            e.checkout = findCheckout.checkoutDate
                             e.recheck = findCheckout.recheck
                         }
                         let findAttendance = attendanceObj[fhb[i].day.getHours()].find(att=>{
@@ -138,7 +135,7 @@ module.exports = function(app,db,post){
                         e.type = "cr"
                         let findCheckout = checkoutObj[course[i].day.getHours()].find(check=>{return check.studentID == e.studentID && check.subject == e.subject})
                         if(findCheckout){
-                            e.checkout = findCheckout.checkout
+                            e.checkout = findCheckout.checkoutDate
                             e.recheck = findCheckout.recheck
                         }
                         let findAttendance = attendanceObj[course[i].day.getHours()].find(att=>{
@@ -164,6 +161,10 @@ module.exports = function(app,db,post){
                         if(each.type == 'fhb') each.subject = attendanceObj[i][j].subject
                         else if(each.type == 'cr') each.subject = (await courseDB.findOne({_id:attendanceObj[i][j].courseID})).subject
                         let findCheckout = checkoutObj[attendanceObj[i][j].date.getHours()].find(check=>{return check.studentID == each.studentID && check.subject == each.subject})
+                        if(findCheckout){
+                            each.checkout = findCheckout.checkoutDate
+                            each.recheck = findCheckout.recheck
+                        }
                         student[attendanceObj[i][j].date.getHours()].push(each)
                     }
                 }
@@ -173,6 +174,8 @@ module.exports = function(app,db,post){
                     student[i][j].firstname = studentObj[student[i][j].studentID].firstname
                     student[i][j].nickname = studentObj[student[i][j].studentID].nickname
                     student[i][j].lastname = studentObj[student[i][j].studentID].lastname
+                    if(student[i][j].checkout === undefined)student[i][j].checkout = null
+                    if(student[i][j].recheck === undefined)student[i][j].recheck = false
                 }
             }
             res.status(200).send(student)

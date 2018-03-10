@@ -33,7 +33,7 @@ var gradeBitToArray = function (bit) {
     return output;
 };
 module.exports = function (app, db, post, fs, passport, CryptoJS , io) {
-
+    console.log(gradeBitToString("1024"))
     var quarterDB = db.collection('quarter');
     var studentHybridDB = db.collection('hybridStudent');
     var studentSkillDB = db.collection('skillStudent');
@@ -61,6 +61,6 @@ module.exports = function (app, db, post, fs, passport, CryptoJS , io) {
     require('./script/v1/transaction.js')(app, db, post , io);
     require('./script/v1/chat.js')(app, db, post);
     require('./script/v1/quota.js')(app, db, post);
-    require('./script/v1/checkoutLog.js')(app,db,post);
+    require('./script/v1/checkoutLog.js')(app,db,post,io);
     require('./script/v1/notification.js')(app, db, post);
 }
