@@ -1074,12 +1074,21 @@ async function showStudentAbsentHistory() {
             maxP += 3;
         }
     }
+    log(history);
     for (let i in history) {
-        if (history[i].courseName === undefined) {
-            if (history[i].hybridSubject === "M") {
-                nowM += 1;
-            } else if (history[i].hybridSubject === "P") {
-                nowP += 1;
+        if (history[i].type === 1) {
+            if (history[i].courseName === undefined) {
+                if (history[i].hybridSubject === "M") {
+                    nowM += 1;
+                } else if (history[i].hybridSubject === "P") {
+                    nowP += 1;
+                }
+            }
+        } else {
+            if (history[i].subject === "M") {
+                nowM -= 1;
+            } else if (history[i].subject === "P") {
+                nowP -= 1;
             }
         }
         let t1 = moment(history[i].date);
@@ -1087,7 +1096,7 @@ async function showStudentAbsentHistory() {
         table.append(
             "<tr class='" + ((history[i].type === 1) ? 'table-danger' : 'table-success') + "'>" +
             "<td class='text-center'>" + t1.format('ddd DD/MM/YY HH:00') + "</td>" +
-            "<td class='text-center'>" + ((history[i].courseName === undefined) ? 'FHB:' + history[i].hybridSubject : history[i].courseName) + "</td>" +
+            "<td class='text-center'>" + ((history[i].courseName === undefined) ? 'FHB:' + ((history[i].type === 1) ? history[i].hybridSubject : history[i].subject) : history[i].courseName) + "</td>" +
             "<td class='text-center'>" + ((history[i].type === 1) ? history[i].reason : "-") + "</td>" +
             "<td class='text-center'>" + t2.format('ddd DD/MM/YY HH:mm') + "</td>" +
             "</tr>"

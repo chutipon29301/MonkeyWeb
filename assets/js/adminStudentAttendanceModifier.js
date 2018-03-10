@@ -1429,7 +1429,7 @@ async function calStdQuota() {
                             break;
                     }
                 } else if (stdAttend[i].type === 2) {
-                    switch (stdAttend[i].hybridSubject) {
+                    switch (stdAttend[i].subject) {
                         case "M":
                             useM -= 1;
                             break;
