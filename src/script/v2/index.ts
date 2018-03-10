@@ -4,21 +4,6 @@ import { router as workflow } from './workflow';
 import * as mongoose from 'mongoose';
 import { Constant } from './classes/Constants';
 
-// { _id: 99009,
-//     password: '2c8c0c6dbaf5b004d4172bb35440ac345eac73eaf3f7645002edd7319022e37a581ed33ee31c41cdccd95d9d5bbcdf67347f80a064335c3c0c31e0bcaee806a4',
-//     position: 'dev',
-//     firstname: 'ชุติพนธ์',
-//     lastname: 'หิรัณย์กนกกุล',
-//     nickname: 'นนท์',
-//     firstnameEn: 'Chutipon',
-//     lastnameEn: 'Hirankanokkul',
-//     nicknameEn: 'Non',
-//     email: 'non-chutipon@mkyhybrid.com',
-//     phone: '0814953366',
-//     tutor: { status: 'active' },
-//     subPosition: 'IT HEAD' }
-
-
 // Add user property to request object
 declare global {
     namespace Express {

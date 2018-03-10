@@ -34,10 +34,10 @@ router.post('/editHeader', (req, res) => {
             msg: 'Bad Request'
         });
     }
-    WorkflowManager.editHeader(req.body.workflowID, req.body.title).then(result => {
+    WorkflowManager.editHeader(req.user._id, req.body.workflowID, req.body.title).then(result => {
         if (result.nModified === 0) {
             return res.status(202).send({
-                msg: 'Non-header node cannot set title'
+                msg: 'Not Modified'
             });
         } else {
             return res.status(200).send({
@@ -47,3 +47,41 @@ router.post('/editHeader', (req, res) => {
     });
 });
 
+router.post('/delete', (req, res) => {
+    if (!(req.body.workflowID)) {
+        return res.status(400).send({
+            err: 0,
+            msg: 'OK'
+        });
+    }
+    WorkflowManager.deleteWorkflow(req.user._id, req.body.workflowID).then(_ => {
+        return res.status(200).send({
+            msg: 'OK'
+        });
+    }).catch(err => {
+        return res.status(500).send({
+            err: 1,
+            msg: err.toString()
+        });
+    });
+});
+
+router.post('/editNode', (req, res) => {
+    if (!(req.body.workflowID && req.body.subtitle)) {
+        return res.status(400).send({
+            err: 0,
+            msg: 'Bad Request'
+        });
+    }
+    WorkflowManager.editNode(req.user._id, req.body.workflowID, req.body.subtitle).then(result => {
+        if (result.nModified === 0) {
+            return res.status(202).send({
+                msg: 'Not Modified'
+            });
+        } else {
+            return res.status(200).send({
+                msg: 'OK'
+            });
+        }
+    });
+});
