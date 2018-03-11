@@ -28,6 +28,7 @@
     "@types/lodash": "^4.14.104",
     "@types/mongoose": "^5.0.6",
     "@types/morgan": "^1.7.35",
+    "@types/rx": "^4.1.1",
     "ajv": "^6.2.1",
     "apn": "^2.2.0",
     "body-parser": "^1.17.1",
