@@ -82,10 +82,16 @@ module.exports = function (app, db, post, io) {
         let now = new Date()
         try {
             let config = await configDB.findOne()
-            let hybrid = await hybridStudentDB.find({
-                quarterID: config.defaultQuarter.quarter.year + '0' + config.defaultQuarter.quarter.quarter,
-                student: { $elemMatch: { studentID: parseInt(req.body.studentID) } }
-            }).toArray()
+            let [hybrid,log] = await Promise.all([
+                hybridStudentDB.find({
+                    quarterID: config.defaultQuarter.quarter.year + '0' + config.defaultQuarter.quarter.quarter,
+                    student: { $elemMatch: { studentID: parseInt(req.body.studentID) } }
+                }).toArray(),
+                checkoutLog.findOne({checkoutDate:{$lte:now , $gte:new Date(now-(1000*60*60))}})
+            ])
+            if(log){
+                return res.status(200).send({type:"error" , msg:"รหัสนี้ได้ทำการ Checkout แล้ว"})
+            }
             let studentID = parseInt(req.body.studentID)
             for (let i in hybrid) {
                 let hybridTime = new Date(hybrid[i].day)
