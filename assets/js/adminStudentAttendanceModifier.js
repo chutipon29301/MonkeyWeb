@@ -1056,21 +1056,25 @@ async function genSmTable() {
     for (let i in newHistory) {
         let type = (newHistory[i].tutorID === 99000) ? 'HB' : 'CR';
         if (newHistory[i].type === 1) {
-            $("#smAbsentTableBody").append(
-                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
-                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
-                "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
-                "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
-                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
-                "</tr>"
-            );
+            if (newHistory[i].reason.toLowerCase() === "summerabsent") {
+                $("#smAbsentTableBody").append(
+                    "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                    "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                    "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
+                    "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
+                    "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
+                    "</tr>"
+                );
+            }
         } else if (newHistory[i].type === 2) {
-            $("#smPresentTableBody").append(
-                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
-                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
-                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
-                "</tr>"
-            );
+            if (newHistory[i].courseID !== undefined) {
+                $("#smPresentTableBody").append(
+                    "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                    "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                    "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
+                    "</tr>"
+                );
+            }
         }
     }
     filterSmData();
