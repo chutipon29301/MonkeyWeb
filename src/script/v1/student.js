@@ -74,7 +74,7 @@ module.exports = function (app, db, post, gradeBitToString) {
             });
         }
         if (req.body.courseID) {
-            attendanceDB.insertOne({
+            let body = {
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: req.body.courseID,
@@ -82,7 +82,11 @@ module.exports = function (app, db, post, gradeBitToString) {
                 date: parseInt(req.body.date),
                 type: PRESENT,
                 sender: req.body.sender
-            });
+            };
+            if (req.body.reason) {
+                body.reason = req.body.reason;
+            }
+            attendanceDB.insertOne(body);
         } else if (req.body.hybridID && req.body.subject) {
             attendanceDB.insertOne({
                 timestamp: new Date(),
@@ -185,9 +189,9 @@ module.exports = function (app, db, post, gradeBitToString) {
                     if (values[i].hybridID === null) {
                         delete values[i].hybridID;
                     }
-                    if (values[i].type === 2) {
-                        delete values[i].reason;
-                    }
+                    // if (values[i].type === 2) {
+                    //     delete values[i].reason;
+                    // }
                     values[i].studentID = values[i].userID._id;
                     values[i].firstname = values[i].userID.firstname;
                     values[i].nickname = values[i].userID.nickname;

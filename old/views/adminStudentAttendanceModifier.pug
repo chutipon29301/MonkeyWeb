@@ -69,11 +69,12 @@ block body
                     .table-responsive
                         table.table.table-bordered.table-hover
                             thead
-                                tr: td.text-center.table-success(colspan=5) เพิ่ม
+                                tr: td.text-center.table-success(colspan=6) เพิ่ม
                                 tr
                                     th.text-center Time
                                     th.text-center Name
                                     th.text-center Subject
+                                    th.text-center Reason
                                     th.text-center.remarkReset Remark
                                     th.text-center ลบ
                             tbody#fhbPresentTable
@@ -234,7 +235,7 @@ block body
                             option(value="13") 13-15
                             option(value="15") 15-17
                             option(value="17") 17-19
-                .col-12.col-md-6#addAttendReasonContainer
+                .col-12.col-md-12#addAttendReasonContainer
                     .form-group
                         label Reason:
                         input#addAttendReasonInput.form-control(type="text")
