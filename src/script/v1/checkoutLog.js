@@ -6,6 +6,7 @@ module.exports = function(app,db,post,io){
     let courseDB = db.collection('course')
     let configDB = db.collection('config')
     let attendanceDB = db.collection('attendance')
+    let attendanceDocumentDB = db.collection('attendanceDocument')
     /**@param req.body
      *  checkoutDate : Date
      *  studentID : int
@@ -94,7 +95,7 @@ module.exports = function(app,db,post,io){
                     attendanceDB.find({date:time[15].getTime()}).toArray(),
                     attendanceDB.find({date:time[17].getTime()}).toArray(),
                 ]),
-                userDB.find({position:"student"}).toArray()
+                userDB.find({position:"student"}).toArray(),
             ])
             let studentObj = {}
             for(let i in user) studentObj[user[i]._id] = {firstname:user[i].firstname , lastname:user[i].lastname , nickname:user[i].nickname , grade:((user[i].student.grade>6?'S':'P')+(user[i].student.grade>6?(user[i].student.grade-6):user[i].student.grade))}
@@ -121,7 +122,11 @@ module.exports = function(app,db,post,io){
                                 let attendanceDate = new Date(findAttendance.date)
                                 attendanceDate.setHours(18,0,0,0)
                                 if(attendanceDate.getDay() == 0) attendanceDate.setDate(attendanceDate.getDate()-1)
+                                e.reason = findAttendance.reason
                                 e.status = 'absent'
+                                attendanceDocumentDB.findOne({attendanceID:findAttendance._id.toString()},(err,img)=>{
+                                    e.img = img?img._id:null
+                                })
                                 if(attendanceDate-attendanceTimestamp<1000*60*60*24) e.status+='Late'
                             }else if(findAttendance.type == 2) e.status = 'err:เพิ่มในรอบที่มีเรียนอยู่แล้ว'
                             else e.status = 'err'
@@ -154,7 +159,11 @@ module.exports = function(app,db,post,io){
                                 let attendanceDate = new Date(findAttendance.date)
                                 attendanceDate.setHours(18,0,0,0)
                                 if(attendanceDate.getDay() == 0) attendanceDate.setDate(attendanceDate.getDate()-1)
+                                e.reason = findAttendance.reason
                                 e.status = 'absent'
+                                attendanceDocumentDB.findOne({attendanceID:findAttendance._id.toString()},(err , img)=>{
+                                    e.img = img?img._id:null
+                                })
                                 if(attendanceDate-attendanceTimestamp<1000*60*60*24) e.status+='Late'
                             }else if(findAttendance.type == 2) e.status = 'err:เพิ่มในรอบที่มีเรียนอยู่แล้ว'
                             else e.status = 'err'
