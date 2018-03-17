@@ -149,13 +149,22 @@ module.exports = function (app, db, post, io) {
             if (attend) {
                 if (attend.courseID != 0) {
                     req.body.courseID = attend.courseID
-                    console.log('checkout cr - attend')
-                    return checkoutCR(req, res)
+                    let checkcr = await courseDB.findOne({_id : attend.courseID})
+                    if(checkcr){
+                        if(checkcr.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()){
+                            console.log('checkout cr - attend')
+                            return checkoutCR(req, res, io,true)
+                        }
+                    }
+                    return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
                 } else {
-                    req.body.subject = attend.subject
-                    req.body.hybridID = attend.hybridID
-                    console.log('checkout fhb - attend')
-                    return checkBodyFHB(req, res, io, true)
+                    if(req.body.scannedSubject[0].toUpperCase() == attend.subject[0].toUpperCase()){
+                        req.body.subject = attend.subject
+                        req.body.hybridID = attend.hybridID
+                        console.log('checkout fhb - attend')
+                        return checkoutFHB(req, res, io, true)
+                    }else return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
+                    
                 }
             }
 
