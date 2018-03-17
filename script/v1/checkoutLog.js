@@ -79,13 +79,13 @@ module.exports = function(app,db,post,io){
             let quarterID = config.defaultQuarter.quarter.year+"0"+config.defaultQuarter.quarter.quarter
             let [fhb , course , checkout , attendance , user] = await Promise.all([
                 hybridStudent.find({quarterID:quarterID}).toArray(),
-                courseDB.find({year:year , quarter:quarter , tutor:99000}).toArray(),
+                courseDB.find({$or: [{year:year , quarter:quarter},{year:year , quarter:Number(config.defaultQuarter.summer.quarter)}] , tutor:99000}).toArray(),
                 Promise.all([
-                    checkoutLog.find({checkoutDate:{$gte: time[9], $lt:time[11]}}).toArray(),
+                    checkoutLog.find({checkoutDate:{$gte: time[8], $lt:time[11]}}).toArray(),
                     checkoutLog.find({checkoutDate:{$gte: time[11], $lt:time[14]}}).toArray(),
                     checkoutLog.find({checkoutDate:{$gte: time[14], $lt:time[16]}}).toArray(),
                     checkoutLog.find({checkoutDate:{$gte: time[16], $lt:time[18]}}).toArray(),
-                    checkoutLog.find({checkoutDate:{$gte: time[18], $lt:time[20]}}).toArray(),
+                    checkoutLog.find({checkoutDate:{$gte: time[18], $lt:time[22]}}).toArray(),
                 ]),
                 Promise.all([
                     attendanceDB.find({date:time[8].getTime()}).toArray(),
@@ -103,7 +103,7 @@ module.exports = function(app,db,post,io){
             let student = {8:[] , 10:[] , 13:[] , 15:[] , 17:[]}
             for(let i in fhb){
                 fhb[i].day = new Date(fhb[i].day)
-                if(fhb[i].day.getDay() == start.getDay()){
+                if(fhb[i].day.getDay() == start.getDay() || (fhb[i].day.getDay() == 1 && start.getDay()%6!=0 && config.inSummer)){
                     student[fhb[i].day.getHours()] = student[fhb[i].day.getHours()].concat(fhb[i].student.map((e)=>{
                         e.type = "fhb"
                         let findCheckout = checkoutObj[fhb[i].day.getHours()].find(check=>{return check.studentID == e.studentID && check.subject == e.subject})
@@ -128,7 +128,7 @@ module.exports = function(app,db,post,io){
             }
             for(let i in course){
                 course[i].day = new Date(course[i].day)
-                if(course[i].day.getDay() == start.getDay()){
+                if(course[i].day.getDay() == start.getDay() || (course[i].day.getDay() == 1 && start.getDay()%6!=0 && config.inSummer)){
                     student[course[i].day.getHours()] = student[course[i].day.getHours()].concat(course[i].student.map((studentID)=>{
                         let e = {studentID:studentID}
                         e.subject = course[i].subject

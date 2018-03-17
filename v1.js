@@ -33,7 +33,6 @@ var gradeBitToArray = function (bit) {
     return output;
 };
 module.exports = function (app, db, post, fs, passport, CryptoJS , io) {
-    console.log(gradeBitToString("1024"))
     var quarterDB = db.collection('quarter');
     var studentHybridDB = db.collection('hybridStudent');
     var studentSkillDB = db.collection('skillStudent');

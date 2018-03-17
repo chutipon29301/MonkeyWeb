@@ -1,6 +1,6 @@
 let allFieldFHB = { _id: "ObjectID", subject: "string", studentID: "number", timestamp: "Date", hybridID: "string", value: "number", sender: "number", reason: "string", remark: "string" }
 let allFieldCR = { _id: "ObjectID", studentID: "number", courseID: "string", timestamp: "Date", value: "number", sender: "number", reason: "string", remark: "string" }
-let checkoutHrs = { 9: 8, 10: 8, 11: 10, 12: 10, 13: 10, 14: 13, 15: 13, 16: 15, 17: 15, 18: 17, 19: 17, 20: 17 }
+let checkoutHrs = { 8: 8, 9: 8, 10: 8, 11: 10, 12: 10, 13: 10, 14: 13, 15: 13, 16: 15, 17: 15, 18: 17, 19: 17, 20: 17 }
 var ObjectID = require('mongodb').ObjectID;
 let transactionCR
 let transactionFHB
@@ -87,9 +87,10 @@ module.exports = function (app, db, post, io) {
                     quarterID: config.defaultQuarter.quarter.year + '0' + config.defaultQuarter.quarter.quarter,
                     student: { $elemMatch: { studentID: parseInt(req.body.studentID) } }
                 }).toArray(),
-                checkoutLog.findOne({checkoutDate:{$lte:now , $gte:new Date(now-(1000*60*60))}})
+                checkoutLog.findOne({studentID:Number(req.body.studentID),checkoutDate:{$lte:now , $gte:new Date(now-(1000*60*60))}})
             ])
             if(log){
+                console.log(log)
                 return res.status(200).send({type:"error" , msg:"รหัสนี้ได้ทำการ Checkout แล้ว"})
             }
             let studentID = parseInt(req.body.studentID)
