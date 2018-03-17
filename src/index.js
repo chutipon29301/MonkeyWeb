@@ -22,9 +22,9 @@ app.use(cookieParser());
 //Temp folder for uploading
 app.use(multer({ dest: "/tmp/" }).any());
 // Serve static files
-app.use(express.static(path.join(__dirname, "assets")));
-app.use(express.static(path.join(__dirname, "../MonkeyWebData")));
-app.use(function (req, res, next) {
+app.use(express.static(path.join(__dirname,"../assets")));
+app.use(express.static(path.join(__dirname,"../../MonkeyWebData")));
+app.use(function(req,res,next){
     // Allow access from other domain
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -35,18 +35,18 @@ app.use(function (req, res, next) {
     next();
 });
 // Allow render from pug files
-app.set("views", path.join(__dirname, "old/views"));
-app.set("view engine", "pug");
+app.set("views",path.join(__dirname,"../old/views"));
+app.set("view engine","pug");
 
 // Enable HTTPS
-var caPath = path.join(__dirname, "../MonkeyWebConfig/ca_bundle.crt");
-var keyPath = path.join(__dirname, "../MonkeyWebConfig/private.key");
-var certPath = path.join(__dirname, "../MonkeyWebConfig/certificate.crt");
-if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-    var credentials = {
-        ca: fs.readFileSync(caPath),
-        key: fs.readFileSync(keyPath),
-        cert: fs.readFileSync(certPath)
+var caPath=path.join(__dirname,"../../MonkeyWebConfig/ca_bundle.crt");
+var keyPath=path.join(__dirname,"../../MonkeyWebConfig/private.key");
+var certPath=path.join(__dirname,"../../MonkeyWebConfig/certificate.crt");
+if(fs.existsSync(caPath)&&fs.existsSync(keyPath)&&fs.existsSync(certPath)){
+    var credentials={
+        ca:fs.readFileSync(caPath),
+        key:fs.readFileSync(keyPath),
+        cert:fs.readFileSync(certPath)
     };
     require("https").createServer(credentials, app).listen(443);
     // Automatically redirect to https
@@ -56,8 +56,8 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
 }
 
 // LINE Notify tokens
-var recipientTokenPath = path.join(
-    __dirname, "../MonkeyWebConfig/recipientToken.json"
+var recipientTokenPath=path.join(
+    __dirname,"../../MonkeyWebConfig/recipientToken.json"
 );
 if (fs.existsSync(recipientTokenPath)) {
     app.locals.recipientToken = JSON.parse(

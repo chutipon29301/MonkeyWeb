@@ -1,5 +1,6 @@
 var ObjectID = require('mongodb').ObjectID;
 var _ = require('lodash');
+var moment = require('moment');
 
 module.exports = function (app, db, post, gradeBitToString) {
 
@@ -12,6 +13,7 @@ module.exports = function (app, db, post, gradeBitToString) {
     var attendanceDocumentDB = db.collection('attendanceDocument');
     var chatDB = db.collection('chat');
     var skillStudentDB = db.collection('skillStudent');
+    var quotaDB = db.collection('quota');
     const NONE = 0;
     const ABSENT = 1;
     const PRESENT = 2;
@@ -72,7 +74,7 @@ module.exports = function (app, db, post, gradeBitToString) {
             });
         }
         if (req.body.courseID) {
-            attendanceDB.insertOne({
+            let body = {
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: req.body.courseID,
@@ -80,7 +82,11 @@ module.exports = function (app, db, post, gradeBitToString) {
                 date: parseInt(req.body.date),
                 type: PRESENT,
                 sender: req.body.sender
-            });
+            };
+            if (req.body.reason) {
+                body.reason = req.body.reason;
+            }
+            attendanceDB.insertOne(body);
         } else if (req.body.hybridID && req.body.subject) {
             attendanceDB.insertOne({
                 timestamp: new Date(),
@@ -183,9 +189,9 @@ module.exports = function (app, db, post, gradeBitToString) {
                     if (values[i].hybridID === null) {
                         delete values[i].hybridID;
                     }
-                    if (values[i].type === 2) {
-                        delete values[i].reason;
-                    }
+                    // if (values[i].type === 2) {
+                    //     delete values[i].reason;
+                    // }
                     values[i].studentID = values[i].userID._id;
                     values[i].firstname = values[i].userID.firstname;
                     values[i].nickname = values[i].userID.nickname;
@@ -436,13 +442,13 @@ module.exports = function (app, db, post, gradeBitToString) {
         });
     });
 
-    post('/post/v1/allStudent',async function (req, res) {
+    post('/post/v1/allStudent', async function (req, res) {
         try {
             let time = new Date()
-            let config = await configDB.findOne({_id: 'config'})
+            let config = await configDB.findOne({ _id: 'config' })
             var quarterID;
             var quarterObj = {}
-            let quarter , year
+            let quarter, year
             if (req.body.quarter && req.body.year) {
                 quarter = req.body.quarter;
                 year = req.body.year;
@@ -464,13 +470,13 @@ module.exports = function (app, db, post, gradeBitToString) {
                 }
                 quarterID = year + quarter;
             }
-            let [student,course,hybrid,skill,chat] = await Promise.all([
-                userDB.find({position:'student'}).sort({_id:1}).toArray(),
+            let [student, course, hybrid, skill, chat] = await Promise.all([
+                userDB.find({ position: 'student' }).sort({ _id: 1 }).toArray(),
                 courseDB.aggregate([
-                    {$match:{quarter:quarterObj.quarter,year:quarterObj.year}},
-                    {$group:{_id: null , student:{$push:"$student"}}},
+                    { $match: { quarter: quarterObj.quarter, year: quarterObj.year } },
+                    { $group: { _id: null, student: { $push: "$student" } } },
                     {
-                        $project:{
+                        $project: {
                             student: {
                                 $reduce: {
                                     "input": "$student",
@@ -482,10 +488,10 @@ module.exports = function (app, db, post, gradeBitToString) {
                     }
                 ]).toArray(),
                 studentHybridDB.aggregate([
-                    {$match:{quarterID:quarterID}},
-                    {$group:{_id: null , student:{$push:"$student.studentID"}}},
+                    { $match: { quarterID: quarterID } },
+                    { $group: { _id: null, student: { $push: "$student.studentID" } } },
                     {
-                        $project:{
+                        $project: {
                             student: {
                                 $reduce: {
                                     "input": "$student",
@@ -497,10 +503,10 @@ module.exports = function (app, db, post, gradeBitToString) {
                     }
                 ]).toArray(),
                 skillStudentDB.aggregate([
-                    {$match:{quarterID:quarterID}},
-                    {$group:{_id: null , student:{$push:"$student.studentID"}}},
+                    { $match: { quarterID: quarterID } },
+                    { $group: { _id: null, student: { $push: "$student.studentID" } } },
                     {
-                        $project:{
+                        $project: {
                             student: {
                                 $reduce: {
                                     "input": "$student",
@@ -512,21 +518,21 @@ module.exports = function (app, db, post, gradeBitToString) {
                     }
                 ]).toArray(),
                 chatDB.aggregate([
-                    {$sort:{timestamp:-1}},
-                    {$lookup:{from:'user',localField:'sender',foreignField:'_id',as:'senderObj'}},
-                    {$group:{_id:"$studentID",data:{$push:{msg:"$msg",sender:"$senderObj",_id:"$_id"}}}}
+                    { $sort: { timestamp: -1 } },
+                    { $lookup: { from: 'user', localField: 'sender', foreignField: '_id', as: 'senderObj' } },
+                    { $group: { _id: "$studentID", data: { $push: { msg: "$msg", sender: "$senderObj", _id: "$_id" } } } }
                 ]).toArray()
             ])
-            let courseSet = new Set(course[0]?course[0].student:[])
-            let fhbSet = new Set(hybrid[0]?hybrid[0].student:[])
-            let skillSet = new Set(skill[0]?skill[0].student:[])
-            student = student.map((user)=>{
+            let courseSet = new Set(course[0] ? course[0].student : [])
+            let fhbSet = new Set(hybrid[0] ? hybrid[0].student : [])
+            let skillSet = new Set(skill[0] ? skill[0].student : [])
+            student = student.map((user) => {
                 user.inCourse = courseSet.has(user._id)
                 user.inHybrid = fhbSet.has(user._id)
                 user.inSkill = skillSet.has(user._id)
                 user.chats = []
-                for(let i in chat){
-                    if(chat[i]._id == user._id){
+                for (let i in chat) {
+                    if (chat[i]._id == user._id) {
                         user.chats = chat[i].data
                         break
                     }
@@ -549,20 +555,74 @@ module.exports = function (app, db, post, gradeBitToString) {
                 delete user.skill;
                 return user
             })
-            res.status(200).send({users:student}) 
+            res.status(200).send({ users: student })
         } catch (error) {
-            res.status(500).send({err:500,msg:'find db error'})
+            res.status(500).send({ err: 500, msg: 'find db error' })
         }
-        
+
     });
 
-    post('/post/v1/allStudentProfilePicture',function(req,res){
-        configDB.findOne({},function(err,config){
-            if(err) res.status(500).send({err:500,msg:'db error'})
-            require('fs').readdir(config.profilePicturePath,function(err,dir){
-                if(err) res.status(400).send({err:400,msg:"fs error occur"})
-                res.status(200).send({arr:dir})
+    post('/post/v1/allStudentProfilePicture', function (req, res) {
+        configDB.findOne({}, function (err, config) {
+            if (err) res.status(500).send({ err: 500, msg: 'db error' })
+            require('fs').readdir(config.profilePicturePath, function (err, dir) {
+                if (err) res.status(400).send({ err: 400, msg: "fs error occur" })
+                res.status(200).send({ arr: dir })
             })
         })
-    })
+    });
+
+    post('/post/v1/getStudentQuota', async function (req, res) {
+        if (!(req.body.studentID && req.body.subj)) {
+            return res.status(400).send({
+                err: -1,
+                msg: 'Bad Request'
+            });
+        }
+        let config = await configDB.findOne({});
+        let defaultQ = config.defaultQuarter.quarter.year + ((config.defaultQuarter.quarter.quarter > 9) ? config.defaultQuarter.quarter.quarter : "0" + config.defaultQuarter.quarter.quarter);
+        let now = moment();
+        let startT = moment(now.valueOf() - 7776000000);
+        let endT = moment(now.valueOf() + 7776000000);
+        let [hb, attend, quota] = await Promise.all([
+            studentHybridDB.find({
+                quarterID: defaultQ,
+                student: { $elemMatch: { studentID: parseInt(req.body.studentID), subject: req.body.subj } }
+            }).toArray(),
+            attendanceDB.find({
+                userID: parseInt(req.body.studentID),
+                $and: [
+                    { date: { $lte: endT.valueOf() } },
+                    { date: { $gte: startT.valueOf() } }
+                ]
+            }).toArray(),
+            quotaDB.find({
+                studentID: parseInt(req.body.studentID),
+                subject: req.body.subj,
+                quarterID: parseInt(defaultQ)
+            }).toArray()
+        ]);
+        console.log(quota);
+        let totalQuota = 3 * hb.length;
+        let usedQuota = 0;
+        for (let i in attend) {
+            if (attend[i].courseID === 0) {
+                if (attend[i].type === 1) {
+                    for (let j in hb) {
+                        if (attend[i].hybridID == hb[j]._id.toString()) usedQuota++;
+                    }
+                } else if (attend[i].type === 2) {
+                    if (attend[i].subject === req.body.subj) usedQuota--;
+                }
+            }
+        }
+        for (let i in quota) {
+            usedQuota -= parseInt(quota[i].value);
+        }
+        return res.status(200).send({
+            studentID: parseInt(req.body.studentID),
+            usedQuota: usedQuota,
+            totalQuota: totalQuota
+        });
+    });
 }
