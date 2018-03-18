@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { WorkflowManager, Status } from './classes/WorkflowManager';
+import { WorkflowManager, Status, BodyNode, HeaderNode } from './classes/WorkflowManager';
 import { Constant } from './classes/Constants';
 import { Observable } from 'rx';
+import * as _ from "lodash";
 
 export const router = Router();
 
@@ -246,7 +247,7 @@ router.post('/todo', (req, res) => {
         });
     }
 
-    WorkflowManager.getNode(req.body.WorkflowManager).flatMap(parent => {
+    WorkflowManager.getNode(req.body.workflowID).flatMap(parent => {
         return WorkflowManager.addNode(
             req.user._id,
             parent._id,
@@ -320,9 +321,53 @@ router.post('/getTree', (req, res) => {
 });
 
 router.post('/getNode', (req, res) => {
+    let allNode: BodyNode[] = [];
+    let headerNode: HeaderNode[] = [];
     WorkflowManager.getUserWorkflow(req.user._id).subscribe(nodes => {
-        res.status(200).send({
-            workflows: nodes
+        let node = _.last(nodes);
+        for (let i = 0; i < nodes.length - 1; i++) {
+            if (nodes[i].detail === '') continue;
+            node.detail = nodes[i].detail + '\n' + node.detail;
+        }
+        allNode.push(node)
+    }, err => {
+        return res.status(500).send(err)
+    }, () => {
+        Observable.forkJoin(allNode.map(node => {
+            return WorkflowManager.findHeader(node._id)
+        })).subscribe(header => {
+            let nodes: any[] = [];
+            for (let i = 0; i < allNode.length; i++) {
+                nodes.push({
+                    header: allNode[i].header,
+                    timestamp: allNode[i].timestamp,
+                    duedate: allNode[i].duedate,
+                    parent: allNode[i].parent,
+                    ancestors: allNode[i].ancestors,
+                    _id: allNode[i]._id,
+                    status: allNode[i].status,
+                    owner: allNode[i].owner,
+                    createdBy: allNode[i].createdBy,
+                    subtitle: allNode[i].subtitle,
+                    detail: allNode[i].detail,
+                    title: header[i].title
+                });
+            }
+            return res.status(200).send({
+                workflows: nodes
+            });
+        }, err => {
+            return res.status(500).send(err)
+        }, () => {
+
+        })
+    });
+});
+
+router.post('/test', (req, res) => {
+    WorkflowManager.getNode('5aab2c948e08b97dc9626a70').subscribe(node => {
+        return res.status(200).send({
+            node: node
         });
     });
 });
