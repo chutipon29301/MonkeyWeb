@@ -79,7 +79,7 @@ module.exports = function (app, db, post, io) {
             msg: 'bad request'
         })
         //check FHB
-        let now = req.date?new Date(req.date):new Date()
+        let now = req.body.date?new Date(req.body.date):new Date()
         try {
             let config = await configDB.findOne()
             let [hybrid,log] = await Promise.all([
@@ -90,7 +90,6 @@ module.exports = function (app, db, post, io) {
                 checkoutLog.findOne({studentID:Number(req.body.studentID),checkoutDate:{$lte:now , $gte:new Date(now-(1000*60*60))}})
             ])
             if(log){
-                console.log(log)
                 return res.status(200).send({type:"error" , msg:"รหัสนี้ได้ทำการ Checkout แล้ว"})
             }
             let studentID = parseInt(req.body.studentID)
@@ -109,7 +108,6 @@ module.exports = function (app, db, post, io) {
             }
             if (req.body.hybridID && req.body.subject) {
                 if(req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()){
-                    console.log('checkout fhb')
                     return checkoutFHB(req, res, io, true,now)
                 }else{
                     return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
@@ -133,7 +131,6 @@ module.exports = function (app, db, post, io) {
                 if (checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 1 && now.getDay() > 0 && now.getDay() < 6))) {
                     req.body.courseID = possibleCourse[i]._id
                     if(possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()){
-                        console.log('checkout cr')
                         return checkoutCR(req, res, io, true,now)
                     }else{
                         return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
@@ -152,7 +149,6 @@ module.exports = function (app, db, post, io) {
                     let checkcr = await courseDB.findOne({_id : attend.courseID})
                     if(checkcr){
                         if(checkcr.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()){
-                            console.log('checkout cr - attend')
                             return checkoutCR(req, res, io,true,now)
                         }
                     }
@@ -161,7 +157,6 @@ module.exports = function (app, db, post, io) {
                     if(req.body.scannedSubject[0].toUpperCase() == attend.subject[0].toUpperCase()){
                         req.body.subject = attend.subject
                         req.body.hybridID = attend.hybridID
-                        console.log('checkout fhb - attend')
                         return checkoutFHB(req, res, io, true,now)
                     }else return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
                     

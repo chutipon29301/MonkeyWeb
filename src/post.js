@@ -218,32 +218,32 @@ module.exports = function (app, db, passport ,io) {
     var post = function (url, callback) {
         app.locals.postFunction[url.slice(1)] = callback;
         app.post(url, function (req, res) {
-            logPosition(req.cookies, function (positionColor) {
-                console.log(chalk.black.bgBlue("[POST REQUEST]"), url.slice(1),
-                    "FROM", req.ip, positionColor("#" + req.cookies.monkeyWebUser),
-                    moment().format("@ dddDDMMMYYYY HH:mm:ss")
-                );
-                var file = [];
-                console.log("\treq.body", "=>", req.body);
-                if (req.files != undefined) {
-                    file = req.files.map(function (x) { return x.originalname });
-                    console.log("\treq.files", "=>", file);
-                }
-                var oldSend = res.send;
-                res.send = function () {
-                    oldSend.apply(this, arguments);
-                    if (arguments[0].err) {
-                        console.log(chalk.black.bgRed("[ERROR POST REQUEST]", url.slice(1),
-                            "FROM", req.ip, positionColor("#" + req.cookies.monkeyWebUser),
-                            moment().format("@ dddDDMMMYYYY HH:mm:ss")
-                        ));
-                        console.log(chalk.black.bgRed("\treq.body", "=>", prettify(req.body)));
-                        console.log(chalk.black.bgRed("\treq.files", "=>", prettify(file)));
-                        console.log(chalk.black.bgRed("\terror.detail", "=>", prettify(arguments[0])));
-                    }
-                }
+            // logPosition(req.cookies, function (positionColor) {
+            //     console.log(chalk.black.bgBlue("[POST REQUEST]"), url.slice(1),
+            //         "FROM", req.ip, positionColor("#" + req.cookies.monkeyWebUser),
+            //         moment().format("@ dddDDMMMYYYY HH:mm:ss")
+            //     );
+            //     var file = [];
+            //     console.log("\treq.body", "=>", req.body);
+            //     if (req.files != undefined) {
+            //         file = req.files.map(function (x) { return x.originalname });
+            //         console.log("\treq.files", "=>", file);
+            //     }
+            //     var oldSend = res.send;
+            //     res.send = function () {
+            //         oldSend.apply(this, arguments);
+            //         if (arguments[0].err) {
+            //             console.log(chalk.black.bgRed("[ERROR POST REQUEST]", url.slice(1),
+            //                 "FROM", req.ip, positionColor("#" + req.cookies.monkeyWebUser),
+            //                 moment().format("@ dddDDMMMYYYY HH:mm:ss")
+            //             ));
+            //             console.log(chalk.black.bgRed("\treq.body", "=>", prettify(req.body)));
+            //             console.log(chalk.black.bgRed("\treq.files", "=>", prettify(file)));
+            //             console.log(chalk.black.bgRed("\terror.detail", "=>", prettify(arguments[0])));
+            //         }
+            //     }
                 callback(req, res);
-            });
+            // });
             
         });
     };
