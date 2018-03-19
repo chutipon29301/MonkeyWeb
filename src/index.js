@@ -74,6 +74,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 var io = require('socket.io')(server);
 /**@method test */
 let connectCounter = 0;
+// io.set('origins', '*:*');
 io.on('connection', (client) => {
     connectCounter++
     client.on('subscribeToTimer', () => {
