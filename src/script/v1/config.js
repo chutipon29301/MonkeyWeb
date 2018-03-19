@@ -6,7 +6,8 @@ module.exports = function(app,db,post,auth){
         nextStudentID : "number",
         nextTutorID : "number",
         allowRegistration : "boolean",
-        coursePrice : "number"
+        coursePrice : "number",
+        inSummer : "boolean"
     }
     var parseConfig = function(key,value){
         if ((typeof value) == "object"){

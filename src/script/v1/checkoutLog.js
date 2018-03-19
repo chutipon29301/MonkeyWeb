@@ -6,6 +6,7 @@ module.exports = function(app,db,post,io){
     let courseDB = db.collection('course')
     let configDB = db.collection('config')
     let attendanceDB = db.collection('attendance')
+    let attendanceDocumentDB = db.collection('attendanceDocument')
     /**@param req.body
      *  checkoutDate : Date
      *  studentID : int
@@ -94,10 +95,10 @@ module.exports = function(app,db,post,io){
                     attendanceDB.find({date:time[15].getTime()}).toArray(),
                     attendanceDB.find({date:time[17].getTime()}).toArray(),
                 ]),
-                userDB.find({position:"student"}).toArray()
+                userDB.find({position:"student"}).toArray(),
             ])
             let studentObj = {}
-            for(let i in user) studentObj[user[i]._id] = {firstname:user[i].firstname , lastname:user[i].lastname , nickname:user[i].nickname}
+            for(let i in user) studentObj[user[i]._id] = {firstname:user[i].firstname , lastname:user[i].lastname , nickname:user[i].nickname , grade:((user[i].student.grade>6?'S':'P')+(user[i].student.grade>6?(user[i].student.grade-6):user[i].student.grade))}
             let checkoutObj = {8:checkout[0] , 10:checkout[1] , 13:checkout[2] , 15:checkout[3] , 17:checkout[4]}
             let attendanceObj ={8:attendance[0] , 10:attendance[1] , 13:attendance[2] , 15:attendance[3] , 17:attendance[4]}
             let student = {8:[] , 10:[] , 13:[] , 15:[] , 17:[]}
@@ -116,8 +117,18 @@ module.exports = function(app,db,post,io){
                             else return false;
                         })
                         if(findAttendance){
-                            if(findAttendance.type == 1) e.status = 'absent'
-                            else if(findAttendance.type == 2) e.status = 'err:เพิ่มในรอบที่มีเรียนอยู่แล้ว'
+                            if(findAttendance.type == 1){
+                                let attendanceTimestamp = new Date(findAttendance.timestamp)
+                                let attendanceDate = new Date(findAttendance.date)
+                                attendanceDate.setHours(18,0,0,0)
+                                if(attendanceDate.getDay() == 0) attendanceDate.setDate(attendanceDate.getDate()-1)
+                                e.reason = findAttendance.reason
+                                e.status = 'absent'
+                                attendanceDocumentDB.findOne({attendanceID:findAttendance._id.toString()},(err,img)=>{
+                                    e.img = img?img._id:null
+                                })
+                                if(attendanceDate-attendanceTimestamp<1000*60*60*24) e.status+='Late'
+                            }else if(findAttendance.type == 2) e.status = 'err:เพิ่มในรอบที่มีเรียนอยู่แล้ว'
                             else e.status = 'err'
                         }else{
                             e.status = 'normal'
@@ -143,8 +154,18 @@ module.exports = function(app,db,post,io){
                             else return false;
                         })
                         if(findAttendance){
-                            if(findAttendance.type == 1) e.status = 'absent'
-                            else if(findAttendance.type == 2) e.status = 'err:เพิ่มในรอบที่มีเรียนอยู่แล้ว'
+                            if(findAttendance.type == 1){
+                                let attendanceTimestamp = new Date(findAttendance.timestamp)
+                                let attendanceDate = new Date(findAttendance.date)
+                                attendanceDate.setHours(18,0,0,0)
+                                if(attendanceDate.getDay() == 0) attendanceDate.setDate(attendanceDate.getDate()-1)
+                                e.reason = findAttendance.reason
+                                e.status = 'absent'
+                                attendanceDocumentDB.findOne({attendanceID:findAttendance._id.toString()},(err , img)=>{
+                                    e.img = img?img._id:null
+                                })
+                                if(attendanceDate-attendanceTimestamp<1000*60*60*24) e.status+='Late'
+                            }else if(findAttendance.type == 2) e.status = 'err:เพิ่มในรอบที่มีเรียนอยู่แล้ว'
                             else e.status = 'err'
                         }else{
                             e.status = 'normal'
@@ -174,6 +195,7 @@ module.exports = function(app,db,post,io){
                     student[i][j].firstname = studentObj[student[i][j].studentID].firstname
                     student[i][j].nickname = studentObj[student[i][j].studentID].nickname
                     student[i][j].lastname = studentObj[student[i][j].studentID].lastname
+                    student[i][j].grade = studentObj[student[i][j].studentID].grade
                     if(student[i][j].checkout === undefined)student[i][j].checkout = null
                     if(student[i][j].recheck === undefined)student[i][j].recheck = false
                 }

@@ -1,5 +1,5 @@
 console.log("[START] post.js");
-module.exports = function (app, db, passport) {
+module.exports = function (app, db, passport ,io) {
     var chalk = require("chalk");
     var CryptoJS = require("crypto-js");
     var fs = require("fs-extra");
@@ -2120,5 +2120,5 @@ module.exports = function (app, db, passport) {
         });
     });
 
-    var postV1 = require("./v1.js")(app, db, post, fs, passport, CryptoJS);
+    var postV1 = require("./v1.js")(app, db, post, fs, passport, CryptoJS , io);
 }
