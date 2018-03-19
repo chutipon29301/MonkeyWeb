@@ -79,7 +79,7 @@ module.exports = function (app, db, post, io) {
             msg: 'bad request'
         })
         //check FHB
-        let now = new Date()
+        let now = req.date?new Date(req.date):new Date()
         try {
             let config = await configDB.findOne()
             let [hybrid,log] = await Promise.all([
@@ -110,7 +110,7 @@ module.exports = function (app, db, post, io) {
             if (req.body.hybridID && req.body.subject) {
                 if(req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()){
                     console.log('checkout fhb')
-                    return checkoutFHB(req, res, io, true)
+                    return checkoutFHB(req, res, io, true,now)
                 }else{
                     return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
                 }
@@ -134,7 +134,7 @@ module.exports = function (app, db, post, io) {
                     req.body.courseID = possibleCourse[i]._id
                     if(possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()){
                         console.log('checkout cr')
-                        return checkoutCR(req, res, io, true)
+                        return checkoutCR(req, res, io, true,now)
                     }else{
                         return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
                     }
@@ -153,7 +153,7 @@ module.exports = function (app, db, post, io) {
                     if(checkcr){
                         if(checkcr.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()){
                             console.log('checkout cr - attend')
-                            return checkoutCR(req, res, io,true)
+                            return checkoutCR(req, res, io,true,now)
                         }
                     }
                     return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
@@ -162,7 +162,7 @@ module.exports = function (app, db, post, io) {
                         req.body.subject = attend.subject
                         req.body.hybridID = attend.hybridID
                         console.log('checkout fhb - attend')
-                        return checkoutFHB(req, res, io, true)
+                        return checkoutFHB(req, res, io, true,now)
                     }else return res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียน กรุณาติดต่อ Admin'})
                     
                 }
@@ -551,7 +551,7 @@ function parseTransactionFHB(key, value) {
     if (allFieldFHB[key] == "ObjectID") return ObjectID(value);
     return value;
 }
-async function checkoutFHB(req, res, io, ioEmit) {
+async function checkoutFHB(req, res, io, ioEmit ,d) {
     if (!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
@@ -560,7 +560,7 @@ async function checkoutFHB(req, res, io, ioEmit) {
     }
     let hybridID
     if (!req.body.hybridID) {
-        let now = new Date()
+        let now = d?new Date(d) : new Date()
         let config = await configDB.findOne()
         let hybrid = await hybridStudentDB.find({
             quarterID: config.defaultQuarter.quarter.year + '0' + config.defaultQuarter.quarter.quarter,
@@ -582,7 +582,7 @@ async function checkoutFHB(req, res, io, ioEmit) {
     let studentID = parseInt(req.body.studentID)
     let value = parseInt(req.body.value ? req.body.value : -800)
     try {
-        let date = new Date()
+        let date = d?new Date(d):new Date()
         await Promise.all([
             transactionFHB.insertOne({
                 studentID: studentID,
@@ -607,7 +607,7 @@ async function checkoutFHB(req, res, io, ioEmit) {
  * @param {studentID : int , courseID : string(optional)} req 
  * @param {*} res 
  */
-async function checkoutCR(req, res, io, ioEmit) {
+async function checkoutCR(req, res, io, ioEmit , d) {
     if (!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
@@ -616,7 +616,7 @@ async function checkoutCR(req, res, io, ioEmit) {
     }
     let studentID = parseInt(req.body.studentID.slice(0, 5))
     let value = -1
-    let date = new Date()
+    let date = d?new Date(d):new Date()
     let day = date.getDay()
     let hr = date.getHours()
     try {
