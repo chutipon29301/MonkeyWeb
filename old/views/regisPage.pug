@@ -50,7 +50,7 @@ mixin fhbSelectButt(value)
             - var t = new Date(i.day)
             if t.getDay()==thisD && t.getHours()==thisH
                 select.custom-select
-                    option(value="0") -
+                    option(value="0") +
                     option(value=i._id) FHB:M
                     option(value=i._id) FHB:P
                     if parseInt(webUser.level.slice(0,-1)) > 8
@@ -79,7 +79,7 @@ mixin skSelectButt(value)
                 - hasHb = true
     if  !(hasCr||hasHb)
         select.custom-select
-            option(value="0") -
+            option(value="0") +
             each i in allSk
                 - var t = new Date(i.day)
                 if t.getDay()==thisD && t.getHours()>(parseInt(thisH)-1+'') && t.getHours()<(parseInt(thisH)+2+'')
@@ -173,7 +173,7 @@ block body
                     .col-12    
                         label.control-label ข้อกำหนด:
                         p 1. สำหรับนักเรียนที่ไม่ต้องการเรียน Full Hybrid สามารถข้ามหน้านี้ได้เลย
-                        p 2. สำหรับนักเรียนที่ไม่ได้เปิดระบบ Full Hybrid จะต้องเปิดระบบก่อน โดยจะต้องเติมเงินเข้าไปในระบบเป็นจำนวน 10,000 บาท/วิชา
+                        p 2. สำหรับนักเรียนที่ไม่ได้เปิดระบบ Full Hybrid จะต้องเปิดระบบก่อน โดยอ่านรายละเอียดได้ที่หน้ารายละเอียดการลงทะเบียน HB
                     .table-responsive
                         table.table.table-bordered
                             thead.thead-light
@@ -218,7 +218,7 @@ block body
                         p 1. สำหรับนักเรียนที่เรียนสกิลจบแล้วสามารถกด Next ได้เลย
                         p 2. การลงทะเบียนสกิลจะทำเฉพาะการเรียนที่สาขาสยามเท่านั้น
                         p 3. กรณีที่เรียนสกิลที่สาย 3 กด Next ได้เลย
-                        p 4. สามารถลงเฉพาะเลขหรืออังกฤษได้ แต่ไม่สามารถลงเวลาทับกันได้
+                        //- p 4. สามารถลงเฉพาะเลขหรืออังกฤษได้ แต่ไม่สามารถลงเวลาทับกันได้
                     .table-responsive
                         table.table.table-bordered
                             thead.thead-light
