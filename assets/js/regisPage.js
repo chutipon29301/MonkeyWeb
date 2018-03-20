@@ -37,8 +37,10 @@ $("#gotoSkBtn").click(function () {
             return true;
         });
         current = current.replace('page=2', 'page=3');
-        for (let i in body) {
-            current = current + '&' + i + '=' + body[i];
+        if (body.fhb > 0) {
+            for (let i in body) {
+                current = current + '&' + i + '=' + body[i];
+            }
         }
         self.location = current;
     }
@@ -59,8 +61,10 @@ $("#gotoSubmitBtn").click(function () {
             return true;
         });
         current = current.replace('page=3', 'page=4');
-        for (let i in body) {
-            current = current + '&' + i + '=' + body[i];
+        if (body.sk.length > 0) {
+            for (let i in body) {
+                current = current + '&' + i + '=' + body[i];
+            }
         }
         self.location = current;
     }
