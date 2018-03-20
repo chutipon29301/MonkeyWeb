@@ -347,7 +347,7 @@ module.exports = function (app, db, pasport) {
                         break;
                     case '4':
                         // general method for sk data
-                        if (req.query.sk == undefined) return res.redirect('/regisPage?page=1');
+                        // if (req.query.sk == undefined) return res.redirect('/regisPage?page=1');
                         let sk = strToArray(req.query.sk);
                         let skInfoPromise = [];
                         for (let i in sk) {
@@ -366,7 +366,7 @@ module.exports = function (app, db, pasport) {
                         }
                     case '3':
                         // general method for fhb data
-                        if (req.query.fhb == undefined) return res.redirect('/regisPage?page=1');
+                        // if (req.query.fhb == undefined) return res.redirect('/regisPage?page=1');
                         let hb = strToArray(req.query.fhb);
                         let hbInfoPromise = [];
                         for (let i in hb) {
