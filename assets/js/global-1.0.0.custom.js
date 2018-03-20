@@ -225,6 +225,21 @@ function clearAllCookie() {
 }
 
 /**
+ * function for relocation with query object
+ */
+const relocate = (url, obj) => {
+    let str = '/';
+    str += url + '?';
+    let n = 0;
+    for (let i in obj) {
+        if (n !== 0) str += '&';
+        str += i + '=' + obj[i];
+        n++;
+    }
+    self.location = str;
+};
+
+/**
  * Load registration page from status of student
  */
 function loadRegistrationPage() {
