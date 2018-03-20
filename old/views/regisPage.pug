@@ -160,7 +160,7 @@ block body
                                 h5(style="color:red") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่แนะนำให้ลงทะเบียน
                                 h5 Description
                                 each i in allCr
-                                    if(i.description!=" " && i.description!='-')
+                                    if(i.description!=' ' && i.description!='-' && i.description!='')
                                         p=i.courseName + " คือ " + i.description
                         .row
                             .col
