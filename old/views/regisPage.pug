@@ -161,8 +161,10 @@ block body
                         .row
                             .col
                                 h5(style="color:red") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่แนะนำให้ลงทะเบียน
-                                if parseInt(webUser.level.slice(0,-1) < 8
+                                if parseInt(webUser.level.slice(0,-1)) < 8
                                     h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์ส
+                                if parseInt(webUser.level.slice(0,-1)) > 7
+                                    h5(style="color:green") ลงทะเบียนเลขและฟิสิกส์ได้เพียงคอร์สเดียวเท่านั้น
                                 h5 Description
                                 each i in allCr
                                     if(i.description!=' ' && i.description!='-' && i.description!='')
