@@ -37,7 +37,8 @@ $("#gotoSkBtn").click(function () {
             return true;
         });
         current = current.replace('page=2', 'page=3');
-        if (body.fhb > 0) {
+        log(body.fhb.length)
+        if (body.fhb.length > 0) {
             for (let i in body) {
                 current = current + '&' + i + '=' + body[i];
             }
@@ -73,12 +74,31 @@ $("#gotoSubmitBtn").click(function () {
 $("#submitBtn").click(function () {
     if (confirm('โปรดตรวจสอบข้อมูลอย่างละเอียดหาก "ยืนยัน" แล้วจะไม่สามารถแก้ไขได้')) {
         let current = window.location.href;
-        let str = current.slice(current.indexOf('cr=') + 3, current.indexOf('fhb=') - 1);
-        let cr = str.split(',');
-        str = current.slice(current.indexOf('fhb=') + 4, current.indexOf('sk=') - 1);
-        let fhb = str.split(',');
-        str = current.slice(current.indexOf('sk=') + 3);
-        let sk = str.split(',');
+        let str;
+        str = current.slice(current.indexOf('cr='));
+        let cr;
+        if (str.indexOf('&') > -1) {
+            cr = str.slice(3, str.indexOf('&'));
+        } else {
+            cr = str.slice(3);
+        }
+        cr = cr.split(',');
+        let fhb = [];
+        if (str.indexOf('fhb=') > -1) {
+            str = str.slice(str.indexOf('fhb=') + 1);
+            if (str.indexOf('&') > -1) {
+                fhb = str.slice(3, str.indexOf('&'));
+            } else {
+                fhb = str.slice(3);
+            }
+            fhb = fhb.split(',');
+        }
+        let sk = [];
+        if (str.indexOf('sk=') > -1) {
+            str = str.slice(str.indexOf('sk=') + 1);
+            sk = str.slice(3);
+            sk = sk.split(',');
+        }
         sendStdTable(cr, fhb, sk);
     }
 });

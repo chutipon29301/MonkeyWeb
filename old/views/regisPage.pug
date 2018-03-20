@@ -77,15 +77,15 @@ mixin skSelectButt(value)
             if t.getDay()==thisD && t.getHours()==thisH
                 button.col.hb.btn.btn-light(id=i._id)= 'FHB:'+i.subj
                 - hasHb = true
-        if  !(hasCr||hasHb)
-            select.custom-select
-                option(value="0") -
-                each i in allSk
-                    - var t = new Date(i.day)
-                    if t.getDay()==thisD && t.getHours()>(parseInt(thisH)-1+'') && t.getHours()<(parseInt(thisH)+2+'')
-                        option(value=i._id)='Math ('+timeToStr(t)+')'
-                        option(value=i._id)='Eng ('+timeToStr(t)+')'
-                        option(value=i._id)='Math&Eng ('+timeToStr(t)+')'
+    if  !(hasCr||hasHb)
+        select.custom-select
+            option(value="0") -
+            each i in allSk
+                - var t = new Date(i.day)
+                if t.getDay()==thisD && t.getHours()>(parseInt(thisH)-1+'') && t.getHours()<(parseInt(thisH)+2+'')
+                    option(value=i._id)='Math ('+timeToStr(t)+')'
+                    option(value=i._id)='Eng ('+timeToStr(t)+')'
+                    option(value=i._id)='Math&Eng ('+timeToStr(t)+')'
 mixin finalSelectButt(value)
     -
         var thisD = value.slice(0,1)
