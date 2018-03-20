@@ -347,37 +347,41 @@ module.exports = function (app, db, pasport) {
                         break;
                     case '4':
                         // general method for sk data
-                        // if (req.query.sk == undefined) return res.redirect('/regisPage?page=1');
-                        let sk = strToArray(req.query.sk);
-                        let skInfoPromise = [];
-                        for (let i in sk) {
-                            let str = sk[i].slice(0, -1);
-                            skInfoPromise.push(skillDB.findOne({ '_id': ObjectId(str) }, { 'day': 1 }));
+                        if (req.query.cr == undefined) return res.redirect('/regisPage?page=1');
+                        if (req.query.sk != undefined) {
+                            let sk = strToArray(req.query.sk);
+                            let skInfoPromise = [];
+                            for (let i in sk) {
+                                let str = sk[i].slice(0, -1);
+                                skInfoPromise.push(skillDB.findOne({ '_id': ObjectId(str) }, { 'day': 1 }));
+                            }
+                            let skInfo = await Promise.all(skInfoPromise);
+                            for (let i in skInfo) {
+                                skInfo[i].subj = sk[i].slice(-1);
+                            }
+                            local.allSk = skInfo;
+                            console.log(skInfo);
                         }
-                        let skInfo = await Promise.all(skInfoPromise);
-                        for (let i in skInfo) {
-                            skInfo[i].subj = sk[i].slice(-1);
-                        }
-                        local.allSk = skInfo;
-                        console.log(skInfo);
                         // special method for submit page
                         if (req.query.page == '4') {
                             local.thisPage = 4;
                         }
                     case '3':
                         // general method for fhb data
-                        // if (req.query.fhb == undefined) return res.redirect('/regisPage?page=1');
-                        let hb = strToArray(req.query.fhb);
-                        let hbInfoPromise = [];
-                        for (let i in hb) {
-                            let str = hb[i].slice(0, -1);
-                            hbInfoPromise.push(hybridDB.findOne({ '_id': ObjectId(str) }, { 'day': 1 }));
+                        if (req.query.cr == undefined) return res.redirect('/regisPage?page=1');
+                        if (req.query.fhb != undefined) {
+                            let hb = strToArray(req.query.fhb);
+                            let hbInfoPromise = [];
+                            for (let i in hb) {
+                                let str = hb[i].slice(0, -1);
+                                hbInfoPromise.push(hybridDB.findOne({ '_id': ObjectId(str) }, { 'day': 1 }));
+                            }
+                            let hbInfo = await Promise.all(hbInfoPromise);
+                            for (let i in hbInfo) {
+                                hbInfo[i].subj = hb[i].slice(-1);
+                            }
+                            local.allHB = hbInfo;
                         }
-                        let hbInfo = await Promise.all(hbInfoPromise);
-                        for (let i in hbInfo) {
-                            hbInfo[i].subj = hb[i].slice(-1);
-                        }
-                        local.allHB = hbInfo;
                         // special method for skill page
                         if (req.query.page == '3') {
                             local.thisPage = 3;
