@@ -114,13 +114,13 @@ block body
             .progress.w-100(style="height:30px")
                 case thisPage
                     when 1
-                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:30%") Course
+                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:30%;font-size:25px") Course
                     when 2
-                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:50%") Full Hybrid
+                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:50%;font-size:25px") Full Hybrid
                     when 3
-                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:70%") Skill
+                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:70%;font-size:25px") Skill
                     when 4
-                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:100%") ยืนยันการลงทะเบียน
+                        .progress-bar.progress-bar-striped.progress-bar-animated(style="width:100%;font-size:25px") ยืนยันการลงทะเบียน
         .row(style="padding-top:30px")
             .card.w-100.mb-2
                 .card-header
@@ -162,9 +162,17 @@ block body
                             .col
                                 h5(style="color:red") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่แนะนำให้ลงทะเบียน
                                 if parseInt(webUser.level.slice(0,-1)) < 8
-                                    h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์ส
-                                if parseInt(webUser.level.slice(0,-1)) > 7
+                                    h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์สที่ไฮไลต์ เพื่อเพิ่มประสิทธิภาพในการเรียน
+                                if parseInt(webUser.level.slice(0,-1)) == 6
+                                    h5(style="color:green") วิชาภาษาอังกฤษให้เลือกลงได้ 1 คอร์สเท่านั้น
+                                if parseInt(webUser.level.slice(0,-1)) == 7
+                                    h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES1a หรือ ES1c คู่กับ ES123z ได้
+                                    h5(style="color:green") วิชาฟิสิกส์ให้เลือกลงได้เพียง 1 คอร์สเท่านั้น
+                                if parseInt(webUser.level.slice(0,-1)) > 7 && parseInt(webUser.level.slice(0,-1)) < 10
                                     h5(style="color:green") ลงทะเบียนเลขและฟิสิกส์ได้เพียงวิชาละคอร์สเท่านั้น
+                                    h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES23b หรือ ES23a คู่กับ ES123z ได้
+                                if parseInt(webUser.level.slice(0,-1)) > 9
+                                    h5(style="color:green") ลงทะเบียนได้เพียงวิชาละคอร์สเท่านั้น
                                 h5 Description
                                 each i in allCr
                                     if(i.description!=' ' && i.description!='-' && i.description!='')
@@ -175,10 +183,11 @@ block body
             when 2
                 .row
                     .col-12
-                        h5(style="color:green") ทุกคนควรลง FHB:M อย่างน้อย 1 ช่อง
+                        if parseInt(webUser.level.slice(0,-1)) > 7
+                            h5(style="color:green") ทุกคนควรลง FHB:M อย่างน้อย 1 ช่อง
                         label.control-label ข้อกำหนด:
                         p 1. สำหรับนักเรียนที่ไม่ต้องการเรียน Full Hybrid สามารถข้ามหน้านี้ได้เลย
-                        p 2. สำหรับนักเรียนที่ไม่ได้เปิดระบบ Full Hybrid จะต้องเปิดระบบก่อน โดยอ่านรายละเอียดได้ที่หน้ารายละเอียดการลงทะเบียน HB
+                        p 2. สำหรับนักเรียนที่ไม่ได้เปิดระบบ Full Hybrid จะต้องทำการเปิดระบบก่อน โดยอ่านรายละเอียดได้ที่หน้าแรก(Monkey)
                     .table-responsive
                         table.table.table-bordered
                             thead.thead-light
