@@ -163,7 +163,7 @@ block body
                                 h5(style="color:red") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่แนะนำให้ลงทะเบียน
                                 if parseInt(webUser.level.slice(0,-1)) < 8
                                     h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์สที่ไฮไลต์ เพื่อเพิ่มประสิทธิภาพในการเรียน
-                                if parseInt(webUser.level.slice(0,-1)) == 6
+                                if parseInt(webUser.level.slice(0,-1)) > 4 && parseInt(webUser.level.slice(0,-1)) < 7
                                     h5(style="color:green") วิชาภาษาอังกฤษให้เลือกลงได้ 1 คอร์สเท่านั้น
                                 if parseInt(webUser.level.slice(0,-1)) == 7
                                     h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES1a หรือ ES1c คู่กับ ES123z ได้
