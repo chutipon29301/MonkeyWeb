@@ -96,7 +96,7 @@ $("#submitBtn").click(function () {
         let sk = [];
         if (str.indexOf('sk=') > -1) {
             str = str.slice(str.indexOf('sk=') + 1);
-            sk = str.slice(3);
+            sk = str.slice(2);
             sk = sk.split(',');
         }
         sendStdTable(cr, fhb, sk);
