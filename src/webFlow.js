@@ -1,6 +1,7 @@
 console.log("[START] webFlow.js");
 module.exports = function (app, db, pasport) {
     require('typescript-require');
+    var ObjectId = require('mongodb').ObjectID;
     var chalk = require("chalk");
     var moment = require("moment");
     var path = require("path");
@@ -10,6 +11,9 @@ module.exports = function (app, db, pasport) {
     var quarterDB = db.collection("quarter");
     var auth = require('./auth.js');
     var courseDB = db.collection('course')
+    var courseSuggestDB = db.collection('courseSuggestion')
+    var hybridDB = db.collection('hybridStudent')
+    var skillDB = db.collection('skillStudent')
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -106,7 +110,7 @@ module.exports = function (app, db, pasport) {
                         if (req.user.student.quarter[i].year == config.defaultQuarter.registration.year
                             && req.user.student.quarter[i].quarter == config.defaultQuarter.registration.quarter) {
                             if ("untransferred" == req.user.student.quarter[i].registrationState)
-                                return res.redirect('/regisPage') 
+                                return res.redirect('/regisPage')
                         }
                     return res.status(200).render('home', local);
                 }
@@ -131,7 +135,7 @@ module.exports = function (app, db, pasport) {
                 do not check if field is undefined
         - localObject is an object that will pass to pug page or can be a function which return promise that resolve to object
     */
-    app.get('/adminChat',function(req,res){return res.status(200).render('adminChat')})
+    app.get('/adminChat', function (req, res) { return res.status(200).render('adminChat') })
     app.get('/login', function (req, res) {
         return res.status(200).render('login')
     })
@@ -243,38 +247,190 @@ module.exports = function (app, db, pasport) {
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
+                nickname: req.user.nickname,
                 firstname: req.user.firstname,
                 lastname: req.user.lastname,
-                position: req.user.position
+                position: req.user.position,
+                grade: req.user.student.grade,
+                level: req.user.level
             },
             config: await configDB.findOne({})
         }
-        if(auth.authorize(req.user,'student',{ status: 'active', state: "untransferred" },local.config)){
+        if (auth.authorize(req.user, 'student', { status: 'active', state: "untransferred" }, local.config)) {
             try {
                 local.courseNumber = (await courseDB.find({
-                    quarter:local.config.defaultQuarter.registration.quarter,
-                    year:local.config.defaultQuarter.registration.year,
-                    student:parseInt(req.user._id),
+                    quarter: local.config.defaultQuarter.registration.quarter,
+                    year: local.config.defaultQuarter.registration.year,
+                    student: parseInt(req.user._id),
                 }).toArray()).length
                 local.qname = (await quarterDB.findOne({
-                    quarter:local.config.defaultQuarter.registration.quarter,
-                    year:local.config.defaultQuarter.registration.year
+                    quarter: local.config.defaultQuarter.registration.quarter,
+                    year: local.config.defaultQuarter.registration.year
                 })).name
-                return res.status(200).render('registrationReceipt',local)    
+                return res.status(200).render('registrationReceipt', local)
             } catch (error) {
-                return return404(req,res)
+                return return404(req, res)
             }
         }
-        if(auth.authorize(req.user,'student',{ status: 'active', state: ["unregistered", "rejected"] },local.config)){
-            if(local.config.allowRegistration){
-                if(local.config.defaultQuarter.registration.quarter > 10) return res.status(200).render('registrationSummer',local)
-                return res.status(200).render('regisPage',local)    
-            }else if(req.cookies.vid&&req.cookies.vpw){
+        if (auth.authorize(req.user, 'student', { status: 'active', state: ["unregistered", "rejected"] }, local.config)) {
+            // Prepare data
+            if (local.config.defaultQuarter.registration.quarter < 10) {
+                // convert gradeBit to gradeStr
+                const gradeBitToString = function (bit) {
+                    var output = "", p = false, s = false;
+                    for (var i = 0; i < 6; i++) {
+                        if (bit & (1 << i)) {
+                            if (p == false) {
+                                p = true;
+                                output += "P";
+                            }
+                            output += (i + 1);
+                        }
+                    }
+                    for (var i = 0; i < 6; i++) {
+                        if (bit & (1 << (i + 6))) {
+                            if (s == false) {
+                                s = true;
+                                output += "S";
+                            }
+                            output += (i + 1);
+                        }
+                    }
+                    if (bit & (1 << 12)) output += "SAT";
+                    return output;
+                };
+                // convert gradeBit to grade arr
+                const gradeBitToArray = function (bit) {
+                    var output = [];
+                    for (var i = 0; i < 13; i++) {
+                        if (bit & (1 << i)) {
+                            output.push(i + 1);
+                        }
+                    }
+                    return output;
+                };
+                // convert str to array
+                const strToArray = (str) => {
+                    return str.split(',');
+                };
+                let regisYear = local.config.defaultQuarter.registration.year;
+                let regisQ = local.config.defaultQuarter.registration.quarter;
+                let stdGrade = req.user.level.slice(0, -1);
+                switch (req.query.page) {
+                    case '1':
+                        // special method for cr page
+                        local.thisPage = 1;
+                        let allCr = await courseDB.find(
+                            { 'year': regisYear, 'quarter': regisQ },
+                            { 'student': 0, 'submission': 0, 'room': 0, 'year': 0, 'quarter': 0 }
+                        ).toArray();
+                        allCr = allCr.filter((a) => {
+                            if (gradeBitToArray(a.grade).findIndex(x => x == parseInt(stdGrade)) > -1) return true;
+                            return false;
+                        });
+                        let tutorInfo = [];
+                        for (let i in allCr) {
+                            tutorInfo.push(userDB.findOne({ '_id': allCr[i].tutor[0] }, { 'nicknameEn': 1 }));
+                        }
+                        let tutor = await Promise.all(tutorInfo);
+                        for (let i in allCr) {
+                            allCr[i].courseName = allCr[i].subject + gradeBitToString(allCr[i].grade) + allCr[i].level;
+                            allCr[i].tutorName = tutor[i].nicknameEn;
+                            allCr[i].grade = gradeBitToArray(allCr[i].grade)
+                        }
+                        local.allCr = allCr;
+                        let crSugg = await courseSuggestDB.findOne(
+                            { 'year': regisYear, 'quarter': regisQ, 'level': req.user.level.slice(-1), 'grade': parseInt(stdGrade) },
+                            { 'courseID': 1 }
+                        );
+                        local.suggCr = crSugg;
+                        break;
+                    case '4':
+                        // general method for sk data
+                        if (req.query.cr == undefined) return res.redirect('/regisPage?page=1');
+                        if (req.query.sk != undefined) {
+                            let sk = strToArray(req.query.sk);
+                            let skInfoPromise = [];
+                            for (let i in sk) {
+                                let str = sk[i].slice(0, -1);
+                                skInfoPromise.push(skillDB.findOne({ '_id': ObjectId(str) }, { 'day': 1 }));
+                            }
+                            let skInfo = await Promise.all(skInfoPromise);
+                            for (let i in skInfo) {
+                                skInfo[i].subj = sk[i].slice(-1);
+                            }
+                            local.allSk = skInfo;
+                            console.log(skInfo);
+                        }
+                        // special method for submit page
+                        if (req.query.page == '4') {
+                            local.thisPage = 4;
+                        }
+                    case '3':
+                        // general method for fhb data
+                        if (req.query.cr == undefined) return res.redirect('/regisPage?page=1');
+                        if (req.query.fhb != undefined) {
+                            let hb = strToArray(req.query.fhb);
+                            let hbInfoPromise = [];
+                            for (let i in hb) {
+                                let str = hb[i].slice(0, -1);
+                                hbInfoPromise.push(hybridDB.findOne({ '_id': ObjectId(str) }, { 'day': 1 }));
+                            }
+                            let hbInfo = await Promise.all(hbInfoPromise);
+                            for (let i in hbInfo) {
+                                hbInfo[i].subj = hb[i].slice(-1);
+                            }
+                            local.allHB = hbInfo;
+                        }
+                        // special method for skill page
+                        if (req.query.page == '3') {
+                            local.thisPage = 3;
+                            let allSk = await skillDB.find({ 'quarterID': regisYear + '' + ((regisQ > 9) ? regisQ : '0' + regisQ) }, { 'day': 1 }).sort({ 'day': 1 }).toArray();
+                            local.allSk = allSk;
+                        }
+                    case '2':
+                        // general method for cr data
+                        if (req.query.cr == undefined) return res.redirect('/regisPage?page=1');
+                        let cr = strToArray(req.query.cr);
+                        let crInfoPromise = [];
+                        for (let i in cr) {
+                            crInfoPromise.push(courseDB.findOne(
+                                { '_id': cr[i] },
+                                { 'student': 0, 'submission': 0, 'room': 0, 'year': 0, 'quarter': 0 }
+                            ));
+                        }
+                        let crInfo = await Promise.all(crInfoPromise);
+                        let tutorInfo2 = [];
+                        for (let i in crInfo) {
+                            tutorInfo2.push(userDB.findOne({ '_id': crInfo[i].tutor[0] }, { 'nicknameEn': 1 }));
+                        }
+                        let tutor2 = await Promise.all(tutorInfo2);
+                        for (let i in crInfo) {
+                            crInfo[i].courseName = crInfo[i].subject + gradeBitToString(crInfo[i].grade) + crInfo[i].level;
+                            crInfo[i].tutorName = tutor2[i].nicknameEn;
+                            crInfo[i].grade = gradeBitToArray(crInfo[i].grade)
+                        }
+                        local.allCr = crInfo;
+                        // special method for fhb page
+                        if (req.query.page == '2') {
+                            local.thisPage = 2;
+                            let allHB = await hybridDB.find({ 'quarterID': regisYear + '' + ((regisQ > 9) ? regisQ : '0' + regisQ) }, { 'day': 1 }).toArray();
+                            local.allHB = allHB;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (local.config.allowRegistration) {
+                if (local.config.defaultQuarter.registration.quarter > 10) return res.status(200).render('registrationSummer', local)
+                return res.status(200).render('regisPage', local)
+            } else if (req.cookies.vid && req.cookies.vpw) {
                 try {
-                    let user = await userDB.findOne({_id:parseInt(req.cookies.vid),password:req.cookies.vpw})
-                    if(user.position && user.position!='student'){
-                        if(local.config.defaultQuarter.registration.quarter > 10) return res.status(200).render('registrationSummer',local)
-                        return res.status(200).render('regisPage',local)
+                    let user = await userDB.findOne({ _id: parseInt(req.cookies.vid), password: req.cookies.vpw })
+                    if (user.position && user.position != 'student') {
+                        if (local.config.defaultQuarter.registration.quarter > 10) return res.status(200).render('registrationSummer', local)
+                        return res.status(200).render('regisPage', local)
                     }
                     else res.status(200).render('verifyRegisUser', local)
                 } catch (error) {

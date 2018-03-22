@@ -1,5 +1,6 @@
 module.exports = function(app,db,post,passport){
     let userDB = db.collection('user')
+    // console.log(passport.authorize)
     post('/post/v1/login', function(req,res,next){
         passport.authenticate('local', function(err,user){    
             if(err) throw err;

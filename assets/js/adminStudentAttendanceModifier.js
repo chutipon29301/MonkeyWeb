@@ -188,12 +188,27 @@ async function genTable(mainType) {
                 );
             }
         } else if (mainType === 1) {
+            let subj;
+            // let type;
+            if (allAdtend[i].courseID === undefined) {
+                subj = "FHB:" + allAdtend[i].subject;
+                // type = "FHB";
+            } else {
+                if (allAdtend[i].tutorName === "Hybrid") {
+                    subj = "CR:" + allAdtend[i].courseName;
+                    // type = "HB";
+                } else {
+                    subj = "CR:" + allAdtend[i].courseName;
+                    // type = "CR";
+                }
+            }
             $("#fhbPresentTable").append(
                 "<tr id='" + allAdtend[i]._id + "' class='fhbTableRow fhbRow" + t + "'>" +
                 "<td class='text-center'>" + timestamp + "</td>" +
                 "<td class='text-center' onclick='gotoStdProfile(\"" +
                 allAdtend[i].studentID + "\")'>" + allAdtend[i].nickname + " " + allAdtend[i].firstname + "</td>" +
-                "<td class='text-center'>" + "FHB:" + allAdtend[i].subject + "</td>" +
+                "<td class='text-center'>" + subj + "</td>" +
+                "<td class='text-center'>" + ((allAdtend[i].reason !== null) ? allAdtend[i].reason : "") + "</td>" +
                 "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
                 "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                 "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
@@ -391,9 +406,12 @@ async function genActivityTable(number) {
             style = "table-success";
             if (allAdtend[i].courseID === undefined) {
                 subj = "FHB:" + allAdtend[i].subject;
-                reason = "-";
             } else {
                 subj = "CR:" + allAdtend[i].courseName;
+            }
+            if (allAdtend[i].reason !== null) {
+                reason = allAdtend[i].reason;
+            } else {
                 reason = "-";
             }
 
@@ -1056,21 +1074,25 @@ async function genSmTable() {
     for (let i in newHistory) {
         let type = (newHistory[i].tutorID === 99000) ? 'HB' : 'CR';
         if (newHistory[i].type === 1) {
-            $("#smAbsentTableBody").append(
-                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
-                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
-                "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
-                "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
-                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
-                "</tr>"
-            );
+            if (newHistory[i].reason.toLowerCase() === "summerabsent") {
+                $("#smAbsentTableBody").append(
+                    "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                    "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                    "<td class='text-center'>" + newHistory[i].courseName + "</td>" +
+                    "<td class='text-center'>" + newHistory[i].tutorName + "</td>" +
+                    "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
+                    "</tr>"
+                );
+            }
         } else if (newHistory[i].type === 2) {
-            $("#smPresentTableBody").append(
-                "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
-                "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
-                "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
-                "</tr>"
-            );
+            if (newHistory[i].courseID !== undefined) {
+                $("#smPresentTableBody").append(
+                    "<tr id='" + newHistory[i]._id + "' class='smrow-" + type + "'>" +
+                    "<td class='text-center'>" + newHistory[i].nickname + " " + newHistory[i].firstname + "</td>" +
+                    "<td class='text-center'><button class='col btn btn-light' onclick='removeAdtend(\"" + newHistory[i]._id + "\");'><span class='fa fa-lg fa-trash text-danger'></span></button></td>" +
+                    "</tr>"
+                );
+            }
         }
     }
     filterSmData();
@@ -1172,7 +1194,7 @@ $("#addAttendTypeSelect").change(function () {
         $("#addAttendTimeContainer").hide();
         genAddAbsentSubj();
     } else if (this.value === '2') {
-        $("#addAttendReasonContainer").hide();
+        $("#addAttendReasonContainer").show();
         $("#addAttendTimeContainer").show();
         genAddPresentSubj();
     }
@@ -1354,6 +1376,9 @@ async function addNewPresentAttend() {
     let classID = $("#addAttendSubjSelect").val();
     let hour = $("#addAttendTimeSelect").val();
     body.date = pickdate.hour(parseInt(hour)).valueOf();
+    if ($("#addAttendReasonInput").val().length > 0) {
+        body.reason = $("#addAttendReasonInput").val();
+    }
     let sendData = true;
     if (className.indexOf("FHB") >= 0) {
         body.subject = className.slice(4, 5);
@@ -1429,7 +1454,7 @@ async function calStdQuota() {
                             break;
                     }
                 } else if (stdAttend[i].type === 2) {
-                    switch (stdAttend[i].hybridSubject) {
+                    switch (stdAttend[i].subject) {
                         case "M":
                             useM -= 1;
                             break;

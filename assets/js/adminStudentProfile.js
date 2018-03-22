@@ -295,9 +295,9 @@ async function genStudentTable() {
             }
 
         }
-        if (timeTable.course[i].courseName.slice(0, 1) === "C") {
-            fhbHasChe = true;
-        }
+        // if (timeTable.course[i].courseName.slice(0, 1) === "C") {
+        //     fhbHasChe = true;
+        // }
     }
     for (let i in timeTable.hybrid) {
         let time = moment(timeTable.hybrid[i].day);
@@ -372,28 +372,35 @@ async function genBarcode() {
 }
 async function genTableTemplate(hasMath, hasPhy, hasChe, hasEng) {
     let studentData = await studentProfile(ID);
+    let src = 'images/TableCover/';
     let state = (studentData.grade > 6) ? 'h' : 'j';
-    if (hasMath && hasPhy) {
-        $("#tableTemplate").attr("src", "images/mp" + state + ".png");
-    } else if (hasMath) {
-        $("#tableTemplate").attr("src", "images/m" + state + ".png");
-    } else if (hasPhy) {
-        $("#tableTemplate").attr("src", "images/p" + state + ".png");
-    } else {
-        $("#tableTemplate").attr("src", "images/mp" + state + ".png");
-    }
+    // if (hasMath && hasPhy) {
+    //     $("#tableTemplate").attr("src", "images/mp" + state + ".png");
+    // } else if (hasMath) {
+    //     $("#tableTemplate").attr("src", "images/m" + state + ".png");
+    // } else if (hasPhy) {
+    //     $("#tableTemplate").attr("src", "images/p" + state + ".png");
+    // } else {
+    //     $("#tableTemplate").attr("src", "images/mp" + state + ".png");
+    // }
     if (hasMath) {
+        src += 'm';
         $("#mathCoverDowload").removeClass("disabled");
     }
     if (hasPhy) {
+        src += 'p';
         $("#phyCoverDowload").removeClass("disabled");
     }
     if (hasChe) {
+        src += 'c';
         $("#cheCoverDowload").removeClass("disabled");
     }
     if (hasEng) {
+        src += 'e';
         $("#engCoverDowload").removeClass("disabled");
     }
+    src += state + '.png';
+    $("#tableTemplate").attr("src", src);
 }
 
 /**
@@ -441,11 +448,11 @@ async function genCover(type) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "bold 150px Cordia New";
-    ctx.fillText((profile.grade > 6) ? 'S' + (profile.grade - 6) : 'P' + profile.grade, 112, 88);
+    ctx.fillText((profile.grade > 6) ? 'S' + (profile.grade - 6) : 'P' + profile.grade, 135, 85);
     let profileImg = document.getElementById('profileImg');
     let picH = 184;
     let picW = profileImg.width * picH / profileImg.height;
-    ctx.drawImage(profileImg, 200, 30, picW, picH);
+    ctx.drawImage(profileImg, 250, 30, picW, picH);
     ctx.font = "bold 80px Cordia New";
     switch (type) {
         case 0:
@@ -468,14 +475,14 @@ async function genCover(type) {
     ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 600, 80);
     ctx.fillText(profile.lastname, 600, 170);
     let w = [1289, 1508, 811, 1050];
-    let h = [390, 533, 675, 813, 955];
+    let h = [315, 437, 559, 681, 875];
     let mw = [1335, 1416, 1498, 1580];
     let mh = [140, 220, 300, 380, 460];
     ctx.font = "bold 60px Cordia New";
     ctx.fillStyle = "#f442df";
     for (let i in timeTable.course) {
         ctx.fillText("CR: " + timeTable.course[i].courseName, w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)]);
-        ctx.fillText((timeTable.course[i].tutorName == "Hybrid" ? "HB" : timeTable.course[i].tutorName), w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)] + 70);
+        ctx.fillText((timeTable.course[i].tutorName == "Hybrid" ? "HB" : timeTable.course[i].tutorName), w[dayIndex(timeTable.course[i].day)], h[hourIndex(timeTable.course[i].day)] + 60);
         if (timeTable.course[i].tutorName == "Hybrid") {
             if (type == 0 && timeTable.course[i].courseName.slice(0, 1) == "M") {
                 ctx.fillText("CR", mw[dayIndex(timeTable.course[i].day)], mh[hourIndex(timeTable.course[i].day)]);
@@ -491,7 +498,7 @@ async function genCover(type) {
     for (let i in timeTable.hybrid) {
         ctx.fillStyle = "#242de2";
         ctx.fillText("FHB: " + timeTable.hybrid[i].subject, w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)]);
-        ctx.fillText("HB", w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)] + 70);
+        ctx.fillText("HB", w[dayIndex(timeTable.hybrid[i].day)], h[hourIndex(timeTable.hybrid[i].day)] + 60);
         ctx.fillStyle = "black";
         if (type == 0 && timeTable.hybrid[i].subject == "M") {
             ctx.fillText("HB", mw[dayIndex(timeTable.hybrid[i].day)], mh[hourIndex(timeTable.hybrid[i].day)]);
@@ -509,7 +516,7 @@ async function genCover(type) {
         let time = moment(timeTable.skill[i].day);
         if (timeTable.skill[i].subject == "ME") {
             ctx.fillText("SK: M " + time.format("H:00"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)]);
-            ctx.fillText("SK: E " + time.format("H:30"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 70);
+            ctx.fillText("SK: E " + time.format("H:30"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 60);
         } else {
             if (time.hour() == 9 || time.hour() == 11 || time.hour() == 14 || time.hour() == 16) {
                 ctx.fillText("SK: " + timeTable.skill[i].subject + " " + time.format("H:mm"), w[dayIndex(timeTable.skill[i].day)], h[hourIndex(timeTable.skill[i].day)] + 70);
@@ -1074,12 +1081,21 @@ async function showStudentAbsentHistory() {
             maxP += 3;
         }
     }
+    log(history);
     for (let i in history) {
-        if (history[i].courseName === undefined) {
-            if (history[i].hybridSubject === "M") {
-                nowM += 1;
-            } else if (history[i].hybridSubject === "P") {
-                nowP += 1;
+        if (history[i].type === 1) {
+            if (history[i].courseName === undefined) {
+                if (history[i].hybridSubject === "M") {
+                    nowM += 1;
+                } else if (history[i].hybridSubject === "P") {
+                    nowP += 1;
+                }
+            }
+        } else {
+            if (history[i].subject === "M") {
+                nowM -= 1;
+            } else if (history[i].subject === "P") {
+                nowP -= 1;
             }
         }
         let t1 = moment(history[i].date);
@@ -1087,7 +1103,7 @@ async function showStudentAbsentHistory() {
         table.append(
             "<tr class='" + ((history[i].type === 1) ? 'table-danger' : 'table-success') + "'>" +
             "<td class='text-center'>" + t1.format('ddd DD/MM/YY HH:00') + "</td>" +
-            "<td class='text-center'>" + ((history[i].courseName === undefined) ? 'FHB:' + history[i].hybridSubject : history[i].courseName) + "</td>" +
+            "<td class='text-center'>" + ((history[i].courseName === undefined) ? 'FHB:' + ((history[i].type === 1) ? history[i].hybridSubject : history[i].subject) : history[i].courseName) + "</td>" +
             "<td class='text-center'>" + ((history[i].type === 1) ? history[i].reason : "-") + "</td>" +
             "<td class='text-center'>" + t2.format('ddd DD/MM/YY HH:mm') + "</td>" +
             "</tr>"

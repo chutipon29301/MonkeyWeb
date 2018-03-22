@@ -30,7 +30,7 @@ html(lang="en")
                     ul.navbar-nav.mr-auto
                         if(webUser.position=="student")
                             if(config.allowRegistration)
-                                li.nav-item: a.nav-link(href="/regisPage") ลงทะเบียน
+                                li.nav-item: a.nav-link(href="/regisPage?page=1") ลงทะเบียน
                             +navLink("absentAgreeForm","ลา")
                             +navLink("addAgreeForm","เพิ่ม")
                             //- +navLink("summerAbsentForm","ลา/ชดเชยCR61MAR")
