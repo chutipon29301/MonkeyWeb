@@ -3,6 +3,7 @@ import { WorkflowManager, Status, BodyNode, HeaderNode } from './classes/Workflo
 import { Constant } from './classes/Constants';
 import { Observable } from 'rx';
 import * as _ from "lodash";
+import { IOSNotificationManager } from './classes/NotificationManager';
 
 export const router = Router();
 
@@ -365,9 +366,7 @@ router.post('/getNode', (req, res) => {
 });
 
 router.post('/test', (req, res) => {
-    WorkflowManager.getNode('5aab2c948e08b97dc9626a70').subscribe(node => {
-        return res.status(200).send({
-            node: node
-        });
+    IOSNotificationManager.getInstance().send(99009, 'Hello World').subscribe(result => {
+        res.status(200).send(result);
     });
 });

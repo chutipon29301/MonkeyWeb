@@ -28,7 +28,7 @@ export enum Status {
  * @interface Node
  * @extends {Document}
  */
-export interface Node extends Document {
+interface Node extends Document {
     header: Boolean,
     timestamp: Date,
     createdBy: Number
