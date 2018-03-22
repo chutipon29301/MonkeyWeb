@@ -176,7 +176,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                                         quarter: quarter.quarter,
                                         year: quarter.year,
                                         registrationState: 'finished'
-                                    }) !== -1 && o.student.status === 'active';
+                                    }) !== -1 && o.student.status !== 'rejected' && o.student.status !== 'dropped';
                                 }).length;
                                 response[field]['room' + values[i][j].room].studentCount += studentNum;
                                 response[field]['room' + values[i][j].room].maxStudent = quarter.maxSeat[values[i][j].room]
