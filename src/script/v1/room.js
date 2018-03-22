@@ -175,8 +175,8 @@ module.exports = function (app, db, post, gradeBitToString) {
                                     return _.findIndex(o.student.quarter, {
                                         quarter: quarter.quarter,
                                         year: quarter.year,
-                                        registrationState: 'finished'
-                                    }) !== -1 && o.student.status === 'active';
+                                        registrationState: 'rejected'
+                                    }) === -1 && o.student.status === 'active';
                                 }).length;
                                 response[field]['room' + values[i][j].room].studentCount += studentNum;
                                 response[field]['room' + values[i][j].room].maxStudent = quarter.maxSeat[values[i][j].room]
@@ -206,8 +206,8 @@ module.exports = function (app, db, post, gradeBitToString) {
                                     return _.findIndex(o.registrationState, {
                                         quarter: quarter.quarter,
                                         year: quarter.year,
-                                        registrationState: 'finished'
-                                    }) !== -1 && o.status === 'active';
+                                        registrationState: 'rejected'
+                                    }) === -1 && o.status === 'active';
                                 }).length;
                                 response[field]['room0'].maxStudent = quarter.maxSeat[0];
                                 response[field]['room0'].studentCount += studentNum;
@@ -218,15 +218,15 @@ module.exports = function (app, db, post, gradeBitToString) {
                                         return _.findIndex(o.registrationState, {
                                             quarter: quarter.quarter,
                                             year: quarter.year,
-                                            registrationState: 'finished'
-                                        }) !== -1 && (o.subject === 'P') && o.status === 'active';
+                                            registrationState: 'rejected'
+                                        }) === -1 && (o.subject === 'P') && o.status === 'active';
                                     }).length,
                                     numMath: _.filter(values[i][j].student, o => {
                                         return _.findIndex(o.registrationState, {
                                             quarter: quarter.quarter,
                                             year: quarter.year,
-                                            registrationState: 'finished'
-                                        }) !== -1 && o.subject === 'M' && o.status === 'active';
+                                            registrationState: 'rejected'
+                                        }) === -1 && o.subject === 'M' && o.status === 'active';
                                     }).length
                                 });
                             }
