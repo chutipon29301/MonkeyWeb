@@ -28,7 +28,7 @@ async function getHBData(subj, hbID) {
     let index = 1;
     for (let i in student) {
         $("#allStudentInHybrid").append(
-            "<tr>" +
+            "<tr onclick='relocatted(\"" + student[i].studentID + "\")'>" +
             "<td>" + index + "</td>" +
             "<td class='text-center'>" + student[i].studentID + "</td>" +
             "<td class='text-center'>" + studentName[i].nickname + "</td>" +
@@ -38,4 +38,12 @@ async function getHBData(subj, hbID) {
         );
         index += 1;
     }
+}
+/**
+ * method for redirect to student profile page
+ * @param {Number} stdID 
+ */
+function relocatted(stdID) {
+    writeCookie("monkeyWebAdminAllstudentSelectedUser", stdID);
+    self.location = "/adminStudentprofile";
 }
