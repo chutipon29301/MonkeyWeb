@@ -5,6 +5,14 @@ block script
     script(src="js/admin.min.js")
     script(src="js/adminCrTable.min.js" type="text/javascript")
 block body
+    .container-fluid
+        .row
+            .col-12.col-md-3
+                .form-group
+                    label
+                        span.fa.fa-lg.fa-th-large &nbsp;
+                        |Quarter
+                    select.form-control#quarter
     .container
         .col#level
             .form-check.form-check-inline
