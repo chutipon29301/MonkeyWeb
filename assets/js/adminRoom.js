@@ -111,7 +111,7 @@ async function genRoom() {
                     if (room.hybrid[k].numEnglish !== undefined) {
                         $("#" + i + j).append(
                             "<tr class='table-active hbRow' id='e" + room.hybrid[k].hybridID + "'>" +
-                            "<td class='text-left'>FHB:M</td>" +
+                            "<td class='text-left'>FHB:E</td>" +
                             "<td class='text-right'>" + room.hybrid[k].numEnglish + "</td>" +
                             "</tr>"
                         );
