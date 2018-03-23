@@ -227,7 +227,21 @@ module.exports = function (app, db, post, gradeBitToString) {
                                             year: quarter.year,
                                             registrationState: 'rejected'
                                         }) === -1 && o.subject === 'M' && o.status === 'active';
-                                    }).length
+                                    }).length,
+                                    numChemistry:  _.filter(values[i][j].student, o => {
+                                        return _.findIndex(o.registrationState, {
+                                            quarter: quarter.quarter,
+                                            year: quarter.year,
+                                            registrationState: 'rejected'
+                                        }) === -1 && o.subject === 'C' && o.status === 'active';
+                                    }).length,
+                                    numEnglish:  _.filter(values[i][j].student, o => {
+                                        return _.findIndex(o.registrationState, {
+                                            quarter: quarter.quarter,
+                                            year: quarter.year,
+                                            registrationState: 'rejected'
+                                        }) === -1 && o.subject === 'E' && o.status === 'active';
+                                    }).length,
                                 });
                             }
                             break;
