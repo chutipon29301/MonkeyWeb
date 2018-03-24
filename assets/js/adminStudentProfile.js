@@ -448,11 +448,11 @@ async function genCover(type) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "bold 150px Cordia New";
-    ctx.fillText((profile.grade > 6) ? 'S' + (profile.grade - 6) : 'P' + profile.grade, 135, 85);
+    ctx.fillText((profile.grade > 6) ? 'S' + (profile.grade - 6) : 'P' + profile.grade, 117, 85);
     let profileImg = document.getElementById('profileImg');
     let picH = 184;
     let picW = profileImg.width * picH / profileImg.height;
-    ctx.drawImage(profileImg, 250, 30, picW, picH);
+    ctx.drawImage(profileImg, 204, 30, picW, picH);
     ctx.font = "bold 80px Cordia New";
     switch (type) {
         case 0:
