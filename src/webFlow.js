@@ -472,9 +472,23 @@ module.exports = function (app, db, pasport) {
                 firstname: req.user.firstname,
                 lastname: req.user.lastname,
                 position: req.user.position
-            },
-            config: await configDB.findOne({})
-        }
+            }
+        };
+        let [config, tutor] = await Promise.all([
+            configDB.findOne({}),
+            userDB.find({
+                position: {
+                    $in: ['tutor', 'admin', 'dev']
+                },
+                'tutor.status': 'active'
+            }, {
+                    sort: {
+                        _id: 1
+                    }
+                }).toArray()
+        ]);
+        local.config = config;
+        local.tutor = tutor;
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllcourse', local)
         else return404(req, res)
     })
