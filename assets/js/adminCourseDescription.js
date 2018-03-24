@@ -29,11 +29,11 @@ if (crCookie === undefined) {
                 if (stdName[i].status == "active") {
                     $("#allStudentInCourseTable").append(
                         "<tr class='std-row' id='" + crInfo.student[i] + "'>" +
-                        "<td>" + index + "</td>" +
+                        "<td class='text-center'>" + index + "</td>" +
                         "<td class='text-center'>" + crInfo.student[i] + "</td>" +
                         "<td class='text-center'>" + stdName[i].nickname + "</td>" +
-                        "<td>" + stdName[i].firstname + "</td>" +
-                        "<td>" + stdName[i].lastname + "</td>" +
+                        "<td class='text-center'>" + stdName[i].firstname + "</td>" +
+                        "<td class='text-center'>" + stdName[i].lastname + "</td>" +
                         "<td class='text-center'>" + grade + "</td>" +
                         "</tr>"
                     )

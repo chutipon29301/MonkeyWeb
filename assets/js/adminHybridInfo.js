@@ -30,11 +30,11 @@ async function getHBData(subj, hbID) {
         let grade = (studentName[i].grade) > 6 ? 'S' + (studentName[i].grade - 6) : 'P' + studentName[i].grade;
         $("#allStudentInHybrid").append(
             "<tr onclick='relocatted(\"" + student[i].studentID + "\")'>" +
-            "<td>" + index + "</td>" +
+            "<td class='text-center'>" + index + "</td>" +
             "<td class='text-center'>" + student[i].studentID + "</td>" +
             "<td class='text-center'>" + studentName[i].nickname + "</td>" +
-            "<td>" + studentName[i].firstname + "</td>" +
-            "<td>" + studentName[i].lastname + "</td>" +
+            "<td class='text-center'>" + studentName[i].firstname + "</td>" +
+            "<td class='text-center'>" + studentName[i].lastname + "</td>" +
             "<td class='text-center'>" + grade + "</td>" +
             "</tr>"
         );
