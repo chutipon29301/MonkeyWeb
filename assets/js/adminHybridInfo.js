@@ -22,11 +22,12 @@ async function getHBData(subj, hbID) {
     student = student.filter(data => data.subject === subj);
     let promise = [];
     for (let i in student) {
-        promise.push(name(student[i].studentID));
+        promise.push(studentProfile(student[i].studentID));
     }
     let studentName = await Promise.all(promise);
     let index = 1;
     for (let i in student) {
+        let grade = (studentName[i].grade) > 6 ? 'S' + (studentName[i].grade - 6) : 'P' + studentName[i].grade;
         $("#allStudentInHybrid").append(
             "<tr onclick='relocatted(\"" + student[i].studentID + "\")'>" +
             "<td>" + index + "</td>" +
@@ -34,6 +35,7 @@ async function getHBData(subj, hbID) {
             "<td class='text-center'>" + studentName[i].nickname + "</td>" +
             "<td>" + studentName[i].firstname + "</td>" +
             "<td>" + studentName[i].lastname + "</td>" +
+            "<td class='text-center'>" + grade + "</td>" +
             "</tr>"
         );
         index += 1;
