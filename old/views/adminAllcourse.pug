@@ -47,22 +47,8 @@ block body
                     .form-group
                         select.form-control#name(onChange="getAllCourseContent()")
                             option(value="all") All Tutor
-                            //- option(value="Anne") Anne
-                            option(value="Atom") Atom
-                            option(value="Bam") Bam
-                            option(value="BB") BB
-                            //- option(value="Beng") Beng
-                            option(value="Chote") Chote
-                            //- option(value="Gag") Gag
-                            option(value="Gui") Gui
-                            option(value="Hybrid") Hybrid
-                            option(value="Paan") Paan
-                            option(value="Pele") Pele
-                            option(value="Pre") Pre
-                            option(value="Tao") Tao
-                            option(value="Ten") Ten
-                            option(value="Third") Third
-                            option(value="Ya") Ya
+                            each i in tutor
+                                option(value=i.nicknameEn)= i.nicknameEn
                 form
                     .form-group
                         select.form-control#time(onChange="getAllCourseContent()")
