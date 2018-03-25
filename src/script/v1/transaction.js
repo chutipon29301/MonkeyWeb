@@ -80,8 +80,10 @@ module.exports = function (app, db, post, io) {
         })
         //check FHB
         let now = req.body.date ? new Date(req.body.date) : new Date()
+        let studentID = parseInt(req.body.studentID)
         try {
-            let config = await configDB.findOne()
+            let [config,student] = await Promise.all([configDB.findOne(),userDB.findOne({_id:parseInt(studentID)})])
+            if(!student) res.status(200).send({type:'error' , msg:'ไม่มีรหัสนักเรียนนี้'})
             let quarter;
             if (now.getDay() > 0 && now.getDay() < 6 && now.getHours() < 16) quarter = config.defaultQuarter.summer;
             else quarter = config.defaultQuarter.quarter;
@@ -101,10 +103,9 @@ module.exports = function (app, db, post, io) {
             if (log) {
                 return res.status(200).send({ type: "error", msg: "รหัสนี้ได้ทำการ Checkout แล้ว" })
             }
-            let studentID = parseInt(req.body.studentID)
-
+            
             //***** check Attendance */
-            let findDate = new Date()
+            let findDate = new Date(now)
             findDate.setHours(checkoutHrs[findDate.getHours()], 0, 0, 0)
             let attend = await attendanceDB.findOne({ userID: studentID, date: findDate.getTime(), type: 2 })
             if (attend) {
@@ -127,7 +128,6 @@ module.exports = function (app, db, post, io) {
                 }
             }
 
-
             for (let i in hybrid) {
                 let hybridTime = new Date(hybrid[i].day)
                 if (hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()) {
@@ -148,7 +148,6 @@ module.exports = function (app, db, post, io) {
                     return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
                 }
             }
-
             // check CR */
 
             for (let i in possibleCourse) {
@@ -165,20 +164,19 @@ module.exports = function (app, db, post, io) {
                     break
                 }
             }
-
             if (now.getDay() % 6 != 0 && (now.getHours()==16 || now.getHours() == 17)) {
                 let timestamp = new Date(now)
                 now.setHours(18)
                 req.body.date = now
-                checkout(req , res , timestamp)
+                checkout(req , res , timestamp , io)
             }else if(now.getDay() % 6 != 0 && now.getHours()>=18){
                 let timestamp = new Date(now)
                 now.setHours(17)
                 req.body.date = now
-                checkout(req , res , timestamp)
+                checkout(req , res , timestamp , io)
             }else res.status(200).send({ type: 'error', msg: 'ไม่มีรหัสนักเรียนนี้ในตาราง' })
         } catch (error) {
-            return res.status(500).send({ err: 500, msg: error.toString() })
+            return res.status(200).send({ type:'error', msg: error.toString() })
         }
 
     })
@@ -724,8 +722,9 @@ function addCheckoutLog(studentID, subject, checkoutDate, recheck, recheckDate) 
     return promise;
 }
 
-async function checkout(req,res,timestamp) {
+async function checkout(req,res,timestamp,io) {
     let now = req.body.date ? new Date(req.body.date) : new Date()
+    let studentID = parseInt(req.body.studentID)
     try {
         let config = await configDB.findOne()
         let quarter;
@@ -747,9 +746,8 @@ async function checkout(req,res,timestamp) {
         if (log) {
             return res.status(200).send({ type: "error", msg: "รหัสนี้ได้ทำการ Checkout แล้ว" })
         }
-        let studentID = parseInt(req.body.studentID)
         //***** check Attendance */
-        let findDate = new Date()
+        let findDate = new Date(now)
         findDate.setHours(checkoutHrs[findDate.getHours()], 0, 0, 0)
         let attend = await attendanceDB.findOne({ userID: studentID, date: findDate.getTime(), type: 2 })
         if (attend) {
@@ -771,7 +769,6 @@ async function checkout(req,res,timestamp) {
 
             }
         }
-
         for (let i in hybrid) {
             let hybridTime = new Date(hybrid[i].day)
             if (hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()) {
@@ -794,7 +791,6 @@ async function checkout(req,res,timestamp) {
         }
 
         // check CR */
-
         for (let i in possibleCourse) {
             let courseDate = new Date(possibleCourse[i].day)
             let courseDay = courseDate.getDay()
@@ -810,7 +806,9 @@ async function checkout(req,res,timestamp) {
             }
         }
 
+        res.status(200).send({type:'error' , msg:'ไม่มีตารางเรียนในเวลานี้ กรุณาติดต่อ Admin'})
+
     } catch (e) {
-        res.status(500).send({type:'error' , msg:'ไม่สามารถ checkout ได้ กรุณาติดต่อ Admin'})
+        res.status(200).send({type:'error' , msg:'ไม่สามารถ checkout ได้ กรุณาติดต่อ Admin'})
     }
 }

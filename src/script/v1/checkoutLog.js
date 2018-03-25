@@ -72,7 +72,7 @@ module.exports = function(app,db,post,io){
             let end = req.body.date?new Date(req.body.date):new Date()
             start.setHours(0,0,0,0)
             end.setHours(23,59,59,999)
-            let time = {8:new Date(start) , 10: new Date(start) , 13: new Date(start) , 15:new Date(start) , 17:new Date(start) , 9:new Date(start) , 11: new Date(start) , 12: new Date(start) , 14:new Date(start) , 16:new Date(start) , 18:new Date(start) , 19:new Date(start) ,20:new Date(start)}
+            let time = {8:new Date(start) , 10: new Date(start) , 13: new Date(start) , 15:new Date(start) , 17:new Date(start) , 9:new Date(start) , 11: new Date(start) , 12: new Date(start) , 14:new Date(start) , 16:new Date(start) , 18:new Date(start) , 19:new Date(start) ,20:new Date(start),21:new Date(start),22:new Date(start),23:new Date(start),24:new Date(start)}
             for(let i in time) time[i].setHours(i);
             let config = await configDB.findOne({})
             let year = Number(config.defaultQuarter.quarter.year)
