@@ -85,14 +85,24 @@ module.exports = function(app,db,post,io){
                 userDB.find({position:"student"}).toArray(),
             ])
             let studentObj = {}
-            for(let i in user) studentObj[user[i]._id] = {firstname:user[i].firstname , lastname:user[i].lastname , nickname:user[i].nickname , grade:((user[i].student.grade>6?'S':'P')+(user[i].student.grade>6?(user[i].student.grade-6):user[i].student.grade))}
+            for(let i in user){
+                studentObj[user[i]._id] = {firstname:user[i].firstname , lastname:user[i].lastname , nickname:user[i].nickname , grade:((user[i].student.grade>6?'S':'P')+(user[i].student.grade>6?(user[i].student.grade-6):user[i].student.grade))}
+                if(user[i].student.quarter.find((e)=> e.year == year && e.quarter == quarter && e.registrationState != 'rejected' && e.status == 'active')){
+                    studentObj[user[i]._id].defaultQuarter = true
+                }else studentObj[user[i]._id].defaultQuarter = false
+                if(user[i].student.quarter.find((e)=> e.year == year && e.quarter == config.defaultQuarter.summer.quarter && e.registrationState != 'rejected' && e.status == 'active')){
+                    studentObj[user[i]._id].defaultSummer = true
+                }else studentObj[user[i]._id].defaultSummer = false
+            }
             let checkoutObj = {8:checkout[0] , 10:checkout[1] , 13:checkout[2] , 15:checkout[3] , 17:checkout[4]}
             let attendanceObj ={8:attendance[0] , 10:attendance[1] , 13:attendance[2] , 15:attendance[3] , 17:attendance[4]}
             let student = {8:[] , 10:[] , 13:[] , 15:[] , 17:[]}
             for(let i in fhb){
                 fhb[i].day = new Date(fhb[i].day)
                 if(fhb[i].day.getDay() == start.getDay() || (fhb[i].day.getDay() == 1 && start.getDay()%6!=0 && config.inSummer)){
-                    student[fhb[i].day.getHours()] = student[fhb[i].day.getHours()].concat(fhb[i].student.map((e)=>{
+                    student[fhb[i].day.getHours()] = student[fhb[i].day.getHours()].concat(fhb[i].student.filter(e=>{
+                        return studentObj[e.studentID].defaultQuarter
+                    }).map((e)=>{
                         e.type = "fhb"
                         let findCheckout = checkoutObj[fhb[i].day.getHours()].find(check=>{return check.studentID == e.studentID && check.subject == e.subject})
                         if(findCheckout){
@@ -127,7 +137,10 @@ module.exports = function(app,db,post,io){
             for(let i in course){
                 course[i].day = new Date(course[i].day)
                 if(course[i].day.getDay() == start.getDay() || (course[i].day.getDay() == 1 && start.getDay()%6!=0 && config.inSummer)){
-                    student[course[i].day.getHours()] = student[course[i].day.getHours()].concat(course[i].student.map((studentID)=>{
+                    student[course[i].day.getHours()] = student[course[i].day.getHours()].concat(course[i].student.filter(e=>{
+                        if(course[i].quarter > 10) return studentObj[e].defaultSummer
+                        else return studentObj[e].defaultQuarter
+                    }).map((studentID)=>{
                         let e = {studentID:studentID}
                         e.subject = course[i].subject
                         e.type = "cr"
