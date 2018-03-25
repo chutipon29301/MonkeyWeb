@@ -25,6 +25,7 @@ if (crCookie === undefined) {
         Promise.all(promise).then(stdName => {
             let index = 1;
             for (let i in stdName) {
+                let grade = stdName[i].grade > 6 ? 'S' + (stdName[i].grade - 6) : 'P' + stdName[i].grade;
                 if (stdName[i].status == "active") {
                     $("#allStudentInCourseTable").append(
                         "<tr class='std-row' id='" + crInfo.student[i] + "'>" +
@@ -33,6 +34,7 @@ if (crCookie === undefined) {
                         "<td class='text-center'>" + stdName[i].nickname + "</td>" +
                         "<td>" + stdName[i].firstname + "</td>" +
                         "<td>" + stdName[i].lastname + "</td>" +
+                        "<td class='text-center'>" + grade + "</td>" +
                         "</tr>"
                     )
                     index += 1;

@@ -100,6 +100,22 @@ async function genRoom() {
                             "</tr>"
                         );
                     }
+                    if (room.hybrid[k].numChemistry !== undefined) {
+                        $("#" + i + j).append(
+                            "<tr class='table-info hbRow' id='c" + room.hybrid[k].hybridID + "'>" +
+                            "<td class='text-left'>FHB:C</td>" +
+                            "<td class='text-right'>" + room.hybrid[k].numChemistry + "</td>" +
+                            "</tr>"
+                        );
+                    }
+                    if (room.hybrid[k].numEnglish !== undefined) {
+                        $("#" + i + j).append(
+                            "<tr class='table-active hbRow' id='e" + room.hybrid[k].hybridID + "'>" +
+                            "<td class='text-left'>FHB:E</td>" +
+                            "<td class='text-right'>" + room.hybrid[k].numEnglish + "</td>" +
+                            "</tr>"
+                        );
+                    }
                 }
             }
             if (room.course !== undefined) {
