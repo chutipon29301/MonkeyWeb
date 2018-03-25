@@ -87,10 +87,10 @@ module.exports = function(app,db,post,io){
             let studentObj = {}
             for(let i in user){
                 studentObj[user[i]._id] = {firstname:user[i].firstname , lastname:user[i].lastname , nickname:user[i].nickname , grade:((user[i].student.grade>6?'S':'P')+(user[i].student.grade>6?(user[i].student.grade-6):user[i].student.grade))}
-                if(user[i].student.quarter.find((e)=> e.year == year && e.quarter == quarter && e.registrationState != 'rejected' && e.status == 'active')){
+                if(user[i].student.quarter.find((e)=> e.year == year && e.quarter == quarter && e.registrationState != 'rejected' && user[i].student.status == 'active')){
                     studentObj[user[i]._id].defaultQuarter = true
                 }else studentObj[user[i]._id].defaultQuarter = false
-                if(user[i].student.quarter.find((e)=> e.year == year && e.quarter == config.defaultQuarter.summer.quarter && e.registrationState != 'rejected' && e.status == 'active')){
+                if(user[i].student.quarter.find((e)=> e.year == year && e.quarter == config.defaultQuarter.summer.quarter && e.registrationState != 'rejected' && user[i].student.status == 'active')){
                     studentObj[user[i]._id].defaultSummer = true
                 }else studentObj[user[i]._id].defaultSummer = false
             }
