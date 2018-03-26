@@ -14,13 +14,13 @@ let IOSTokenSchema = new Schema({
     userID: Number
 });
 
-export let IOSTokenModel = mongoose.model<IOSToken>('IOSToken', IOSTokenSchema, 'deviceToken');
+export let IOSTokenModel = mongoose.model<IOSToken>("IOSToken", IOSTokenSchema,"deviceToken");
 
 export class IOSTokenManager {
     static addToken(token: string, userID: number): Observable<IOSToken> {
         let deviceToken = new IOSTokenModel({
             _id: token,
-            device: 'iOS',
+            device: "iOS",
             userID: userID
         });
         return Observable.fromPromise(deviceToken.save());
@@ -53,7 +53,6 @@ export class IOSNotificationManager {
         } catch (error) {
             console.log(error);
         }
-
     }
 
     public static getInstance(): IOSNotificationManager {
@@ -63,14 +62,14 @@ export class IOSNotificationManager {
     public send(userID: number, msg: string): Observable<any> {
         return IOSTokenManager.getUserToken(userID).flatMap(tokens => {
             var notification = new this.apn.Notification();
-            notification.topic = 'com.monkey-monkey.tutor';
-            notification.expiry = Math.floor(Date.now() / 1000) + 86400;
-            notification.badge = 1;
-            notification.sound = 'ping.aiff';
-            notification.alert = msg;
-            notification.payload = {
-                id: 123
-            };
+                notification.topic = "com.monkey-monkey.tutor";
+                notification.expiry = Math.floor(Date.now() / 1000) + 86400;
+                notification.badge = 1;
+                notification.sound = "ping.aiff";
+                notification.alert = msg;
+                notification.payload = {
+                    id: 123
+                };
             return Observable.fromPromise(mongoose.Promise.all(tokens.map(token => {
                 return this.provider.send(notification, token._id);
             })));

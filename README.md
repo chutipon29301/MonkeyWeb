@@ -205,9 +205,96 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 	This function is use for wdit the title of the task, only head task can be send into this function
 
 	
+#### Slideshow
+- Function using for manage the slide show image
+- This API need authentication with username and password
 
+- Add
 
+	This function add the image to the database and save it in the storage
 
+	- request path `/v2/slideshow/add`
+	- request body
+		```javascript
+		req.body = {
+			type: 0, /* [0, 1, 2] = ['news', 'student_portait', 'student_landscape'] */
+			date: 'Date string'
+		}
+		```
+	- response body
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
+- Remove
+
+	This function is used of remove image file and delete on database
+
+	- request path `/v2/slideshow/remove`
+	- request body
+		```javascript
+		req.body = {
+			fileName: 'v4ouwaouw4bgfyuwbfo8w27r3w4',
+			date: 'Date string'
+		}
+		```
+	- response body
+		```javascript
+		res.body = {
+			 msg: 'OK'
+		}
+		```
+
+- List/ListAll
+
+	This function list all the visilbe image object in the specify range
+
+	- request path `/v2/slideshow/list`, `/v2/slideshow/listAll`
+	- request body
+		```javascript
+		req.body = {
+			startDate: 'Date string',
+			endDate: 'Date string'
+		}
+		```
+	- response body
+		```javascript
+		res.body = {
+			image: [
+				{
+					date: 'Date string',
+        			fileName: 'File name',
+        			path: 'File path',
+        			type: 0,
+					visible: false,
+					link: 'link'
+				}
+			]
+		}
+		```
+- ToggleVisible
+
+	This function is used for change the visible field og the image
+
+	- request path `/v2/slideshow/toggle/Visible`
+	- request body
+		```javascript
+		req.body = {
+			fileName: 'File name',
+			date: 'Date string',
+			visible: true
+		}
+		``` 
+	- response body
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
+		
 ### Phase I
 ~~Under construction.~~
 ## TODO

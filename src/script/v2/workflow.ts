@@ -1,23 +1,24 @@
-import { Router } from 'express';
-import { WorkflowManager, Status, BodyNode, HeaderNode } from './classes/WorkflowManager';
-import { Constant } from './classes/Constants';
-import { Observable } from 'rx';
+import { Router } from "express";
+import { WorkflowManager, Status, BodyNode, HeaderNode } from "./classes/WorkflowManager";
+import { Constant } from "./classes/Constants";
+import { Observable } from "rx";
 import * as _ from "lodash";
-import { IOSNotificationManager } from './classes/NotificationManager';
+import { IOSNotificationManager } from "./classes/NotificationManager";
+import { UserManager } from "./classes/UserManager";
 
 export const router = Router();
 
-router.all('*', (req, res, next) => {
-    let positionArray = ['tutor', 'admin', 'dev', 'mel'];
-    if (positionArray.indexOf(req.user.position) === -1) return res.render('404');
+router.all("*", (req, res, next) => {
+    let positionArray = ["tutor", "admin", "dev", "mel"];
+    if (positionArray.indexOf(req.user.position) === -1) return res.render("404");
     next();
 });
 
-router.post('/add', (req, res) => {
+router.post("/add", (req, res) => {
     if (!(req.body.title && req.body.subtitle && req.body.detail)) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
     let duedate: Date;
@@ -35,22 +36,22 @@ router.post('/add', (req, res) => {
         duedate
     ).subscribe(node => {
         return res.status(200).send({
-            msg: 'OK'
+            msg: "OK"
         });
     });
 });
 
-router.post('/delete', (req, res) => {
+router.post("/delete", (req, res) => {
     if (!(req.body.workflowID)) {
         return res.status(400).send({
             err: 0,
-            msg: 'OK'
+            msg: "OK"
         });
     }
     WorkflowManager.deleteWorkflow(req.user._id, req.body.workflowID).subscribe(
         _ => {
             return res.status(200).send({
-                msg: 'OK'
+                msg: "OK"
             });
         }, err => {
             return res.status(500).send({
@@ -61,11 +62,11 @@ router.post('/delete', (req, res) => {
     );
 });
 
-router.post('/editHeader', (req, res) => {
+router.post("/editHeader", (req, res) => {
     if (!(req.body.workflowID && req.body.title)) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
     WorkflowManager.editHeader(
@@ -75,21 +76,21 @@ router.post('/editHeader', (req, res) => {
     ).subscribe(result => {
         if (result.nModified === 0) {
             return res.status(202).send({
-                msg: 'Not Modified'
+                msg: "Not Modified"
             });
         } else {
             return res.status(200).send({
-                msg: 'OK'
+                msg: "OK"
             });
         }
     });
 });
 
-router.post('/editHeader', (req, res) => {
+router.post("/editHeader", (req, res) => {
     if (!(req.body.workflowID && req.body.title)) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
     WorkflowManager.editHeader(
@@ -98,23 +99,23 @@ router.post('/editHeader', (req, res) => {
         req.body.title
     ).subscribe(node => {
         return res.status(200).send({
-            msg: 'OK'
+            msg: "OK"
         });
     });
 });
 
-router.post('/editNode', (req, res) => {
+router.post("/editNode", (req, res) => {
     if (!(req.body.workflowID && (req.body.subtitle || req.body.duedate))) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
     let subtitle: string;
     let duedate: Date;
 
     if (req.body.subtitle) subtitle = req.body.subtitle;
-    else subtitle = '';
+    else subtitle = "";
 
     if (req.body.duedate) duedate = new Date(req.body.duedate);
     else duedate = null;
@@ -127,22 +128,22 @@ router.post('/editNode', (req, res) => {
     ).subscribe(result => {
         if (result.nModified === 0) {
             return res.status(202).send({
-                msg: 'Not Modified'
+                msg: "Not Modified"
             });
         } else {
             return res.status(200).send({
-                msg: 'Ok'
+                msg: "Ok"
             });
         }
     })
 });
 
 
-router.post('/assign', (req, res) => {
+router.post("/assign", (req, res) => {
     if (!(req.body.workflowID && req.body.owner)) {
         return res.status(200).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
 
@@ -169,58 +170,64 @@ router.post('/assign', (req, res) => {
             req.user._id,
             node._id,
             req.body.owner,
-            '',
-            '',
+            "",
+            "",
             Status.TODO
         )
+    }).flatMap(node => {
+        return UserManager.getTutorInfo(req.user._id);
+    }).flatMap(tutor => {
+        return IOSNotificationManager.getInstance().send(req.body.owner, tutor.nicknameEn + " assign you a task");
     }).subscribe(node => {
-        // TODO: Handle notification event
         return res.status(200).send({
-            msg: 'OK'
+            msg: "OK"
         });
     });
+    
+    
+    
 });
 
-router.post('/addChild', (req, res) => {
-    if (!(req.body.workflowID && req.body.owner)) {
-        return res.status(400).send({
-            err: 0,
-            msg: 'Bad Request'
-        });
-    }
+// router.post("/addChild", (req, res) => {
+//     if (!(req.body.workflowID && req.body.owner)) {
+//         return res.status(400).send({
+//             err: 0,
+//             msg: "Bad Request"
+//         });
+//     }
 
-    let subtitle: string;
-    let detail: string;
-    let duedate: Date;
+//     let subtitle: string;
+//     let detail: string;
+//     let duedate: Date;
 
-    if (req.body.subtitle) subtitle = req.body.subtitle;
-    if (req.body.detail) detail = req.body.detail;
-    if (req.body.duedate) duedate = new Date(req.body.duedate);
+//     if (req.body.subtitle) subtitle = req.body.subtitle;
+//     if (req.body.detail) detail = req.body.detail;
+//     if (req.body.duedate) duedate = new Date(req.body.duedate);
 
-    WorkflowManager.getNode(req.body.workflowID).flatMap(parent => {
-        if (parent.status !== Status.ASSIGN) throw Observable.throw(new Error('annot add child to non-assign status node'));
-        return WorkflowManager.addNode(
-            req.user._id,
-            parent._id,
-            req.body.owner,
-            subtitle,
-            detail,
-            Status.TODO,
-            duedate
-        );
-    }).subscribe(node => {
-        // TODO: Handle notification event
-        return res.status(200).send({
-            msg: 'OK'
-        });
-    });
-});
+//     WorkflowManager.getNode(req.body.workflowID).flatMap(parent => {
+//         if (parent.status !== Status.ASSIGN) throw Observable.throw(new Error("Cannot add child to non-assign status node"));
+//         return WorkflowManager.addNode(
+//             req.user._id,
+//             parent._id,
+//             req.body.owner,
+//             subtitle,
+//             detail,
+//             Status.TODO,
+//             duedate
+//         );
+//     }).subscribe(node => {
+//         // TODO: Handle notification event
+//         return res.status(200).send({
+//             msg: "OK"
+//         });
+//     });
+// });
 
-router.post('/inProgress', (req, res) => {
+router.post("/inProgress", (req, res) => {
     if (!req.body.workflowID) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
 
@@ -229,22 +236,26 @@ router.post('/inProgress', (req, res) => {
             req.user._id,
             parent._id,
             req.user._id,
-            '', '',
+            "", "",
             Status.IN_PROGRESS
         );
+    }).flatMap(node => {
+        return WorkflowManager.getParentNode(node._id);
+    }).flatMap(node => {
+        return IOSNotificationManager.getInstance().send(node.owner.valueOf(), req.user.nicknameEn + " change task status to in progress.");
     }).subscribe(node => {
-        // TODO: Handle notification event
+        // TODO: Test function
         return res.status(200).send({
-            msg: 'OK'
+            msg: "OK"
         });
     });
 });
 
-router.post('/todo', (req, res) => {
+router.post("/todo", (req, res) => {
     if (!req.body.workflowID) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bar Request'
+            msg: "Bar Request"
         });
     }
 
@@ -253,22 +264,26 @@ router.post('/todo', (req, res) => {
             req.user._id,
             parent._id,
             req.user._id,
-            '', '',
+            "", "",
             Status.TODO
         );
+    }).flatMap(node => {
+        return WorkflowManager.getParentNode(node._id);
+    }).flatMap(node => {
+        return IOSNotificationManager.getInstance().send(node.owner.valueOf(), req.user.nicknameEn + " change task status to in progress.");
     }).subscribe(node => {
-        // TODO: Handle notification event
+        // TODO: Test function
         return res.status(200).send({
-            msg: 'OK'
+            msg: "OK"
         });
     });
 });
 
-// router.post('/done', (req, res) => {
+// router.post("/done", (req, res) => {
 //     if (!req.body.workflowID) {
 //         return res.status(400).send({
 //             err: 0,
-//             msg: 'Bad Request'
+//             msg: "Bad Request"
 //         });
 //     }
 //     let userID: Number;
@@ -278,7 +293,7 @@ router.post('/todo', (req, res) => {
 //     //         req.user._id,
 //     //         node._id,
 //     //         req.user._id,
-//     //         '',
+//     //         "",
 //     //         Status.DONE
 //     //     );
 //     // }).then(node => {
@@ -286,18 +301,18 @@ router.post('/todo', (req, res) => {
 //     //         req.user._id,
 //     //         node._id,
 //     //         userID as number,
-//     //         '',
+//     //         "",
 //     //         Status.TODO
 //     //     )
 //     // });
 
 // });
 
-router.post('/getChild', (req, res) => {
+router.post("/getChild", (req, res) => {
     if (!req.body.workflowID) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
     WorkflowManager.getChildNode(req.body.workflowID).subscribe(nodes => {
@@ -307,11 +322,11 @@ router.post('/getChild', (req, res) => {
     });
 });
 
-router.post('/getTree', (req, res) => {
+router.post("/getTree", (req, res) => {
     if (!req.body.workflowID) {
         return res.status(400).send({
             err: 0,
-            msg: 'Bad Request'
+            msg: "Bad Request"
         });
     }
     WorkflowManager.getTree(req.body.workflowID).subscribe(nodes => {
@@ -321,14 +336,14 @@ router.post('/getTree', (req, res) => {
     });
 });
 
-router.post('/getNode', (req, res) => {
+router.post("/getNode", (req, res) => {
     let allNode: BodyNode[] = [];
     let headerNode: HeaderNode[] = [];
     WorkflowManager.getUserWorkflow(req.user._id).subscribe(nodes => {
         let node = _.last(nodes);
         for (let i = 0; i < nodes.length - 1; i++) {
-            if (nodes[i].detail === '') continue;
-            node.detail = nodes[i].detail + '\n' + node.detail;
+            if (nodes[i].detail === "") continue;
+            node.detail = nodes[i].detail + "\n" + node.detail;
         }
         allNode.push(node)
     }, err => {
@@ -365,8 +380,11 @@ router.post('/getNode', (req, res) => {
     });
 });
 
-router.post('/test', (req, res) => {
-    IOSNotificationManager.getInstance().send(99009, 'Hello World').subscribe(result => {
-        res.status(200).send(result);
+router.post("/test", (req, res) => {
+    WorkflowManager.getParentNode("5ab529c3f044fa18e6b6526d").subscribe(node => {
+        return res.status(200).send(node);
+    }, err => {
+        return res.status(500).send(err);
+    }, () => {
     });
 });

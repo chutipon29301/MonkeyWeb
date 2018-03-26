@@ -84,8 +84,8 @@ let tutorSchema = new Schema({
     subPosition: String
 });
 
-export let StudentModel = mongoose.model<Student>('Student', studentSchema, 'user');
-export let TutorModel = mongoose.model<Tutor>('Tutor', tutorSchema, 'user');
+export let StudentModel = mongoose.model<Student>("Student", studentSchema, "user");
+export let TutorModel = mongoose.model<Tutor>("Tutor", tutorSchema, "user");
 
 
 export class UserManager {

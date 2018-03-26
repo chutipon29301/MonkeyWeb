@@ -1,6 +1,6 @@
 import { Schema, Model, Document, Mongoose, connect, connection } from "mongoose";
 import * as mongoose from "mongoose";
-import { Constant } from "./Constants";
+import { Constant, UpdateResponse } from "./Constants";
 import * as _ from "lodash";
 import { Observable } from "rx";
 
@@ -12,13 +12,13 @@ import { Observable } from "rx";
  * @enum {number}
  */
 export enum Status {
-    NONE = 'none',
-    NOTE = 'note',
-    TODO = 'todo',
-    IN_PROGRESS = 'inprogress',
-    ASSIGN = 'assign',
-    DONE = 'done',
-    COMPLETE = 'complete'
+    NONE = "none",
+    NOTE = "note",
+    TODO = "todo",
+    IN_PROGRESS = "inprogress",
+    ASSIGN = "assign",
+    DONE = "done",
+    COMPLETE = "complete"
 }
 
 /**
@@ -61,15 +61,6 @@ export interface BodyNode extends Node {
     detail: String,
     parent: Schema.Types.ObjectId,
     ancestors: [Schema.Types.ObjectId]
-}
-
-/**
- * Declare response interface
- */
-export interface UpdateResponse {
-    n: number,
-    nModified: number,
-    ok: number
 }
 
 /**
@@ -120,8 +111,8 @@ let nodeSchema = new Schema({
 /**
  * Create model from schema
  */
-export let HeaderModel = mongoose.model<HeaderNode>('Header', headerSchema, 'workflow');
-export let NodeModel = mongoose.model<BodyNode>('Node', nodeSchema, 'workflow');
+export let HeaderModel = mongoose.model<HeaderNode>("Header", headerSchema, "workflow");
+export let NodeModel = mongoose.model<BodyNode>("Node", nodeSchema, "workflow");
 
 /**
  * Class provide method for handle all workflow database operation
@@ -155,7 +146,7 @@ export class WorkflowManager {
         let workflowDuedate: Date;
 
         if (tag) workflowTag = tag;
-        else workflowTag = 'Other';
+        else workflowTag = "Other";
 
         if (duedate) workflowDuedate = duedate;
         else workflowDuedate = null;
@@ -191,7 +182,7 @@ export class WorkflowManager {
      * @memberof WorkflowManager
      */
     static editHeader(userID: number, workflowID: string | mongoose.Types.ObjectId, title: string): Observable<UpdateResponse> {
-        if (typeof workflowID === 'string') workflowID = new mongoose.Types.ObjectId(workflowID);
+        if (typeof workflowID === "string") workflowID = new mongoose.Types.ObjectId(workflowID);
         return Observable.fromPromise(
             HeaderModel.updateOne({
                 _id: workflowID
@@ -215,7 +206,7 @@ export class WorkflowManager {
      */
     static deleteWorkflow(userID: number, workflowID: string | mongoose.Types.ObjectId): Observable<UpdateResponse[]> {
         return this.getHeader(workflowID).flatMap(header => {
-            if (header === null) throw Observable.throw(new Error('Header not found'));
+            if (header === null) throw Observable.throw(new Error("Header not found"));
             return Observable.zip(
                 Observable.fromPromise(HeaderModel.deleteOne({
                     _id: header._id
@@ -246,7 +237,7 @@ export class WorkflowManager {
 
         if (subtitle) newValue.subtitle = subtitle;
         if (duedate) newValue.duedate = duedate;
-        if (typeof workflowID === 'string') workflowID = new mongoose.Types.ObjectId(workflowID);
+        if (typeof workflowID === "string") workflowID = new mongoose.Types.ObjectId(workflowID);
 
         return Observable.fromPromise(
             NodeModel.updateOne({
@@ -314,15 +305,15 @@ export class WorkflowManager {
      * @memberof WorkflowManager
      */
     static getNode(workflowID: string | mongoose.Types.ObjectId, userID?: number): Observable<BodyNode> {
-        if (typeof workflowID === 'string') workflowID = new mongoose.Types.ObjectId(workflowID);
+        if (typeof workflowID === "string") workflowID = new mongoose.Types.ObjectId(workflowID);
         let query: {
             _id: mongoose.Types.ObjectId,
             header: boolean,
             userID?: number
         } = {
-            _id: workflowID,
-            header: false
-        }
+                _id: workflowID,
+                header: false
+            }
         if (userID) query.userID = userID;
         return Observable.fromPromise(NodeModel.findOne(query));
     }
@@ -336,16 +327,16 @@ export class WorkflowManager {
      * @memberof WorkflowManager
      */
     static getHeader(workflowID: string | mongoose.Types.ObjectId, userID?: number): Observable<HeaderNode> {
-        if (typeof workflowID === 'string') workflowID = new mongoose.Types.ObjectId(workflowID);
+        if (typeof workflowID === "string") workflowID = new mongoose.Types.ObjectId(workflowID);
         console.log(workflowID);
         let query: {
             _id: mongoose.Types.ObjectId,
             header: boolean,
             userID?: number
         } = {
-            _id: workflowID,
-            header: true
-        }
+                _id: workflowID,
+                header: true
+            }
         if (userID) query.userID;
         return Observable.fromPromise(HeaderModel.findOne(query));
     }
@@ -359,7 +350,7 @@ export class WorkflowManager {
      * @memberof WorkflowManager
      */
     static getChildNode(workflowID: string | mongoose.Types.ObjectId): Observable<BodyNode[]> {
-        if (typeof workflowID === 'string') workflowID = new mongoose.Types.ObjectId(workflowID);
+        if (typeof workflowID === "string") workflowID = new mongoose.Types.ObjectId(workflowID);
         return Observable.fromPromise(NodeModel.find({
             ancestors: workflowID
         }));
@@ -418,6 +409,19 @@ export class WorkflowManager {
             return userNode;
         }).flatMap(nodes => {
             return this.getTree(nodes._id)
+        });
+    }
+
+    static getParentNode(workflowID: string | mongoose.Types.ObjectId): Observable<BodyNode> {
+        return this.getTree(workflowID).flatMap(nodes => {
+            let index = _.findIndex(nodes, o => o._id == workflowID);
+            let referenceID = nodes[index].owner;
+            for (let i = index; i > 0; i--) {
+                if (nodes[i].owner != referenceID) {
+                    return [nodes[i]];
+                }
+            }
+            throw Observable.throw(new Error("Parent node not found"));
         });
     }
 }
