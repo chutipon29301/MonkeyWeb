@@ -14,13 +14,13 @@ let IOSTokenSchema = new Schema({
     userID: Number
 });
 
-export let IOSTokenModel = mongoose.model<IOSToken>('IOSToken', IOSTokenSchema,'deviceToken');
+export let IOSTokenModel = mongoose.model<IOSToken>("IOSToken", IOSTokenSchema,"deviceToken");
 
 export class IOSTokenManager {
     static addToken(token: string, userID: number): Observable<IOSToken> {
         let deviceToken = new IOSTokenModel({
             _id: token,
-            device: 'iOS',
+            device: "iOS",
             userID: userID
         });
         return Observable.fromPromise(deviceToken.save());
@@ -39,13 +39,13 @@ export class IOSNotificationManager {
     private provider: any;
     private apn: any;
     private constructor() {
-        this.apn = require('apn');
-        var keyPath = __dirname.substring(0, __dirname.indexOf('script')) + 'key/MonkeyTutorNotification.p8';
+        this.apn = require("apn");
+        var keyPath = __dirname.substring(0, __dirname.indexOf("script")) + "key/MonkeyTutorNotification.p8";
         this.provider = new this.apn.Provider({
             token: {
                 key: keyPath,
-                keyId: 'GPJR9B9WJ6',
-                teamId: 'S4F5J66T3H'
+                keyId: "GPJR9B9WJ6",
+                teamId: "S4F5J66T3H"
             },
             production: false
         });
@@ -58,10 +58,10 @@ export class IOSNotificationManager {
     public send(userID: number, msg: string): Observable<any> {
         return IOSTokenManager.getUserToken(userID).flatMap(tokens => {
             var notification = new this.apn.Notification();
-                notification.topic = 'com.monkey-monkey.tutor';
+                notification.topic = "com.monkey-monkey.tutor";
                 notification.expiry = Math.floor(Date.now() / 1000) + 86400;
                 notification.badge = 1;
-                notification.sound = 'ping.aiff';
+                notification.sound = "ping.aiff";
                 notification.alert = msg;
                 notification.payload = {
                     id: 123

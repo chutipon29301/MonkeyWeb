@@ -1,4 +1,16 @@
+import * as multer from "multer";
+
 export abstract class Constant{
-    public static DB_PATH = 'mongodb://127.0.0.1:27017/monkeyDB';
+    public static Multer = multer({ dest: "/tmp/" });
 }
+
+/**
+ * Declare response interface
+ */
+export interface UpdateResponse {
+    n: number,
+    nModified: number,
+    ok: number
+}
+
 
