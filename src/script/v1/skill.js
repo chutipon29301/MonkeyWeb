@@ -1,7 +1,7 @@
-var ObjectID=require("mongodb").ObjectID;
+var ObjectID = require("mongodb").ObjectID;
 
 module.exports = function (app, db, post) {
-
+    var configDB = db.collection('config');
     var quarterDB = db.collection('quarter');
     var studentSkillDB = db.collection('skillStudent');
 
@@ -82,7 +82,7 @@ module.exports = function (app, db, post) {
         }).then(data => {
             studentSkillDB.find({
                 quarterID: data._id
-            }).toArray(function (err, result) {
+            }).sort({ day: 1 }).toArray(function (err, result) {
                 if (err) {
                     res.status(500).send({
                         err: 0,
@@ -224,4 +224,17 @@ module.exports = function (app, db, post) {
             });
         });
     });
+    // post('/post/v1/allSkill', async function (req, res) {
+    //     let config = await configDB.findOne({});
+    //     let year;
+    //     let quarter;
+    //     if (req.year === undefined || req.quarter === undefined) {
+    //         year = config.defaultQuarter.quarter.year;
+    //         quarter = config.defaultQuarter.quarter.quarter;
+    //     } else {
+    //         year = req.year;
+    //         quarter = req.quarter;
+    //     }
+
+    // });
 }

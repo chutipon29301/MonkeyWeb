@@ -41,6 +41,13 @@ html(lang="en")
                                 +navLink("adminAllCourse","My Course")
                             else
                                 +navLink("adminAllCourse","All Course")
+                            if(webUser.position!="tutor")
+                                +navLink("adminAllskill","All Skill")
+                                //- li.nav-item.dropdown
+                                //-     a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") FHB&SK 
+                                //-     .dropdown-menu(aria-labelledby="navbarDropdown")
+                                //-         a.dropdown-item(href="#") FHB
+                                //-         a.dropdown-item(href="/adminAllskill") Skill
                             +navLink("tutorCommentStudent","Comments")
                             li.nav-item.dropdown
                                 a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") CR 

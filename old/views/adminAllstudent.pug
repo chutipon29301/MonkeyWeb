@@ -15,13 +15,13 @@ block body
                         label
                             span.fa.fa-lg.fa-th-large &nbsp;
                             |Quarter
-                        select.form-control#quarter(onChange="quarterChange()")
+                        select.custom-select#quarter(onChange="quarterChange()")
                 form
                     .form-group
                         label
                             span.fa.fa-lg.fa-filter &nbsp;
                             |Filter
-                        select.form-control#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
+                        select.custom-select#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
                             option(value="default") Default
                             option(value="active") Active
                             option(value="inactive") Inactive
@@ -30,10 +30,10 @@ block body
                             option(value="all") All
                 form
                     .form-group
-                        select.form-control#stage(onChange="registrationStateChange()")
+                        select.custom-select#stage(onChange="registrationStateChange()")
                 form
                     .form-group
-                        select.form-control#grade(onChange="getAllStudentContent()")
+                        select.custom-select#grade(onChange="getAllStudentContent()")
                             option(value="all") All Grade
                             option(value="1") P1
                             option(value="2") P2
@@ -49,7 +49,7 @@ block body
                             option(value="12") S6
                 form
                     .form-group
-                        select.form-control#course(onChange="getAllStudentContent()")
+                        select.custom-select#course(onChange="getAllStudentContent()")
                             option(value="all" ) CR &amp; FHB
                             option(value="cr") CR
                             option(value="hb") FHB

@@ -3,6 +3,7 @@ module.exports = function (app, db, pasport) {
     require('typescript-require');
     var ObjectId = require('mongodb').ObjectID;
     var chalk = require("chalk");
+    // var cookieParser = require("cookie-parser");
     var moment = require("moment");
     var path = require("path");
     var userDB = db.collection("user");
@@ -516,6 +517,131 @@ module.exports = function (app, db, pasport) {
             config: await configDB.findOne({})
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminHybridInfo', local)
+        else return404(req, res)
+    })
+    app.get("/adminAllskill", auth.isLoggedIn, async function (req, res) {
+        let [config, allQ] = await Promise.all([
+            configDB.findOne({}),
+            quarterDB.find({}, { year: 1, quarter: 1, name: 1 }).sort({ _id: 1 }).toArray()
+        ]);
+        let year;
+        let quarter;
+        if (req.cookies.monkeyWebSelectedQuarter === undefined) {
+            year = config.defaultQuarter.quarter.year;
+            quarter = config.defaultQuarter.quarter.quarter;
+        } else {
+            year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
+            quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        }
+        let selectedQ = year + '-' + quarter;
+        let allSk = await skillDB.find({
+            quarterID: year + ((quarter < 10) ? '0' + quarter : '' + quarter)
+        }).sort({ day: 1 }).toArray();
+        let newAllSk = [];
+        for (let i in allSk) {
+            let math = 0;
+            let eng = 0;
+            let t = moment(allSk[i].day).format('dddd HH:mm');
+            for (let j in allSk[i].student) {
+                if (allSk[i].student[j].subject.toLowerCase() === 'm') {
+                    math += 1;
+                } else if (allSk[i].student[j].subject.toLowerCase() === 'e') {
+                    eng += 1;
+                } else {
+                    math += 1;
+                    eng += 1;
+                }
+            }
+            newAllSk.push({
+                ID: allSk[i]._id,
+                day: t,
+                student: math,
+                subject: 'M'
+            });
+            newAllSk.push({
+                ID: allSk[i]._id,
+                day: t,
+                student: eng,
+                subject: 'E'
+            });
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            quarterList: allQ,
+            selectedQuarter: selectedQ,
+            skillList: newAllSk
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllskill', local)
+        else return404(req, res)
+    })
+    app.get("/adminSkillInfo", auth.isLoggedIn, async function (req, res) {
+        let config;
+        let skInfo;
+        if (req.cookies.monkeySelectedSkill === undefined) {
+            res.redirect('/adminAllskill');
+        } else {
+            let skID = req.cookies.monkeySelectedSkill.slice(0, -1);
+            [config, skInfo] = await Promise.all([
+                configDB.findOne({}),
+                skillDB.findOne({ _id: ObjectId(skID) })
+            ]);
+        }
+        let promise1 = [];
+        let promise2 = [];
+        let promise3 = [];
+        let year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
+        let quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        for (let i in skInfo.student) {
+            if (skInfo.student[i].subject === "ME" || skInfo.student[i].subject === req.cookies.monkeySelectedSkill.slice(-1)) {
+                promise1.push(userDB.findOne({ _id: skInfo.student[i].studentID, position: 'student' }, {
+                    nickname: 1,
+                    firstname: 1,
+                    'student.grade': 1
+                }));
+                promise2.push(courseDB.findOne({
+                    year: year,
+                    quarter: quarter,
+                    student: skInfo.student[i].studentID
+                }, { _id: 1 }));
+                promise3.push(hybridDB.findOne({
+                    quarterID: year + '' + ((quarter > 10) ? quarter : '0' + quarter),
+                    student: { $elemMatch: { studentID: skInfo.student[i].studentID } }
+                }, { _id: 1 }))
+            }
+        }
+        let [userInfo, crInfo, hbInfo] = await Promise.all([
+            Promise.all(promise1),
+            Promise.all(promise2),
+            Promise.all(promise3)
+        ]);
+        for (let i = 0; i < userInfo.length; i++) {
+            userInfo[i].grade = userInfo[i].student.grade;
+            delete userInfo[i].student;
+            userInfo[i].hasCR = (crInfo[i] === null ? false : true);
+            userInfo[i].hasHB = (hbInfo[i] === null ? false : true);
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            skInfo: {
+                skillID: skInfo._id,
+                subject: req.cookies.monkeySelectedSkill.slice(-1),
+                day: moment(skInfo.day).format('dddd HH:mm')
+            },
+            skStd: userInfo
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminSkillInfo', local)
         else return404(req, res)
     })
     app.get("/tutorCommentStudent", auth.isLoggedIn, async function (req, res) {
