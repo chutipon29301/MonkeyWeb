@@ -32,10 +32,10 @@ async function getHBData(subj, hbID) {
             "<tr onclick='relocatted(\"" + student[i].studentID + "\")'>" +
             "<td class='text-center'>" + index + "</td>" +
             "<td class='text-center'>" + student[i].studentID + "</td>" +
+            "<td class='text-center'>" + grade + "</td>" +
             "<td class='text-center'>" + studentName[i].nickname + "</td>" +
             "<td class='text-center'>" + studentName[i].firstname + "</td>" +
             "<td class='text-center'>" + studentName[i].lastname + "</td>" +
-            "<td class='text-center'>" + grade + "</td>" +
             "</tr>"
         );
         index += 1;
