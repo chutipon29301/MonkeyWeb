@@ -4,10 +4,10 @@ import { SlideshowManager } from "./SlideshowManager";
 
 export class FileManager {
 
-    static addSlideshowImage(files: Express.Multer.File[], showDate: Date) {
-        ensureDirSync(SlideshowManager.getDir(showDate));
+    static addSlideshowImage(files: Express.Multer.File[]) {
+        ensureDirSync(process.env.SLIDESHOW_PATH);
         files.forEach(file => {
-            moveSync(file.path, SlideshowManager.getPath(showDate,file.filename));
+            moveSync(file.path, SlideshowManager.getPath(file.filename));
         });
     }
 
