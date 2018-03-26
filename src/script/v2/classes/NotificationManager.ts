@@ -2,7 +2,7 @@ import { Schema, Document } from "mongoose";
 import * as mongoose from "mongoose";
 import { Observable } from "rx";
 
-export interface IOSToken extends Document{
+export interface IOSToken extends Document {
     _id: string,
     device: string,
     userID: number
@@ -26,7 +26,7 @@ export class IOSTokenManager {
         return Observable.fromPromise(deviceToken.save());
     }
 
-    static getUserToken(userID: number): Observable<IOSToken[]>{
+    static getUserToken(userID: number): Observable<IOSToken[]> {
         return Observable.fromPromise(IOSTokenModel.find({
             userID: userID
         }));
@@ -39,16 +39,20 @@ export class IOSNotificationManager {
     private provider: any;
     private apn: any;
     private constructor() {
-        this.apn = require("apn");
-        var keyPath = __dirname.substring(0, __dirname.indexOf("script")) + "key/MonkeyTutorNotification.p8";
-        this.provider = new this.apn.Provider({
-            token: {
-                key: keyPath,
-                keyId: "GPJR9B9WJ6",
-                teamId: "S4F5J66T3H"
-            },
-            production: false
-        });
+        this.apn = require('apn');
+        try {
+            var keyPath = __dirname.substring(0, __dirname.indexOf('script')) + 'key/MonkeyTutorNotification.p8';
+            this.provider = new this.apn.Provider({
+                token: {
+                    key: keyPath,
+                    keyId: 'GPJR9B9WJ6',
+                    teamId: 'S4F5J66T3H'
+                },
+                production: false
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     public static getInstance(): IOSNotificationManager {
