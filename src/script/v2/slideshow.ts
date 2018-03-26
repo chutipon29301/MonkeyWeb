@@ -5,7 +5,7 @@ import { SlideshowManager, SlideshowResponse, SlideshowObject } from "./classes/
 
 export const router = Router();
 
-function formatDate(date: Date): Date{
+function formatDate(date: Date): Date {
     let newDate = new Date(0);
     newDate.setDate(date.getDate());
     newDate.setMonth(date.getMonth());
@@ -30,7 +30,7 @@ router.post("/add", (req, res) => {
 });
 
 router.post("/remove", (req, res) => {
-    if(!(req.body.fileName && req.body.date)){
+    if (!(req.body.fileName && req.body.date)) {
         return res.status(400).send({
             err: -1,
             msg: "Bad Request"
@@ -48,7 +48,7 @@ router.post("/remove", (req, res) => {
 });
 
 router.post("/list", (req, res) => {
-    if(!(req.body.startDate && req.body.endDate)){
+    if (!(req.body.startDate && req.body.endDate)) {
         return res.status(400).send({
             err: -1,
             msg: "Bad Request"
@@ -56,15 +56,15 @@ router.post("/list", (req, res) => {
     }
     SlideshowManager.listSlideshow(formatDate(new Date(req.body.startDate)), formatDate(new Date(req.body.endDate)), true).subscribe(slideshows => {
         let slideshowResponse: SlideshowResponse[] = [];
-        for (let i = 0; i  < slideshows.length; i++) {
+        for (let i = 0; i < slideshows.length; i++) {
             slideshowResponse.push(new SlideshowObject(slideshows[i]).getSlideshowResponse());
         }
-        return res.status(200).send(slideshowResponse);
+        return res.status(200).send({ images: slideshowResponse });
     });
 });
 
-router.post("/listAllSlideshow", (req, res) => {
-    if(!(req.body.startDate && req.body.endDate)){
+router.post("/listAll", (req, res) => {
+    if (!(req.body.startDate && req.body.endDate)) {
         return res.status(400).send({
             err: -1,
             msg: "Bad Request"
@@ -72,15 +72,15 @@ router.post("/listAllSlideshow", (req, res) => {
     }
     SlideshowManager.listAllSlideshow(formatDate(new Date(req.body.startDate)), formatDate(new Date(req.body.endDate))).subscribe(slideshows => {
         let slideshowResponse: SlideshowResponse[] = [];
-        for (let i = 0; i  < slideshows.length; i++) {
+        for (let i = 0; i < slideshows.length; i++) {
             slideshowResponse.push(new SlideshowObject(slideshows[i]).getSlideshowResponse());
         }
-        return res.status(200).send(slideshowResponse);
+        return res.status(200).send({images: slideshowResponse});
     });
 });
 
-router.post("/toggleVisible", (req,res) => {
-    if(!(req.body.fileName && req.body.date && req.body.visible)){
+router.post("/toggleVisible", (req, res) => {
+    if (!(req.body.fileName && req.body.date && req.body.visible)) {
         return res.status(400).send({
             err: -1,
             msg: "Bad Request"
@@ -93,8 +93,8 @@ router.post("/toggleVisible", (req,res) => {
     });
 });
 
-router.get("/img", (req,res) => {
-    if(!(req.query.d && req.query.n)){
+router.get("/img", (req, res) => {
+    if (!(req.query.d && req.query.n)) {
         return res.status(400).send({
             err: -1,
             msg: "Bad Request"
