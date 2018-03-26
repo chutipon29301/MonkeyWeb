@@ -42,8 +42,39 @@ function dateToDay(date) {
         }
     }
 }
-let year = 2018;
-let quarter = 1;
+let year;
+let quarter;
+getQuarter();
+async function getQuarter() {
+    let [allQ, config] = await Promise.all([
+        listQuarter('private'),
+        getConfig()
+    ]);
+    for (let i in allQ.quarter) {
+        $("#quarter").append(
+            "<option value='" + allQ.quarter[i].year + '-' + allQ.quarter[i].quarter + "'>" + allQ.quarter[i].name + "</option>"
+        );
+    }
+    let cookies = getCookieDict();
+    if (cookies.monkeyWebSelectedQuarter === undefined) {
+        $("#quarter").val(config.defaultQuarter.registration.year + '-' + config.defaultQuarter.registration.quarter);
+        writeCookie("monkeyWebSelectedQuarter", $("#quarter").val());
+        year = config.defaultQuarter.registration.year;
+        quarter = config.defaultQuarter.registration.quarter;
+    } else {
+        $("#quarter").val(cookies.monkeyWebSelectedQuarter);
+        let str = $("#quarter").val();
+        year = str.slice(0, 4);
+        quarter = str.slice(5);
+    }
+}
+$("#quarter").change(function () {
+    writeCookie("monkeyWebSelectedQuarter", $("#quarter").val());
+    let str = $("#quarter").val();
+    year = str.slice(0, 4);
+    quarter = str.slice(5);
+    sendLevel();
+});
 function sendLevel() {
     let allLevel = [];
     $('#level').find(':checked').each(function () {
@@ -60,11 +91,7 @@ function sendLevel() {
     $("#sun13").empty().append("<th style='background-color: #ffd59a;text-align: center;vertical-align: middle'>13-15</th>");
     $("#sun15").empty().append("<th style='background-color: #ffd59a;text-align: center;vertical-align: middle'>15-17</th>");
     $("#spaceRow").empty().append("<td colspan='80'></td>");
-    getConfig().then(config => {
-        year = config.defaultQuarter.registration.year;
-        quarter = config.defaultQuarter.registration.quarter;
-        genTable(allLevel, 0);
-    });
+    genTable(allLevel, 0);
 }
 function genTable(allLevel, i) {
     if (i >= allLevel.length) return;

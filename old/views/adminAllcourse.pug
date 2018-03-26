@@ -7,7 +7,7 @@ block script
 block body
     .container-fluid
         .row
-            div#filterPanel(class=webUser.position === "tutor" ? "invisible" : "col-12 col-md-3 col-xl-2")
+            div#filterPanel.col-12.col-md-3.col-xl-2
                 h1.mt-10 Course
                 form
                     .form-group
@@ -15,7 +15,7 @@ block body
                             span.fa.fa-lg.fa-th-large &nbsp;
                             |Quarter
                         select.form-control#quarter(onChange="quarterChange()")
-                form
+                form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
                         label
                             span.fa.fa-lg.fa-filter &nbsp;
@@ -27,7 +27,7 @@ block body
                             option(value="E") English
                             option(value="C") Chemistry
                             option(value="S") Science
-                form
+                form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
                         select.form-control#grade(onChange="getAllCourseContent()")
                             option(value="all") All grade
@@ -43,27 +43,13 @@ block body
                             option(value="10") S4
                             option(value="11") S5
                             option(value="12") S6
-                form
+                form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
                         select.form-control#name(onChange="getAllCourseContent()")
                             option(value="all") All Tutor
-                            //- option(value="Anne") Anne
-                            option(value="Atom") Atom
-                            option(value="Bam") Bam
-                            option(value="BB") BB
-                            //- option(value="Beng") Beng
-                            option(value="Chote") Chote
-                            //- option(value="Gag") Gag
-                            option(value="Gui") Gui
-                            option(value="Hybrid") Hybrid
-                            option(value="Paan") Paan
-                            option(value="Pele") Pele
-                            option(value="Pre") Pre
-                            option(value="Tao") Tao
-                            option(value="Ten") Ten
-                            option(value="Third") Third
-                            option(value="Ya") Ya
-                form
+                            each i in tutor
+                                option(value=i.nicknameEn)= i.nicknameEn
+                form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
                         select.form-control#time(onChange="getAllCourseContent()")
                             option(value="all") All Time
@@ -75,7 +61,7 @@ block body
                             option(value="270000000") Sun 10
                             option(value="280800000") Sun 13
                             option(value="288000000") Sun 15
-                form
+                form(class=webUser.position === "tutor" ? "invisible" : "")
                     .row#level
                         label.checkbox-inline.col
                             input(type='checkbox', value='a', checked, name="options[]", onClick="getAllCourseContent()")
@@ -104,16 +90,16 @@ block body
                 a(href="adminCourseTable" class=webUser.position === "tutor" ? "invisible" : "btn btn-link col")
                     span.fa.fa-lg.fa-book
                     |คัมภีร์เทวดา
-            div(class=webUser.position === "tutor" ? "col" : "col-12 col-md-9 offset-md-3 col-xl-10 offset-xl-2 p-0")
+            div.col-12.col-md-9.offset-md-3.col-xl-10.offset-xl-2.p-0
                 .table-responsive
                     table.table.table-hover
                         thead
                             tr
-                                th.w-10 No.
-                                th.w-20.text-center CourseName
-                                th.w-15.text-center Day
-                                th.w-20.text-center Time
-                                th.w-10.text-center Tutor
-                                th.w-10.text-center Student
-                                th.w-15.text-center Room
+                                th.text-center(width='10%') No.
+                                th.text-center(width='20%') CourseName
+                                th.text-center(width='10%') Day
+                                th.text-center(width='20%') Time
+                                th.text-center(width='15%') Tutor
+                                th.text-center(width='10%') Student
+                                th.text-center(width='15%') Room
                         tbody#allCourseTable
