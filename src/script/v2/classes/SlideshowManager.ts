@@ -44,6 +44,18 @@ export class SlideshowObject {
         this.slideshow = slideshow;
     }
 
+    static getSlideshowObjectArray(slideshows: Slideshow[]): SlideshowObject[]{
+        return slideshows.map(slideshow => new SlideshowObject(slideshow));
+    }
+
+    getID(): mongoose.Types.ObjectId{
+        return this.slideshow._id;
+    }
+
+    getPath(): string{
+        return this.slideshow.path.toString();
+    }
+
     getSlideshowResponse(): SlideshowResponse {
         return {
             startDate: this.slideshow.startDate,
@@ -61,8 +73,8 @@ export class SlideshowManager {
     static getPath(fileName: string): string {
         return join(process.env.SLIDESHOW_PATH, fileName);
     }
-
-    static addSlideshowImage(startDate: Date, endDate: Date, fileName: string, path: string, type: number): Observable<Slideshow> {
+    
+    static addSlideshowImage(startDate: Date, endDate:Date, fileName: string, path: string, type: number): Observable<SlideshowObject>{
         let slideshow = new SlideshowModel({
             startDate: startDate,
             endDate: endDate,
@@ -70,18 +82,19 @@ export class SlideshowManager {
             path: path,
             type: type
         });
-        return Observable.fromPromise(slideshow.save());
+        return Observable.fromPromise(slideshow.save()).map(slideshow => new SlideshowObject(slideshow));
     }
-
-    static addSlideshowImages(startDate: Date, endDate: Date, files: Express.Multer.File[], type: number): Observable<Slideshow[]> {
+    
+    static addSlideshowImages(startDate: Date, endDate: Date, files: Express.Multer.File[], type: number): Observable<SlideshowObject[]> {
         return Observable.forkJoin(files.map(file => {
             return this.addSlideshowImage(startDate, endDate, file.filename, this.getPath(file.filename), type);
         }));
     }
 
-    static getSlideshow(slideshowID: string | mongoose.Types.ObjectId): Observable<Slideshow> {
+
+    static getSlideshow(slideshowID: string | mongoose.Types.ObjectId): Observable<SlideshowObject> {
         if (typeof slideshowID === "string") slideshowID = new mongoose.Types.ObjectId(slideshowID);
-        return Observable.fromPromise(SlideshowModel.findById(slideshowID));
+        return Observable.fromPromise(SlideshowModel.findById(slideshowID)).map(slideshow => new SlideshowObject(slideshow));
     }
 
     static deleteSlideshow(slideshowID: string | mongoose.Types.ObjectId): Observable<UpdateResponse> {
@@ -91,7 +104,7 @@ export class SlideshowManager {
         }));
     }
 
-    static listSlideshow(startDate: Date, endDate: Date): Observable<Slideshow[]> {
+    static listSlideshow(startDate: Date, endDate: Date): Observable<SlideshowObject[]> {
         return Observable.fromPromise(SlideshowModel.find({
             $or: [{
                 $and: [
@@ -106,6 +119,6 @@ export class SlideshowManager {
             }]
         }).sort({
             startDate: -1
-        }));
+        })).map(slideshows => SlideshowObject.getSlideshowObjectArray(slideshows));
     }
 }
