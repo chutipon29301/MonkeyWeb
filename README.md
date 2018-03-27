@@ -275,6 +275,32 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 		}
 		```
 		
+#### Student
+- Function using for manage student
+- This api nees to authenticate with username and password
+
+- Get Registration Quarter
+
+	This function list all quarter which student have been registed for
+
+	- request path `/v2/student/getRegistrationQuarter`
+	- request body
+		```javascript
+		req.body = {
+			studentID: 15999
+		}
+		```
+	- response body
+		```javascript
+		res.body = {
+			registration: {
+				course: ['201701', '201702'],
+				hybrid: [],
+				skill: []
+			}
+		}
+		```
+
 ### Phase I
 ~~Under construction.~~
 ## TODO
