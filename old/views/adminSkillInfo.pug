@@ -22,7 +22,7 @@ block body
                 tbody
                     - var index = 1
                     each i in skStd
-                        tr
+                        tr(onclick='gotoStudentInfo("'+i._id+'");')
                             td.text-center= index                  
                             td.text-center= i._id
                             td.text-center= i.grade>6?"S"+(i.grade-6):"P"+i.grade
@@ -31,4 +31,8 @@ block body
                             td.text-center: span(class= 'fa fa-' + (i.hasHB?'check':'times'))
                             td.text-center: span(class= 'fa fa-' + (i.hasCR?'check':'times'))
                         - index += 1
-                    
+    script.
+        function gotoStudentInfo(ID){
+            writeCookie("monkeyWebAdminAllstudentSelectedUser", ID);
+            self.location = "/adminStudentprofile";
+        }      

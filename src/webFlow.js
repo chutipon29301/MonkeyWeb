@@ -506,6 +506,82 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminCoursedescription', local)
         else return404(req, res)
     })
+    app.get("/adminAllHybrid", auth.isLoggedIn, async function (req, res) {
+        let [config, allQ] = await Promise.all([
+            configDB.findOne({}),
+            quarterDB.find({}, { year: 1, quarter: 1, name: 1 }).sort({ _id: 1 }).toArray()
+        ]);
+        let year;
+        let quarter;
+        if (req.cookies.monkeyWebSelectedQuarter === undefined) {
+            year = config.defaultQuarter.quarter.year;
+            quarter = config.defaultQuarter.quarter.quarter;
+        } else {
+            year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
+            quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        }
+        let selectedQ = year + '-' + quarter;
+        let allHb = await hybridDB.find({
+            quarterID: year + ((quarter < 10) ? '0' + quarter : '' + quarter)
+        }).sort({ day: 1 }).toArray();
+        let newAllHb = [];
+        for (let i in allHb) {
+            let math = 0;
+            let phy = 0;
+            let chem = 0;
+            let eng = 0;
+            let t = moment(allHb[i].day).format('dddd HH:mm');
+            for (let j in allHb[i].student) {
+                if (allHb[i].student[j].subject.toLowerCase() === 'm') {
+                    math += 1;
+                } else if (allHb[i].student[j].subject.toLowerCase() === 'p') {
+                    phy += 1;
+                } else if (allHb[i].student[j].subject.toLowerCase() === 'c') {
+                    chem += 1;
+                } else if (allHb[i].student[j].subject.toLowerCase() === 'e') {
+                    eng += 1;
+                }
+            }
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: math,
+                subject: 'M'
+            });
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: phy,
+                subject: 'P'
+            });
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: chem,
+                subject: 'C'
+            });
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: eng,
+                subject: 'E'
+            });
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            quarterList: allQ,
+            selectedQuarter: selectedQ,
+            hybridList: newAllHb
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllHybrid', local)
+        else return404(req, res)
+    })
     app.get("/adminHybridInfo", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
