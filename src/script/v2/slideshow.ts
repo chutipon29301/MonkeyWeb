@@ -35,8 +35,8 @@ router.post("/remove", (req, res) => {
         });
     }
     SlideshowManager.getSlideshow(req.body.slideshowID).flatMap(slideshow => {
-        FileManager.removeSlideshowImage(slideshow.path.toString());
-        return SlideshowManager.deleteSlideshow(slideshow._id);
+        FileManager.removeSlideshowImage(slideshow.getPath());
+        return SlideshowManager.deleteSlideshow(slideshow.getID());
     }).subscribe(_ => {
         return res.status(200).send({ msg: "OK" });
     });
@@ -52,20 +52,20 @@ router.post("/list", (req, res) => {
     SlideshowManager.listSlideshow(formatDate(req.body.startDate), formatDate(req.body.endDate)).subscribe(slideshows => {
         let slideshowResponse: SlideshowResponse[] = [];
         for (let i = 0; i < slideshows.length; i++) {
-            slideshowResponse.push(new SlideshowObject(slideshows[i]).getSlideshowResponse());
+            slideshowResponse.push(slideshows[i].getSlideshowResponse());
         }
         return res.status(200).send(slideshowResponse);
     });
 });
 
-router.get("/img", (req,res) => {
-    if(!req.query.id){
+router.get("/img", (req, res) => {
+    if (!req.query.id) {
         return res.status(400).send({
             err: -1,
             msg: "Bad Request"
         });
     }
     SlideshowManager.getSlideshow(req.query.id).subscribe(slideshow => {
-        return res.status(200).sendFile(slideshow.path.toString());
+        return res.status(200).sendFile(slideshow.getPath());
     });
 });

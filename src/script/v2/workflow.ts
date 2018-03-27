@@ -177,7 +177,7 @@ router.post("/assign", (req, res) => {
     }).flatMap(node => {
         return UserManager.getTutorInfo(req.user._id);
     }).flatMap(tutor => {
-        return IOSNotificationManager.getInstance().send(req.body.owner, tutor.nicknameEn + " assign you a task");
+        return IOSNotificationManager.getInstance().send(req.body.owner, tutor.getNicknameEn() + " assign you a task");
     }).subscribe(node => {
         return res.status(200).send({
             msg: "OK"

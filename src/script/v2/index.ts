@@ -1,7 +1,8 @@
 import * as express from "express";
 import * as morgan from "morgan";
 import { router as workflow } from "./workflow";
-import { router as slideshow} from "./slideshow";
+import { router as slideshow } from "./slideshow";
+import { router as student } from "./student";
 import * as mongoose from "mongoose";
 
 
@@ -48,7 +49,11 @@ export function app(passport: any) {
         });
     });
 
-    app.use("/workflow", passport.isLoggedIn, workflow);
-    app.use("/slideshow", passport.isLoggedIn, slideshow);
+    app.use(passport.isLoggedIn);
+
+    app.use("/workflow", workflow);
+    app.use("/slideshow", slideshow);
+    app.use("/student", student);
+
     return app;
 }
