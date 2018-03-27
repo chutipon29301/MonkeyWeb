@@ -525,7 +525,6 @@ module.exports = function (app, db, pasport) {
             quarterID: year + ((quarter < 10) ? '0' + quarter : '' + quarter)
         }).sort({ day: 1 }).toArray();
         let newAllHb = [];
-        console.log(allHb);
         for (let i in allHb) {
             let math = 0;
             let phy = 0;
