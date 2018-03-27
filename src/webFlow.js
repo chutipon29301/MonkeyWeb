@@ -671,8 +671,15 @@ module.exports = function (app, db, pasport) {
         let promise1 = [];
         let promise2 = [];
         let promise3 = [];
-        let year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
-        let quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        let year;
+        let quarter;
+        if (req.cookies.monkeyWebSelectedQuarter === undefined) {
+            year = config.defaultQuarter.quarter.year;
+            quarter = config.defaultQuarter.quarter.quarter;
+        } else {
+            year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
+            quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        }
         for (let i in skInfo.student) {
             if (skInfo.student[i].subject === "ME" || skInfo.student[i].subject === req.cookies.monkeySelectedSkill.slice(-1)) {
                 promise1.push(userDB.findOne({ _id: skInfo.student[i].studentID, position: 'student' }, {
