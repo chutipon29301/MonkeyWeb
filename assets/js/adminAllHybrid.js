@@ -1,3 +1,7 @@
+if (mobilecheck()) {
+    $(".option-container").removeClass('position-fixed');
+}
+
 $("#quarter-select").change(function () {
     writeCookie('monkeyWebSelectedQuarter', $("#quarter-select").val());
     location.reload();
