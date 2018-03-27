@@ -128,40 +128,43 @@ module.exports = function (app, db, post, io) {
 
                 }
             }
-
-            for (let i in hybrid) {
-                let hybridTime = new Date(hybrid[i].day)
-                if (hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()) {
-                    req.body.hybridID = hybrid[i]._id;
-                    for (let j in hybrid[i].student) {
-                        if (hybrid[i].student[j].studentID == studentID) {
-                            req.body.subject = hybrid[i].student[j].subject.toUpperCase()[0]
-                            break;
+            // check ลาเรียน
+            let miss = await attendanceDB.findOne({ userID: studentID, date: findDate.getTime(), type: 1 })
+            if(!miss){
+                for (let i in hybrid) {
+                    let hybridTime = new Date(hybrid[i].day)
+                    if (hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()) {
+                        req.body.hybridID = hybrid[i]._id;
+                        for (let j in hybrid[i].student) {
+                            if (hybrid[i].student[j].studentID == studentID) {
+                                req.body.subject = hybrid[i].student[j].subject.toUpperCase()[0]
+                                break;
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
-            }
-            if (req.body.hybridID && req.body.subject) {
-                if (req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                    return checkoutFHB(req, res, io, true, now)
-                } else {
-                    return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
-                }
-            }
-            // check CR */
-            for (let i in possibleCourse) {
-                let courseDate = new Date(possibleCourse[i].day)
-                let courseDay = courseDate.getDay()
-                let courseHr = courseDate.getHours()
-                if (checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 1 && now.getDay() > 0 && now.getDay() < 6))) {
-                    req.body.courseID = possibleCourse[i]._id
-                    if (possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                        return checkoutCR(req, res, io, true, now)
+                if (req.body.hybridID && req.body.subject) {
+                    if (req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
+                        return checkoutFHB(req, res, io, true, now)
                     } else {
                         return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
                     }
-                    break
+                }
+                // check CR */
+                for (let i in possibleCourse) {
+                    let courseDate = new Date(possibleCourse[i].day)
+                    let courseDay = courseDate.getDay()
+                    let courseHr = courseDate.getHours()
+                    if (checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 1 && now.getDay() > 0 && now.getDay() < 6))) {
+                        req.body.courseID = possibleCourse[i]._id
+                        if (possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
+                            return checkoutCR(req, res, io, true, now)
+                        } else {
+                            return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
+                        }
+                        break
+                    }
                 }
             }
             if( (now.getDay()%6 != 0) && now.getHours()>15 && now.getHours()<18){
