@@ -1,6 +1,6 @@
 let cookies = getCookieDict();
 if (cookies.monkeySelectedHybrid === undefined) {
-    self.location = "/adminCourseRoom";
+    self.location = "/adminAllHybrid";
 } else {
     let subj = cookies.monkeySelectedHybrid.slice(0, 1).toUpperCase();
     let hbID = cookies.monkeySelectedHybrid.slice(1);
