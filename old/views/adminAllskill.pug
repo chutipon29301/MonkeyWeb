@@ -17,21 +17,29 @@ block body
                             option(value=i.year+'-'+i.quarter selected)= i.name
                         else
                             option(value=i.year+'-'+i.quarter)= i.name
+                label.mt-3
+                    span.fa.fa-lg.fa-filter &nbsp;
+                    |Filter
+                select.custom-select#subject
+                    option(value="ME") ALL
+                    option(value="M") MATH
+                    option(value="E") ENGLISH
+                //- button#addBtn.mt-3.col.btn.btn-outline-secondary + Add New
             .col-12.col-md-10.offset-md-2.px-0
                 .table-responsive
                     table.table.table-striped.table-hover
                         thead
                             tr
-                                th.text-center No
+                                //- th.text-center No
                                 th.text-center Time
                                 th.text-center Subject
                                 th.text-center Student
                         tbody
-                            - var index = 1
+                            //- - var index = 1
                             each i in skillList
-                                tr(onclick='gotoSkillInfoPage("'+i.ID+i.subject+'")')
-                                    td.text-center= index
+                                tr(class=i.subject+'skill' onclick='gotoSkillInfoPage("'+i.ID+i.subject+'")')
+                                    //- td.text-center= index
                                     td.text-center= i.day
                                     td.text-center= (i.subject=='M')?'Math':'English'
                                     td.text-center= i.student
-                                - index += 1
+                                //- - index += 1
