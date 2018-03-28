@@ -479,8 +479,8 @@ async function genCover(type) {
     ctx.drawImage(barcode, 900, 115);
     ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 600, 80);
     ctx.fillText(profile.lastname, 600, 170);
-    let w = [1289, 1508, 811, 1050];
-    let h = [315, 437, 559, 681, 875];
+    let w = [1289, 1508, 835, 1064];
+    let h = [383, 508, 633, 758, 875];
     let mw = [1335, 1416, 1498, 1580];
     let mh = [140, 220, 300, 380, 460];
     ctx.font = "bold 60px Cordia New";
@@ -539,7 +539,7 @@ async function genCover(type) {
             quarterStr += allQ.quarter[i].name + ' / ';
         }
     }
-    ctx.fillText(quarterStr.slice(0, -3),35,1000);
+    ctx.fillText(quarterStr.slice(0, -3), 35, 244);
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     if (type == 4 || type == 5) {
