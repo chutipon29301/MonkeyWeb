@@ -417,7 +417,12 @@ async function genCover(type) {
         }
         return;
     }
-    let [profile, timeTable] = await Promise.all([studentProfile(ID), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
+    let [profile, timeTable, registedData, allQ] = await Promise.all([
+        studentProfile(ID),
+        $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) }),
+        $.post('/v2/student/getRegistrationQuarter', { studentID: ID }),
+        listQuarter('private')
+    ]);
     let coverCanvas;
     let barcode;
     switch (type) {
@@ -526,6 +531,17 @@ async function genCover(type) {
         }
     }
     ctx.fillStyle = "black";
+    ctx.textAlign = "left";
+    let allRegisteredTemp = _.union(registedData.registration.course, registedData.registration.hybrid);
+    let quarterStr = '';
+    for (let i in allQ.quarter) {
+        if (allRegisteredTemp.indexOf(allQ.quarter[i].quarterID) > -1) {
+            quarterStr += allQ.quarter[i].name + ' / ';
+        }
+    }
+    ctx.fillText(quarterStr.slice(0, -3),35,1000);
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
     if (type == 4 || type == 5) {
         if (type == 4) {
             var appRejCanvas = document.getElementById('appRejCover1');
