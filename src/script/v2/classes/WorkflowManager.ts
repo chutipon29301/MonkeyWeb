@@ -111,8 +111,8 @@ let nodeSchema = new Schema({
 /**
  * Create model from schema
  */
-export let HeaderModel = mongoose.model<HeaderNode>("Header", headerSchema, "workflow");
-export let NodeModel = mongoose.model<BodyNode>("Node", nodeSchema, "workflow");
+let HeaderModel = mongoose.model<HeaderNode>("Header", headerSchema, "workflow");
+let NodeModel = mongoose.model<BodyNode>("Node", nodeSchema, "workflow");
 
 /**
  * Class provide method for handle all workflow database operation

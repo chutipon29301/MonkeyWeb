@@ -14,7 +14,7 @@ let IOSTokenSchema = new Schema({
     userID: Number
 });
 
-export let IOSTokenModel = mongoose.model<IOSToken>("IOSToken", IOSTokenSchema,"deviceToken");
+let IOSTokenModel = mongoose.model<IOSToken>("IOSToken", IOSTokenSchema,"deviceToken");
 
 export class IOSTokenManager {
     static addToken(token: string, userID: number): Observable<IOSToken> {
