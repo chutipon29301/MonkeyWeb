@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 import { Observable } from "rx";
 import { QuarterManager } from "./QuarterManager";
 
-interface Course extends Document {
+interface CourseInterface extends Document {
     subject: String,
     grade: Number,
     level: String,
@@ -28,37 +28,31 @@ let courseSchema = new Schema({
     quarter: Number
 });
 
-let CourseModel = mongoose.model<Course>('Course', courseSchema, 'course');
+let CourseModel = mongoose.model<CourseInterface>('Course', courseSchema, 'course');
 
 export class CourseManager {
 
-    static getCourseInQuarter(quarterID: string): Observable<CourseObject[]> {
+    static getCourseInQuarter(quarterID: string): Observable<Course[]> {
         return QuarterManager.getQuarter(quarterID).flatMap(quarter => {
             return Observable.fromPromise(CourseModel.find({
                 year: quarter.getYear(),
                 quarter: quarter.getQuarter()
             }));
-        }).map(courses => {
-            return CourseObject.getCourseArrayObject(courses);
-        });
+        }).map(courses => courses.map(course => new Course(course)));
     }
 
-    static findCourseContainStudent(studentID: number): Observable<CourseObject[]>{
+    static findCourseContainStudent(studentID: number): Observable<Course[]>{
         return Observable.fromPromise(CourseModel.find({
             student: studentID
-        })).map(courses => CourseObject.getCourseArrayObject(courses));
+        })).map(courses => courses.map(course => new Course(course)));
     }
 }
 
-export class CourseObject {
-    course: Course;
+export class Course {
+    course: CourseInterface;
 
-    constructor(course: Course) {
+    constructor(course: CourseInterface) {
         this.course = course
-    }
-
-    static getCourseArrayObject(courses: Course[]): CourseObject[] {
-        return courses.map(course => new CourseObject(course));
     }
 
     getQuarterID(): string {

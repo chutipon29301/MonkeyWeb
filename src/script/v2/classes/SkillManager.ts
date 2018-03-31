@@ -2,7 +2,7 @@ import { Document, Schema } from "mongoose";
 import * as mongoose from "mongoose";
 import { Observable } from "rx";
 
-interface Skill extends Document {
+interface SkillInterface extends Document {
     quarterID: String,
     day: Number,
     student: [{
@@ -20,31 +20,27 @@ let skillSchema = new Schema({
     }]
 });
 
-let SkillModel = mongoose.model<Skill>('Skill', skillSchema, 'skillStudent');
+let SkillModel = mongoose.model<SkillInterface>('Skill', skillSchema, 'skillStudent');
 
 export class SKillManager {
-    static getSkillForQuarter(quarterID: string): Observable<SkillObject> {
+    static getSkillForQuarter(quarterID: string): Observable<Skill> {
         return Observable.fromPromise(SkillModel.findOne({
             quarterID: quarterID
-        })).map(skill => new SkillObject(skill));
+        })).map(skill => new Skill(skill));
     }
 
-    static findSkillContainStudent(studentID: number): Observable<SkillObject[]> {
+    static findSkillContainStudent(studentID: number): Observable<Skill[]> {
         return  Observable.fromPromise(SkillModel.find({
             "student.studentID": studentID
-        })).map(skill => SkillObject.getSkillArrayObject(skill));
+        })).map(skills => skills.map(skill => new Skill(skill)));
     }
 }
 
-export class SkillObject {
-    skill: Skill
+export class Skill {
+    skill: SkillInterface
 
-    constructor(skill: Skill) {
+    constructor(skill: SkillInterface) {
         this.skill = skill;
-    }
-
-    static getSkillArrayObject(skills: Skill[]): SkillObject[]{
-        return skills.map(skill => new SkillObject(skill));
     }
 
     getQuarterID(): String{

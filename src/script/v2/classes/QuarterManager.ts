@@ -2,7 +2,7 @@ import { Document, Schema } from "mongoose";
 import * as mongoose from "mongoose";
 import { Observable } from "rx";
 
-interface Quarter extends Document {
+interface QuarterInterface extends Document {
     year: Number,
     quarter: Number,
     name: String,
@@ -18,19 +18,21 @@ let quarterSchema = new Schema({
     status: String
 });
 
-let QuarterModel = mongoose.model<Quarter>('Quarter', quarterSchema, 'quarter');
+let QuarterModel = mongoose.model<QuarterInterface>('Quarter', quarterSchema, 'quarter');
 
 export class QuarterManager {
-    static getQuarter(quarterID: string): Observable<QuarterObject> {
-        return Observable.fromPromise(QuarterModel.findById(quarterID)).map(quarter => new QuarterObject(quarter));
+    static getQuarter(quarterID: string): Observable<Quarter> {
+        return Observable.fromPromise(QuarterModel.findById(quarterID)).map(quarter => new Quarter(quarter));
     }
 }
 
-export class QuarterObject {
+declare function createLabel(id: number): number;
 
-    quarter: Quarter
+export class Quarter {
 
-    constructor(quarter: Quarter) {
+    private quarter: QuarterInterface
+
+    constructor(quarter: QuarterInterface) {
         this.quarter = quarter
     }
 
