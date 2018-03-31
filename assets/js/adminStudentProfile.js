@@ -533,15 +533,29 @@ async function genCover(type) {
     ctx.fillStyle = "black";
     ctx.textAlign = "left";
     let allRegisteredTemp = _.union(registedData.registration.course, registedData.registration.hybrid);
+    let diff = 0;
     let quarterStr = '';
     for (let i in allQ.quarter) {
+        let bool = i < allQ.quarter.length - 1;
         if (allRegisteredTemp.indexOf(allQ.quarter[i].quarterID) > -1) {
-            quarterStr += allQ.quarter[i].name + ' / ';
+            if (allQ.quarter[i].quarter < 10) {
+                ctx.font = "50px Cordia New";
+                ctx.fillText(allQ.quarter[i].name + ((bool) ? ' / ' : ''), 35 + diff, 244);
+            } else {
+                ctx.font = "bold 50px Cordia New";
+                ctx.fillText(allQ.quarter[i].name, 35 + diff, 244);
+                ctx.font = "50px Cordia New";
+                if (bool) {
+                    ctx.fillText(' / ', 185 + diff, 244);
+                    diff += 30;
+                }
+            }
+            diff += 145;
         }
     }
-    ctx.fillText(quarterStr.slice(0, -3), 35, 244);
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
+    ctx.font = "bold 50px Cordia New";
     if (type == 4 || type == 5) {
         if (type == 4) {
             var appRejCanvas = document.getElementById('appRejCover1');
