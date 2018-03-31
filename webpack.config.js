@@ -1,7 +1,7 @@
 const path = require('path');
 var nodeExternals = require('webpack-node-externals');
 const NodemonPlugin = require('nodemon-webpack-plugin');
-
+require('dotenv').config()
 module.exports = {
     entry: './src/index.js',
     module: {
