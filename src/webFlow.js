@@ -93,6 +93,9 @@ module.exports = function (app, db, pasport) {
     app.get('/test', function (req, res) {
         res.status(200).render('test', {})
     })
+    app.get('/react', function (req, res) {
+        res.status(200).render('reactPage', {})
+    })
     app.get('/', async function (req, res) {
         if (req.isAuthenticated()) {
             let local = {
