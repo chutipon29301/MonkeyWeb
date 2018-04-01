@@ -41,7 +41,7 @@ export class CourseManager {
         }).map(courses => courses.map(course => new Course(course)));
     }
 
-    static findCourseContainStudent(studentID: number): Observable<Course[]>{
+    static findCourseContainStudent(studentID: number): Observable<Course[]> {
         return Observable.fromPromise(CourseModel.find({
             student: studentID
         })).map(courses => courses.map(course => new Course(course)));
@@ -58,7 +58,11 @@ export class Course {
     getQuarterID(): string {
         let year = this.course.year + '';
         let quarter = this.course.quarter + ''
-        if(quarter.length === 1) quarter = '0' + quarter;
+        if (quarter.length === 1) quarter = '0' + quarter;
         return year + quarter;
+    }
+
+    getStudentID(): number[] {
+        return this.course.student.map(id => id.valueOf());
     }
 }

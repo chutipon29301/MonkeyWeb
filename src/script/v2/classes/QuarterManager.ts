@@ -21,9 +21,18 @@ let quarterSchema = new Schema({
 let QuarterModel = mongoose.model<QuarterInterface>('Quarter', quarterSchema, 'quarter');
 
 export class QuarterManager {
+
     static getQuarter(quarterID: string): Observable<Quarter> {
         return Observable.fromPromise(QuarterModel.findById(quarterID)).map(quarter => new Quarter(quarter));
     }
+
+    static getQuarterFromQuarterObject(quarter: { quarter: Number, year: Number }): Observable<Quarter> {
+        return Observable.fromPromise(QuarterModel.findOne({
+            quarter: quarter.quarter,
+            year: quarter.year
+        })).map(quarter => new Quarter(quarter));
+    }
+
 }
 
 declare function createLabel(id: number): number;
