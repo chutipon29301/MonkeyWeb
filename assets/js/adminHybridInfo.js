@@ -27,17 +27,19 @@ async function getHBData(subj, hbID) {
     let studentName = await Promise.all(promise);
     let index = 1;
     for (let i in student) {
-        let grade = (studentName[i].grade) > 6 ? 'S' + (studentName[i].grade - 6) : 'P' + studentName[i].grade;
-        $("#allStudentInHybrid").append(
-            "<tr onclick='relocatted(\"" + student[i].studentID + "\")'>" +
-            "<td class='text-center'>" + index + "</td>" +
-            "<td class='text-center'>" + student[i].studentID + "</td>" +
-            "<td class='text-center'>" + grade + "</td>" +
-            "<td class='text-center'>" + studentName[i].nickname + "</td>" +
-            "<td class='text-center'>" + studentName[i].firstname + "</td>" +
-            "<td class='text-center'>" + studentName[i].lastname + "</td>" +
-            "</tr>"
-        );
+        if (studentName[i].status == "active") {
+            let grade = (studentName[i].grade) > 6 ? 'S' + (studentName[i].grade - 6) : 'P' + studentName[i].grade;
+            $("#allStudentInHybrid").append(
+                "<tr onclick='relocatted(\"" + student[i].studentID + "\")'>" +
+                "<td class='text-center'>" + index + "</td>" +
+                "<td class='text-center'>" + student[i].studentID + "</td>" +
+                "<td class='text-center'>" + grade + "</td>" +
+                "<td class='text-center'>" + studentName[i].nickname + "</td>" +
+                "<td class='text-center'>" + studentName[i].firstname + "</td>" +
+                "<td class='text-center'>" + studentName[i].lastname + "</td>" +
+                "</tr>"
+            );
+        }
         index += 1;
     }
 }
