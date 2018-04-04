@@ -155,7 +155,13 @@ $('#testQR').click(function () {
 
 $("#DownloadAllButt").click(function () {
     downloadQR("hotQR", lastTxt + "hotkey");
-    downloadQR("hwQR", lastTxt + "homework");
-    downloadQR("skQR", lastTxt + "skill");
-    downloadQR("testQR", lastTxt + "test");
+    setTimeout(() => {
+        downloadQR("hwQR", lastTxt + "homework");
+    }, 50);
+    setTimeout(() => {
+        downloadQR("skQR", lastTxt + "skill");
+    }, 100);
+    setTimeout(() => {
+        downloadQR("testQR", lastTxt + "test");
+    }, 150);
 });
