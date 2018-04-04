@@ -12,13 +12,13 @@ $("#quarterSelect").change(function () {
 });
 
 // add event when click Img for upload pic
-$("#profileImg").click(function () {
-    if (window.File && window.FileReader && window.FileList && window.Blob) {
-        $("#uploadPicModal").modal('show');
-    } else {
-        alert('กรุณาเปลี่ยน Browser');
-    }
-});
+// $("#profileImg").click(function () {
+//     if (window.File && window.FileReader && window.FileList && window.Blob) {
+//         $("#uploadPicModal").modal('show');
+//     } else {
+//         alert('กรุณาเปลี่ยน Browser');
+//     }
+// });
 
 // crop
 let options = {
