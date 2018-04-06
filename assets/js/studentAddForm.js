@@ -87,7 +87,7 @@ async function fillButton() {
         $(".btn-10").addClass("disabled");
         $(".btn-13").addClass("disabled");
         $(".btn-15").addClass("disabled");
-        $(".label-8").html("17-19");
+        $(".label-8").html("16-18");
         let hb = timetable.hybrid;
         for (let i in hb) {
             let t = moment(hb[i].day);
@@ -251,12 +251,15 @@ async function sendData() {
     notifyStr = notifyStr + "ต้องการเพิ่ม: " + pickDate.format("ddd DD/MM/YY") + "\n";
     let timeStr;
     if (pickDate.day() === 2 || pickDate.day() === 4) {
-        timeStr = 17;
+        timeStr = 16;
     } else {
         timeStr = classHour($(".btn-info"));
     }
     notifyStr = notifyStr + "FHB:" + $("#subjInput").val() + " - " +
         timeStr + ":00";
+    if (pickDate.day() === 2 || pickDate.day() === 4) {
+        timeStr = 17;
+    }
     let allHB = await $.post("post/v1/listHybridDayInQuarter", { year: year, quarter: quarter });
     let hybridID;
     for (let i in allHB) {

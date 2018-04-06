@@ -57,7 +57,7 @@ function fillButton() {
     let cr = timetable.course;
     let hb = timetable.hybrid;
     if (pickDate.day() === 2 || pickDate.day() === 4) {
-        $(".label-8").html("17-19");
+        $(".label-8").html("16-18");
         for (let i in hb) {
             let t = moment(hb[i].day);
             if (t.day() === pickDate.day()) {
@@ -297,7 +297,7 @@ async function sendData() {
         if (pickDate.day() === 0 || pickDate.day() === 6) {
             notifyStr = notifyStr + thisButt.html() + " - " + classHour(thisButt) + ":00\n";
         } else {
-            notifyStr = notifyStr + thisButt.html() + " - 17:00\n";
+            notifyStr = notifyStr + thisButt.html() + " - 16:00\n";
         }
         if (thisButt.hasClass("cr")) {
             promise.push($.post("post/v1/addStudentAbsent", {
