@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Observable } from "rx";
 import { Status, WorkflowManager } from "./classes/WorkflowManager";
+import { IOSNotificationManager } from "./classes/NotificationManager";
 
 export const router = Router();
 
@@ -106,6 +107,28 @@ router.post("/editNode", (req, res) => {
     }
 });
 
+router.post("/note", (req, res) => {
+    let { workflowID } = req.body;
+    if (!workflowID) {
+        return res.status(400).send({
+            err: 0,
+            msg: "Bad Request"
+        });
+    }
+    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
+        return WorkflowManager.clone(node).map(child => ({ child, node }));
+    }).flatMap(({ child, node }) => {
+        return Observable.forkJoin([
+            child.setStatus(Status.NOTE),
+            node.append(child)
+        ]);
+    }).subscribe(_ => {
+        return res.status(200).send({
+            msg: "OK"
+        });
+    });
+});
+
 router.post("/todo", (req, res) => {
     let { workflowID } = req.body;
     if (!workflowID) {
@@ -128,7 +151,7 @@ router.post("/todo", (req, res) => {
     });
 });
 
-router.post("/inProgress", (req,res) => {
+router.post("/inProgress", (req, res) => {
     let { workflowID } = req.body;
     if (!workflowID) {
         return res.status(400).send({
@@ -150,6 +173,50 @@ router.post("/inProgress", (req,res) => {
     });
 });
 
+router.post("/assign", (req, res) => {
+    let { workflowID, owner, subtitle, detail, duedate } = req.body;
+    if (!(workflowID && owner)) {
+        return res.status(400).send({
+            err: 0,
+            msg: "OK"
+        });
+    }
+    if (duedate) duedate = new Date(duedate);
+
+    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
+        let ancestors = node.getAncestors();
+        ancestors.push(node.getID());
+        return WorkflowManager.createBodyNode(
+            Status.TODO,
+            parseInt(owner),
+            req.user._id,
+            duedate,
+            subtitle,
+            detail,
+            node.getID(),
+            ancestors
+        );
+    }).flatMap(node => {
+        return node.getOwnerDetail();
+    }).flatMap(tutor => {
+        return IOSNotificationManager.getInstance().send(parseInt(owner), tutor.getNicknameEn() + "assign you a task");
+    }).subscribe(_ => {
+        return res.status(200).send({
+            msg: "OK"
+        });
+    });
+});
+
+router.post("/done", (req, res) => {
+    let { workflowID } = req.body;
+    if (!workflowID) {
+        return res.status(400).send({
+            err: 0,
+            msg: "OK"
+        });
+    }
+
+});
 
 // router.post("/assign", (req, res) => {
 //     if (!(req.body.workflowID && req.body.owner)) {
@@ -201,35 +268,6 @@ router.post("/inProgress", (req,res) => {
 // });
 
 
-// router.post("/inProgress", (req, res) => {
-//     if (!req.body.workflowID) {
-//         return res.status(400).send({
-//             err: 0,
-//             msg: "Bad Request"
-//         });
-//     }
-
-//     WorkflowManager.getNode(req.body.workflowID).flatMap(parent => {
-//         return WorkflowManager.addNode(
-//             req.user._id,
-//             parent._id,
-//             req.user._id,
-//             "", "",
-//             Status.IN_PROGRESS
-//         );
-//     }).flatMap(node => {
-//         return WorkflowManager.getParentNode(node._id);
-//     }).flatMap(node => {
-//         return IOSNotificationManager.getInstance().send(node.owner.valueOf(), req.user.nicknameEn + " change task status to in progress.");
-//     }).subscribe(node => {
-//         // TODO: Test function
-//         return res.status(200).send({
-//             msg: "OK"
-//         });
-//     });
-// });
-
-
 // // router.post("/done", (req, res) => {
 // //     if (!req.body.workflowID) {
 // //         return res.status(400).send({
@@ -258,84 +296,3 @@ router.post("/inProgress", (req,res) => {
 // //     // });
 
 // // });
-
-// router.post("/getChild", (req, res) => {
-//     if (!req.body.workflowID) {
-//         return res.status(400).send({
-//             err: 0,
-//             msg: "Bad Request"
-//         });
-//     }
-//     WorkflowManager.getChildNode(req.body.workflowID).subscribe(nodes => {
-//         return res.status(200).send({
-//             child: nodes
-//         });
-//     });
-// });
-
-// router.post("/getTree", (req, res) => {
-//     if (!req.body.workflowID) {
-//         return res.status(400).send({
-//             err: 0,
-//             msg: "Bad Request"
-//         });
-//     }
-//     WorkflowManager.getTree(req.body.workflowID).subscribe(nodes => {
-//         return res.status(200).send({
-//             child: nodes
-//         });
-//     });
-// });
-
-// router.post("/getNode", (req, res) => {
-//     let allNode: BodyNode[] = [];
-//     let headerNode: HeaderNode[] = [];
-//     WorkflowManager.getUserWorkflow(req.user._id).subscribe(nodes => {
-//         let node = _.last(nodes);
-//         for (let i = 0; i < nodes.length - 1; i++) {
-//             if (nodes[i].detail === "") continue;
-//             node.detail = nodes[i].detail + "\n" + node.detail;
-//         }
-//         allNode.push(node)
-//     }, err => {
-//         return res.status(500).send(err)
-//     }, () => {
-//         Observable.forkJoin(allNode.map(node => {
-//             return WorkflowManager.findHeader(node._id)
-//         })).subscribe(header => {
-//             let nodes: any[] = [];
-//             for (let i = 0; i < allNode.length; i++) {
-//                 nodes.push({
-//                     header: allNode[i].header,
-//                     timestamp: allNode[i].timestamp,
-//                     duedate: allNode[i].duedate,
-//                     parent: allNode[i].parent,
-//                     ancestors: allNode[i].ancestors,
-//                     _id: allNode[i]._id,
-//                     status: allNode[i].status,
-//                     owner: allNode[i].owner,
-//                     createdBy: allNode[i].createdBy,
-//                     subtitle: allNode[i].subtitle,
-//                     detail: allNode[i].detail,
-//                     title: header[i].title
-//                 });
-//             }
-//             return res.status(200).send({
-//                 workflows: nodes
-//             });
-//         }, err => {
-//             return res.status(500).send(err)
-//         }, () => {
-
-//         })
-//     });
-// });
-
-// router.post("/test", (req, res) => {
-//     WorkflowManager.getParentNode("5ab529c3f044fa18e6b6526d").subscribe(node => {
-//         return res.status(200).send(node);
-//     }, err => {
-//         return res.status(500).send(err);
-//     }, () => {
-//     });
-// });

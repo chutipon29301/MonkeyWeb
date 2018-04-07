@@ -202,6 +202,10 @@ export class BodyNode extends Node<BodyInterface> {
         return this.node.detail.valueOf();
     }
 
+    getOwnerDetail(): Observable<Tutor> {
+        return UserManager.getTutorInfo(this.getOwner());
+    }
+
     append(childNode: BodyNode): Observable<BodyNode> {
         return childNode.setParent(new BodyNode(this.node));
     }
@@ -211,7 +215,7 @@ export class BodyNode extends Node<BodyInterface> {
         ancestors.push(parentNode.getID());
         return this.edit({
             parent: parentNode.getID(),
-                ancestors: ancestors
+            ancestors: ancestors
         });
     }
 
