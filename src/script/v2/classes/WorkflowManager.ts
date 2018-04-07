@@ -1,8 +1,7 @@
-import { Schema, Model, Document, Mongoose, connect, connection } from "mongoose";
 import * as mongoose from "mongoose";
-import { Constant, UpdateResponse } from "./Constants";
-import * as _ from "lodash";
+import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
+import { UpdateResponse } from "./Constants";
 import { Tutor, UserManager } from "./UserManager";
 
 

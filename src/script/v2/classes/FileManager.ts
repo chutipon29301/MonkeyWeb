@@ -1,5 +1,4 @@
 import { ensureDirSync, moveSync, removeSync } from "fs-extra";
-import { join } from "path";
 import { SlideshowManager } from "./SlideshowManager";
 
 export class FileManager {

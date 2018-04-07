@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { Constant } from "./classes/Constants";
 import { FileManager } from "./classes/FileManager";
-import { SlideshowManager, SlideshowResponse, Slideshow } from "./classes/SlideshowManager";
+import { SlideshowManager, SlideshowResponse } from "./classes/SlideshowManager";
 
 export const router = Router();
 

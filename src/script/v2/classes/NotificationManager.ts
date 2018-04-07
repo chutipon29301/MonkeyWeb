@@ -1,5 +1,5 @@
-import { Schema, Document } from "mongoose";
 import * as mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
 
 export interface IOSTokenInterface extends Document {

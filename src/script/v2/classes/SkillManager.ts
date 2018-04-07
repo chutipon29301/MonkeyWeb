@@ -1,5 +1,5 @@
-import { Document, Schema } from "mongoose";
 import * as mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
 
 interface SkillInterface extends Document {

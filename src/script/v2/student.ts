@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { Constant } from "./classes/Constants";
-import { UserManager } from "./classes/UserManager";
 import * as _ from "lodash";
+import { UserManager } from "./classes/UserManager";
 
 export const router = Router();
 

@@ -1,8 +1,8 @@
-import { Document, Schema, Mongoose } from "mongoose";
 import * as mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
-import { CourseManager, Course } from "./CourseManager";
-import { HybridManager, Hybrid } from "./HybridManager";
+import { Course, CourseManager } from "./CourseManager";
+import { Hybrid, HybridManager } from "./HybridManager";
 import { SKillManager, Skill } from "./SkillManager";
 
 interface UserInterface extends Document {

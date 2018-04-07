@@ -1,8 +1,8 @@
-import { Document, Schema } from "mongoose";
 import * as mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
+import { join } from "path";
 import { Observable } from "rx";
 import { UpdateResponse } from "./Constants";
-import { join } from "path";
 
 export enum SlideshowType {
     NEWS = 0,

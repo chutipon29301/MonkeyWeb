@@ -1,9 +1,4 @@
 import { Router } from "express";
-import { CourseManager } from "./classes/CourseManager";
-import { QuarterManager } from "./classes/QuarterManager";
-import { ConfigManager } from "./classes/ConfigManager";
-import { Observable } from "rx";
-import { UserManager } from "./classes/UserManager";
 
 export const router = Router();
 
