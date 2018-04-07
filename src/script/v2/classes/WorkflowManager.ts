@@ -115,12 +115,12 @@ let nodeSchema = new Schema({
 let HeaderModel = mongoose.model<HeaderInterface>("Header", headerSchema, "workflow");
 let NodeModel = mongoose.model<BodyInterface>("Node", nodeSchema, "workflow");
 
-abstract class Node {
+abstract class Node<T extends NodeInterface> {
 
-    protected node: NodeInterface
+    protected node: T
 
-    constructor(node: NodeInterface) {
-        this.node = node
+    constructor(node: T) {
+        this.node = node;
     }
 
     getID(): mongoose.Types.ObjectId {
@@ -138,13 +138,14 @@ abstract class Node {
     }
 }
 
-export class HeaderNode extends Node {
+export class HeaderNode extends Node<HeaderInterface> {
+
     constructor(header: HeaderInterface) {
         super(header);
     }
 
     getInterface(): HeaderInterface {
-        return this.node as HeaderInterface;
+        return this.node
     }
 
     setTitle(title: string): Observable<HeaderNode> {
@@ -156,13 +157,83 @@ export class HeaderNode extends Node {
     }
 }
 
-export class BodyNode extends Node {
+export class BodyNode extends Node<BodyInterface> {
+
     constructor(body: BodyInterface) {
         super(body);
     }
 
     getInterface(): BodyInterface {
-        return this.node as BodyInterface;
+        return this.node
+    }
+
+    getParentID(): mongoose.Types.ObjectId {
+        return this.node.parent;
+    }
+
+    getAncestors(): mongoose.Types.ObjectId[] {
+        return this.node.ancestors;
+    }
+
+    getHeaderID(): mongoose.Types.ObjectId {
+        return this.getAncestors()[0];
+    }
+
+    getStatus(): string {
+        return this.node.status.valueOf();
+    }
+
+    getOwner(): number {
+        return this.node.owner.valueOf();
+    }
+
+    getCreatedBy(): number {
+        return this.node.createdBy.valueOf();
+    }
+
+    getDuedate(): Date {
+        return this.node.duedate;
+    }
+
+    getSubtitle(): string {
+        return this.node.subtitle.valueOf();
+    }
+
+    getDetail(): string {
+        return this.node.detail.valueOf();
+    }
+
+    append(childNode: BodyNode): Observable<BodyNode> {
+        return childNode.setParent(new BodyNode(this.node));
+    }
+
+    setParent(parentNode: BodyNode): Observable<BodyNode> {
+        let ancestors = parentNode.getAncestors();
+        ancestors.push(parentNode.getID());
+        return this.edit({
+            parent: parentNode.getID(),
+                ancestors: ancestors
+        });
+    }
+
+    getParent(): Observable<BodyNode> | Observable<null> {
+        return this.hasParent().flatMap(hasParent => {
+            if (hasParent) {
+                return null;
+            } else {
+                return Observable.fromPromise(NodeModel.findById(this.getParentID())).map(parent => new BodyNode(parent));
+            }
+        });
+    }
+
+    getHeader(): Observable<HeaderNode> {
+        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
+    }
+
+    hasParent(): Observable<boolean> {
+        return Observable.fromPromise(NodeModel.findById(this.getID())).map(parent => {
+            return parent.header.valueOf()
+        });
     }
 
     setSubtitle(subtitle: string): Observable<BodyNode> {
@@ -177,41 +248,9 @@ export class BodyNode extends Node {
         });
     }
 
-    getParentID(): mongoose.Types.ObjectId {
-        return (this.node as BodyInterface).parent;
-    }
-
-    getHeaderID(): mongoose.Types.ObjectId {
-        return this.getAncestors()[0];
-    }
-
-    getAncestors(): mongoose.Types.ObjectId[] {
-        return (this.node as BodyInterface).ancestors;
-    }
-
-    append(node: BodyNode): Observable<BodyNode> {
-        let bodyNode = node as BodyNode;
-        
-    }
-
-    getParent(): Observable<BodyNode> | null {
-        return this.hasParent().flatMap(hasParent => {
-            if (hasParent) {
-                return null;
-            } else {
-                return Observable.fromPromise(NodeModel.findById(this.getParentID())).map(parent => new BodyNode(parent));
-            }
-        });
-    }
-
-
-    getHeader(): Observable<HeaderNode> {
-        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
-    }
-
-    hasParent(): Observable<boolean> {
-        return Observable.fromPromise(NodeModel.findById(this.getID())).map(parent => {
-            return parent.header.valueOf()
+    setStatus(status: string): Observable<BodyNode> {
+        return this.edit({
+            status: status
         });
     }
 
@@ -265,18 +304,8 @@ export class WorkflowManager {
             tag: tag
         });
         return Observable.fromPromise(header.save()).flatMap(header => {
-            let node = new NodeModel({
-                status: Status.NOTE,
-                owner: userID,
-                createdBy: userID,
-                duedate: workflowDuedate,
-                subtitle: subtitle,
-                detail: detail,
-                parent: header._id,
-                ancestors: [header._id]
-            });
-            return Observable.fromPromise(node.save())
-        }).map(bodyNode => new BodyNode(bodyNode));
+            return this.createBodyNode(Status.NOTE, userID, userID, workflowDuedate, subtitle, detail, header._id, [header._id]);
+        });
     }
 
 
@@ -299,70 +328,34 @@ export class WorkflowManager {
         );
     }
 
-    //     /**
-    //      * Create node after parent node
-    //      * 
-    //      * @static
-    //      * @param {number} userID User id who request to add node
-    //      * @param {(string | Types.ObjectId)} parentID Object id of parent node
-    //      * @param {number} owner User id of the node owner
-    //      * @param {string} subtitle Subtitle of the node
-    //      * @param {string} detail Detail of the node
-    //      * @param {string} status Status of the node
-    //      * @param {Date} [duedate] <Optional> Duedate of the node
-    //      * @returns {Observable<BodyNode>} Obserable of event that return node
-    //      * @memberof WorkflowManager
-    //      */
-    //     static addNode(userID: number,
-    //         parentID: string | mongoose.Types.ObjectId,
-    //         owner: number,
-    //         subtitle: string,
-    //         detail: string,
-    //         status: string,
-    //         duedate?: Date): Observable<BodyNode> {
-    //         return this.getNode(parentID).flatMap(parent => {
-    //             parent.ancestors.push(parent._id);
-    //             let nodeDuedate: Date;
-    //             if (duedate) {
-    //                 nodeDuedate = duedate;
-    //             } else {
-    //                 nodeDuedate = parent.duedate;
-    //             }
-    //             let node = new NodeModel({
-    //                 status: status,
-    //                 owner: owner,
-    //                 createdBy: userID,
-    //                 duedate: nodeDuedate,
-    //                 subtitle: subtitle,
-    //                 detail: detail,
-    //                 parent: parent._id,
-    //                 ancestors: parent.ancestors
-    //             });
-    //             return Observable.fromPromise(node.save());
-    //         });
-    //     }
+    static getHeaderNode(nodeID: mongoose.Types.ObjectId | string): Observable<HeaderNode> {
+        if (typeof nodeID === "string") nodeID = new mongoose.Types.ObjectId(nodeID);
+        return Observable.fromPromise(HeaderModel.findById(nodeID)).map(node => new HeaderNode(node));
+    }
 
-    //     /**
-    //      * Get node info
-    //      * 
-    //      * @static
-    //      * @param {(string | Types.ObjectId)} workflowID Object id of the node
-    //      * @returns {Observable<BodyNode>} Observable of event that return node
-    //      * @memberof WorkflowManager
-    //      */
-    //     static getNode(workflowID: string | mongoose.Types.ObjectId, userID?: number): Observable<BodyNode> {
-    //         if (typeof workflowID === "string") workflowID = new mongoose.Types.ObjectId(workflowID);
-    //         let query: {
-    //             _id: mongoose.Types.ObjectId,
-    //             header: boolean,
-    //             userID?: number
-    //         } = {
-    //                 _id: workflowID,
-    //                 header: false
-    //             }
-    //         if (userID) query.userID = userID;
-    //         return Observable.fromPromise(NodeModel.findOne(query));
-    //     }
+    static getBodyNode(nodeID: mongoose.Types.ObjectId | string): Observable<BodyNode> {
+        if (typeof nodeID === "string") nodeID = new mongoose.Types.ObjectId(nodeID);
+        return Observable.fromPromise(NodeModel.findById(nodeID)).map(node => new BodyNode(node));
+    }
+
+    static createBodyNode(status: string, owner: number, createdBy: number, duedate: Date, subtitle: string, detail: string,
+        parent: mongoose.Types.ObjectId, ancestors: mongoose.Types.ObjectId[]): Observable<BodyNode> {
+        let node = new NodeModel({
+            status: status,
+            owner: owner,
+            createdBy: createdBy,
+            duedate: duedate,
+            subtitle: subtitle,
+            detail: detail,
+            parent: parent,
+            ancestors: ancestors
+        });
+        return Observable.fromPromise(node.save()).map(node => new BodyNode(node));
+    }
+
+    static clone(node: BodyNode): Observable<BodyNode> {
+        return this.createBodyNode(node.getStatus(), node.getOwner(), node.getCreatedBy(), node.getDuedate(), node.getSubtitle(), node.getDetail(), node.getParentID(), node.getAncestors())
+    }
 
     //     /**
     //      * Find workflow node of requested user
