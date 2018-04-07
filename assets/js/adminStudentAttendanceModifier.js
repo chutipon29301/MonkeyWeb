@@ -501,6 +501,8 @@ async function generateChart(type) {
     let maxSeat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let mhbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let phbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let chbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ehbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let mcrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let pcrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ccrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -509,6 +511,8 @@ async function generateChart(type) {
     // realtime data
     let mhbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let phbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let chbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ehbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let mcrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let pcrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ccrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -548,8 +552,12 @@ async function generateChart(type) {
         maxSeat[dayIndex(i)] = allHbRoom[i].maxStudent;
         mhbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numMath;
         phbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numPhysics;
+        chbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numChemistry;
+        ehbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numEnglish;
         mhbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numMath;
         phbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numPhysics;
+        chbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numChemistry;
+        ehbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numEnglish;
         if (allHbRoom[i].course !== undefined) {
             let cr = allHbRoom[i].course;
             for (let j in cr) {
@@ -644,6 +652,10 @@ async function generateChart(type) {
                             mhbReal[dayIndex(t)] -= 1;
                         } else if (attend[j].hybridSubject === "P") {
                             phbReal[dayIndex(t)] -= 1;
+                        } else if (attend[j].hybridSubject === "C") {
+                            chbReal[dayIndex(t)] -= 1;
+                        } else if (attend[j].hybridSubject === "E") {
+                            ehbReal[dayIndex(t)] -= 1;
                         }
                     } else {
                         if (attend[j].tutorID === 99000) {
@@ -685,6 +697,8 @@ async function generateChart(type) {
     }
     cvZero(mhbStatic);
     cvZero(phbStatic);
+    cvZero(chbStatic);
+    cvZero(ehbStatic);
     cvZero(mcrStatic);
     cvZero(pcrStatic);
     cvZero(ccrStatic);
@@ -692,6 +706,8 @@ async function generateChart(type) {
     cvZero(emptySeat);
     cvZero(mhbReal);
     cvZero(phbReal);
+    cvZero(chbReal);
+    cvZero(ehbReal);
     cvZero(mcrReal);
     cvZero(pcrReal);
     cvZero(ccrReal);
@@ -771,6 +787,8 @@ async function generateChart(type) {
     if (firstTimeGen) {
         addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
         addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+        addDataSet("CHB(Static)", chbStatic, 0, "#ff8af3", "white");
+        addDataSet("EHB(Static)", ehbStatic, 0, "#bdbdbd", "white");
         addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
         addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
         addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
@@ -805,6 +823,8 @@ async function generateChart(type) {
         });
         addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
         addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+        addDataSet("CHB(Real)", chbReal, 1, "#ff3dec", "white");
+        addDataSet("EHB(Real)", ehbReal, 1, "#9e9e9e", "white");
         addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
         addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
         addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
@@ -889,6 +909,8 @@ async function generateChart(type) {
             case 1:
                 addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
                 addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("CHB(Static)", chbStatic, 0, "#ff8af3", "white");
+                addDataSet("EHB(Static)", ehbStatic, 0, "#bdbdbd", "white");
                 addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
                 addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
                 addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
@@ -927,6 +949,8 @@ async function generateChart(type) {
             case 3:
                 addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
                 addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("CHB(Static)", chbStatic, 0, "#ff8af3", "white");
+                addDataSet("EHB(Static)", ehbStatic, 0, "#bdbdbd", "white");
                 addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
                 addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
                 addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
@@ -962,6 +986,8 @@ async function generateChart(type) {
             case 2:
                 addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
                 addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+                addDataSet("CHB(Real)", chbReal, 1, "#ff3dec", "white");
+                addDataSet("EHB(Real)", ehbReal, 1, "#9e9e9e", "white");
                 addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
                 addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
                 addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
