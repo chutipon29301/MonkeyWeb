@@ -115,13 +115,9 @@ router.post("/note", (req, res) => {
             msg: "Bad Request"
         });
     }
+
     WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return WorkflowManager.clone(node).map(child => ({ child, node }));
-    }).flatMap(({ child, node }) => {
-        return Observable.forkJoin([
-            child.setStatus(Status.NOTE),
-            node.append(child)
-        ]);
+        return node.appendWithStatus(Status.NOTE);
     }).subscribe(_ => {
         return res.status(200).send({
             msg: "OK"
@@ -137,13 +133,9 @@ router.post("/todo", (req, res) => {
             msg: "Bad Request"
         });
     }
+
     WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return WorkflowManager.clone(node).map(child => ({ child, node }));
-    }).flatMap(({ child, node }) => {
-        return Observable.forkJoin([
-            child.setStatus(Status.TODO),
-            node.append(child)
-        ]);
+        return node.appendWithStatus(Status.TODO);
     }).subscribe(_ => {
         return res.status(200).send({
             msg: "OK"
@@ -156,16 +148,12 @@ router.post("/inProgress", (req, res) => {
     if (!workflowID) {
         return res.status(400).send({
             err: 0,
-            msg: "Bad Request"
+            msg: "OK"
         });
     }
+
     WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return WorkflowManager.clone(node).map(child => ({ child, node }));
-    }).flatMap(({ child, node }) => {
-        return Observable.forkJoin([
-            child.setStatus(Status.IN_PROGRESS),
-            node.append(child)
-        ]);
+        return node.appendWithStatus(Status.IN_PROGRESS);
     }).subscribe(_ => {
         return res.status(200).send({
             msg: "OK"
@@ -184,22 +172,24 @@ router.post("/assign", (req, res) => {
     if (duedate) duedate = new Date(duedate);
 
     WorkflowManager.getBodyNode(workflowID).flatMap(node => {
+        return node.appendWithStatus(Status.ASSIGN);
+    }).flatMap(node => {
+        return WorkflowManager.getBodyNode(node.getID())
+    }).flatMap(node => {
         let ancestors = node.getAncestors();
         ancestors.push(node.getID());
         return WorkflowManager.createBodyNode(
             Status.TODO,
             parseInt(owner),
-            req.user._id,
+            node.getCreatedBy(),
             duedate,
             subtitle,
             detail,
             node.getID(),
             ancestors
         );
-    }).flatMap(node => {
-        return node.getOwnerDetail();
-    }).flatMap(tutor => {
-        return IOSNotificationManager.getInstance().send(parseInt(owner), tutor.getNicknameEn() + "assign you a task");
+    }).flatMap(_ => {
+        return IOSNotificationManager.getInstance().send(parseInt(owner), req.user.nicknameEn + " assign you a task.");
     }).subscribe(_ => {
         return res.status(200).send({
             msg: "OK"

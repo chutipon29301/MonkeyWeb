@@ -1,4 +1,5 @@
 import * as mongoose from "mongoose";
+import * as _ from "lodash";
 import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
 import { UpdateResponse } from "./Constants";
@@ -60,7 +61,7 @@ export interface BodyInterface extends NodeInterface {
     subtitle: String,
     detail: String,
     parent?: mongoose.Types.ObjectId,
-    ancestors?: [mongoose.Types.ObjectId]
+    ancestors?: mongoose.Types.ObjectId[]
 }
 
 /**
@@ -206,13 +207,18 @@ export class BodyNode extends Node<BodyInterface> {
         return UserManager.getTutorInfo(this.getOwner());
     }
 
-    append(childNode: BodyNode): Observable<BodyNode> {
-        return childNode.setParent(new BodyNode(this.node));
+    appendWithStatus(status: string): Observable<BodyNode>{
+        return WorkflowManager.clone(this).flatMap(newNode => {
+            return newNode.setStatus(status);
+        }).flatMap(newNode => {
+            return newNode.setParent(this);
+        });
     }
 
     setParent(parentNode: BodyNode): Observable<BodyNode> {
         let ancestors = parentNode.getAncestors();
         ancestors.push(parentNode.getID());
+        this.node.ancestors = ancestors;
         return this.edit({
             parent: parentNode.getID(),
             ancestors: ancestors
@@ -220,8 +226,8 @@ export class BodyNode extends Node<BodyInterface> {
     }
 
     getParent(): Observable<BodyNode> | Observable<null> {
-        return this.hasParent().flatMap(hasParent => {
-            if (hasParent) {
+        return this.isParentHeader().flatMap(isHeader => {
+            if (isHeader) {
                 return null;
             } else {
                 return Observable.fromPromise(NodeModel.findById(this.getParentID())).map(parent => new BodyNode(parent));
@@ -233,7 +239,7 @@ export class BodyNode extends Node<BodyInterface> {
         return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
     }
 
-    hasParent(): Observable<boolean> {
+    isParentHeader(): Observable<boolean> {
         return Observable.fromPromise(NodeModel.findById(this.getID())).map(parent => {
             return parent.header.valueOf()
         });
@@ -254,6 +260,37 @@ export class BodyNode extends Node<BodyInterface> {
     setStatus(status: string): Observable<BodyNode> {
         return this.edit({
             status: status
+        });
+    }
+
+    getTree(): Observable<BodyNode[]> {
+        return this.getHeader().flatMap(header => {
+            return Observable.fromPromise(NodeModel.find({
+                ancestors: header.getID()
+            }))
+        }).map(nodes => nodes.map(node => new BodyNode(node)));
+    }
+
+    getParentBranch(): Observable<BodyNode[]> {
+        return this.getTree().map(bodynodes => {
+            return _.dropRightWhile(bodynodes, o => {
+                return o.getID() !== this.getID()
+            });
+        });
+    }
+
+    getBranchParent(): Observable<BodyNode> {
+        return this.getTree().map(bodynodes => {
+            bodynodes = _.dropRightWhile(bodynodes, o => {
+                return o.getID() !== this.getID()
+            });
+            let returnNode: BodyNode;
+            _.forEachRight(bodynodes, node => {
+                if (node.getOwner() != this.getOwner()) {
+                    returnNode = node;
+                }
+            });
+            return returnNode;
         });
     }
 
@@ -307,7 +344,14 @@ export class WorkflowManager {
             tag: tag
         });
         return Observable.fromPromise(header.save()).flatMap(header => {
-            return this.createBodyNode(Status.NOTE, userID, userID, workflowDuedate, subtitle, detail, header._id, [header._id]);
+            return this.createBodyNode(Status.NOTE,
+                userID,
+                userID,
+                workflowDuedate,
+                subtitle,
+                detail,
+                header._id,
+                [header._id]);
         });
     }
 
@@ -357,7 +401,14 @@ export class WorkflowManager {
     }
 
     static clone(node: BodyNode): Observable<BodyNode> {
-        return this.createBodyNode(node.getStatus(), node.getOwner(), node.getCreatedBy(), node.getDuedate(), node.getSubtitle(), node.getDetail(), node.getParentID(), node.getAncestors())
+        return this.createBodyNode(node.getStatus(),
+            node.getOwner(),
+            node.getCreatedBy(),
+            node.getDuedate(),
+            undefined,
+            undefined,
+            node.getParentID(),
+            node.getAncestors());
     }
 
     //     /**
