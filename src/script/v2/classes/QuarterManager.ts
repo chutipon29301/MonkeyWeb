@@ -1,13 +1,16 @@
 import * as mongoose from "mongoose";
 import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
+import { start } from "repl";
 
 interface QuarterInterface extends Document {
     year: Number,
     quarter: Number,
     name: String,
     maxSeat: [Number],
-    status: String
+    status: String,
+    startDate: Date,
+    endDate: Date
 }
 
 let quarterSchema = new Schema({
@@ -15,7 +18,9 @@ let quarterSchema = new Schema({
     quarter: Number,
     name: String,
     maxSeat: [Number],
-    status: String
+    status: String,
+    startDate: Date,
+    endDate: Date
 });
 
 let QuarterModel = mongoose.model<QuarterInterface>('Quarter', quarterSchema, 'quarter');
@@ -45,6 +50,10 @@ export class Quarter {
         this.quarter = quarter
     }
 
+    getID(): string {
+        return this.quarter._id;
+    }
+
     getYear(): number {
         return this.quarter.year.valueOf();
     }
@@ -55,5 +64,18 @@ export class Quarter {
 
     getQuarterID(): string {
         return this.quarter._id;
+    }
+
+    setStartEndDate(startDate: Date, endDate: Date): Observable<Quarter> {
+        return this.edit({
+            startDate: startDate,
+            endDate: endDate
+        });
+    }
+
+    private edit(value: any): Observable<Quarter> {
+        return Observable.fromPromise(QuarterModel.findByIdAndUpdate(this.getID(), {
+            $set: value
+        })).map(quarter => new Quarter(quarter));
     }
 }
