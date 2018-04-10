@@ -206,57 +206,58 @@ router.post("/done", (req, res) => {
         });
     }
 
+    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
+        return node.appendWithStatus(Status.DONE);
+    }).flatMap(node => {
+        return WorkflowManager.getBodyNode(node.getID());
+    }).flatMap(node => {
+        return node.getBranchParent().map(parent => ({ node, parent }));
+    }).flatMap(({ node, parent }) => {
+        let ancestors = node.getAncestors();
+        ancestors.push(node.getID());
+        return WorkflowManager.createBodyNode(
+            Status.TODO,
+            parent.getOwner(),
+            req.user._id,
+            parent.getDuedate(),
+            undefined,
+            undefined,
+            node.getID(),
+            ancestors
+        ).map(child => ({ child, parent }));
+    }).flatMap(({ child, parent }) => {
+        return IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn);
+    }).subscribe(_ => {
+        return res.status(200).send({
+            msg: "OK"
+        })
+    })
+
+    // WorkflowManager.getBodyNode(workflowID).flatMap(node => {
+    //     return node.appendWithStatus(Status.DONE);
+    // }).flatMap(node => {
+    //     return WorkflowManager.getBodyNode(node.getID());
+    // }).flatMap(node => {
+    //     return node.getBranchParent();
+    // }).flatMap(node => {
+    //     let ancestors = node.getAncestors();
+    //     ancestors.push(node.getID());
+    //     return WorkflowManager.createBodyNode(
+    //         Status.TODO,
+    //         node.getOwner(),
+    //         node.getCreatedBy(),
+    //         node.getDuedate(),
+    //         node.getSubtitle(),
+    //         node.getDetail(),
+    //         node.getID(),
+    //         ancestors
+    //     );
+    // }).subscribe(_ => {
+    //     return res.status(200).send({
+    //         msg: "OK"
+    //     });
+    // });
 });
-
-// router.post("/assign", (req, res) => {
-//     if (!(req.body.workflowID && req.body.owner)) {
-//         return res.status(200).send({
-//             err: 0,
-//             msg: "Bad Request"
-//         });
-//     }
-
-//     let subtitle: string;
-//     let detail: string;
-//     let duedate: Date;
-
-//     if (req.body.subtitle) subtitle = req.body.subtitle;
-//     if (req.body.detail) detail = req.body.detail;
-//     if (req.body.duedate) duedate = new Date(req.body.duedate);
-
-//     WorkflowManager.getNode(req.body.workflowID).flatMap(parent => {
-//         return WorkflowManager.addNode(
-//             req.user._id,
-//             parent._id,
-//             req.user._id,
-//             subtitle,
-//             detail,
-//             Status.ASSIGN,
-//             duedate
-//         );
-//     }).flatMap(node => {
-//         return WorkflowManager.addNode(
-//             req.user._id,
-//             node._id,
-//             req.body.owner,
-//             "",
-//             "",
-//             Status.TODO
-//         )
-//     }).flatMap(node => {
-//         return UserManager.getTutorInfo(req.user._id);
-//     }).flatMap(tutor => {
-//         return IOSNotificationManager.getInstance().send(req.body.owner, tutor.getNicknameEn() + " assign you a task");
-//     }).subscribe(node => {
-//         return res.status(200).send({
-//             msg: "OK"
-//         });
-//     });
-
-
-
-// });
-
 
 // // router.post("/done", (req, res) => {
 // //     if (!req.body.workflowID) {
