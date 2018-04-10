@@ -132,7 +132,7 @@ abstract class Node<T extends NodeInterface> {
 
     getChild(): Observable<BodyNode[]> {
         return Observable.fromPromise(NodeModel.find({
-            ancestors: this.getID
+            ancestors: this.getID()
         })).map(nodes => nodes.map(node => new BodyNode(node)));
     }
 
@@ -155,6 +155,10 @@ export class HeaderNode extends Node<HeaderInterface> {
         super(header);
     }
 
+    getTitle(): string {
+        return this.node.title.valueOf();
+    }
+
     setTitle(title: string): Observable<HeaderNode> {
         return Observable.fromPromise(HeaderModel.findByIdAndUpdate(this.getID(), {
             $set: {
@@ -164,43 +168,109 @@ export class HeaderNode extends Node<HeaderInterface> {
     }
 
 }
-
+// let nodeSchema = new Schema({
+//     parent: {
+//         type: Schema.Types.ObjectId,
+//         default: null
+//     },
+//     ancestors: {
+//         type: [Schema.Types.ObjectId],
+//         default: []
+//     }
+// });
 export class BodyNode extends Node<BodyInterface> {
 
     constructor(body: BodyInterface) {
         super(body);
     }
 
-    getParentID(): mongoose.Types.ObjectId {
-        return this.node.parent;
+    getDuedate(): Date {
+        return this.node.duedate;
     }
 
-    getAncestors(): mongoose.Types.ObjectId[] {
-        return this.node.ancestors;
+    setDuedate(date: Date): Observable<BodyNode> {
+        return this.edit({
+            duedate: date
+        });
     }
-
-    getHeaderID(): mongoose.Types.ObjectId {
-        return this.getAncestors()[0];
-    }
-
+    
     getStatus(): string {
         return this.node.status.valueOf();
+    }
+    
+    setStatus(status: string): Observable<BodyNode> {
+        return this.edit({
+            status: status
+        });
     }
 
     getOwner(): number {
         return this.node.owner.valueOf();
     }
 
-    getDuedate(): Date {
-        return this.node.duedate;
+    setOwner(owner: number): Observable<BodyNode> {
+        return this.edit({
+            owner: owner
+        });
     }
-
+    
     getSubtitle(): string {
         return this.node.subtitle.valueOf();
+    }
+    
+    setSubtitle(subtitle: string): Observable<BodyNode> {
+        return this.edit({
+            subtitle: subtitle
+        });
     }
 
     getDetail(): string {
         return this.node.detail.valueOf();
+    }
+
+    setDetail(detail: string): Observable<BodyNode> {
+        return this.edit({
+            detail: detail
+        });
+    }
+
+    getParentID(): mongoose.Types.ObjectId {
+        return this.node.parent;
+    }
+
+    getParent(): Observable<BodyNode> | Observable<null> {
+        return this.isParentHeader().flatMap(isHeader => {
+            if (isHeader) {
+                return null;
+            } else {
+                return Observable.fromPromise(NodeModel.findById(this.getParentID())).map(parent => new BodyNode(parent));
+            }
+        });
+    }
+
+    setParent(parentNode: BodyNode): Observable<BodyNode> {
+        let ancestors = parentNode.getAncestorsID();
+        ancestors.push(parentNode.getID());
+        this.node.ancestors = ancestors;
+        return this.edit({
+            parent: parentNode.getID(),
+            ancestors: ancestors
+        });
+    }
+
+    getAncestorsID(): mongoose.Types.ObjectId[] {
+        return this.node.ancestors;
+    }
+
+    // getAncestors(): Observable<BodyNode[]> {
+    //     return Observable.fromPromise()
+    // }
+
+
+
+
+    getHeaderID(): mongoose.Types.ObjectId {
+        return this.node.ancestors[0];
     }
 
     getOwnerDetail(): Observable<Tutor> {
@@ -215,25 +285,9 @@ export class BodyNode extends Node<BodyInterface> {
         });
     }
 
-    setParent(parentNode: BodyNode): Observable<BodyNode> {
-        let ancestors = parentNode.getAncestors();
-        ancestors.push(parentNode.getID());
-        this.node.ancestors = ancestors;
-        return this.edit({
-            parent: parentNode.getID(),
-            ancestors: ancestors
-        });
-    }
+    
 
-    getParent(): Observable<BodyNode> | Observable<null> {
-        return this.isParentHeader().flatMap(isHeader => {
-            if (isHeader) {
-                return null;
-            } else {
-                return Observable.fromPromise(NodeModel.findById(this.getParentID())).map(parent => new BodyNode(parent));
-            }
-        });
-    }
+    
 
     getHeader(): Observable<HeaderNode> {
         return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
@@ -251,24 +305,8 @@ export class BodyNode extends Node<BodyInterface> {
         });
     }
 
-    setSubtitle(subtitle: string): Observable<BodyNode> {
-        return this.edit({
-            subtitle: subtitle
-        });
-    }
 
-    setDuedate(duedate: Date): Observable<BodyNode> {
-        return this.edit({
-            duedate: duedate
-        });
-    }
-
-    setStatus(status: string): Observable<BodyNode> {
-        return this.edit({
-            status: status
-        });
-    }
-
+    
     getTree(): Observable<BodyNode[]> {
         return this.getHeader().flatMap(header => {
             return Observable.fromPromise(NodeModel.find({
@@ -446,7 +484,7 @@ export class WorkflowManager {
             undefined,
             undefined,
             node.getParentID(),
-            node.getAncestors());
+            node.getAncestorsID());
     }
 
     //     /**
