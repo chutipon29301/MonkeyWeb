@@ -1,11 +1,11 @@
-import { Document, Schema, Mongoose } from "mongoose";
 import * as mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
-import { CourseManager, CourseObject } from "./CourseManager";
-import { HybridManager, HybridObject } from "./HybridManager";
-import { SKillManager, SkillObject } from "./SkillManager";
+import { Course, CourseManager } from "./CourseManager";
+import { Hybrid, HybridManager } from "./HybridManager";
+import { SKillManager, Skill } from "./SkillManager";
 
-interface User extends Document {
+interface UserInterface extends Document {
     _id: Number,
     password: String,
     position: String,
@@ -19,14 +19,14 @@ interface User extends Document {
     phone: String
 }
 
-export interface Tutor extends User {
+export interface TutorInterface extends UserInterface {
     tutor: {
         status: String
     },
     subPosition: String
 }
 
-export interface Student extends User {
+export interface StudentInterface extends UserInterface {
     student: {
         grade: Number,
         skillday: any[],
@@ -89,26 +89,26 @@ let tutorSchema = new Schema({
     subPosition: String
 });
 
-export let StudentModel = mongoose.model<Student>("Student", studentSchema, "user");
-export let TutorModel = mongoose.model<Tutor>("Tutor", tutorSchema, "user");
+export let StudentModel = mongoose.model<StudentInterface>("Student", studentSchema, "user");
+export let TutorModel = mongoose.model<TutorInterface>("Tutor", tutorSchema, "user");
 
 
 export class UserManager {
 
-    static getStudentInfo(userID: number): Observable<StudentObject> {
-        return Observable.fromPromise(StudentModel.findById(userID as Number)).map(student => new StudentObject(student));
+    static getStudentInfo(userID: number): Observable<Student> {
+        return Observable.fromPromise(StudentModel.findById(userID as Number)).map(student => new Student(student));
     }
 
-    static getTutorInfo(userID: number): Observable<TutorObject> {
-        return Observable.fromPromise(TutorModel.findById(userID as Number)).map(tutor => new TutorObject(tutor));
+    static getTutorInfo(userID: number): Observable<Tutor> {
+        return Observable.fromPromise(TutorModel.findById(userID as Number)).map(tutor => new Tutor(tutor));
     }
 }
 
-class UserObject {
+abstract class User {
 
-    user: User
+    user: UserInterface
 
-    constructor(user: User) {
+    constructor(user: UserInterface) {
         this.user = user
     }
 
@@ -117,16 +117,16 @@ class UserObject {
     }
 }
 
-export class StudentObject extends UserObject {
+export class Student extends User {
 
-    student: Student
+    student: StudentInterface
 
-    constructor(student: Student) {
+    constructor(student: StudentInterface) {
         super(student);
-        student = this.user as Student;
+        student = this.user as StudentInterface;
     }
 
-    getRegistrationQuarter(): Observable<[CourseObject[], HybridObject[], SkillObject[]]>{
+    getRegistrationQuarter(): Observable<[Course[], Hybrid[], Skill[]]>{
         return Observable.zip(
             CourseManager.findCourseContainStudent(this.getID()),
             HybridManager.findHybridContainStudent(this.getID()),
@@ -135,13 +135,13 @@ export class StudentObject extends UserObject {
     }
 }
 
-export class TutorObject extends UserObject {
+export class Tutor extends User {
 
-    tutor: Tutor
+    tutor: TutorInterface
 
-    constructor(tutor: Tutor) {
+    constructor(tutor: TutorInterface) {
         super(tutor);
-        tutor = this.user as Tutor;
+        tutor = this.user as TutorInterface;
     }
 
     getNicknameEn(): string{

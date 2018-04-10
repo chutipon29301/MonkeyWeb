@@ -1,9 +1,10 @@
 import * as express from "express";
-import * as morgan from "morgan";
 import { router as workflow } from "./workflow";
 import { router as slideshow } from "./slideshow";
 import { router as student } from "./student";
+import { router as feedback } from "./feedback";
 import * as mongoose from "mongoose";
+import * as morgan from "morgan";
 
 
 // Add user property to request object
@@ -54,6 +55,7 @@ export function app(passport: any) {
     app.use("/workflow", workflow);
     app.use("/slideshow", slideshow);
     app.use("/student", student);
+    app.use("/feedback", feedback);
 
     return app;
 }

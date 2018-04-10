@@ -1,8 +1,8 @@
-import { Document, Schema } from "mongoose";
 import * as mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
 
-interface Hybrid extends Document {
+interface HybridInterface extends Document {
     quarterID: String,
     day: Number,
     student: [{
@@ -20,31 +20,27 @@ let hybridSchema = new Schema({
     }]
 });
 
-let HybridModel = mongoose.model<Hybrid>('Hybrid', hybridSchema, 'hybridStudent');
+let HybridModel = mongoose.model<HybridInterface>('Hybrid', hybridSchema, 'hybridStudent');
 
 export class HybridManager {
-    static getHybridForQuarter(quarterID: string): Observable<HybridObject> {
+    static getHybridForQuarter(quarterID: string): Observable<Hybrid> {
         return Observable.fromPromise(HybridModel.findOne({
             quarterID: quarterID
-        })).map(hybrid => new HybridObject(hybrid));
+        })).map(hybrid => new Hybrid(hybrid));
     }
 
-    static findHybridContainStudent(studentID: number): Observable<HybridObject[]> {
+    static findHybridContainStudent(studentID: number): Observable<Hybrid[]> {
         return Observable.fromPromise(HybridModel.find({
             "student.studentID": studentID
-        })).map(hybrid => HybridObject.getHybridArrayObject(hybrid));
+        })).map(hybrids => hybrids.map(hybrid => new Hybrid(hybrid)));
     }
 }
 
-export class HybridObject {
-    hybrid: Hybrid
+export class Hybrid {
+    hybrid: HybridInterface
 
-    constructor(hybrid: Hybrid) {
+    constructor(hybrid: HybridInterface) {
         this.hybrid = hybrid;
-    }
-
-    static getHybridArrayObject(hybrids: Hybrid[]): HybridObject[] {
-        return hybrids.map(hybrid => new HybridObject(hybrid));
     }
 
     getQuarterID(): string {
