@@ -4,7 +4,7 @@ block head
     link(rel="stylesheet", href="css/typeaheadjs.css")
 block script
     script(src="js/bootstrap3-typeahead.min.js")
-    script(src="js/adminAllstudent.min.js")
+    script(src="js/adminAllstudent.js")
 block body
     .container-fluid
         .row
@@ -50,9 +50,10 @@ block body
                 form
                     .form-group
                         select.custom-select#course(onChange="getAllStudentContent()")
-                            option(value="all" ) CR &amp; FHB
+                            option(value="none" ) CR or FHB
                             option(value="cr") CR
                             option(value="hb") FHB
+                            option(value="all" ) CR &amp; FHB
                 form
                     .form-group
                         label
@@ -66,7 +67,9 @@ block body
                             |Barcode
                         input.form-control(type="number" id="studentID" autofocus)
                 label#currentStudentLabel 
-                button.btn.btn-outline-secondary.col-sm-12(onClick="if(confirm('ยืนยันที่จะเพิ่มนักเรียนใหม่?'))createNewStudent()") Add Student
+                button.btn.btn-outline-secondary.col-12(onClick="if(confirm('ยืนยันที่จะเพิ่มนักเรียนใหม่?'))createNewStudent()") Add Student
+                h1#stdCount.text-center.text-danger.mb-0 --
+                p.text-center.text-danger person
             .col-12.col-md-9.offset-md-3.col-xl-10.offset-xl-2.p-0
                 .table-responsive
                     table.table.table-hover
