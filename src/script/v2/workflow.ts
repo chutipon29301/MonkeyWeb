@@ -176,7 +176,7 @@ router.post("/assign", (req, res) => {
     }).flatMap(node => {
         return WorkflowManager.getBodyNode(node.getID())
     }).flatMap(node => {
-        let ancestors = node.getAncestors();
+        let ancestors = node.getAncestorsID();
         ancestors.push(node.getID());
         return WorkflowManager.createBodyNode(
             Status.TODO,
@@ -213,7 +213,7 @@ router.post("/done", (req, res) => {
     }).flatMap(node => {
         return node.getBranchParent().map(parent => ({ node, parent }));
     }).flatMap(({ node, parent }) => {
-        let ancestors = node.getAncestors();
+        let ancestors = node.getAncestorsID();
         ancestors.push(node.getID());
         return WorkflowManager.createBodyNode(
             Status.TODO,
