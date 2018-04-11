@@ -125,7 +125,6 @@ function loadSelectedMenu(config) {
                     log("[getAllStudentContent()] : post/allStudent => " + data.err);
                 } else {
                     log("[getAllStudentContent()] : post/allStudent => ");
-                    log(data);
 
                     // for typeahead predict
                     for (let i = 0; i < data.users.length; i++) {
@@ -220,13 +219,15 @@ function filterData(data, quarterList, config) {
     if (grade.options[grade.selectedIndex].value !== "all") {
         data = data.filter(data => data.grade === parseInt(grade.options[grade.selectedIndex].value));
     }
-    if (course.options[course.selectedIndex].value !== "all") {
+    if (course.options[course.selectedIndex].value !== "none") {
         data = data.filter(data => {
             switch (course.options[course.selectedIndex].value) {
                 case "hb":
                     return data.inHybrid;
                 case "cr":
                     return data.inCourse;
+                case "all":
+                    return data.inCourse && data.inHybrid;
                 default:
                     break;
             }
@@ -242,6 +243,7 @@ function filterData(data, quarterList, config) {
 async function generateStudentHtmlTable(student) {
     let table = document.getElementById("allStudentTable");
     table.innerHTML = "";
+    $("#stdCount").html(student.length);
     for (let i = 0; i < student.length; i++) {
         let row = table.insertRow(i);
         let status = student[i].status;
