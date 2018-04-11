@@ -688,7 +688,8 @@ module.exports = function (app, db, pasport) {
                 promise1.push(userDB.findOne({ _id: skInfo.student[i].studentID, position: 'student' }, {
                     nickname: 1,
                     firstname: 1,
-                    'student.grade': 1
+                    'student.grade': 1,
+                    'student.status': 1,
                 }));
                 promise2.push(courseDB.findOne({
                     year: year,
@@ -706,11 +707,19 @@ module.exports = function (app, db, pasport) {
             Promise.all(promise2),
             Promise.all(promise3)
         ]);
+        console.log(userInfo);
+        let skStd = [];
         for (let i = 0; i < userInfo.length; i++) {
-            userInfo[i].grade = userInfo[i].student.grade;
-            delete userInfo[i].student;
-            userInfo[i].hasCR = (crInfo[i] === null ? false : true);
-            userInfo[i].hasHB = (hbInfo[i] === null ? false : true);
+            if (userInfo[i].student.status == "active") {
+                skStd.push({
+                    grade: userInfo[i].student.grade,
+                    hasCR: (crInfo[i] === null ? false : true),
+                    hasHB: (hbInfo[i] === null ? false : true),
+                    _id: userInfo[i]._id,
+                    firstname: userInfo[i].firstname,
+                    nickname: userInfo[i].nickname
+                });
+            }
         }
         let local = {
             webUser: {
@@ -725,7 +734,7 @@ module.exports = function (app, db, pasport) {
                 subject: req.cookies.monkeySelectedSkill.slice(-1),
                 day: moment(skInfo.day).format('dddd HH:mm')
             },
-            skStd: userInfo
+            skStd: skStd
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminSkillInfo', local)
         else return404(req, res)
