@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Observable } from "rx";
-import { Status, WorkflowManager } from "./classes/WorkflowManager";
+import { Status, WorkflowManager, BodyNode } from "./classes/WorkflowManager";
 import { IOSNotificationManager } from "./classes/NotificationManager";
 
 export const router = Router();
@@ -22,11 +22,12 @@ router.post("/createWorkflow", (req, res) => {
     if (duedate) {
         duedate = new Date(duedate);
     }
-    WorkflowManager.create(req.user._id, title, subtitle, detail, tag, duedate).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    WorkflowManager.create(req.user._id, title, subtitle, detail, tag, duedate)
+        .subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
         });
-    });
 });
 
 router.post("/delete", (req, res) => {
@@ -37,15 +38,14 @@ router.post("/delete", (req, res) => {
             msg: "Bad Request"
         });
     }
-    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return node.getHeader();
-    }).flatMap(node => {
-        return WorkflowManager.delete(node);
-    }).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    WorkflowManager.getBodyNode(workflowID)
+        .flatMap(node => node.getHeader())
+        .flatMap(node => WorkflowManager.delete(node))
+        .subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
         });
-    });
 });
 
 router.post("/editHeader", (req, res) => {
@@ -56,13 +56,13 @@ router.post("/editHeader", (req, res) => {
             msg: "Bad Request"
         });
     }
-    WorkflowManager.getHeaderNode(workflowID).flatMap(header => {
-        return header.setTitle(title)
-    }).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    WorkflowManager.getHeaderNode(workflowID)
+        .flatMap(header => header.setTitle(title))
+        .subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
         });
-    });
 });
 
 router.post("/editNode", (req, res) => {
@@ -79,31 +79,30 @@ router.post("/editNode", (req, res) => {
     }
 
     if (subtitle && duedate) {
-        WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-            return node.setSubtitle(subtitle);
-        }).flatMap(node => {
-            return node.setDuedate(duedate);
-        }).subscribe(_ => {
-            return res.status(200).send({
-                msg: "OK"
+        WorkflowManager.getBodyNode(workflowID)
+            .flatMap(node => node.setSubtitle(subtitle))
+            .flatMap(node => node.setDuedate(duedate))
+            .subscribe(_ => {
+                return res.status(200).send({
+                    msg: "OK"
+                });
             });
-        });
     } else if (subtitle) {
-        WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-            return node.setSubtitle(subtitle);
-        }).subscribe(_ => {
-            return res.status(200).send({
-                msg: "OK"
+        WorkflowManager.getBodyNode(workflowID)
+            .flatMap(node => node.setSubtitle(subtitle))
+            .subscribe(_ => {
+                return res.status(200).send({
+                    msg: "OK"
+                });
             });
-        });
     } else {
-        WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-            return node.setDuedate(duedate);
-        }).subscribe(_ => {
-            return res.status(200).send({
-                msg: "OK"
+        WorkflowManager.getBodyNode(workflowID)
+            .flatMap(node => node.setDuedate(duedate))
+            .subscribe(_ => {
+                return res.status(200).send({
+                    msg: "OK"
+                });
             });
-        });
     }
 });
 
@@ -116,13 +115,13 @@ router.post("/note", (req, res) => {
         });
     }
 
-    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return node.appendWithStatus(Status.NOTE);
-    }).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    WorkflowManager.getBodyNode(workflowID)
+        .flatMap(node => node.appendWithStatus(Status.NOTE))
+        .subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
         });
-    });
 });
 
 router.post("/todo", (req, res) => {
@@ -134,13 +133,13 @@ router.post("/todo", (req, res) => {
         });
     }
 
-    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return node.appendWithStatus(Status.TODO);
-    }).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    WorkflowManager.getBodyNode(workflowID)
+        .flatMap(node => node.appendWithStatus(Status.TODO))
+        .subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
         });
-    });
 });
 
 router.post("/inProgress", (req, res) => {
@@ -152,13 +151,13 @@ router.post("/inProgress", (req, res) => {
         });
     }
 
-    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return node.appendWithStatus(Status.IN_PROGRESS);
-    }).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    WorkflowManager.getBodyNode(workflowID)
+        .flatMap(node => node.appendWithStatus(Status.IN_PROGRESS))
+        .subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
         });
-    });
 });
 
 router.post("/assign", (req, res) => {
@@ -171,30 +170,29 @@ router.post("/assign", (req, res) => {
     }
     if (duedate) duedate = new Date(duedate);
 
-    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return node.appendWithStatus(Status.ASSIGN);
-    }).flatMap(node => {
-        return WorkflowManager.getBodyNode(node.getID())
-    }).flatMap(node => {
-        let ancestors = node.getAncestorsID();
-        ancestors.push(node.getID());
-        return WorkflowManager.createBodyNode(
-            Status.TODO,
-            parseInt(owner),
-            node.getCreatedBy(),
-            duedate,
-            subtitle,
-            detail,
-            node.getID(),
-            ancestors
-        );
-    }).flatMap(_ => {
-        return IOSNotificationManager.getInstance().send(parseInt(owner), req.user.nicknameEn + " assign you a task.");
-    }).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    WorkflowManager.getBodyNode(workflowID)
+        .flatMap(node => node.appendWithStatus(Status.ASSIGN))
+        .flatMap(node => WorkflowManager.getBodyNode(node.getID()))
+        .flatMap(node => {
+            let ancestors = node.getAncestorsID();
+            ancestors.push(node.getID());
+            return WorkflowManager.createBodyNode(
+                Status.TODO,
+                parseInt(owner),
+                node.getCreatedBy(),
+                duedate,
+                subtitle,
+                detail,
+                node.getID(),
+                ancestors
+            );
+        })
+        .flatMap(() => IOSNotificationManager.getInstance().send(parseInt(owner), req.user.nicknameEn + " assign you a task."))
+        .subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
         });
-    });
 });
 
 router.post("/done", (req, res) => {
@@ -206,45 +204,50 @@ router.post("/done", (req, res) => {
         });
     }
 
-    WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-        return node.appendWithStatus(Status.DONE);
-    }).flatMap(node => {
-        return WorkflowManager.getBodyNode(node.getID());
-    }).flatMap(node => {
-        return node.getParentBranchNode().map(parent => ({ node, parent }));
-    }).flatMap(({ node, parent }) => {
-        let ancestors = node.getAncestorsID();
-        ancestors.push(node.getID());
-        if (parent !== null) {
-            return WorkflowManager.createBodyNode(
-                Status.TODO,
-                parent.getOwner(),
-                parent.getCreatedBy(),
-                parent.getDuedate(),
-                undefined,
-                undefined,
-                node.getID(),
-                ancestors
-            ).flatMap(parent => {
-                return IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn + "");
+    WorkflowManager.getBodyNode(workflowID)
+        .flatMap(node => node.appendWithStatus(Status.DONE))
+        .flatMap(node => WorkflowManager.getBodyNode(node.getID()))
+        .flatMap(node => node.getParentBranchNode().map(parent => ({ node, parent })))
+        .flatMap(({ node, parent }) => {
+            let ancestors = node.getAncestorsID();
+            ancestors.push(node.getID());
+            if (parent !== null) {
+                return WorkflowManager.createBodyNode(
+                    Status.TODO,
+                    parent.getOwner(),
+                    parent.getCreatedBy(),
+                    parent.getDuedate(),
+                    undefined,
+                    undefined,
+                    node.getID(),
+                    ancestors
+                )
+                    .flatMap(parent => IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn + ""));
+            } else {
+                return WorkflowManager.createBodyNode(
+                    Status.COMPLETE,
+                    node.getOwner(),
+                    node.getCreatedBy(),
+                    node.getDuedate(),
+                    undefined,
+                    undefined,
+                    node.getID(),
+                    ancestors
+                );
+            }
+        }).subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
             });
-        } else {
-            return WorkflowManager.createBodyNode(
-                Status.COMPLETE,
-                node.getOwner(),
-                node.getCreatedBy(),
-                node.getDuedate(),
-                undefined,
-                undefined,
-                node.getID(),
-                ancestors
-            );
-        }
-    }).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
         });
-    });
+});
+
+router.post("/list", (req, res) => {
+    WorkflowManager.getUserNode(req.user._id)
+        .flatMap(nodes => Observable.forkJoin(nodes.map(node => node.getParentTree())))
+        .subscribe(nodes => {
+
+        })
 });
 
 router.post("/test", (req, res) => {
