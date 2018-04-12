@@ -168,16 +168,7 @@ export class HeaderNode extends Node<HeaderInterface> {
     }
 
 }
-// let nodeSchema = new Schema({
-//     parent: {
-//         type: Schema.Types.ObjectId,
-//         default: null
-//     },
-//     ancestors: {
-//         type: [Schema.Types.ObjectId],
-//         default: []
-//     }
-// });
+
 export class BodyNode extends Node<BodyInterface> {
 
     constructor(body: BodyInterface) {
@@ -262,15 +253,12 @@ export class BodyNode extends Node<BodyInterface> {
         return this.node.ancestors;
     }
 
-    // getAncestors(): Observable<BodyNode[]> {
-    //     return Observable.fromPromise()
-    // }
-
-
-
-
     getHeaderID(): mongoose.Types.ObjectId {
         return this.node.ancestors[0];
+    }
+
+    getHeader(): Observable<HeaderNode> {
+        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
     }
 
     getOwnerDetail(): Observable<Tutor> {
@@ -285,14 +273,6 @@ export class BodyNode extends Node<BodyInterface> {
         });
     }
 
-    
-
-    
-
-    getHeader(): Observable<HeaderNode> {
-        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
-    }
-
     private edit(value: any): Observable<BodyNode> {
         return Observable.fromPromise(NodeModel.findByIdAndUpdate(this.getID(), {
             $set: value
@@ -304,8 +284,6 @@ export class BodyNode extends Node<BodyInterface> {
             return parent.header.valueOf()
         });
     }
-
-
     
     getTree(): Observable<BodyNode[]> {
         return this.getHeader().flatMap(header => {
@@ -337,6 +315,7 @@ export class BodyNode extends Node<BodyInterface> {
             return returnNode;
         });
     }
+    
     
 }
 
