@@ -211,79 +211,46 @@ router.post("/done", (req, res) => {
     }).flatMap(node => {
         return WorkflowManager.getBodyNode(node.getID());
     }).flatMap(node => {
-        return node.getBranchParent().map(parent => ({ node, parent }));
+        return node.getParentBranchNode().map(parent => ({ node, parent }));
     }).flatMap(({ node, parent }) => {
         let ancestors = node.getAncestorsID();
         ancestors.push(node.getID());
-        return WorkflowManager.createBodyNode(
-            Status.TODO,
-            parent.getOwner(),
-            req.user._id,
-            parent.getDuedate(),
-            undefined,
-            undefined,
-            node.getID(),
-            ancestors
-        ).map(child => ({ child, parent }));
-    }).flatMap(({ child, parent }) => {
-        return IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn);
+        if (parent !== null) {
+            return WorkflowManager.createBodyNode(
+                Status.TODO,
+                parent.getOwner(),
+                parent.getCreatedBy(),
+                parent.getDuedate(),
+                undefined,
+                undefined,
+                node.getID(),
+                ancestors
+            ).flatMap(parent => {
+                return IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn + "");
+            });
+        } else {
+            return WorkflowManager.createBodyNode(
+                Status.COMPLETE,
+                node.getOwner(),
+                node.getCreatedBy(),
+                node.getDuedate(),
+                undefined,
+                undefined,
+                node.getID(),
+                ancestors
+            );
+        }
     }).subscribe(_ => {
         return res.status(200).send({
             msg: "OK"
-        })
-    })
-
-    // WorkflowManager.getBodyNode(workflowID).flatMap(node => {
-    //     return node.appendWithStatus(Status.DONE);
-    // }).flatMap(node => {
-    //     return WorkflowManager.getBodyNode(node.getID());
-    // }).flatMap(node => {
-    //     return node.getBranchParent();
-    // }).flatMap(node => {
-    //     let ancestors = node.getAncestors();
-    //     ancestors.push(node.getID());
-    //     return WorkflowManager.createBodyNode(
-    //         Status.TODO,
-    //         node.getOwner(),
-    //         node.getCreatedBy(),
-    //         node.getDuedate(),
-    //         node.getSubtitle(),
-    //         node.getDetail(),
-    //         node.getID(),
-    //         ancestors
-    //     );
-    // }).subscribe(_ => {
-    //     return res.status(200).send({
-    //         msg: "OK"
-    //     });
-    // });
+        });
+    });
 });
 
-// // router.post("/done", (req, res) => {
-// //     if (!req.body.workflowID) {
-// //         return res.status(400).send({
-// //             err: 0,
-// //             msg: "Bad Request"
-// //         });
-// //     }
-// //     let userID: Number;
-// //     // WorkflowManager.getNode(req.body.workflowID).then(node => {
-// //     //     userID = node.createdBy;
-// //     //     return WorkflowManager.addNode(
-// //     //         req.user._id,
-// //     //         node._id,
-// //     //         req.user._id,
-// //     //         "",
-// //     //         Status.DONE
-// //     //     );
-// //     // }).then(node => {
-// //     //     return WorkflowManager.addNode(
-// //     //         req.user._id,
-// //     //         node._id,
-// //     //         userID as number,
-// //     //         "",
-// //     //         Status.TODO
-// //     //     )
-// //     // });
-
-// // });
+router.post("/test", (req, res) => {
+    WorkflowManager.getBodyNode('5ac9e36963b66391d8b0df10')
+        .flatMap(node => node.getParentBranchNode())
+        .subscribe(node => {
+            return res.status(200).send(node);
+        });
+});

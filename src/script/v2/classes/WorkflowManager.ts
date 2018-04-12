@@ -184,11 +184,11 @@ export class BodyNode extends Node<BodyInterface> {
             duedate: date
         });
     }
-    
+
     getStatus(): string {
         return this.node.status.valueOf();
     }
-    
+
     setStatus(status: string): Observable<BodyNode> {
         return this.edit({
             status: status
@@ -204,11 +204,11 @@ export class BodyNode extends Node<BodyInterface> {
             owner: owner
         });
     }
-    
+
     getSubtitle(): string {
         return this.node.subtitle.valueOf();
     }
-    
+
     setSubtitle(subtitle: string): Observable<BodyNode> {
         return this.edit({
             subtitle: subtitle
@@ -265,7 +265,7 @@ export class BodyNode extends Node<BodyInterface> {
         return UserManager.getTutorInfo(this.getOwner());
     }
 
-    appendWithStatus(status: string): Observable<BodyNode>{
+    appendWithStatus(status: string): Observable<BodyNode> {
         return WorkflowManager.clone(this).flatMap(newNode => {
             return newNode.setStatus(status);
         }).flatMap(newNode => {
@@ -284,39 +284,40 @@ export class BodyNode extends Node<BodyInterface> {
             return parent.header.valueOf()
         });
     }
-    
+
     getTree(): Observable<BodyNode[]> {
-        return this.getHeader().flatMap(header => {
-            return Observable.fromPromise(NodeModel.find({
-                ancestors: header.getID()
-            }))
-        }).map(nodes => nodes.map(node => new BodyNode(node)));
+        return this.getHeader().flatMap(header => header.getChild());
     }
 
-    getParentBranch(): Observable<BodyNode[]> {
+    getParentTree(): Observable<BodyNode[]> {
         return this.getTree().map(bodynodes => {
-            return _.dropRightWhile(bodynodes, o => {
-                return o.getID() !== this.getID()
-            });
+            return _.dropRightWhile(bodynodes, o => o.getID().equals(this.getID()));
         });
     }
 
-    getBranchParent(): Observable<BodyNode> {
-        return this.getTree().map(bodynodes => {
-            bodynodes = _.dropRightWhile(bodynodes, o => {
-                return o.getID() !== this.getID()
+    getParentBranchNode(): Observable<BodyNode> {
+        return this.getParentTree().map(bodynodes => {
+            let order: Number[] = [];
+            _.forEach(bodynodes, node => {
+                let id = node.getOwner();
+                if (_.indexOf(order, id) === -1) {
+                    order.push(id);
+                }
             });
-            let returnNode: BodyNode;
+
+            let returnNode: BodyNode = null;
+            let parentIndex = _.indexOf(order, this.getOwner()) - 1;
+            if (parentIndex < 0) return null;
+            let parentID = order[parentIndex];
             _.forEachRight(bodynodes, node => {
-                if (node.getOwner() != this.getOwner()) {
+                if (node.getOwner() === parentID && returnNode == null) {
                     returnNode = node;
                 }
             });
             return returnNode;
         });
     }
-    
-    
+
 }
 
 /**
@@ -464,6 +465,12 @@ export class WorkflowManager {
             undefined,
             node.getParentID(),
             node.getAncestorsID());
+    }
+
+    static getUserNode(userID: number): Observable<BodyNode[]> {
+        return Observable.fromPromise(NodeModel.find({
+            owner: userID
+        })).map(nodes => nodes.map(node => new BodyNode(node)));
     }
 
     //     /**
