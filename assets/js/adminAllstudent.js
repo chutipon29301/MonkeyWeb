@@ -61,7 +61,7 @@ function loadSelectedMenu(config) {
         text: "No filter"
     }, {
         value: "allStage",
-        text: "All Stage"
+        text: "Exclude unregist"
     }, {
         value: "unregistered",
         text: "Unregistered"
@@ -194,7 +194,7 @@ function filterData(data, quarterList, config) {
         if (stage.options[stage.selectedIndex].value !== "all") {
             let registrationState = "unregistered";
             for (let i = 0; i < data.quarter.length; i++) {
-                if (selectedYear = data.quarter[i].year && selectedQuarter === data.quarter[i].quarter) {
+                if (selectedYear === data.quarter[i].year && selectedQuarter === data.quarter[i].quarter) {
                     registrationState = data.quarter[i].registrationState;
                 }
             }

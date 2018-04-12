@@ -4,7 +4,7 @@ block head
     link(rel="stylesheet", href="css/typeaheadjs.css")
 block script
     script(src="js/bootstrap3-typeahead.min.js")
-    script(src="js/adminAllstudent.js")
+    script(src="js/adminAllstudent.min.js")
 block body
     .container-fluid
         .row
@@ -22,11 +22,11 @@ block body
                             span.fa.fa-lg.fa-filter &nbsp;
                             |Filter
                         select.custom-select#status(onChange="getAllStudentContent()" style="margin-bottom: 5px")
-                            option(value="default") Default
-                            option(value="active") Active
-                            option(value="inactive") Inactive
-                            option(value="dropped") Drop
+                            option(value="default") Default(Active/Drop)
+                            option(value="active") Active(Current register)
+                            option(value="dropped") Drop(In this Q)
                             option(value="terminated") Terminate
+                            option(value="inactive") New student ID
                             option(value="all") All
                 form
                     .form-group
