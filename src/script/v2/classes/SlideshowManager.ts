@@ -10,7 +10,7 @@ export enum SlideshowType {
     STUDENT_LANDSCAPE = 2
 }
 
-export interface SlideshowInterface extends Document {
+interface SlideshowInterface extends Document {
     startDate: Date,
     endDate: Date,
     fileName: String,
