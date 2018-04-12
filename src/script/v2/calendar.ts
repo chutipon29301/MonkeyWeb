@@ -77,8 +77,6 @@ router.post("/list", (req, res) => {
             msg: "Bad Request"
         });
     }
-    console.log(startDate);
-    console.log(endDate);
     CalendarManager.findRange(new Date(startDate), new Date(endDate)).subscribe(calendars => {
         return res.status(200).send({
             calendars: calendars.map(calendar => calendar.getInterface())
