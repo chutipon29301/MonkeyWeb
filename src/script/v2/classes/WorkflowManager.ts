@@ -63,6 +63,23 @@ export interface BodyInterface extends NodeInterface {
     ancestors?: mongoose.Types.ObjectId[]
 }
 
+
+interface NodeResponseInterface {
+    nodeID: mongoose.Types.ObjectId
+    title: string,
+    timestamp: Date,
+    createdBy: number,
+    duedate?: Date,
+    status: string,
+    owner: number,
+    subtitle: string,
+    detail: string,
+    parent?: mongoose.Types.ObjectId,
+    ancestors?: mongoose.Types.ObjectId[]
+    childStatus: string,
+    childOwner: number
+}
+
 /**
  * Create mongoose schema
  */
@@ -467,34 +484,70 @@ export class WorkflowManager {
             node.getAncestorsID());
     }
 
-    static getUserNode(userID: number): Observable<BodyNode[]> {
+    // interface NodeResponseInterface {
+    //     nodeID: mongoose.Types.ObjectId
+    //     timestamp: Date,
+    //     createdBy: number,
+    //     duedate?: Date,
+    //     status: string,
+    //     owner: number,
+    //     subtitle: string,
+    //     detail: string,
+    //     parent?: mongoose.Types.ObjectId,
+    //     ancestors?: mongoose.Types.ObjectId[]
+    //     childStatus: string
+    // }
+
+
+    static getUserNode(userID: number): Observable<NodeResponseInterface[]> {
         return Observable.fromPromise(NodeModel.find({
             owner: userID
-        })).map(nodes => nodes.map(node => new BodyNode(node)));
+        })).map(nodes => nodes.map(node => new BodyNode(node))).flatMap(nodes => {
+            let groupNodes = _.groupBy(nodes, node => {
+                return node.getAncestorsID()[0];
+            });
+            let userNodes: BodyNode[] = [];
+            _.forEach(groupNodes, nodes => {
+                userNodes.push(_.last(nodes));
+            });
+            return Observable.forkJoin(userNodes.map(node => node.getTree()));
+        }).map(nodes => {
+            let response: NodeResponseInterface[] = [];
+            nodes.map(innerNode => {
+                let lastestUserIndex = _.findLastIndex(innerNode, node => {
+                    return node.getOwner() === userID;
+                });
+                let currentNode = innerNode[lastestUserIndex];
+                let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
+                responseNode.nodeID = currentNode.getID();
+                responseNode.timestamp = currentNode.getTimestamp();
+                responseNode.createdBy = currentNode.getCreatedBy();
+                responseNode.duedate = currentNode.getDuedate();
+                responseNode.status = currentNode.getStatus();
+                responseNode.owner = currentNode.getOwner();
+                responseNode.parent = currentNode.getParentID();
+                responseNode.ancestors = currentNode.getAncestorsID();
+                responseNode.subtitle = "";
+                responseNode.detail = "";
+                for (let i = 0; i < lastestUserIndex; i++) {
+                    const node = innerNode[i];
+                    try {
+                        responseNode.subtitle += node.getSubtitle() + "\n";
+                        responseNode.detail += node.getDetail() + "\n";
+                    } catch (error) { }
+                }
+                try {
+                    let childOwner = innerNode[lastestUserIndex + 1].getOwner();
+                    responseNode.childOwner = childOwner;
+                    for (let i = lastestUserIndex + 1; i < innerNode.length; i++) {
+                        const node = innerNode[i];
+                        if (node.getOwner() != childOwner) break;
+                        responseNode.childStatus = node.getStatus();
+                    }
+                } catch (error) { }
+                response.push(responseNode);
+            });
+            return response;
+        });
     }
-
-    //     /**
-    //      * Find workflow node of requested user
-    //      * 
-    //      * @static
-    //      * @param {number} userID User id of user
-    //      * @returns {Observable<BodyNode[]>} Observable of event that return array of node
-    //      * @memberof WorkflowManager
-    //      */
-    //     static getUserWorkflow(userID: number): Observable<BodyNode[]> {
-    //         return Observable.fromPromise(NodeModel.find({
-    //             owner: userID
-    //         })).flatMap(nodes => {
-    //             let groupNode = _.groupBy(nodes, o => {
-    //                 return o.ancestors[0];
-    //             });
-    //             let userNode: BodyNode[] = [];
-    //             for (let key in groupNode) {
-    //                 userNode.push(_.last(groupNode[key]));
-    //             }
-    //             return userNode;
-    //         }).flatMap(nodes => {
-    //             return this.getTree(nodes._id)
-    //         });
-    //     }
 }

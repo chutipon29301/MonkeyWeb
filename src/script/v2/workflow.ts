@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Observable } from "rx";
 import { Status, WorkflowManager, BodyNode } from "./classes/WorkflowManager";
 import { IOSNotificationManager } from "./classes/NotificationManager";
+import * as _ from "lodash";
 
 export const router = Router();
 
@@ -243,11 +244,13 @@ router.post("/done", (req, res) => {
 });
 
 router.post("/list", (req, res) => {
-    WorkflowManager.getUserNode(req.user._id)
-        .flatMap(nodes => Observable.forkJoin(nodes.map(node => node.getParentTree())))
-        .subscribe(nodes => {
 
-        })
+    WorkflowManager.getUserNode(req.user._id)
+    .subscribe(nodes => {
+        return res.status(200).send({
+            nodes: nodes
+        });
+    });
 });
 
 router.post("/test", (req, res) => {
