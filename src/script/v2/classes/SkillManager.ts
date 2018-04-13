@@ -26,13 +26,15 @@ export class SKillManager {
     static getSkillForQuarter(quarterID: string): Observable<Skill> {
         return Observable.fromPromise(SkillModel.findOne({
             quarterID: quarterID
-        })).map(skill => new Skill(skill));
+        }))
+            .map(skill => new Skill(skill));
     }
 
     static findSkillContainStudent(studentID: number): Observable<Skill[]> {
-        return  Observable.fromPromise(SkillModel.find({
+        return Observable.fromPromise(SkillModel.find({
             "student.studentID": studentID
-        })).map(skills => skills.map(skill => new Skill(skill)));
+        }))
+            .map(skills => skills.map(skill => new Skill(skill)));
     }
 }
 
@@ -43,7 +45,7 @@ export class Skill {
         this.skill = skill;
     }
 
-    getQuarterID(): String{
+    getQuarterID(): String {
         return this.skill.quarterID.toString();
     }
 }

@@ -23,13 +23,15 @@ export class IOSTokenManager {
             device: "iOS",
             userID: userID
         });
-        return Observable.fromPromise(deviceToken.save()).map(iOSToken => new IOSToken(iOSToken));
+        return Observable.fromPromise(deviceToken.save())
+            .map(iOSToken => new IOSToken(iOSToken));
     }
 
     static getUserToken(userID: number): Observable<IOSToken[]> {
         return Observable.fromPromise(IOSTokenModel.find({
             userID: userID
-        })).map(iOSTokens => iOSTokens.map(iOSToken => new IOSToken(iOSToken)));
+        }))
+            .map(iOSTokens => iOSTokens.map(iOSToken => new IOSToken(iOSToken)));
     }
 }
 

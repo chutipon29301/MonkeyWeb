@@ -21,9 +21,10 @@ router.post("/add", (req, res) => {
         });
     }
     FileManager.addSlideshowImage(req.files as Express.Multer.File[]);
-    SlideshowManager.addSlideshowImages(formatDate(req.body.startDate), formatDate(req.body.endDate), req.files as Express.Multer.File[], parseInt(req.body.type)).subscribe(_ => {
-        return res.status(200).send({ msg: "OK" });
-    });
+    SlideshowManager.addSlideshowImages(formatDate(req.body.startDate), formatDate(req.body.endDate), req.files as Express.Multer.File[], parseInt(req.body.type))
+        .subscribe(_ => {
+            return res.status(200).send({ msg: "OK" });
+        });
 });
 
 router.post("/remove", (req, res) => {
@@ -33,12 +34,14 @@ router.post("/remove", (req, res) => {
             msg: "Bad Request"
         });
     }
-    SlideshowManager.getSlideshow(req.body.slideshowID).flatMap(slideshow => {
-        FileManager.removeSlideshowImage(slideshow.getPath());
-        return SlideshowManager.deleteSlideshow(slideshow.getID());
-    }).subscribe(_ => {
-        return res.status(200).send({ msg: "OK" });
-    });
+    SlideshowManager.getSlideshow(req.body.slideshowID)
+        .flatMap(slideshow => {
+            FileManager.removeSlideshowImage(slideshow.getPath());
+            return SlideshowManager.deleteSlideshow(slideshow.getID());
+        })
+        .subscribe(_ => {
+            return res.status(200).send({ msg: "OK" });
+        });
 });
 
 router.post("/list", (req, res) => {
@@ -48,13 +51,14 @@ router.post("/list", (req, res) => {
             msg: "Ok"
         });
     }
-    SlideshowManager.listSlideshow(formatDate(req.body.startDate), formatDate(req.body.endDate)).subscribe(slideshows => {
-        let slideshowResponse: SlideshowResponse[] = [];
-        for (let i = 0; i < slideshows.length; i++) {
-            slideshowResponse.push(slideshows[i].getSlideshowResponse());
-        }
-        return res.status(200).send(slideshowResponse);
-    });
+    SlideshowManager.listSlideshow(formatDate(req.body.startDate), formatDate(req.body.endDate))
+        .subscribe(slideshows => {
+            let slideshowResponse: SlideshowResponse[] = [];
+            for (let i = 0; i < slideshows.length; i++) {
+                slideshowResponse.push(slideshows[i].getSlideshowResponse());
+            }
+            return res.status(200).send(slideshowResponse);
+        });
 });
 
 router.get("/img", (req, res) => {
@@ -64,7 +68,8 @@ router.get("/img", (req, res) => {
             msg: "Bad Request"
         });
     }
-    SlideshowManager.getSlideshow(req.query.id).subscribe(slideshow => {
-        return res.status(200).sendFile(slideshow.getPath());
-    });
+    SlideshowManager.getSlideshow(req.query.id)
+        .subscribe(slideshow => {
+            return res.status(200).sendFile(slideshow.getPath());
+        });
 });

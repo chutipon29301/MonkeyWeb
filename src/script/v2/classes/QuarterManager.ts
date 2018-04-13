@@ -28,14 +28,16 @@ let QuarterModel = mongoose.model<QuarterInterface>('Quarter', quarterSchema, 'q
 export class QuarterManager {
 
     static getQuarter(quarterID: string): Observable<Quarter> {
-        return Observable.fromPromise(QuarterModel.findById(quarterID)).map(quarter => new Quarter(quarter));
+        return Observable.fromPromise(QuarterModel.findById(quarterID))
+            .map(quarter => new Quarter(quarter));
     }
 
     static getQuarterFromQuarterObject(quarter: { quarter: Number, year: Number }): Observable<Quarter> {
         return Observable.fromPromise(QuarterModel.findOne({
             quarter: quarter.quarter,
             year: quarter.year
-        })).map(quarter => new Quarter(quarter));
+        }))
+            .map(quarter => new Quarter(quarter));
     }
 
 }
@@ -76,6 +78,7 @@ export class Quarter {
     private edit(value: any): Observable<Quarter> {
         return Observable.fromPromise(QuarterModel.findByIdAndUpdate(this.getID(), {
             $set: value
-        })).map(quarter => new Quarter(quarter));
+        }))
+            .map(quarter => new Quarter(quarter));
     }
 }

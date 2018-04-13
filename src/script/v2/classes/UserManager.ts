@@ -96,11 +96,13 @@ export let TutorModel = mongoose.model<TutorInterface>("Tutor", tutorSchema, "us
 export class UserManager {
 
     static getStudentInfo(userID: number): Observable<Student> {
-        return Observable.fromPromise(StudentModel.findById(userID as Number)).map(student => new Student(student));
+        return Observable.fromPromise(StudentModel.findById(userID as Number))
+            .map(student => new Student(student));
     }
 
     static getTutorInfo(userID: number): Observable<Tutor> {
-        return Observable.fromPromise(TutorModel.findById(userID as Number)).map(tutor => new Tutor(tutor));
+        return Observable.fromPromise(TutorModel.findById(userID as Number))
+            .map(tutor => new Tutor(tutor));
     }
 }
 
@@ -126,7 +128,7 @@ export class Student extends User {
         student = this.user as StudentInterface;
     }
 
-    getRegistrationQuarter(): Observable<[Course[], Hybrid[], Skill[]]>{
+    getRegistrationQuarter(): Observable<[Course[], Hybrid[], Skill[]]> {
         return Observable.zip(
             CourseManager.findCourseContainStudent(this.getID()),
             HybridManager.findHybridContainStudent(this.getID()),
@@ -144,7 +146,7 @@ export class Tutor extends User {
         tutor = this.user as TutorInterface;
     }
 
-    getNicknameEn(): string{
+    getNicknameEn(): string {
         return this.tutor.nicknameEn.toString();
     }
 }

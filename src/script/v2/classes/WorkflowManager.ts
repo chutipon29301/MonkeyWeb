@@ -1,5 +1,5 @@
-import * as mongoose from "mongoose";
 import * as _ from "lodash";
+import * as mongoose from "mongoose";
 import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
 import { UpdateResponse } from "./Constants";
@@ -251,7 +251,8 @@ export class BodyNode extends Node<BodyInterface> {
             if (isHeader) {
                 return null;
             } else {
-                return Observable.fromPromise(NodeModel.findById(this.getParentID())).map(parent => new BodyNode(parent));
+                return Observable.fromPromise(NodeModel.findById(this.getParentID()))
+                    .map(parent => new BodyNode(parent));
             }
         });
     }
@@ -275,7 +276,8 @@ export class BodyNode extends Node<BodyInterface> {
     }
 
     getHeader(): Observable<HeaderNode> {
-        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
+        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID()))
+            .map(header => new HeaderNode(header));
     }
 
     getOwnerDetail(): Observable<Tutor> {
@@ -297,9 +299,8 @@ export class BodyNode extends Node<BodyInterface> {
     }
 
     isParentHeader(): Observable<boolean> {
-        return Observable.fromPromise(NodeModel.findById(this.getID())).map(parent => {
-            return parent.header.valueOf()
-        });
+        return Observable.fromPromise(NodeModel.findById(this.getID()))
+            .map(parent => parent.header.valueOf());
     }
 
     getTree(): Observable<BodyNode[]> {
@@ -307,9 +308,8 @@ export class BodyNode extends Node<BodyInterface> {
     }
 
     getParentTree(): Observable<BodyNode[]> {
-        return this.getTree().map(bodynodes => {
-            return _.dropRightWhile(bodynodes, o => o.getID().equals(this.getID()));
-        });
+        return this.getTree()
+            .map(bodynodes => _.dropRightWhile(bodynodes, o => o.getID().equals(this.getID())));
     }
 
     getParentBranchNode(): Observable<BodyNode> {
@@ -419,7 +419,8 @@ export class WorkflowManager {
      */
     static getHeaderNode(nodeID: mongoose.Types.ObjectId | string): Observable<HeaderNode> {
         if (typeof nodeID === "string") nodeID = new mongoose.Types.ObjectId(nodeID);
-        return Observable.fromPromise(HeaderModel.findById(nodeID)).map(node => new HeaderNode(node));
+        return Observable.fromPromise(HeaderModel.findById(nodeID))
+            .map(node => new HeaderNode(node));
     }
 
     /**
@@ -432,7 +433,8 @@ export class WorkflowManager {
      */
     static getBodyNode(nodeID: mongoose.Types.ObjectId | string): Observable<BodyNode> {
         if (typeof nodeID === "string") nodeID = new mongoose.Types.ObjectId(nodeID);
-        return Observable.fromPromise(NodeModel.findById(nodeID)).map(node => new BodyNode(node));
+        return Observable.fromPromise(NodeModel.findById(nodeID))
+            .map(node => new BodyNode(node));
     }
 
     /**
@@ -462,7 +464,8 @@ export class WorkflowManager {
             parent: parent,
             ancestors: ancestors
         });
-        return Observable.fromPromise(node.save()).map(node => new BodyNode(node));
+        return Observable.fromPromise(node.save())
+            .map(node => new BodyNode(node));
     }
 
     /**
@@ -484,70 +487,58 @@ export class WorkflowManager {
             node.getAncestorsID());
     }
 
-    // interface NodeResponseInterface {
-    //     nodeID: mongoose.Types.ObjectId
-    //     timestamp: Date,
-    //     createdBy: number,
-    //     duedate?: Date,
-    //     status: string,
-    //     owner: number,
-    //     subtitle: string,
-    //     detail: string,
-    //     parent?: mongoose.Types.ObjectId,
-    //     ancestors?: mongoose.Types.ObjectId[]
-    //     childStatus: string
-    // }
-
-
     static getUserNode(userID: number): Observable<NodeResponseInterface[]> {
         return Observable.fromPromise(NodeModel.find({
             owner: userID
-        })).map(nodes => nodes.map(node => new BodyNode(node))).flatMap(nodes => {
-            let groupNodes = _.groupBy(nodes, node => {
-                return node.getAncestorsID()[0];
-            });
-            let userNodes: BodyNode[] = [];
-            _.forEach(groupNodes, nodes => {
-                userNodes.push(_.last(nodes));
-            });
-            return Observable.forkJoin(userNodes.map(node => node.getTree()));
-        }).map(nodes => {
-            let response: NodeResponseInterface[] = [];
-            nodes.map(innerNode => {
-                let lastestUserIndex = _.findLastIndex(innerNode, node => {
-                    return node.getOwner() === userID;
+        }))
+            .map(nodes => nodes.map(node => new BodyNode(node)))
+            .flatMap(nodes => {
+                let groupNodes = _.groupBy(nodes, node => {
+                    return node.getAncestorsID()[0];
                 });
-                let currentNode = innerNode[lastestUserIndex];
-                let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
-                responseNode.nodeID = currentNode.getID();
-                responseNode.timestamp = currentNode.getTimestamp();
-                responseNode.createdBy = currentNode.getCreatedBy();
-                responseNode.duedate = currentNode.getDuedate();
-                responseNode.status = currentNode.getStatus();
-                responseNode.owner = currentNode.getOwner();
-                responseNode.parent = currentNode.getParentID();
-                responseNode.ancestors = currentNode.getAncestorsID();
-                responseNode.subtitle = "";
-                responseNode.detail = "";
-                for (let i = 0; i < lastestUserIndex; i++) {
-                    const node = innerNode[i];
-                    try {
-                        responseNode.subtitle += node.getSubtitle() + "\n";
-                        responseNode.detail += node.getDetail() + "\n";
-                    } catch (error) { }
-                }
-                try {
-                    let childOwner = innerNode[lastestUserIndex + 1].getOwner();
-                    responseNode.childOwner = childOwner;
-                    for (let i = lastestUserIndex + 1; i < innerNode.length; i++) {
+                let userNodes: BodyNode[] = [];
+                _.forEach(groupNodes, nodes => {
+                    userNodes.push(_.last(nodes));
+                });
+                return Observable.forkJoin(userNodes.map(node => node.getTree()));
+            })
+            .map(nodes => {
+                let response: NodeResponseInterface[] = [];
+                nodes.map(innerNode => {
+                    let lastestUserIndex = _.findLastIndex(innerNode, node => {
+                        return node.getOwner() === userID;
+                    });
+                    let currentNode = innerNode[lastestUserIndex];
+                    let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
+                    responseNode.nodeID = currentNode.getID();
+                    responseNode.timestamp = currentNode.getTimestamp();
+                    responseNode.createdBy = currentNode.getCreatedBy();
+                    responseNode.duedate = currentNode.getDuedate();
+                    responseNode.status = currentNode.getStatus();
+                    responseNode.owner = currentNode.getOwner();
+                    responseNode.parent = currentNode.getParentID();
+                    responseNode.ancestors = currentNode.getAncestorsID();
+                    responseNode.subtitle = "";
+                    responseNode.detail = "";
+                    for (let i = 0; i < lastestUserIndex; i++) {
                         const node = innerNode[i];
-                        if (node.getOwner() != childOwner) break;
-                        responseNode.childStatus = node.getStatus();
+                        try {
+                            responseNode.subtitle += node.getSubtitle() + "\n";
+                            responseNode.detail += node.getDetail() + "\n";
+                        } catch (error) { }
                     }
-                } catch (error) { }
-                response.push(responseNode);
+                    try {
+                        let childOwner = innerNode[lastestUserIndex + 1].getOwner();
+                        responseNode.childOwner = childOwner;
+                        for (let i = lastestUserIndex + 1; i < innerNode.length; i++) {
+                            const node = innerNode[i];
+                            if (node.getOwner() != childOwner) break;
+                            responseNode.childStatus = node.getStatus();
+                        }
+                    } catch (error) { }
+                    response.push(responseNode);
+                });
+                return response;
             });
-            return response;
-        });
     }
 }
