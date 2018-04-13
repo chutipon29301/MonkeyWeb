@@ -218,8 +218,10 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 		```javascript
 		req.body = {
 			type: 0, /* [0, 1, 2] = ['news', 'student_portait', 'student_landscape'] */
-			date: 'Date string'
-		}
+			startDate: 'Date string',
+			endDate: 'Date string',
+		};
+		req.files = {}
 		```
 	- response body
 		```javascript
@@ -236,8 +238,7 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 	- request body
 		```javascript
 		req.body = {
-			fileName: 'v4ouwaouw4bgfyuwbfo8w27r3w4',
-			date: 'Date string'
+			slideshowID: 'v4ouwaouw4bgfyuwbfo8w27r3w4'
 		}
 		```
 	- response body
@@ -298,6 +299,95 @@ app.get('/yourLink', [middleWareOptions], function(req, res) {
 				hybrid: [],
 				skill: []
 			}
+		}
+		```
+
+#### Calendar(Temp)
+- Function using for add event to calendar collection
+- This API need authentication with username and password
+
+- Add
+
+	- request path `/v2/calendar/add`
+	- request body
+		```javascript
+		req.body = {
+			title: '',
+			tag: '',
+			ownerID: 99000
+			startDate: 'Date string',
+			endDate: 'Date string'
+		};
+		req.files = {}
+		```
+	- response body
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
+- Delete
+
+	- request path `/v2/calendar/delete`
+	- request body
+		```javascript
+		req.body = {
+			calendarID: 'af4wtjfgp8w4uyt8af4yfr4',
+		};
+		req.files = {}
+		```
+	- response body
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
+- Edit
+
+	- request path `/v2/calendar/edit`
+	- request body
+		```javascript
+		req.body = {
+			calendarID: 'w8p48gfkfu4p5q2af80mu8u4vtp84',,
+			title: '',
+			tag: '',
+			ownerID: 99000
+			startDate: 'Date string',
+			endDate: 'Date string'
+		};
+		req.files = {}
+		```
+	- response body
+		```javascript
+		res.body = {
+			msg: 'OK'
+		}
+		```
+
+- List
+
+	- request path `/v2/calendar/list`
+	- request body
+		```javascript
+		req.body = {
+			startDate: 'Date string',
+			endDate: 'Date string'
+		};
+		req.files = {}
+		```
+	- response body
+		```javascript
+		res.body = {
+			calendars: [
+				calendarID: 'w8p48gfkfu4p5q2af80mu8u4vtp84',,
+				title: '',
+				tag: '',
+				ownerID: 99000
+				startDate: 'Date string',
+				endDate: 'Date string'
+			]
 		}
 		```
 

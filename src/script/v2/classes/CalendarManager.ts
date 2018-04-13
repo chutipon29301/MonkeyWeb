@@ -91,12 +91,14 @@ export class CalendarManager {
             startDate: startDate,
             endDate: endDate
         });
-        return Observable.fromPromise(calendar.save()).map(calendar => new Calendar(calendar));
+        return Observable.fromPromise(calendar.save())
+            .map(calendar => new Calendar(calendar));
     }
 
     static find(id: mongoose.Types.ObjectId | string): Observable<Calendar> {
         if (typeof id === "string") id = new mongoose.Types.ObjectId(id);
-        return Observable.fromPromise(CalendarModel.findById(id)).map(calendar => new Calendar(calendar));
+        return Observable.fromPromise(CalendarModel.findById(id))
+            .map(calendar => new Calendar(calendar));
     }
 
     static findRange(startDate: Date, endDate: Date): Observable<Calendar[]> {
@@ -112,7 +114,8 @@ export class CalendarManager {
                     { endDate: { $lte: endDate } }
                 ]
             }]
-        })).map(calendars => calendars.map(calendar => new Calendar(calendar)));
+        }))
+            .map(calendars => calendars.map(calendar => new Calendar(calendar)));
     }
 
 }

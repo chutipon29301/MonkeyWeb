@@ -26,13 +26,15 @@ export class HybridManager {
     static getHybridForQuarter(quarterID: string): Observable<Hybrid> {
         return Observable.fromPromise(HybridModel.findOne({
             quarterID: quarterID
-        })).map(hybrid => new Hybrid(hybrid));
+        }))
+            .map(hybrid => new Hybrid(hybrid));
     }
 
     static findHybridContainStudent(studentID: number): Observable<Hybrid[]> {
         return Observable.fromPromise(HybridModel.find({
             "student.studentID": studentID
-        })).map(hybrids => hybrids.map(hybrid => new Hybrid(hybrid)));
+        }))
+            .map(hybrids => hybrids.map(hybrid => new Hybrid(hybrid)));
     }
 }
 

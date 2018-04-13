@@ -1,5 +1,5 @@
-import * as mongoose from "mongoose";
 import * as _ from "lodash";
+import * as mongoose from "mongoose";
 import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
 import { UpdateResponse } from "./Constants";
@@ -61,6 +61,23 @@ export interface BodyInterface extends NodeInterface {
     detail: String,
     parent?: mongoose.Types.ObjectId,
     ancestors?: mongoose.Types.ObjectId[]
+}
+
+
+interface NodeResponseInterface {
+    nodeID: mongoose.Types.ObjectId
+    title: string,
+    timestamp: Date,
+    createdBy: number,
+    duedate?: Date,
+    status: string,
+    owner: number,
+    subtitle: string,
+    detail: string,
+    parent?: mongoose.Types.ObjectId,
+    ancestors?: mongoose.Types.ObjectId[]
+    childStatus: string,
+    childOwner: number
 }
 
 /**
@@ -184,11 +201,11 @@ export class BodyNode extends Node<BodyInterface> {
             duedate: date
         });
     }
-    
+
     getStatus(): string {
         return this.node.status.valueOf();
     }
-    
+
     setStatus(status: string): Observable<BodyNode> {
         return this.edit({
             status: status
@@ -204,11 +221,11 @@ export class BodyNode extends Node<BodyInterface> {
             owner: owner
         });
     }
-    
+
     getSubtitle(): string {
         return this.node.subtitle.valueOf();
     }
-    
+
     setSubtitle(subtitle: string): Observable<BodyNode> {
         return this.edit({
             subtitle: subtitle
@@ -234,7 +251,8 @@ export class BodyNode extends Node<BodyInterface> {
             if (isHeader) {
                 return null;
             } else {
-                return Observable.fromPromise(NodeModel.findById(this.getParentID())).map(parent => new BodyNode(parent));
+                return Observable.fromPromise(NodeModel.findById(this.getParentID()))
+                    .map(parent => new BodyNode(parent));
             }
         });
     }
@@ -258,14 +276,15 @@ export class BodyNode extends Node<BodyInterface> {
     }
 
     getHeader(): Observable<HeaderNode> {
-        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID())).map(header => new HeaderNode(header));
+        return Observable.fromPromise(HeaderModel.findById(this.getHeaderID()))
+            .map(header => new HeaderNode(header));
     }
 
     getOwnerDetail(): Observable<Tutor> {
         return UserManager.getTutorInfo(this.getOwner());
     }
 
-    appendWithStatus(status: string): Observable<BodyNode>{
+    appendWithStatus(status: string): Observable<BodyNode> {
         return WorkflowManager.clone(this).flatMap(newNode => {
             return newNode.setStatus(status);
         }).flatMap(newNode => {
@@ -280,43 +299,42 @@ export class BodyNode extends Node<BodyInterface> {
     }
 
     isParentHeader(): Observable<boolean> {
-        return Observable.fromPromise(NodeModel.findById(this.getID())).map(parent => {
-            return parent.header.valueOf()
-        });
+        return Observable.fromPromise(NodeModel.findById(this.getID()))
+            .map(parent => parent.header.valueOf());
     }
-    
+
     getTree(): Observable<BodyNode[]> {
-        return this.getHeader().flatMap(header => {
-            return Observable.fromPromise(NodeModel.find({
-                ancestors: header.getID()
-            }))
-        }).map(nodes => nodes.map(node => new BodyNode(node)));
+        return this.getHeader().flatMap(header => header.getChild());
     }
 
-    getParentBranch(): Observable<BodyNode[]> {
-        return this.getTree().map(bodynodes => {
-            return _.dropRightWhile(bodynodes, o => {
-                return o.getID() !== this.getID()
-            });
-        });
+    getParentTree(): Observable<BodyNode[]> {
+        return this.getTree()
+            .map(bodynodes => _.dropRightWhile(bodynodes, o => o.getID().equals(this.getID())));
     }
 
-    getBranchParent(): Observable<BodyNode> {
-        return this.getTree().map(bodynodes => {
-            bodynodes = _.dropRightWhile(bodynodes, o => {
-                return o.getID() !== this.getID()
+    getParentBranchNode(): Observable<BodyNode> {
+        return this.getParentTree().map(bodynodes => {
+            let order: Number[] = [];
+            _.forEach(bodynodes, node => {
+                let id = node.getOwner();
+                if (_.indexOf(order, id) === -1) {
+                    order.push(id);
+                }
             });
-            let returnNode: BodyNode;
+
+            let returnNode: BodyNode = null;
+            let parentIndex = _.indexOf(order, this.getOwner()) - 1;
+            if (parentIndex < 0) return null;
+            let parentID = order[parentIndex];
             _.forEachRight(bodynodes, node => {
-                if (node.getOwner() != this.getOwner()) {
+                if (node.getOwner() === parentID && returnNode == null) {
                     returnNode = node;
                 }
             });
             return returnNode;
         });
     }
-    
-    
+
 }
 
 /**
@@ -401,7 +419,8 @@ export class WorkflowManager {
      */
     static getHeaderNode(nodeID: mongoose.Types.ObjectId | string): Observable<HeaderNode> {
         if (typeof nodeID === "string") nodeID = new mongoose.Types.ObjectId(nodeID);
-        return Observable.fromPromise(HeaderModel.findById(nodeID)).map(node => new HeaderNode(node));
+        return Observable.fromPromise(HeaderModel.findById(nodeID))
+            .map(node => new HeaderNode(node));
     }
 
     /**
@@ -414,7 +433,8 @@ export class WorkflowManager {
      */
     static getBodyNode(nodeID: mongoose.Types.ObjectId | string): Observable<BodyNode> {
         if (typeof nodeID === "string") nodeID = new mongoose.Types.ObjectId(nodeID);
-        return Observable.fromPromise(NodeModel.findById(nodeID)).map(node => new BodyNode(node));
+        return Observable.fromPromise(NodeModel.findById(nodeID))
+            .map(node => new BodyNode(node));
     }
 
     /**
@@ -444,7 +464,8 @@ export class WorkflowManager {
             parent: parent,
             ancestors: ancestors
         });
-        return Observable.fromPromise(node.save()).map(node => new BodyNode(node));
+        return Observable.fromPromise(node.save())
+            .map(node => new BodyNode(node));
     }
 
     /**
@@ -466,28 +487,58 @@ export class WorkflowManager {
             node.getAncestorsID());
     }
 
-    //     /**
-    //      * Find workflow node of requested user
-    //      * 
-    //      * @static
-    //      * @param {number} userID User id of user
-    //      * @returns {Observable<BodyNode[]>} Observable of event that return array of node
-    //      * @memberof WorkflowManager
-    //      */
-    //     static getUserWorkflow(userID: number): Observable<BodyNode[]> {
-    //         return Observable.fromPromise(NodeModel.find({
-    //             owner: userID
-    //         })).flatMap(nodes => {
-    //             let groupNode = _.groupBy(nodes, o => {
-    //                 return o.ancestors[0];
-    //             });
-    //             let userNode: BodyNode[] = [];
-    //             for (let key in groupNode) {
-    //                 userNode.push(_.last(groupNode[key]));
-    //             }
-    //             return userNode;
-    //         }).flatMap(nodes => {
-    //             return this.getTree(nodes._id)
-    //         });
-    //     }
+    static getUserNode(userID: number): Observable<NodeResponseInterface[]> {
+        return Observable.fromPromise(NodeModel.find({
+            owner: userID
+        }))
+            .map(nodes => nodes.map(node => new BodyNode(node)))
+            .flatMap(nodes => {
+                let groupNodes = _.groupBy(nodes, node => {
+                    return node.getAncestorsID()[0];
+                });
+                let userNodes: BodyNode[] = [];
+                _.forEach(groupNodes, nodes => {
+                    userNodes.push(_.last(nodes));
+                });
+                return Observable.forkJoin(userNodes.map(node => node.getTree()));
+            })
+            .map(nodes => {
+                let response: NodeResponseInterface[] = [];
+                nodes.map(innerNode => {
+                    let lastestUserIndex = _.findLastIndex(innerNode, node => {
+                        return node.getOwner() === userID;
+                    });
+                    let currentNode = innerNode[lastestUserIndex];
+                    let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
+                    responseNode.nodeID = currentNode.getID();
+                    responseNode.timestamp = currentNode.getTimestamp();
+                    responseNode.createdBy = currentNode.getCreatedBy();
+                    responseNode.duedate = currentNode.getDuedate();
+                    responseNode.status = currentNode.getStatus();
+                    responseNode.owner = currentNode.getOwner();
+                    responseNode.parent = currentNode.getParentID();
+                    responseNode.ancestors = currentNode.getAncestorsID();
+                    responseNode.subtitle = "";
+                    responseNode.detail = "";
+                    for (let i = 0; i < lastestUserIndex; i++) {
+                        const node = innerNode[i];
+                        try {
+                            responseNode.subtitle += node.getSubtitle() + "\n";
+                            responseNode.detail += node.getDetail() + "\n";
+                        } catch (error) { }
+                    }
+                    try {
+                        let childOwner = innerNode[lastestUserIndex + 1].getOwner();
+                        responseNode.childOwner = childOwner;
+                        for (let i = lastestUserIndex + 1; i < innerNode.length; i++) {
+                            const node = innerNode[i];
+                            if (node.getOwner() != childOwner) break;
+                            responseNode.childStatus = node.getStatus();
+                        }
+                    } catch (error) { }
+                    response.push(responseNode);
+                });
+                return response;
+            });
+    }
 }

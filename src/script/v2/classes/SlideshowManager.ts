@@ -89,12 +89,13 @@ export class SlideshowManager {
 
 
     static getSlideshow(slideshowID: string | mongoose.Types.ObjectId): Observable<Slideshow> {
-        if (slideshowID !instanceof mongoose.Types.ObjectId) slideshowID = new mongoose.Types.ObjectId(slideshowID);
-        return Observable.fromPromise(SlideshowModel.findById(slideshowID)).map(slideshow => new Slideshow(slideshow));
+        if (slideshowID! instanceof mongoose.Types.ObjectId) slideshowID = new mongoose.Types.ObjectId(slideshowID);
+        return Observable.fromPromise(SlideshowModel.findById(slideshowID))
+            .map(slideshow => new Slideshow(slideshow));
     }
 
     static deleteSlideshow(slideshowID: string | mongoose.Types.ObjectId): Observable<UpdateResponse> {
-        if (slideshowID !instanceof mongoose.Types.ObjectId) slideshowID = new mongoose.Types.ObjectId(slideshowID);
+        if (slideshowID! instanceof mongoose.Types.ObjectId) slideshowID = new mongoose.Types.ObjectId(slideshowID);
         return Observable.fromPromise(SlideshowModel.deleteOne({
             _id: slideshowID
         }));
@@ -115,6 +116,7 @@ export class SlideshowManager {
             }]
         }).sort({
             startDate: -1
-        })).map(slideshows => slideshows.map(slideshow => new Slideshow(slideshow)));
+        }))
+            .map(slideshows => slideshows.map(slideshow => new Slideshow(slideshow)));
     }
 }
