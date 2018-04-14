@@ -33,18 +33,21 @@ let CourseModel = mongoose.model<CourseInterface>('Course', courseSchema, 'cours
 export class CourseManager {
 
     static getCourseInQuarter(quarterID: string): Observable<Course[]> {
-        return QuarterManager.getQuarter(quarterID).flatMap(quarter => {
-            return Observable.fromPromise(CourseModel.find({
-                year: quarter.getYear(),
-                quarter: quarter.getQuarter()
-            }));
-        }).map(courses => courses.map(course => new Course(course)));
+        return QuarterManager.getQuarter(quarterID)
+            .flatMap(quarter => {
+                return Observable.fromPromise(CourseModel.find({
+                    year: quarter.getYear(),
+                    quarter: quarter.getQuarter()
+                }));
+            })
+            .map(courses => courses.map(course => new Course(course)));
     }
 
     static findCourseContainStudent(studentID: number): Observable<Course[]> {
         return Observable.fromPromise(CourseModel.find({
             student: studentID
-        })).map(courses => courses.map(course => new Course(course)));
+        }))
+        .map(courses => courses.map(course => new Course(course)));
     }
 }
 

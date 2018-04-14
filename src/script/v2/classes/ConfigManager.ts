@@ -87,7 +87,8 @@ class Config {
 export class ConfigManager {
 
     static getConfig(): Observable<Config> {
-        return Observable.fromPromise(configModel.findById('config')).map(config => new Config(config));
+        return Observable.fromPromise(configModel.findById('config'))
+            .map(config => new Config(config));
     }
 
 }

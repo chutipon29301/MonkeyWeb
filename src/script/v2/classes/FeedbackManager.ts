@@ -47,12 +47,14 @@ export class FeedbackManager {
 
     static add(feedback: Feedback): Observable<Feedback> {
         let feedbackModel = new FeedbackModel(feedback.getInterface());
-        return Observable.fromPromise(feedbackModel.save()).map(feedback => new Feedback(feedback));
+        return Observable.fromPromise(feedbackModel.save())
+            .map(feedback => new Feedback(feedback));
     }
 
     static getFeedback(feedbackID: mongoose.Types.ObjectId | string): Observable<Feedback> {
         if (typeof feedbackID === "string") feedbackID = new mongoose.Types.ObjectId(feedbackID);
-        return Observable.fromPromise(FeedbackModel.findById(feedbackID)).map(feedback => new Feedback(feedback));
+        return Observable.fromPromise(FeedbackModel.findById(feedbackID))
+            .map(feedback => new Feedback(feedback));
     }
 
     static getFeedbackForUserID(feedbackTo: Number): Observable<Feedback[]> {
@@ -86,6 +88,7 @@ export class FeedbackManager {
     }
 
     private static findMany(queryObject: any): Observable<Feedback[]> {
-        return Observable.fromPromise(FeedbackModel.find(queryObject)).map(feedbacks => feedbacks.map(feedback => new Feedback(feedback)));
+        return Observable.fromPromise(FeedbackModel.find(queryObject))
+            .map(feedbacks => feedbacks.map(feedback => new Feedback(feedback)));
     }
 }

@@ -1,6 +1,6 @@
 import * as multer from "multer";
 
-export abstract class Constant{
+export abstract class Constant {
     public static Multer = multer({ dest: "/tmp/" });
 }
 
