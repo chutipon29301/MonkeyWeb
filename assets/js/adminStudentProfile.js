@@ -91,8 +91,11 @@ $("#engCoverDowload").click(function () {
         genCover(3);
     }
 });
-$("#smCoverDowload").click(function () {
-    genSummerCover();
+$("#smMathCoverDowload").click(function () {
+    genSummerCover(1);
+});
+$("#smPhyCoverDowload").click(function () {
+    genSummerCover(2);
 });
 
 // load profileImg function
@@ -615,20 +618,20 @@ const hourIndex = (day) => {
             return 4;
     }
 }
-async function genSummerCover() {
+async function genSummerCover(type) {
     let str = $("#quarterSelect").val();
     let startT = moment(0);
     startT.date(12).month(2).year(2018).hour(3);
     let endT = moment(0);
     endT.date(30).month(2).year(2018).hour(23);
-    let [allQ, timeTable, attend] = await Promise.all([
+    let [allQ, timeTable, stdName] = await Promise.all([
         listQuarter("private"),
         $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) }),
-        $.post("post/v1/listAttendance", { studentStartDate: startT.valueOf(), studentEndDate: endT.valueOf(), studentID: ID })
+        name(ID)
     ]);
-    attend.sort((a, b) => {
-        return a.date - b.date;
-    });
+    // attend.sort((a, b) => {
+    //     return a.date - b.date;
+    // });
     let thisQ;
     for (let i in allQ.quarter) {
         if (allQ.quarter[i].year === parseInt(str.slice(0, 4)) && allQ.quarter[i].quarter === parseInt(str.slice(5))) {
@@ -638,51 +641,62 @@ async function genSummerCover() {
     let coverCanvas = document.getElementById('smCover');
     let ctx = coverCanvas.getContext('2d');
     let template = document.getElementById('smTableTemplate');
-    ctx.drawImage(template, 0, 0, 1244, 1760);
+    ctx.drawImage(template, 0, 0, 1241, 880);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "bold 180px Cordia New";
     ctx.fillText(thisQ.name, 340, 88);
-    ctx.font = "bold 80px Cordia New";
-    ctx.fillText(ID, 1100, 65);
+    ctx.font = "bold 85px Cordia New";
+    if (type === 1) {
+        ctx.fillText(ID + "1", 1070, 77);
+    } else if (type === 2) {
+        ctx.fillText(ID + "2", 1070, 77);
+    }
+    ctx.font = "bold 60px Cordia New";
+    ctx.fillText(stdName.firstname + " (" + stdName.nickname + ")", 980, 172);
+    ctx.font = "bold 150px Cordia New";
     let thisCr = timeTable.course;
-    let hIndex = { 8: 235, 10: 335, 13: 435 };
+    let hIndex = { 8: 350, 10: 530, 13: 710 };
     ctx.textAlign = "left";
     for (let i in thisCr) {
         let t = moment(thisCr[i].day);
         ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, 370, hIndex[t.hour()]);
     }
-    ctx.textAlign = "center";
-    ctx.font = "bold 65px Cordia New";
-    let temp = moment(0);
-    let index = -1;
-    let initH2 = 696;
-    for (let i in attend) {
-        let initH = 696;
-        let initW = { 8: 380, 10: 470, 13: 560 };
-        if (attend[i].reason === 'SummerAbsent') {
-            let t = moment(attend[i].date);
-            if (temp.date() === t.date() && temp.month() === t.month() && temp.year() === t.year()) {
-                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
-            } else {
-                index += 1;
-                ctx.fillText(t.date(), 120, initH + 69 * index);
-                ctx.fillText(t.month() + 1, 200, initH + 69 * index);
-                ctx.fillText((t.year() + '').slice(2), 280, initH + 69 * index);
-                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
-            }
-            temp = t;
-        } else if (attend[i].type === 2) {
-            let t = moment(attend[i].date);
-            if (t.hour() === 15) {
-                ctx.fillText(t.date(), 660, initH2);
-                ctx.fillText(t.month() + 1, 750, initH2);
-                ctx.fillText((t.year() + '').slice(2), 840, initH2);
-                initH2 = initH2 + 69;
-            }
-        }
+    // ctx.textAlign = "center";
+    // ctx.font = "bold 65px Cordia New";
+    // let temp = moment(0);
+    // let index = -1;
+    // let initH2 = 696;
+    // for (let i in attend) {
+    //     let initH = 696;
+    //     let initW = { 8: 380, 10: 470, 13: 560 };
+    //     if (attend[i].reason === 'SummerAbsent') {
+    //         let t = moment(attend[i].date);
+    //         if (temp.date() === t.date() && temp.month() === t.month() && temp.year() === t.year()) {
+    //             ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+    //         } else {
+    //             index += 1;
+    //             ctx.fillText(t.date(), 120, initH + 69 * index);
+    //             ctx.fillText(t.month() + 1, 200, initH + 69 * index);
+    //             ctx.fillText((t.year() + '').slice(2), 280, initH + 69 * index);
+    //             ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+    //         }
+    //         temp = t;
+    //     } else if (attend[i].type === 2) {
+    //         let t = moment(attend[i].date);
+    //         if (t.hour() === 15) {
+    //             ctx.fillText(t.date(), 660, initH2);
+    //             ctx.fillText(t.month() + 1, 750, initH2);
+    //             ctx.fillText((t.year() + '').slice(2), 840, initH2);
+    //             initH2 = initH2 + 69;
+    //         }
+    //     }
+    // }
+    if (type === 1) {
+        downloadCanvas(6);
+    } else if (type === 2) {
+        downloadCanvas(7);
     }
-    downloadCanvas(6);
 }
 async function genSmAppRej(type) {
     let str = $("#quarterSelect").val();
@@ -720,7 +734,7 @@ async function genSmAppRej(type) {
         ctx.fillStyle = "green";
         ctx.fillText("FINISHED", ray, 0);
     }
-    downloadCanvas(7);
+    downloadCanvas(8);
 }
 function downloadCanvas(type) {
     let text = ""
@@ -752,9 +766,13 @@ function downloadCanvas(type) {
             break;
         case 6:
             canvas = document.getElementById('smCover');
-            text += ID + "sm.png";
+            text += ID + "1sm.png";
             break;
         case 7:
+        canvas = document.getElementById('smCover');
+        text += ID + "2sm.png";
+            break;
+        case 8:
             canvas = document.getElementById('smAppRejCover');
             text += ID + ".png";
             break;
