@@ -529,7 +529,12 @@ export class WorkflowManager {
 
                     let parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
 
-                    while (parentIndex != -1) {
+                    if (parentIndex === -1) {
+                        responseNode.subtitle = currentNode.getSubtitle();
+                        responseNode.detail = currentNode.getDetail();
+                    }
+
+                    while (parentIndex !== -1) {
                         let parentNode = innerNodes[parentIndex];
                         try {
                             responseNode.subtitle = currentNode.getSubtitle() + "\n" + responseNode.subtitle;
@@ -541,6 +546,20 @@ export class WorkflowManager {
                         currentNode = parentNode;
                         parentNode = innerNodes[parentIndex];
                     }
+
+                    currentNode = innerNodes[lastUserIndex];
+                    let childIndex = _.findIndex(innerNodes, node => currentNode.getID().equals(node.getParentID()));
+                    if (childIndex !== -1) {
+                        let childeNode = innerNodes[childIndex];
+                        let baseOwner = childeNode.getOwner();
+                        while (childIndex !== -1 && childeNode.getOwner() === baseOwner) {
+                            childeNode = innerNodes[childIndex];
+                            childIndex = _.findIndex(innerNodes, node => childeNode.getID().equals(node.getParentID()))
+                        }
+                        responseNode.childOwner = baseOwner;
+                        responseNode.childStatus = childeNode.getStatus();
+                    }
+
                     response.push(responseNode);
                 }
                 return response;
