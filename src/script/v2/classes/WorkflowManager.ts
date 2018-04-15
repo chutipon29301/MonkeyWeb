@@ -500,16 +500,22 @@ export class WorkflowManager {
                 _.forEach(groupNodes, nodes => {
                     userNodes.push(_.last(nodes));
                 });
-                return Observable.forkJoin(userNodes.map(node => node.getTree()));
+                return Observable.zip(
+                    Observable.forkJoin(userNodes.map(node => node.getTree())),
+                    Observable.forkJoin(userNodes.map(node => node.getHeader()))
+                );
             })
             .map(nodes => {
+                let bodyNodes = nodes[0];
+                let headerNodes = nodes[1];
                 let response: NodeResponseInterface[] = [];
-                nodes.map(innerNode => {
-                    let lastestUserIndex = _.findLastIndex(innerNode, node => {
-                        return node.getOwner() === userID;
-                    });
-                    let currentNode = innerNode[lastestUserIndex];
+                for (let i = 0; i < bodyNodes.length; i++) {
+                    const innerNodes = bodyNodes[i];
                     let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
+                    responseNode.title = headerNodes[i].getTitle();
+                    let lastUserIndex = _.findLastIndex(innerNodes, node => node.getOwner() === userID);
+                    let currentNode = innerNodes[lastUserIndex];
+
                     responseNode.nodeID = currentNode.getID();
                     responseNode.timestamp = currentNode.getTimestamp();
                     responseNode.createdBy = currentNode.getCreatedBy();
@@ -520,24 +526,23 @@ export class WorkflowManager {
                     responseNode.ancestors = currentNode.getAncestorsID();
                     responseNode.subtitle = "";
                     responseNode.detail = "";
-                    for (let i = 0; i < lastestUserIndex; i++) {
-                        const node = innerNode[i];
+
+                    let parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
+
+                    while (parentIndex != -1) {
+                        let parentNode = innerNodes[parentIndex];
                         try {
-                            responseNode.subtitle += node.getSubtitle() + "\n";
-                            responseNode.detail += node.getDetail() + "\n";
-                        } catch (error) { }
+                            responseNode.subtitle = currentNode.getSubtitle() + "\n" + responseNode.subtitle;
+                        } catch (_) { }
+                        try {
+                            responseNode.detail = currentNode.getDetail() + "\n" + responseNode.detail;
+                        } catch (_) { }
+                        parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
+                        currentNode = parentNode;
+                        parentNode = innerNodes[parentIndex];
                     }
-                    try {
-                        let childOwner = innerNode[lastestUserIndex + 1].getOwner();
-                        responseNode.childOwner = childOwner;
-                        for (let i = lastestUserIndex + 1; i < innerNode.length; i++) {
-                            const node = innerNode[i];
-                            if (node.getOwner() != childOwner) break;
-                            responseNode.childStatus = node.getStatus();
-                        }
-                    } catch (error) { }
                     response.push(responseNode);
-                });
+                }
                 return response;
             });
     }
