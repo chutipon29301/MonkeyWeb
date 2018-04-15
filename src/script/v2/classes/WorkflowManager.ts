@@ -75,7 +75,8 @@ interface NodeResponseInterface {
     subtitle: string,
     detail: string,
     parent?: mongoose.Types.ObjectId,
-    ancestors?: mongoose.Types.ObjectId[]
+    ancestors?: mongoose.Types.ObjectId[],
+    tag: string,
     childStatus: string,
     childOwner: number
 }
@@ -184,6 +185,13 @@ export class HeaderNode extends Node<HeaderInterface> {
         })).map(header => new HeaderNode(header));
     }
 
+    getTag(): string {
+        try {
+            return this.node.tag.valueOf();
+        } catch (error) {
+            return "other";
+        }
+    }
 }
 
 export class BodyNode extends Node<BodyInterface> {
@@ -513,6 +521,7 @@ export class WorkflowManager {
                     const innerNodes = bodyNodes[i];
                     let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
                     responseNode.title = headerNodes[i].getTitle();
+                    responseNode.tag = headerNodes[i].getTag();
                     let lastUserIndex = _.findLastIndex(innerNodes, node => node.getOwner() === userID);
                     let currentNode = innerNodes[lastUserIndex];
 
