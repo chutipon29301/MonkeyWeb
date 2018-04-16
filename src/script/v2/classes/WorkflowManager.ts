@@ -78,7 +78,8 @@ interface NodeResponseInterface {
     ancestors?: mongoose.Types.ObjectId[],
     tag: string,
     childStatus: string,
-    childOwner: number
+    childOwner: number,
+    childOwnerName: string
 }
 
 /**
@@ -572,6 +573,16 @@ export class WorkflowManager {
                     response.push(responseNode);
                 }
                 return response;
+            }).flatMap(responses => {
+                return Observable.forkJoin(responses.map(response => UserManager.getTutorInfo(response.childOwner)))
+                    .map(userInfo => ({ responses, userInfo }));
+            }).map(({ responses, userInfo }) => {
+                for (let i = 0; i < responses.length; i++) {
+                    try {
+                        responses[i].childOwnerName = userInfo[i].getNicknameEn();
+                    } catch (error) { }
+                }
+                return responses;
             });
     }
 }

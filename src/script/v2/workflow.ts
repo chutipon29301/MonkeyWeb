@@ -24,9 +24,9 @@ router.post("/createWorkflow", (req, res) => {
         duedate = new Date(duedate);
     }
     WorkflowManager.create(req.user._id, title, subtitle, detail, tag, duedate)
-        .subscribe(_ => {
+        .subscribe(node => {
             return res.status(200).send({
-                msg: "OK"
+                node: node
             });
         });
 });
@@ -39,6 +39,7 @@ router.post("/delete", (req, res) => {
             msg: "Bad Request"
         });
     }
+    // TODO: Handle unauthorize delete
     WorkflowManager.getBodyNode(workflowID)
         .flatMap(node => node.getHeader())
         .flatMap(node => WorkflowManager.delete(node))
