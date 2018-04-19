@@ -169,12 +169,12 @@ async function genStudentData() {
     $("#studentProfileContent").append(
         "<h4>" + studentData.firstname + " (" + studentData.nickname + ") " + studentData.lastname + "</h4>" +
         "<h4>" + studentData.firstnameEn + " (" + studentData.nicknameEn + ") " + studentData.lastnameEn + "</h4>" +
-        "<h4><span class='fa fa-graduation-cap'></span> " + (studentData.grade > 6 ? 'S' + (studentData.grade - 6) : 'P' + studentData.grade) +
-        " <span class='fa fa-id-card-o'></span> " + ID + "</h4>" +
+        "<h4><span class='fas fa-fw fa-lg fa-graduation-cap'></span> " + (studentData.grade > 6 ? 'S' + (studentData.grade - 6) : 'P' + studentData.grade) +
+        " <span class='far fa-fw fa-lg fa-id-card'></span> " + ID + "</h4>" +
         "<h5>Level: " + studentData.level + "</h5>" +
-        "<h5><span class='fa fa-envelope-o'></span> " + studentData.email + "</h5>" +
-        "<h5><span class='fa fa-phone'></span> Student: " + studentData.phone + "</h5>" +
-        "<h5><span class='fa fa-phone'></span> Parent: " + studentData.phoneParent + "</h5>"
+        "<h5><span class='far fa-fw fa-lg fa-envelope'></span> " + studentData.email + "</h5>" +
+        "<h5><span class='fas fa-fw fa-lg fa-phone'></span> Student: " + studentData.phone + "</h5>" +
+        "<h5><span class='fas fa-fw fa-lg fa-phone'></span> Parent: " + studentData.phoneParent + "</h5>"
     );
     if (parseInt(str.slice(5)) > 10) {
         $("#smCoverDowload").show();
@@ -855,9 +855,9 @@ async function showChatData() {
     $("#chatButt").empty();
     for (let i in chats) {
         if (chats[i].sender._id === parseInt(myID)) {
-            $("#chatButt").append("<row><p class='mb-0'><small><span class='fa fa-user-secret'></span>&nbsp;me</small></p><button class='btn btn-primary col-10'>" + chats[i].msg + "</button></row>");
+            $("#chatButt").append("<row><p class='mb-0'><small><span class='fas fa-fw fa-user-secret'></span>&nbsp;me</small></p><button class='btn btn-primary col-10'>" + chats[i].msg + "</button></row>");
         } else {
-            $("#chatButt").append("<row><p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fa fa-user'></span></small>&nbsp;</p><button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button></row>");
+            $("#chatButt").append("<row><p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fas fa-fw fa-user'></span></small>&nbsp;</p><button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button></row>");
         }
     }
 }
@@ -1051,10 +1051,10 @@ async function genCommentViewBody() {
             $commentContentBody.append(
                 "<div id=" + comment.comment[i].commentID + ">" +
                 "<h5>" +
-                "<span class='fa fa-thumb-tack' style=" + ((comment.comment[i].priority > 0) ? 'color:red' : 'color:silver') + " onclick=\"editComment(\'1\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].priority + "\');\"></span> " +
-                "<span class='fa fa-check-circle' style=" + ((comment.comment[i].isCleared) ? 'color:green' : 'color:silver') + " onclick=\"editComment(\'2\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].isCleared + "\');\"></span> " +
+                "<span class='fas fa-thumbtack' style=" + ((comment.comment[i].priority > 0) ? 'color:red' : 'color:silver') + " onclick=\"editComment(\'1\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].priority + "\');\"></span> " +
+                "<span class='fas fa-check-circle' style=" + ((comment.comment[i].isCleared) ? 'color:green' : 'color:silver') + " onclick=\"editComment(\'2\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].isCleared + "\');\"></span> " +
                 tutorComment[i].nickname + " (" + moment(comment.comment[i].timestamp).format('DD MMM') + ") " +
-                "<span class='fa fa-trash' style='color:red' onclick=\"editComment(\'3\',\'" + comment.comment[i].commentID + "\','');\"></span>" +
+                "<span class='fas fa-trash' style='color:red' onclick=\"editComment(\'3\',\'" + comment.comment[i].commentID + "\','');\"></span>" +
                 "</h5>" +
                 "<p>" + comment.comment[i].message + "</p>" +
                 "</div>"
