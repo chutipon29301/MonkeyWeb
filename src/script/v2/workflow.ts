@@ -24,10 +24,8 @@ router.post("/createWorkflow", (req, res) => {
         duedate = new Date(duedate);
     }
     WorkflowManager.create(req.user._id, title, subtitle, detail, tag, duedate)
-        .subscribe(_ => {
-            return res.status(200).send({
-                msg: "OK"
-            });
+        .subscribe(node => {
+            return res.status(200).send(node.getInterface());
         });
 });
 
@@ -223,7 +221,9 @@ router.post("/done", (req, res) => {
                     node.getID(),
                     ancestors
                 )
-                    .flatMap(parent => IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn + ""));
+                    .flatMap(parent => {
+                        return IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn + " has finished your task.")
+                    });
             } else {
                 return WorkflowManager.createBodyNode(
                     Status.COMPLETE,
@@ -250,13 +250,15 @@ router.post("/list", (req, res) => {
         return res.status(200).send({
             nodes: nodes
         });
+    }, err => {
+        return res.status(200).send({
+            nodes: []
+        });
     });
 });
 
 router.post("/test", (req, res) => {
-    WorkflowManager.getBodyNode('5ac9e36963b66391d8b0df10')
-        .flatMap(node => node.getParentBranchNode())
-        .subscribe(node => {
-            return res.status(200).send(node);
-        });
+    IOSNotificationManager.getInstance().send(99009, "Hello World").subscribe(result => {
+        return res.status(200).send(result);
+    });
 });
