@@ -37,7 +37,6 @@ router.post("/delete", (req, res) => {
             msg: "Bad Request"
         });
     }
-    // TODO: Handle unauthorize delete
     WorkflowManager.getBodyNode(workflowID)
         .flatMap(node => node.getHeader())
         .flatMap(node => WorkflowManager.delete(node))
@@ -223,7 +222,7 @@ router.post("/done", (req, res) => {
                     ancestors
                 )
                     .flatMap(parent => {
-                        return IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn + "")
+                        return IOSNotificationManager.getInstance().send(parent.getOwner(), req.user.nicknameEn + " has finished your task.")
                     });
             } else {
                 return WorkflowManager.createBodyNode(
