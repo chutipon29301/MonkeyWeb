@@ -41,7 +41,7 @@ interface NodeInterface extends Document {
  * @interface HeaderInterface
  * @extends {Node}
  */
-export interface HeaderInterface extends NodeInterface {
+interface HeaderInterface extends NodeInterface {
     title: String,
     tag: String
 }
@@ -53,7 +53,7 @@ export interface HeaderInterface extends NodeInterface {
  * @interface BodyNode
  * @extends {Node}
  */
-export interface BodyInterface extends NodeInterface {
+interface BodyInterface extends NodeInterface {
     duedate?: Date,
     status: String,
     owner: Number,
@@ -79,7 +79,8 @@ interface NodeResponseInterface {
     tag: string,
     childStatus: string,
     childOwner: number,
-    childOwnerName: string
+    childOwnerName: string,
+    canDelete: Boolean
 }
 
 /**
@@ -527,6 +528,7 @@ export class WorkflowManager {
                     let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
                     responseNode.title = headerNodes[i].getTitle();
                     responseNode.tag = headerNodes[i].getTag();
+                    responseNode.canDelete = innerNodes[0].getOwner() === userID;
                     let lastUserIndex = _.findLastIndex(innerNodes, node => node.getOwner() === userID);
                     let currentNode = innerNodes[lastUserIndex];
 
