@@ -104,6 +104,19 @@ export class UserManager {
         return Observable.fromPromise(TutorModel.findById(userID as Number))
             .map(tutor => new Tutor(tutor));
     }
+
+    static listTutor(): Observable<Tutor[]> {
+        return Observable.fromPromise(TutorModel.find({
+            tutor: {
+                $exists: true
+            },
+            "tutor.status": "active"
+        })
+        .sort({
+            _id: 1
+        }))
+            .map(tutors => tutors.map(tutor => new Tutor(tutor)));
+    }
 }
 
 abstract class User<T extends UserInterface> {
@@ -120,6 +133,10 @@ abstract class User<T extends UserInterface> {
 
     getNicknameEn(): string {
         return this.user.nicknameEn.valueOf();
+    }
+
+    getInterface(): T {
+        return this.user;
     }
 }
 

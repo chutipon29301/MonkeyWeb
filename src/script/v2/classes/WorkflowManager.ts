@@ -502,6 +502,9 @@ export class WorkflowManager {
         }))
             .map(nodes => nodes.map(node => new BodyNode(node)))
             .flatMap(nodes => {
+                if (nodes.length === 0) {
+                    throw Observable.throw(new Error("EmptyArrayException"));
+                }
                 let groupNodes = _.groupBy(nodes, node => {
                     return node.getAncestorsID()[0];
                 });
@@ -520,6 +523,7 @@ export class WorkflowManager {
                 let response: NodeResponseInterface[] = [];
                 for (let i = 0; i < bodyNodes.length; i++) {
                     const innerNodes = bodyNodes[i];
+                    if (_.findIndex(innerNodes, node => ((node.getStatus() === Status.COMPLETE) && (node.getOwner() !== userID))) !== -1) continue;
                     let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
                     responseNode.title = headerNodes[i].getTitle();
                     responseNode.tag = headerNodes[i].getTag();
@@ -571,6 +575,9 @@ export class WorkflowManager {
                     }
 
                     response.push(responseNode);
+                }
+                if (response.length === 0) {
+                    throw Observable.throw(new Error("EmptyArrayException"));
                 }
                 return response;
             }).flatMap(responses => {
