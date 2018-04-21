@@ -51,7 +51,6 @@ module.exports = function (app, db, post, io) {
         io.emit('updateCheckout')
         res.status(200).send('ok')
     })
-
     /**
      * each obj has these parameter
      * {
