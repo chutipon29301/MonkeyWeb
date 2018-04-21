@@ -3,19 +3,19 @@ block head
     -const pageTitle = "Registration Summer"
     style.
         .suggestCr{
-            box-shadow: 0 0 8px blue;
+            box-shadow: 0 0 8px #49d0d0;
         }
 block script
     script(src="js/regSm.min.js")
 block body
     .jumbotron.bg-info.text-white
         .container-fluid
-            h3#regisHead ลงทะเบียน CR61MAR
+            h3#regisHead ลงทะเบียน CR61APR
     .container-fluid
         .row
             .col
-                p.text-center.text-danger สำหรับคอร์ส CR61MAR จะเป็นคอร์สที่เรียนต่อเนื่องทุกวันจันทร์-ศุกร์ ตั้งแต่วันที่ 12 มี.ค. 61 - 30 มี.ค. 61
-                p.text-center.text-primary ช่องที่มีกรอบไฮไลต์สีน้ำเงินคือคอร์สที่แนะนำให้สมัครเรียน
+                p.text-center.text-danger สำหรับคอร์ส CR61APR จะเป็นคอร์สที่เรียนต่อเนื่องทุกวันจันทร์-ศุกร์ ตั้งแต่วันที่ 18 เม.ย. 61 - 27 เม.ย. 61
+                //- p.text-center.text-primary ช่องที่มีกรอบไฮไลต์สีน้ำเงินคือคอร์สที่แนะนำให้สมัครเรียน
         .table-responsive
             table.table.table-bordered
                 thead
@@ -41,6 +41,10 @@ block body
         .row
             .col#crDescription
                 p: strong Description:
+        .row
+            .col
+                p: strong - ทุกครั้งที่มีการปิดเทอมหรือหยุดนานๆ จะทำให้ นร.หลุดจากบรรยากาศการเรียนเสมอ คอร์สนี้จัดขึ้นเพื่อเตรียมให้ นร.กลับเข้าสู่บรรยากาศเรียนรู้ให้พร้อมเรียนในตอนเปิดเทอม
+                p: strong - นอกจากนี้ยังเป็นโอกาศที่ดีสำหรับ นร.ที่ไม่ได้ลง CR61MAR เพราะเนื้อหาที่เรียนใน 1 คอร์ส จะก้าวกระโดดมากทำให้ นร.อาจตกลงไปเรียนในระดับที่ต่ำกว่า
         .row
             .col
                 h5#total.float-right(style="color:red;") รวมเป็นเงิน 0 บาท

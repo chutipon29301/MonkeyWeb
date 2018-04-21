@@ -63,7 +63,7 @@ $(".selector").click(function () {
 });
 function updateTotal() {
     let crCount = $(".btn-primary").length;
-    $("#total").html("รวมเป็นเงิน " + crCount * 9000 + " บาท");
+    $("#total").html("รวมเป็นเงิน " + crCount * 4800 + " บาท");
 }
 $("#submitBtn").click(function () {
     if ($(".btn-primary").length <= 0) {

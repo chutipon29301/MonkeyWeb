@@ -1,13 +1,16 @@
-import { Document, Schema } from "mongoose";
 import * as mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
+import { start } from "repl";
 
-interface Quarter extends Document {
+interface QuarterInterface extends Document {
     year: Number,
     quarter: Number,
     name: String,
     maxSeat: [Number],
-    status: String
+    status: String,
+    startDate: Date,
+    endDate: Date
 }
 
 let quarterSchema = new Schema({
@@ -15,23 +18,42 @@ let quarterSchema = new Schema({
     quarter: Number,
     name: String,
     maxSeat: [Number],
-    status: String
+    status: String,
+    startDate: Date,
+    endDate: Date
 });
 
-let QuarterModel = mongoose.model<Quarter>('Quarter', quarterSchema, 'quarter');
+let QuarterModel = mongoose.model<QuarterInterface>('Quarter', quarterSchema, 'quarter');
 
 export class QuarterManager {
-    static getQuarter(quarterID: string): Observable<QuarterObject> {
-        return Observable.fromPromise(QuarterModel.findById(quarterID)).map(quarter => new QuarterObject(quarter));
+
+    static getQuarter(quarterID: string): Observable<Quarter> {
+        return Observable.fromPromise(QuarterModel.findById(quarterID))
+            .map(quarter => new Quarter(quarter));
     }
+
+    static getQuarterFromQuarterObject(quarter: { quarter: Number, year: Number }): Observable<Quarter> {
+        return Observable.fromPromise(QuarterModel.findOne({
+            quarter: quarter.quarter,
+            year: quarter.year
+        }))
+            .map(quarter => new Quarter(quarter));
+    }
+
 }
 
-export class QuarterObject {
+declare function createLabel(id: number): number;
 
-    quarter: Quarter
+export class Quarter {
 
-    constructor(quarter: Quarter) {
+    private quarter: QuarterInterface
+
+    constructor(quarter: QuarterInterface) {
         this.quarter = quarter
+    }
+
+    getID(): string {
+        return this.quarter._id;
     }
 
     getYear(): number {
@@ -44,5 +66,19 @@ export class QuarterObject {
 
     getQuarterID(): string {
         return this.quarter._id;
+    }
+
+    setStartEndDate(startDate: Date, endDate: Date): Observable<Quarter> {
+        return this.edit({
+            startDate: startDate,
+            endDate: endDate
+        });
+    }
+
+    private edit(value: any): Observable<Quarter> {
+        return Observable.fromPromise(QuarterModel.findByIdAndUpdate(this.getID(), {
+            $set: value
+        }))
+            .map(quarter => new Quarter(quarter));
     }
 }
