@@ -563,18 +563,21 @@ export class WorkflowManager {
                         parentNode = innerNodes[parentIndex];
                     }
 
-                    currentNode = innerNodes[lastUserIndex];
-                    let childIndex = _.findIndex(innerNodes, node => currentNode.getID().equals(node.getParentID()));
-                    if (childIndex !== -1) {
-                        let childeNode = innerNodes[childIndex];
-                        let baseOwner = childeNode.getOwner();
-                        while (childIndex !== -1 && childeNode.getOwner() === baseOwner) {
-                            childeNode = innerNodes[childIndex];
-                            childIndex = _.findIndex(innerNodes, node => childeNode.getID().equals(node.getParentID()))
-                        }
-                        responseNode.childOwner = baseOwner;
-                        responseNode.childStatus = childeNode.getStatus();
-                    }
+                    responseNode.childOwner = _.last(innerNodes).getOwner();
+                    responseNode.childStatus = _.last(innerNodes).getStatus();
+
+                    // currentNode = innerNodes[lastUserIndex];
+                    // let childIndex = _.findIndex(innerNodes, node => currentNode.getID().equals(node.getParentID()));
+                    // if (childIndex !== -1) {
+                    //     let childeNode = innerNodes[childIndex];
+                    //     let baseOwner = childeNode.getOwner();
+                    //     while (childIndex !== -1 && childeNode.getOwner() === baseOwner) {
+                    //         childeNode = innerNodes[childIndex];
+                    //         childIndex = _.findIndex(innerNodes, node => childeNode.getID().equals(node.getParentID()))
+                    //     }
+                    //     responseNode.childOwner = baseOwner;
+                    //     responseNode.childStatus = childeNode.getStatus();
+                    // }
 
                     response.push(responseNode);
                 }
