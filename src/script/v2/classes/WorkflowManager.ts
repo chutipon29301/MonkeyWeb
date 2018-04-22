@@ -161,11 +161,12 @@ abstract class Node<T extends NodeInterface> {
     }
 
     getTimestamp(): Date {
-        return this.node.timestamp;
+        return this.getID().getTimestamp();
     }
 
     getTimestampString(): String {
-        return this.node.timestamp.getDate() + "/" + this.node.timestamp.getMonth() + "/" + this.node.timestamp.getFullYear() + " " + this.node.timestamp.getHours() + ":" + this.node.timestamp.getMinutes()
+        let time = this.getID().getTimestamp();
+        return time.getDate() + "/" + time.getMonth() + "/" + time.getFullYear() + " " + time.getHours() + ":" + time.getMinutes();
     }
 
     getCreatedBy(): number {
