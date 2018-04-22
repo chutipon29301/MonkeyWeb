@@ -556,7 +556,7 @@ export class WorkflowManager {
 
 
                     for (let j = 0; j < innerNodes.length; j++) {
-                        responseNode.detail += "\n" + innerTutors[j].getNicknameEn() + " :: " + innerNodes[j].getStatus() + " # " + currentNode.getTimestampString() + "\n";
+                        responseNode.detail += "\n" + innerTutors[j].getNicknameEn() + " :: " + innerNodes[j].getStatus() + " # " + innerNodes[j].getTimestampString() + "\n";
                         try {
                             responseNode.subtitle = innerNodes[j].getSubtitle();
                         } catch (_) { }
