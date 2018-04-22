@@ -165,7 +165,7 @@ abstract class Node<T extends NodeInterface> {
     }
 
     getTimestampString(): String {
-        return this.node.timestamp.getDay() + "/" + this.node.timestamp.getMonth() + "/" + this.node.timestamp.getFullYear() + " " + this.node.timestamp.getHours() + ":" + this.node.timestamp.getMinutes()
+        return this.node.timestamp.getDate() + "/" + this.node.timestamp.getMonth() + "/" + this.node.timestamp.getFullYear() + " " + this.node.timestamp.getHours() + ":" + this.node.timestamp.getMinutes()
     }
 
     getCreatedBy(): number {
