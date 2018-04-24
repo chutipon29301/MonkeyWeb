@@ -267,16 +267,16 @@ async function generateStudentHtmlTable(student) {
         if (student[i].remark !== undefined) {
             remark = student[i].remark;
             if (remark === "1") {
-                remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
+                remarkStr = "<span class='far fa-2x fa-check-circle' style='color:blue'></span>";
             } else if (remark === "2") {
-                remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
+                remarkStr = "<span class='far fa-2x fa-check-circle' style='color:green'></span>";
             } else if (remark === "3") {
-                remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:orange'></span>";
+                remarkStr = "<span class='far fa-2x fa-times-circle' style='color:orange'></span>";
             } else {
-                remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+                remarkStr = "<span class='far fa-2x fa-times-circle' style='color:red'></span>";
             }
         } else {
-            remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+            remarkStr = "<span class='far fa-2x fa-times-circle' style='color:red'></span>";
         }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
@@ -325,16 +325,16 @@ async function generateStudentHtmlTable(student) {
             $.post("post/v1/setRemark", { studentID: row.getElementsByTagName("td")[1].innerHTML, remark: sendData }).then(() => {
                 let remarkStr = "";
                 if (cell.id === "" || cell.id === "0") {
-                    remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:orange'></span>";
+                    remarkStr = "<span class='far fa-2x fa-times-circle' style='color:orange'></span>";
                     cell.id = "3";
                 } else if (cell.id === "1") {
-                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:green'></span>";
+                    remarkStr = "<span class='far fa-2x fa-check-circle' style='color:green'></span>";
                     cell.id = "2";
                 } else if (cell.id === "2") {
-                    remarkStr = "<span class='fa fa-2x fa-times-circle-o' style='color:red'></span>";
+                    remarkStr = "<span class='far fa-2x fa-times-circle' style='color:red'></span>";
                     cell.id = "0";
                 } else if (cell.id === "3") {
-                    remarkStr = "<span class='fa fa-2x fa-check-circle-o' style='color:blue'></span>";
+                    remarkStr = "<span class='far fa-2x fa-check-circle' style='color:blue'></span>";
                     cell.id = "1";
                 }
                 cell.innerHTML = "<td>" + remarkStr + "</td>";

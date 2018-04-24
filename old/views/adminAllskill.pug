@@ -9,7 +9,7 @@ block body
             .col-12.col-md-2.option-container.position-fixed
                 h1.mt-10 Skill
                 label
-                    span.fa.fa-lg.fa-th-large &nbsp;
+                    span.fas.fa-fw.fa-lg.fa-th-large &nbsp;
                     |Quarter
                 select.custom-select#quarter-select
                     each i in quarterList
@@ -18,7 +18,7 @@ block body
                         else
                             option(value=i.year+'-'+i.quarter)= i.name
                 label.mt-3
-                    span.fa.fa-lg.fa-filter &nbsp;
+                    span.fas.fa-fw.fa-lg.fa-filter &nbsp;
                     |Filter
                 select.custom-select#subject
                     option(value="ME") ALL

@@ -12,13 +12,13 @@ block body
                 form
                     .form-group
                         label
-                            span.fa.fa-lg.fa-th-large &nbsp;
+                            span.fas.fa-fw.fa-lg.fa-th-large &nbsp;
                             |Quarter
                         select.custom-select#quarter(onChange="quarterChange()")
                 form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
                         label
-                            span.fa.fa-lg.fa-filter &nbsp;
+                            span.fas.fa-fw.fa-lg.fa-filter &nbsp;
                             |Filter
                         select.custom-select#subject(onChange="getAllCourseContent()")
                             option(value="all") All Subject
@@ -88,7 +88,7 @@ block body
                             input(type='checkbox', value='o', checked, name="options[]", onClick="getAllCourseContent()")
                             | o
                 a(href="adminCourseTable" class=webUser.position === "tutor" ? "invisible" : "btn btn-link col")
-                    span.fa.fa-lg.fa-book
+                    span.fas.fa-fw.fa-lg.fa-book
                     |คัมภีร์เทวดา
             div.col-12.col-md-9.offset-md-3.col-xl-10.offset-xl-2.p-0
                 .table-responsive
