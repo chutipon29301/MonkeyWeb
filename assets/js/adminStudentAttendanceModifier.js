@@ -384,9 +384,9 @@ async function genActivityTable(number) {
         startDate: acTime1.valueOf(),
         endDate: acTime2.valueOf()
     });
-    if (allAdtend.length === 0) {
-        $("#loadMoreButt").hide();
-    }
+    // if (allAdtend.length === 0) {
+    //     $("#loadMoreButt").hide();
+    // }
     for (let i = 0; i < allAdtend.length; i++) {
         let style;
         let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY - HH:mm");
