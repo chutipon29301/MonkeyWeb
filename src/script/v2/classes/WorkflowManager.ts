@@ -41,7 +41,7 @@ interface NodeInterface extends Document {
  * @interface HeaderInterface
  * @extends {Node}
  */
-export interface HeaderInterface extends NodeInterface {
+interface HeaderInterface extends NodeInterface {
     title: String,
     tag: String
 }
@@ -53,7 +53,7 @@ export interface HeaderInterface extends NodeInterface {
  * @interface BodyNode
  * @extends {Node}
  */
-export interface BodyInterface extends NodeInterface {
+interface BodyInterface extends NodeInterface {
     duedate?: Date,
     status: String,
     owner: Number,
@@ -75,9 +75,12 @@ interface NodeResponseInterface {
     subtitle: string,
     detail: string,
     parent?: mongoose.Types.ObjectId,
-    ancestors?: mongoose.Types.ObjectId[]
+    ancestors?: mongoose.Types.ObjectId[],
+    tag: string,
     childStatus: string,
-    childOwner: number
+    childOwner: number,
+    childOwnerName: string,
+    canDelete: Boolean
 }
 
 /**
@@ -158,7 +161,12 @@ abstract class Node<T extends NodeInterface> {
     }
 
     getTimestamp(): Date {
-        return this.node.timestamp;
+        return this.getID().getTimestamp();
+    }
+
+    getTimestampString(): String {
+        let time = this.getID().getTimestamp();
+        return time.getDate() + "/" + time.getMonth() + "/" + time.getFullYear() + " " + time.getHours() + ":" + time.getMinutes();
     }
 
     getCreatedBy(): number {
@@ -184,6 +192,13 @@ export class HeaderNode extends Node<HeaderInterface> {
         })).map(header => new HeaderNode(header));
     }
 
+    getTag(): string {
+        try {
+            return this.node.tag.valueOf();
+        } catch (error) {
+            return "other";
+        }
+    }
 }
 
 export class BodyNode extends Node<BodyInterface> {
@@ -493,6 +508,9 @@ export class WorkflowManager {
         }))
             .map(nodes => nodes.map(node => new BodyNode(node)))
             .flatMap(nodes => {
+                if (nodes.length === 0) {
+                    throw Observable.throw(new Error("EmptyArrayException"));
+                }
                 let groupNodes = _.groupBy(nodes, node => {
                     return node.getAncestorsID()[0];
                 });
@@ -500,16 +518,31 @@ export class WorkflowManager {
                 _.forEach(groupNodes, nodes => {
                     userNodes.push(_.last(nodes));
                 });
-                return Observable.forkJoin(userNodes.map(node => node.getTree()));
+                return Observable.zip(
+                    Observable.forkJoin(userNodes.map(node => node.getTree())),
+                    Observable.forkJoin(userNodes.map(node => node.getHeader()))
+                );
             })
-            .map(nodes => {
+            .flatMap(nodes => {
+                return Observable.forkJoin(nodes[0].map(node => {
+                    return Observable.forkJoin(node.map(n => n.getOwnerDetail()))
+                })).map(o => ({nodes, o}));
+            })
+            .map(({ nodes, o }) => {
+                let bodyNodes = nodes[0];
+                let headerNodes = nodes[1];
                 let response: NodeResponseInterface[] = [];
-                nodes.map(innerNode => {
-                    let lastestUserIndex = _.findLastIndex(innerNode, node => {
-                        return node.getOwner() === userID;
-                    });
-                    let currentNode = innerNode[lastestUserIndex];
+                for (let i = 0; i < bodyNodes.length; i++) {
+                    const innerNodes = bodyNodes[i];
+                    const innerTutors = o[i];
+                    if (_.findIndex(innerNodes, node => ((node.getStatus() === Status.COMPLETE) && (node.getOwner() !== userID))) !== -1) continue;
                     let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
+                    responseNode.title = headerNodes[i].getTitle();
+                    responseNode.tag = headerNodes[i].getTag();
+                    responseNode.canDelete = innerNodes[0].getOwner() === userID;
+                    let lastUserIndex = _.findLastIndex(innerNodes, node => node.getOwner() === userID);
+                    let currentNode = innerNodes[lastUserIndex];
+
                     responseNode.nodeID = currentNode.getID();
                     responseNode.timestamp = currentNode.getTimestamp();
                     responseNode.createdBy = currentNode.getCreatedBy();
@@ -520,25 +553,56 @@ export class WorkflowManager {
                     responseNode.ancestors = currentNode.getAncestorsID();
                     responseNode.subtitle = "";
                     responseNode.detail = "";
-                    for (let i = 0; i < lastestUserIndex; i++) {
-                        const node = innerNode[i];
+
+
+                    for (let j = 0; j < innerNodes.length; j++) {
+                        responseNode.detail += "\n" + innerTutors[j].getNicknameEn() + " :: " + innerNodes[j].getStatus() + " # " + innerNodes[j].getTimestampString() + "\n";
                         try {
-                            responseNode.subtitle += node.getSubtitle() + "\n";
-                            responseNode.detail += node.getDetail() + "\n";
-                        } catch (error) { }
+                            responseNode.subtitle = innerNodes[j].getSubtitle();
+                        } catch (_) { }
+                        try {
+                            responseNode.detail += innerNodes[j].getDetail() + "\n";
+                        } catch (_) { }
                     }
-                    try {
-                        let childOwner = innerNode[lastestUserIndex + 1].getOwner();
-                        responseNode.childOwner = childOwner;
-                        for (let i = lastestUserIndex + 1; i < innerNode.length; i++) {
-                            const node = innerNode[i];
-                            if (node.getOwner() != childOwner) break;
-                            responseNode.childStatus = node.getStatus();
-                        }
-                    } catch (error) { }
+                    // let parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
+
+                    // if (parentIndex === -1) {
+                    //     responseNode.subtitle = currentNode.getSubtitle();
+                    //     responseNode.detail = currentNode.getDetail();
+                    // }
+
+                    // while (parentIndex !== -1) {
+                    //     let parentNode = innerNodes[parentIndex];
+                    //     try {
+                    //         responseNode.subtitle = currentNode.getSubtitle() + "\n" + responseNode.subtitle;
+                    //     } catch (_) { }
+                    //     try {
+                    //         responseNode.detail = currentNode.getDetail() + "\n" + responseNode.detail;
+                    //     } catch (_) { }
+                    //     parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
+                    //     currentNode = parentNode;
+                    //     parentNode = innerNodes[parentIndex];
+                    // }
+
+                    responseNode.childOwner = _.last(innerNodes).getOwner();
+                    responseNode.childStatus = _.last(innerNodes).getStatus();
+
                     response.push(responseNode);
-                });
+                }
+                if (response.length === 0) {
+                    throw Observable.throw(new Error("EmptyArrayException"));
+                }
                 return response;
+            }).flatMap(responses => {
+                return Observable.forkJoin(responses.map(response => UserManager.getTutorInfo(response.childOwner)))
+                    .map(userInfo => ({ responses, userInfo }));
+            }).map(({ responses, userInfo }) => {
+                for (let i = 0; i < responses.length; i++) {
+                    try {
+                        responses[i].childOwnerName = userInfo[i].getNicknameEn();
+                    } catch (error) { }
+                }
+                return responses;
             });
     }
 }
