@@ -753,6 +753,7 @@ module.exports = function (app, db, pasport) {
         else return404(req, res)
     })
     app.get("/tutorEditProfile", auth.isLoggedIn, async function (req, res) {
+        let email = await userDB.findOne({ _id: parseInt(req.user._id) }, { email: 1 });
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -760,7 +761,8 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config: await configDB.findOne({})
+            config: await configDB.findOne({}),
+            email: email.email
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorEditProfile', local)
         else return404(req, res)
@@ -773,7 +775,7 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config: await configDB.findOne({})
+            config: await configDB.findOne({}),
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminStudentAttendanceModifier', local)
         else return404(req, res)
