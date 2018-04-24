@@ -38,12 +38,13 @@ html(lang="en")
                                 +navLink("adminAllStudent","All Student")
                             if(webUser.position=="tutor")
                                 +navLink("adminAllCourse","My Course")
-                            else
+                            //- else
                                 +navLink("adminAllCourse","All Course")
                             if(webUser.position!="tutor")
                                 li.nav-item.dropdown
-                                    a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") FHB&SK 
+                                    a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") CR|FHB|SK 
                                     .dropdown-menu(aria-labelledby="navbarDropdown")
+                                        a.dropdown-item(href="/adminAllCourse") Course
                                         a.dropdown-item(href="/adminAllHybrid") FHB
                                         a.dropdown-item(href="/adminAllskill") Skill
                             +navLink("tutorCommentStudent","Comments")
@@ -63,6 +64,7 @@ html(lang="en")
                                     if(webUser.position=="mel")
                                         a.dropdown-item(href="/checkInSummary") Manage
                             +navLink("tutorQrGenerator","QR Generator")
+                            +navLink("adminCalendar","Calendar")
                             if(webUser.position!="tutor")
                                 +navLink("adminCourseRoom","Room")
                             //- +navLink("adminConference","Conference")
