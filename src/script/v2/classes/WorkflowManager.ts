@@ -166,7 +166,9 @@ abstract class Node<T extends NodeInterface> {
 
     getTimestampString(): String {
         let time = this.getID().getTimestamp();
-        return time.getDate() + "/" + time.getMonth() + "/" + time.getFullYear() + " " + time.getHours() + ":" + time.getMinutes();
+        let min = time.getMinutes() + "";
+        if (min.length === 1) min = "0" + min;
+        return time.getDate() + "/" + (time.getMonth() + 1) + "/" + time.getFullYear() + " " + time.getHours() + ":" + min;
     }
 
     getCreatedBy(): number {
