@@ -565,7 +565,10 @@ export class WorkflowManager {
                         }
                         responseNode.detail += "\n" + innerTutors[j].getNicknameEn() + " :: " + innerNodes[j].getStatus() + " # " + innerNodes[j].getTimestampString() + "\n";
                         try {
-                            responseNode.subtitle = innerNodes[j].getSubtitle();
+                            let subtitle = innerNodes[j].getSubtitle();
+                            if (subtitle){
+                                responseNode.subtitle = subtitle;
+                            }
                         } catch (_) { }
                         try {
                             responseNode.detail += innerNodes[j].getDetail() + "\n";
