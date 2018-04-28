@@ -161,7 +161,12 @@ abstract class Node<T extends NodeInterface> {
     }
 
     getTimestamp(): Date {
-        return this.node.timestamp;
+        return this.getID().getTimestamp();
+    }
+
+    getTimestampString(): String {
+        let time = this.getID().getTimestamp();
+        return time.getDate() + "/" + time.getMonth() + "/" + time.getFullYear() + " " + time.getHours() + ":" + time.getMinutes();
     }
 
     getCreatedBy(): number {
@@ -518,12 +523,18 @@ export class WorkflowManager {
                     Observable.forkJoin(userNodes.map(node => node.getHeader()))
                 );
             })
-            .map(nodes => {
+            .flatMap(nodes => {
+                return Observable.forkJoin(nodes[0].map(node => {
+                    return Observable.forkJoin(node.map(n => n.getOwnerDetail()))
+                })).map(o => ({nodes, o}));
+            })
+            .map(({ nodes, o }) => {
                 let bodyNodes = nodes[0];
                 let headerNodes = nodes[1];
                 let response: NodeResponseInterface[] = [];
                 for (let i = 0; i < bodyNodes.length; i++) {
                     const innerNodes = bodyNodes[i];
+                    const innerTutors = o[i];
                     if (_.findIndex(innerNodes, node => ((node.getStatus() === Status.COMPLETE) && (node.getOwner() !== userID))) !== -1) continue;
                     let responseNode: NodeResponseInterface = {} as NodeResponseInterface;
                     responseNode.title = headerNodes[i].getTitle();
@@ -543,38 +554,38 @@ export class WorkflowManager {
                     responseNode.subtitle = "";
                     responseNode.detail = "";
 
-                    let parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
 
-                    if (parentIndex === -1) {
-                        responseNode.subtitle = currentNode.getSubtitle();
-                        responseNode.detail = currentNode.getDetail();
-                    }
-
-                    while (parentIndex !== -1) {
-                        let parentNode = innerNodes[parentIndex];
+                    for (let j = 0; j < innerNodes.length; j++) {
+                        responseNode.detail += "\n" + innerTutors[j].getNicknameEn() + " :: " + innerNodes[j].getStatus() + " # " + innerNodes[j].getTimestampString() + "\n";
                         try {
-                            responseNode.subtitle = currentNode.getSubtitle() + "\n" + responseNode.subtitle;
+                            responseNode.subtitle = innerNodes[j].getSubtitle();
                         } catch (_) { }
                         try {
-                            responseNode.detail = currentNode.getDetail() + "\n" + responseNode.detail;
+                            responseNode.detail += innerNodes[j].getDetail() + "\n";
                         } catch (_) { }
-                        parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
-                        currentNode = parentNode;
-                        parentNode = innerNodes[parentIndex];
                     }
+                    // let parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
 
-                    currentNode = innerNodes[lastUserIndex];
-                    let childIndex = _.findIndex(innerNodes, node => currentNode.getID().equals(node.getParentID()));
-                    if (childIndex !== -1) {
-                        let childeNode = innerNodes[childIndex];
-                        let baseOwner = childeNode.getOwner();
-                        while (childIndex !== -1 && childeNode.getOwner() === baseOwner) {
-                            childeNode = innerNodes[childIndex];
-                            childIndex = _.findIndex(innerNodes, node => childeNode.getID().equals(node.getParentID()))
-                        }
-                        responseNode.childOwner = baseOwner;
-                        responseNode.childStatus = childeNode.getStatus();
-                    }
+                    // if (parentIndex === -1) {
+                    //     responseNode.subtitle = currentNode.getSubtitle();
+                    //     responseNode.detail = currentNode.getDetail();
+                    // }
+
+                    // while (parentIndex !== -1) {
+                    //     let parentNode = innerNodes[parentIndex];
+                    //     try {
+                    //         responseNode.subtitle = currentNode.getSubtitle() + "\n" + responseNode.subtitle;
+                    //     } catch (_) { }
+                    //     try {
+                    //         responseNode.detail = currentNode.getDetail() + "\n" + responseNode.detail;
+                    //     } catch (_) { }
+                    //     parentIndex = _.findIndex(innerNodes, node => node.getID().equals(currentNode.getParentID()));
+                    //     currentNode = parentNode;
+                    //     parentNode = innerNodes[parentIndex];
+                    // }
+
+                    responseNode.childOwner = _.last(innerNodes).getOwner();
+                    responseNode.childStatus = _.last(innerNodes).getStatus();
 
                     response.push(responseNode);
                 }

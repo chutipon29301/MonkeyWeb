@@ -118,24 +118,24 @@ async function genTable(mainType) {
         let nextRemark;
         let link;
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
-            link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
         } else {
-            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i]._id + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i]._id + "\")'></span>";
         }
         if (emergencyAbsent(allAdtend[i].timestamp, allAdtend[i].date)) {
             style = "table-warning";
         }
         switch (allAdtend[i].remark) {
             case "1":
-                remark = "<span class='fa fa-lg fa-check-circle-o' style='color:orange'></span>"
+                remark = "<span class='far fa-fw fa-lg fa-check-circle' style='color:orange'></span>"
                 nextRemark = "next2";
                 break;
             case "2":
-                remark = "<span class='fa fa-lg fa-check-circle-o' style='color:green'></span>"
+                remark = "<span class='far fa-fw fa-lg fa-check-circle' style='color:green'></span>"
                 nextRemark = "next0";
                 break;
             default:
-                remark = "<span class='fa fa-lg fa-times-circle-o' style='color:red'></span>"
+                remark = "<span class='far fa-fw fa-lg fa-times-circle' style='color:red'></span>"
                 nextRemark = "next1";
                 break;
         }
@@ -167,7 +167,7 @@ async function genTable(mainType) {
                     "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
                     "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                    allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
                     "</tr>"
                 );
             } else if (type !== "FHB" && mainType === 2) {
@@ -183,7 +183,7 @@ async function genTable(mainType) {
                     "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
                     "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                    allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
                     "</tr>"
                 );
             }
@@ -212,7 +212,7 @@ async function genTable(mainType) {
                 "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
                 "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                 "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
                 "</tr>"
             );
         }
@@ -335,19 +335,19 @@ function setRemark(adtendID) {
         $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "0" }).then((cb) => {
             log(cb);
             that.removeClass("next0").addClass("next1");
-            that.html("<span class='fa fa-lg fa-times-circle-o' style='color:red'></span>");
+            that.html("<span class='far fa-fw fa-lg fa-times-circle' style='color:red'></span>");
         });
     } else if (that.hasClass("next1")) {
         $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "1" }).then((cb) => {
             log(cb);
             that.removeClass("next1").addClass("next2");
-            that.html("<span class='fa fa-lg fa-check-circle-o' style='color:orange'></span>");
+            that.html("<span class='far fa-fw fa-lg fa-check-circle' style='color:orange'></span>");
         });
     } else if (that.hasClass("next2")) {
         $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "2" }).then((cb) => {
             log(cb);
             that.removeClass("next2").addClass("next0");
-            that.html("<span class='fa fa-lg fa-check-circle-o' style='color:green'></span>");
+            that.html("<span class='far fa-fw fa-lg fa-check-circle' style='color:green'></span>");
         });
     }
 }
@@ -384,9 +384,9 @@ async function genActivityTable(number) {
         startDate: acTime1.valueOf(),
         endDate: acTime2.valueOf()
     });
-    if (allAdtend.length === 0) {
-        $("#loadMoreButt").hide();
-    }
+    // if (allAdtend.length === 0) {
+    //     $("#loadMoreButt").hide();
+    // }
     for (let i = 0; i < allAdtend.length; i++) {
         let style;
         let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY - HH:mm");
@@ -417,9 +417,9 @@ async function genActivityTable(number) {
 
         }
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
-            link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
         } else {
-            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
         }
         $("#acTableBody").append(
             "<tr class='" + style + "' id='" + allAdtend[i]._id + "'>" +
@@ -432,7 +432,7 @@ async function genActivityTable(number) {
             "<td class='text-center'>" + link + "</td>" +
             "<td class='text-center'>" + allAdtend[i].sender + "</td>" +
             "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-            allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+            allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
             "</tr>"
         );
     }

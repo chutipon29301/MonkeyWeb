@@ -187,7 +187,7 @@ router.post("/assign", (req, res) => {
             );
         })
         .flatMap(() => IOSNotificationManager.getInstance().send(parseInt(owner), req.user.nicknameEn + " assign you a task."))
-        .subscribe(_ => {
+        .subscribe(result => {
             return res.status(200).send({
                 msg: "OK"
             });
@@ -236,7 +236,7 @@ router.post("/done", (req, res) => {
                     ancestors
                 );
             }
-        }).subscribe(_ => {
+        }).subscribe(result => {
             return res.status(200).send({
                 msg: "OK"
             });

@@ -176,12 +176,12 @@ async function genTableData() {
             "<td id='" + "total" + i + "' class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
             "</tr>"
         );
-        let doneStatus = "<span class='fa fa-times' style='color:red' onclick='addIntervalDone(\"" + i + "\")'></span>";
+        let doneStatus = "<span class='fas fa-fw fa-lg fa-times' style='color:red' onclick='addIntervalDone(\"" + i + "\")'></span>";
         let doneClass = "";
         if (doneTutorID !== undefined) {
             if ($.inArray(parseInt(i), doneTutorID) > -1) {
                 doneClass = "table-success";
-                doneStatus = "<span class='fa fa-check' style='color:green' onclick='deleteIntervalDone(\"" + i + "\")'></span>"
+                doneStatus = "<span class='fas fa-fw fa-lg fa-check' style='color:green' onclick='deleteIntervalDone(\"" + i + "\")'></span>"
             }
         }
         $summaryTableBody.append(
@@ -446,7 +446,7 @@ const buttonMinText = (str) => {
     return str;
 };
 const trashButton = (tutorID, str) => {
-    return "<button type='button' class='col btn btn-light' onclick='removeIOHistory(\"" + tutorID + "\",\"" + str + "\")'><span class='fa fa-lg fa-trash-o' style='color: red'></span></button>";
+    return "<button type='button' class='col btn btn-light' onclick='removeIOHistory(\"" + tutorID + "\",\"" + str + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color: red'></span></button>";
 };
 
 //function for extra
@@ -464,7 +464,7 @@ function showExtra(tutorID) {
                 if (allExtra[i].reason.indexOf("FPGG") < 0) {
                     $("#independentExtra").append(
                         "<h4>" + allExtra[i].reason + " : " + allExtra[i].value +
-                        " <span class='fa fa-trash' style='color:red' onclick='removeExtra(\"" +
+                        " <span class='fas fa-fw fa-lg fa-trash' style='color:red' onclick='removeExtra(\"" +
                         allExtra[i].extraID + "\")'></span></h4>"
                     );
                 }

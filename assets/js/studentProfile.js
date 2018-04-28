@@ -129,8 +129,8 @@ async function genStudentData() {
             "<h4>" + studentInfo.firstnameEn + " (" + studentInfo.nicknameEn + ") " + studentInfo.lastnameEn + "</h4>" +
             "<h4>" + "ID: " + ID + "</h4>" +
             "<h4>" + "ชั้น: " + (studentInfo.grade > 6 ? 'ม.' + (studentInfo.grade - 6) : 'ป.' + studentInfo.grade) + "</h4>" +
-            "<h4><span class='fa fa-phone'></span> " + studentInfo.phone + "</h4>" +
-            "<h4><span class='fa fa-envelope'></span> " + studentInfo.email + "</h4>" +
+            "<h4><span class='fas fa-fw fa-lg fa-phone'></span> " + studentInfo.phone + "</h4>" +
+            "<h4><span class='fas fa-fw fa-lg fa-envelope'></span> " + studentInfo.email + "</h4>" +
             "<h4>" + "สถานะ: " + str + "</h4>"
         );
     } else {
@@ -139,8 +139,8 @@ async function genStudentData() {
             "<h6>" + studentInfo.firstnameEn + " (" + studentInfo.nicknameEn + ") " + studentInfo.lastnameEn + "</h6>" +
             "<h6>" + "ID: " + ID + "</h6>" +
             "<h6>" + "ชั้น: " + (studentInfo.grade > 6 ? 'ม.' + (studentInfo.grade - 6) : 'ป.' + studentInfo.grade) + "</h6>" +
-            "<h6><span class='fa fa-phone'></span> " + studentInfo.phone + "</h6>" +
-            "<h6><span class='fa fa-envelope'></span> " + studentInfo.email + "</h6>" +
+            "<h6><span class='fas fa-fw fa-lg fa-phone'></span> " + studentInfo.phone + "</h6>" +
+            "<h6><span class='fas fa-fw fa-lg fa-envelope'></span> " + studentInfo.email + "</h6>" +
             "<h6>" + "สถานะ: " + str + "</h6>"
         );
     }

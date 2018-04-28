@@ -1,6 +1,7 @@
 import * as mongoose from "mongoose";
 import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
+var OneSignal = require('onesignal-node');
 
 export interface IOSTokenInterface extends Document {
     _id: string,
@@ -47,27 +48,15 @@ export class IOSToken {
     }
 }
 
-
-
 export class IOSNotificationManager {
     private static _instance: IOSNotificationManager = new IOSNotificationManager();
-    private provider: any;
-    private apn: any;
-    private constructor() {
-        this.apn = require('apn');
-        try {
-            var keyPath = __dirname.substring(0, __dirname.indexOf('script')) + 'key/MonkeyTutorNotification.p8';
-            this.provider = new this.apn.Provider({
-                token: {
-                    key: keyPath,
-                    keyId: 'GPJR9B9WJ6',
-                    teamId: 'S4F5J66T3H'
-                },
-                production: false
-            });
-        } catch (error) {
-            console.log(error);
-        }
+    private client: any;
+
+    constructor() {
+        this.client = new OneSignal.Client({
+            userAuthKey: process.env.ONESIGNAL_USER_AUTH,
+            app: { appAuthKey: process.env.ONESIGNAL_APP_AUTH, appId: process.env.ONESIGNAL_APP_ID }
+        });
     }
 
     public static getInstance(): IOSNotificationManager {
@@ -76,18 +65,15 @@ export class IOSNotificationManager {
 
     send(userID: number, msg: string): Observable<any> {
         return IOSTokenManager.getUserToken(userID).flatMap(tokens => {
-            var notification = new this.apn.Notification();
-            notification.topic = "com.monkey-monkey.tutor";
-            notification.expiry = Math.floor(Date.now() / 1000) + 86400;
-            notification.badge = 1;
-            notification.sound = "ping.aiff";
-            notification.alert = msg;
-            notification.payload = {
-                id: 123
-            };
-            return Observable.fromPromise(mongoose.Promise.all(tokens.map(token => {
-                return this.provider.send(notification, token.getID());
-            })));
+            let notification = new OneSignal.Notification({
+                contents: {
+                    en: msg
+                },
+            });
+            notification.setTargetDevices(tokens.map(token => token.getID()));
+            notification.setParameter("ios_badgeType", "Increase");
+            notification.setParameter("ios_badgeCount", 1);
+            return Observable.fromPromise(this.client.sendNotification(notification))
         });
     }
 }
