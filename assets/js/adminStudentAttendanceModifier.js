@@ -681,13 +681,24 @@ async function generateChart(type) {
                             }
                         }
                     }
-                } else if (attend[j].type === 2) {
-                    let t = moment(attend[j].date).format("dddH").toLowerCase();
-                    if (attend[j].subject === "M") {
+                }
+            } else if (attend[j].type === 2) {
+                let t = moment(attend[j].date).format("dddH").toLowerCase();
+                switch (attend[j].subject) {
+                    case "M":
                         mhbReal[dayIndex(t)] += 1;
-                    } else if (attend[j].subject === "P") {
+                        break;
+                    case "P":
                         phbReal[dayIndex(t)] += 1;
-                    }
+                        break;
+                    case "C":
+                        chbReal[dayIndex(t)] += 1;
+                        break;
+                    case "E":
+                        ehbReal[dayIndex(t)] += 1;
+                        break;
+                    default:
+                        break;
                 }
             }
         }
