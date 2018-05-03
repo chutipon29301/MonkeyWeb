@@ -704,7 +704,7 @@ async function generateChart(type) {
         }
     }
     for (let i in emptySeatReal) {
-        emptySeatReal[i] = maxSeat[i] - mhbReal[i] - phbReal[i] - mcrReal[i] - pcrReal[i] - ccrReal[i] - ecrReal[i];
+        emptySeatReal[i] = maxSeat[i] - mhbReal[i] - phbReal[i] - chbReal[i] - ehbReal[i] - mcrReal[i] - pcrReal[i] - ccrReal[i] - ecrReal[i];
     }
     cvZero(mhbStatic);
     cvZero(phbStatic);
@@ -1451,14 +1451,23 @@ async function addNewPresentAttend() {
 }
 async function calStdQuota() {
     let selectStd = $("#addStdTypeahead").typeahead("getActive");
+    let allQ = await listQuarter('private');
     if (selectStd !== undefined) {
         let selectQ = $("#addAttendQuarterSelect").val();
         let now = moment();
-        let startDate = now.valueOf() - 7776000000;
-        let endDate = now.valueOf() + 7776000000;
+        let selectYear = parseInt(selectQ.slice(0, 4));
+        let selectQuarter = parseInt(selectQ.slice(5));
+        let startDate;
+        let endDate;
+        for (let i in allQ.quarter) {
+            if (allQ.quarter[i].year === selectYear && allQ.quarter[i].quarter === selectQuarter) {
+                startDate = allQ.quarter[i].startDate;
+                endDate = allQ.quarter[i].endDate;
+            }
+        }
         try {
             let [timetable, quota, stdAttend] = await Promise.all([
-                $.post("post/v1/studentTimeTable", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5), studentID: selectStd.id }),
+                $.post("post/v1/studentTimeTable", { year: selectYear, quarter: selectQuarter, studentID: selectStd.id }),
                 $.post("post/v1/listQuota", { studentID: selectStd.id }),
                 $.post("post/v1/listAttendance", { studentStartDate: startDate, studentEndDate: endDate, studentID: selectStd.id })
             ]);
@@ -1469,10 +1478,10 @@ async function calStdQuota() {
             for (let i in timetable.hybrid) {
                 switch (timetable.hybrid[i].subject) {
                     case "M":
-                        maxM += 3;
+                        maxM += 2;
                         break;
                     case "P":
-                        maxP += 3;
+                        maxP += 2;
                         break;
                     default:
                         break;
