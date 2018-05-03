@@ -573,17 +573,19 @@ module.exports = function (app, db, post, gradeBitToString) {
     });
 
     post('/post/v1/getStudentQuota', async function (req, res) {
-        if (!(req.body.studentID && req.body.subj)) {
+        const sendError = (msg) => {
             return res.status(400).send({
                 err: -1,
-                msg: 'Bad Request'
+                msg: msg
             });
-        }
+        };
+        if (!(req.body.studentID && req.body.subj)) sendError('Bad Request');
         let config = await configDB.findOne({});
         let defaultQ = config.defaultQuarter.quarter.year + ((config.defaultQuarter.quarter.quarter > 9) ? config.defaultQuarter.quarter.quarter : "0" + config.defaultQuarter.quarter.quarter);
-        let now = moment();
-        let startT = moment(now.valueOf() - 7776000000);
-        let endT = moment(now.valueOf() + 7776000000);
+        let quarter = await quarterDB.findOne({
+            year: parseInt(config.defaultQuarter.quarter.year),
+            quarter: parseInt(config.defaultQuarter.quarter.quarter)
+        }, );
         let [hb, attend, quota] = await Promise.all([
             studentHybridDB.find({
                 quarterID: defaultQ,
@@ -592,8 +594,8 @@ module.exports = function (app, db, post, gradeBitToString) {
             attendanceDB.find({
                 userID: parseInt(req.body.studentID),
                 $and: [
-                    { date: { $lte: endT.valueOf() } },
-                    { date: { $gte: startT.valueOf() } }
+                    { date: { $lte: parseInt(quarter.endDate) } },
+                    { date: { $gte: parseInt(quarter.startDate) } }
                 ]
             }).toArray(),
             quotaDB.find({
@@ -602,8 +604,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                 quarterID: parseInt(defaultQ)
             }).toArray()
         ]);
-        console.log(quota);
-        let totalQuota = 3 * hb.length;
+        let totalQuota = 2 * hb.length;
         let usedQuota = 0;
         for (let i in attend) {
             if (attend[i].courseID === 0) {

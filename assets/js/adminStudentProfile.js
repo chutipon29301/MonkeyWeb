@@ -769,8 +769,8 @@ function downloadCanvas(type) {
             text += ID + "1sm.png";
             break;
         case 7:
-        canvas = document.getElementById('smCover');
-        text += ID + "2sm.png";
+            canvas = document.getElementById('smCover');
+            text += ID + "2sm.png";
             break;
         case 8:
             canvas = document.getElementById('smAppRejCover');
@@ -1109,43 +1109,27 @@ $("#absentViewButt").click(function () {
 async function showStudentAbsentHistory() {
     let str = $("#quarterSelect").val();
     let table = $("#absentHistoryTableBody");
-    let today = moment();
-    let startDay = moment(0).year(today.year()).month(today.month() - 3).date(today.date());
-    let endDay = moment(0).year(today.year()).month(today.month() + 3).date(today.date());
-    let [history, quota, timetable] = await Promise.all([
-        $.post('post/v1/listAttendance', { studentStartDate: startDay.valueOf(), studentEndDate: endDay.valueOf(), studentID: ID }),
-        $.post('post/v1/listQuota', { studentID: ID }),
-        $.post('post/v1/studentTimeTable', { year: str.slice(0, 4), quarter: str.slice(5), studentID: ID })
+    let [config, allQ] = await Promise.all([
+        getConfig(),
+        listQuarter('private')
     ]);
-    let stdHB = timetable.hybrid;
-    let maxP = 0;
-    let maxM = 0;
-    let nowP = 0;
-    let nowM = 0;
-    for (let i in stdHB) {
-        if (stdHB[i].subject === "M") {
-            maxM += 3;
-        } else if (stdHB[i].subject === "P") {
-            maxP += 3;
+    let today = moment();
+    let startDay;
+    let endDay;
+    for (let i in allQ.quarter) {
+        if (allQ.quarter[i].year === config.defaultQuarter.quarter.year && allQ.quarter[i].quarter === config.defaultQuarter.quarter.quarter) {
+            log(allQ.quarter[i]);
+            startDay = moment(parseInt(allQ.quarter[i].startDate));
+            endDay = moment(parseInt(allQ.quarter[i].endDate));
         }
     }
-    log(history);
+    let [history, mQuota, pQuota] = await Promise.all([
+        $.post('post/v1/listAttendance', { studentStartDate: startDay.valueOf(), studentEndDate: endDay.valueOf(), studentID: ID }),
+        $.post('post/v1/getStudentQuota', { studentID: ID, subj: 'M' }),
+        $.post('post/v1/getStudentQuota', { studentID: ID, subj: 'P' })
+    ]);
+    table.empty();
     for (let i in history) {
-        if (history[i].type === 1) {
-            if (history[i].courseName === undefined) {
-                if (history[i].hybridSubject === "M") {
-                    nowM += 1;
-                } else if (history[i].hybridSubject === "P") {
-                    nowP += 1;
-                }
-            }
-        } else {
-            if (history[i].subject === "M") {
-                nowM -= 1;
-            } else if (history[i].subject === "P") {
-                nowP -= 1;
-            }
-        }
         let t1 = moment(history[i].date);
         let t2 = moment(history[i].timestamp);
         table.append(
@@ -1157,14 +1141,7 @@ async function showStudentAbsentHistory() {
             "</tr>"
         )
     }
-    for (let i in quota.quotaCount) {
-        if (quota.quotaCount[i]._id === "M") {
-            nowM -= quota.quotaCount[i].value;
-        } else if (quota.quotaCount[i]._id === "P") {
-            nowP -= quota.quotaCount[i].value;
-        }
-    }
-    $("#absentHistoryMQuota").html((maxM - nowM) + "/" + maxM);
-    $("#absentHistoryPQuota").html((maxP - nowP) + "/" + maxP);
+    $("#absentHistoryMQuota").html((mQuota.totalQuota - mQuota.usedQuota) + "/" + mQuota.totalQuota);
+    $("#absentHistoryPQuota").html((pQuota.totalQuota - pQuota.usedQuota) + "/" + pQuota.totalQuota);
     $("#viewAbsentModal").modal('show');
 }
