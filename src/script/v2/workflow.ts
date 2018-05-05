@@ -246,19 +246,32 @@ router.post("/done", (req, res) => {
 router.post("/list", (req, res) => {
 
     WorkflowManager.getUserNode(req.user._id)
-    .subscribe(nodes => {
-        return res.status(200).send({
-            nodes: nodes
+        .subscribe(nodes => {
+            return res.status(200).send({
+                nodes: nodes
+            });
+        }, err => {
+            return res.status(200).send({
+                nodes: []
+            });
         });
-    }, err => {
-        return res.status(200).send({
-            nodes: []
-        });
-    });
 });
 
 router.post("/test", (req, res) => {
     IOSNotificationManager.getInstance().send(99009, "Hello World").subscribe(result => {
         return res.status(200).send(result);
     });
+});
+
+router.post("/listNode", (req, res) => {
+    WorkflowManager.getUserNode(parseInt(req.body.id))
+        .subscribe(nodes => {
+            return res.status(200).send({
+                nodes: nodes
+            });
+        }, err => {
+            return res.status(200).send({
+                nodes: []
+            });
+        });
 });

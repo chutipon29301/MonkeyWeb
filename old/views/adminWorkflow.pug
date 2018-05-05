@@ -1,0 +1,29 @@
+extends htmlTemplate
+block head
+    - var pageTitle = "Workflow"
+block script
+    script(src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js")
+    script(src="js/adminWorkflow.min.js")
+block body
+    h1.text-center.mt-5#loaddingPane
+        span.fas.fa-2x.fa-fw.fa-sync.fa-spin(style="color:red")
+        |Fetching data from server
+    .container-fluid#bodyPane
+        .row
+            .col-12.col-md-3.offset-md-9.py-3
+                select.custom-select#filterSelect
+                    option(value=1) Default
+                    option(value=2) Name
+                    option(value=3) In charge
+                    option(value=4) Due date
+                    option(value=5) Status
+        .table-responsive
+            table.table.table-bordered
+                thead.thead-dark
+                    tr
+                        th.text-center Name
+                        th.text-center Owner
+                        th.text-center Status
+                        th.text-center In charge
+                        th.text-center Due date
+                tbody#tableBody
