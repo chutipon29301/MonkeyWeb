@@ -15,6 +15,7 @@ module.exports = function (app, db, pasport) {
     var courseSuggestDB = db.collection('courseSuggestion')
     var hybridDB = db.collection('hybridStudent')
     var skillDB = db.collection('skillStudent')
+    var workflowDB = db.collection('workflow')
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -817,6 +818,19 @@ module.exports = function (app, db, pasport) {
             config: await configDB.findOne({})
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorCheck', local)
+        else return404(req, res)
+    })
+    app.get("/workflow", auth.isLoggedIn, async function (req, res) {
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: await configDB.findOne({})
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminWorkflow', local)
         else return404(req, res)
     })
     app.get("/tutorCourseMaterial", auth.isLoggedIn, async function (req, res) {
