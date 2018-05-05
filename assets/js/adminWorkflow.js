@@ -10,9 +10,14 @@ async function getData() {
     let allTask = await Promise.all(promise);
     for (let i in allTask) {
         uniqueTask = _.union(uniqueTask, allTask[i].nodes);
-        uniqueTask = _.remove(uniqueTask, (e) => { return e.canDelete });
+        uniqueTask = _.remove(uniqueTask, (e) => { return e.status !== 'note' && e.canDelete });
     }
     getTutorName();
+    let allChild = _.uniqBy(uniqueTask, 'childOwner');
+    allChild = _.orderBy(allChild, 'childOwnerName', 'asc');
+    for (let i in allChild) {
+        $("#filterSelect").append("<option value='" + allChild[i].childOwner + "'>" + allChild[i].childOwnerName + "</option>");
+    }
 }
 async function getTutorName() {
     let promise = [];
@@ -27,18 +32,26 @@ async function getTutorName() {
 }
 function genTable(type) {
     let task = uniqueTask;
+    let filter = parseInt($("#filterSelect").val());
+    if (filter !== 0) {
+        task = task.filter((e) => { return e.childOwner === filter });
+    }
+    $("#taskCount").html(task.length + " task");
     switch (type) {
         case 2:
             task = _.orderBy(task, 'title', 'asc');
             break;
         case 3:
-            task = _.orderBy(task, 'childOwnerName', 'asc');
+            task = _.orderBy(task, 'owner', 'asc');
             break;
         case 4:
-            task = _.orderBy(task, 'duedate', 'asc');
+            task = _.orderBy(task, 'childStatus', 'asc');
             break;
         case 5:
-            task = _.orderBy(task, 'status', 'asc');
+            task = _.orderBy(task, 'childOwnerName', 'asc');
+            break;
+        case 6:
+            task = _.orderBy(task, 'duedate', 'asc');
             break;
         default:
             break;
@@ -53,8 +66,8 @@ function genTable(type) {
             t = 'None';
         }
         let state = ''
-        switch (task[i].status.toLowerCase()) {
-            case 'assign':
+        switch (task[i].childStatus.toLowerCase()) {
+            case 'inprogress':
                 state = 'bg-warning'
                 break;
             case 'complete':
@@ -67,7 +80,7 @@ function genTable(type) {
             "<tr class='" + state + "'>" +
             "<td class='text-center'>" + task[i].title + "</td>" +
             "<td class='text-center'>" + task[i].owner + "</td>" +
-            "<td class='text-center'>" + task[i].status + "</td>" +
+            "<td class='text-center'>" + task[i].childStatus + "</td>" +
             "<td class='text-center'>" + task[i].childOwnerName + "</td>" +
             "<td class='text-center'>" + t + "</td>" +
             "</tr>"
@@ -78,5 +91,5 @@ function genTable(type) {
 }
 
 $("#filterSelect").change(function () {
-    genTable(parseInt(this.value));
+    genTable(1);
 });

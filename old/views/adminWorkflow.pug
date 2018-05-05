@@ -10,20 +10,18 @@ block body
         |Fetching data from server
     .container-fluid#bodyPane
         .row
-            .col-12.col-md-3.offset-md-9.py-3
+            .col-12.col-md-3
+                h1#taskCount.text-danger 13 Task
+            .col-12.col-md-3.offset-md-6.pt-2
                 select.custom-select#filterSelect
-                    option(value=1) Default
-                    option(value=2) Name
-                    option(value=3) In charge
-                    option(value=4) Due date
-                    option(value=5) Status
+                    option(value="0") All
         .table-responsive
             table.table.table-bordered
                 thead.thead-dark
                     tr
-                        th.text-center Name
-                        th.text-center Owner
-                        th.text-center Status
-                        th.text-center In charge
-                        th.text-center Due date
+                        th.text-center(onclick='genTable(2)') Task
+                        th.text-center(onclick='genTable(3)') Create By
+                        th.text-center(onclick='genTable(4)') Status
+                        th.text-center(onclick='genTable(5)') In charge
+                        th.text-center(onclick='genTable(6)') Due date
                 tbody#tableBody
