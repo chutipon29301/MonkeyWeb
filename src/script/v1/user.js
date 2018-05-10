@@ -60,24 +60,24 @@ module.exports = function (app, db, post, CryptoJS) {
                 $in: ['tutor', 'admin', 'dev']
             },
             'tutor.status': 'active'
-        },{
-            sort: {
-                _id: -1
-            }
-        }).toArray().then(result => {
-            for (let i = 0; i < result.length; i++) {
-                result[i].tutorID = result[i]._id;
-                delete result[i]._id;
-                delete result[i].password;
-                delete result[i].firstnameEn;
-                delete result[i].lastnameEn;
-                delete result[i].phone;
-                delete result[i].tutor;
-            }
-            res.status(200).send({
-                tutors: result.reverse()
+        }, {
+                sort: {
+                    _id: -1
+                }
+            }).toArray().then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    result[i].tutorID = result[i]._id;
+                    delete result[i]._id;
+                    delete result[i].password;
+                    delete result[i].firstnameEn;
+                    delete result[i].lastnameEn;
+                    delete result[i].phone;
+                    delete result[i].tutor;
+                }
+                res.status(200).send({
+                    tutors: result.reverse()
+                });
             });
-        });
     });
 
     post('/post/v1/changePassword', function (req, res) {
@@ -141,5 +141,18 @@ module.exports = function (app, db, post, CryptoJS) {
                 }
                 res.status(200).send('OK');
             });
+    });
+    post('/post/v1/allUser', async function (req, res) {
+        let user = await userDB.find({}, { password: 0 }).sort({ _id: 1 }).toArray();
+        for (let i in user) {
+            if (user[i].position == 'student') {
+                user[i].status = user[i].student.status;
+                delete user[i].student;
+            } else {
+                user[i].status = user[i].tutor.status;
+                delete user[i].tutor;
+            }
+        }
+        res.status(200).send(user);
     });
 }

@@ -286,13 +286,18 @@ async function sendData() {
             hybridID = allHB[i].hybridID;
         }
     }
-    await $.post("post/v1/addStudentPresent", {
+    let body = {
         userID: studentID,
         date: roundTime(pickDate, timeStr),
         hybridID: hybridID,
         subject: $("#subjInput").val(),
         sender: $("#senderInput").val()
-    });
+    };
+    if ($("#reasonInput").val() !== "") {
+        notifyStr = notifyStr + "\nเหตุผล: " + $("#reasonInput").val();
+        body.reason = $("#reasonInput").val();
+    }
+    await $.post("post/v1/addStudentPresent", body);
     log("OK");
     await lineNotify("MonkeyAdmin", notifyStr);
     location.reload();

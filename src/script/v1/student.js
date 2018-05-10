@@ -88,7 +88,7 @@ module.exports = function (app, db, post, gradeBitToString) {
             }
             attendanceDB.insertOne(body);
         } else if (req.body.hybridID && req.body.subject) {
-            attendanceDB.insertOne({
+            let body = {
                 timestamp: new Date(),
                 userID: parseInt(req.body.userID),
                 courseID: NONE,
@@ -97,7 +97,11 @@ module.exports = function (app, db, post, gradeBitToString) {
                 type: PRESENT,
                 sender: req.body.sender,
                 subject: req.body.subject
-            });
+            }
+            if (req.body.reason) {
+                body.reason = req.body.reason;
+            }
+            attendanceDB.insertOne(body);
         }
         res.status(200).send('OK');
     });
