@@ -3,7 +3,7 @@ import { join } from 'path';
 import { Application } from 'express';
 import { router as test } from './api/test';
 
-export default class View {
+export default class Controller {
     public app: Application;
     constructor(app: Application) {
         this.app = app;
