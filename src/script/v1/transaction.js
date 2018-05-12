@@ -1,6 +1,8 @@
 let allFieldFHB = { _id: "ObjectID", subject: "string", studentID: "number", timestamp: "Date", hybridID: "string", value: "number", sender: "number", reason: "string", remark: "string" }
 let allFieldCR = { _id: "ObjectID", studentID: "number", courseID: "string", timestamp: "Date", value: "number", sender: "number", reason: "string", remark: "string" }
 let checkoutHrs = { 8: 8, 9: 8, 10: 8, 11: 10, 12: 10, 13: 10, 14: 13, 15: 13, 16: 15, 17: 15, 18: 17, 19: 17, 20: 17 }
+const fs = require('fs')
+let subjectToNum = { 'M': 1, 'P': 2, 'C': 3, 'E': 4, 'B': 5 }
 var ObjectID = require('mongodb').ObjectID;
 let transactionCR
 let transactionFHB
@@ -82,8 +84,8 @@ module.exports = function (app, db, post, io) {
         let now = req.body.date ? new Date(req.body.date) : new Date()
         let studentID = parseInt(req.body.studentID)
         try {
-            let [config,student] = await Promise.all([configDB.findOne(),userDB.findOne({_id:parseInt(studentID)})])
-            if(!student) res.status(200).send({type:'error' , msg:'ไม่มีรหัสนักเรียนนี้'})
+            let [config, student] = await Promise.all([configDB.findOne(), userDB.findOne({ _id: parseInt(studentID) })])
+            if (!student) res.status(200).send({ type: 'error', msg: 'ไม่มีรหัสนักเรียนนี้' })
             let quarter;
             if (now.getDay() > 0 && now.getDay() < 6 && now.getHours() < 16) quarter = config.defaultQuarter.summer;
             else quarter = config.defaultQuarter.quarter;
@@ -103,7 +105,7 @@ module.exports = function (app, db, post, io) {
             if (log) {
                 return res.status(200).send({ type: "error", msg: "รหัสนี้ได้ทำการ Checkout แล้ว" })
             }
-            
+
             //***** check Attendance */
             let findDate = new Date(now)
             findDate.setHours(checkoutHrs[findDate.getHours()], 0, 0, 0)
@@ -115,7 +117,7 @@ module.exports = function (app, db, post, io) {
                     checkcr = await courseDB.findOne({ _id: attend.courseID })
                     if (checkcr) {
                         if (checkcr.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                            return checkoutCR(req, res, io, true, now ,null, findDate.getHours())
+                            return checkoutCR(req, res, io, true, now, null, findDate.getHours())
                         }
                     }
                     return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
@@ -123,48 +125,51 @@ module.exports = function (app, db, post, io) {
                     if (req.body.scannedSubject[0].toUpperCase() == attend.subject[0].toUpperCase()) {
                         req.body.subject = attend.subject
                         req.body.hybridID = attend.hybridID
-                        return checkoutFHB(req, res, io, true, now ,null, findDate.getHours())
+                        return checkoutFHB(req, res, io, true, now, null, findDate.getHours())
                     } else return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
 
                 }
             }
-
-            for (let i in hybrid) {
-                let hybridTime = new Date(hybrid[i].day)
-                if (hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()) {
-                    req.body.hybridID = hybrid[i]._id;
-                    for (let j in hybrid[i].student) {
-                        if (hybrid[i].student[j].studentID == studentID) {
-                            req.body.subject = hybrid[i].student[j].subject.toUpperCase()[0]
-                            break;
+            // check ลาเรียน
+            let miss = await attendanceDB.findOne({ userID: studentID, date: findDate.getTime(), type: 1 })
+            if (!miss) {
+                for (let i in hybrid) {
+                    let hybridTime = new Date(hybrid[i].day)
+                    if (hybridTime.getDay() == now.getDay() && checkoutHrs[now.getHours()] == hybridTime.getHours()) {
+                        req.body.hybridID = hybrid[i]._id;
+                        for (let j in hybrid[i].student) {
+                            if (hybrid[i].student[j].studentID == studentID) {
+                                req.body.subject = hybrid[i].student[j].subject.toUpperCase()[0]
+                                break;
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
-            }
-            if (req.body.hybridID && req.body.subject) {
-                if (req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                    return checkoutFHB(req, res, io, true, now)
-                } else {
-                    return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
-                }
-            }
-            // check CR */
-            for (let i in possibleCourse) {
-                let courseDate = new Date(possibleCourse[i].day)
-                let courseDay = courseDate.getDay()
-                let courseHr = courseDate.getHours()
-                if (checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 1 && now.getDay() > 0 && now.getDay() < 6))) {
-                    req.body.courseID = possibleCourse[i]._id
-                    if (possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                        return checkoutCR(req, res, io, true, now)
+                if (req.body.hybridID && req.body.subject) {
+                    if (req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
+                        return checkoutFHB(req, res, io, true, now)
                     } else {
                         return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
                     }
-                    break
+                }
+                // check CR */
+                for (let i in possibleCourse) {
+                    let courseDate = new Date(possibleCourse[i].day)
+                    let courseDay = courseDate.getDay()
+                    let courseHr = courseDate.getHours()
+                    if (checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 1 && now.getDay() > 0 && now.getDay() < 6))) {
+                        req.body.courseID = possibleCourse[i]._id
+                        if (possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
+                            return checkoutCR(req, res, io, true, now)
+                        } else {
+                            return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
+                        }
+                        break
+                    }
                 }
             }
-            if( (now.getDay()%6 != 0) && now.getHours()>15 && now.getHours()<18){
+            if ((now.getDay() % 6 != 0) && now.getHours() > 15 && now.getHours() < 18) {
                 // check both 15 and 17
                 let timestamp = new Date(now)
                 now.setHours(18)
@@ -191,7 +196,7 @@ module.exports = function (app, db, post, io) {
                         checkcr = await courseDB.findOne({ _id: attend.courseID })
                         if (checkcr) {
                             if (checkcr.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                                return checkoutCR(req, res, io, true, now , timestamp , findDate.getHours())
+                                return checkoutCR(req, res, io, true, now, timestamp, findDate.getHours())
                             }
                         }
                         return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
@@ -199,7 +204,7 @@ module.exports = function (app, db, post, io) {
                         if (req.body.scannedSubject[0].toUpperCase() == attend.subject[0].toUpperCase()) {
                             req.body.subject = attend.subject
                             req.body.hybridID = attend.hybridID
-                            return checkoutFHB(req, res, io, true, now , timestamp , findDate.getHours())
+                            return checkoutFHB(req, res, io, true, now, timestamp, findDate.getHours())
                         } else return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
 
                     }
@@ -220,7 +225,7 @@ module.exports = function (app, db, post, io) {
                 }
                 if (req.body.hybridID && req.body.subject) {
                     if (req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                        return checkoutFHB(req, res, io, true, now , timestamp)
+                        return checkoutFHB(req, res, io, true, now, timestamp)
                     } else {
                         return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
                     }
@@ -233,7 +238,7 @@ module.exports = function (app, db, post, io) {
                     if (checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 1 && now.getDay() > 0 && now.getDay() < 6))) {
                         req.body.courseID = possibleCourse[i]._id
                         if (possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                            return checkoutCR(req, res, io, true, now , timestamp)
+                            return checkoutCR(req, res, io, true, now, timestamp)
                         } else {
                             return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
                         }
@@ -241,7 +246,7 @@ module.exports = function (app, db, post, io) {
                     }
                 }
                 res.status(200).send({ type: 'error', msg: 'ไม่มีรหัสนักเรียนนี้ในตาราง' })
-            }else if( (now.getDay()%6!=0) && now.getHours()>17){
+            } else if ((now.getDay() % 6 != 0) && now.getHours() > 17) {
                 // check both 15 and 17
                 let timestamp = new Date(now)
                 now.setHours(17)
@@ -268,7 +273,7 @@ module.exports = function (app, db, post, io) {
                         checkcr = await courseDB.findOne({ _id: attend.courseID })
                         if (checkcr) {
                             if (checkcr.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                                return checkoutCR(req, res, io, true, now , timestamp,findDate.getHours())
+                                return checkoutCR(req, res, io, true, now, timestamp, findDate.getHours())
                             }
                         }
                         return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
@@ -276,7 +281,7 @@ module.exports = function (app, db, post, io) {
                         if (req.body.scannedSubject[0].toUpperCase() == attend.subject[0].toUpperCase()) {
                             req.body.subject = attend.subject
                             req.body.hybridID = attend.hybridID
-                            return checkoutFHB(req, res, io, true, now , timestamp,findDate.getHours())
+                            return checkoutFHB(req, res, io, true, now, timestamp, findDate.getHours())
                         } else return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
 
                     }
@@ -297,7 +302,7 @@ module.exports = function (app, db, post, io) {
                 }
                 if (req.body.hybridID && req.body.subject) {
                     if (req.body.subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                        return checkoutFHB(req, res, io, true, now , timestamp)
+                        return checkoutFHB(req, res, io, true, now, timestamp)
                     } else {
                         return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
                     }
@@ -310,7 +315,7 @@ module.exports = function (app, db, post, io) {
                     if (checkoutHrs[now.getHours()] == courseHr && (courseDay == now.getDay() || (courseDay == 1 && now.getDay() > 0 && now.getDay() < 6))) {
                         req.body.courseID = possibleCourse[i]._id
                         if (possibleCourse[i].subject[0].toUpperCase() == req.body.scannedSubject[0].toUpperCase()) {
-                            return checkoutCR(req, res, io, true, now , timestamp)
+                            return checkoutCR(req, res, io, true, now, timestamp)
                         } else {
                             return res.status(200).send({ type: 'error', msg: 'ไม่มีตารางเรียน กรุณาติดต่อ Admin' })
                         }
@@ -321,7 +326,7 @@ module.exports = function (app, db, post, io) {
             }
             else res.status(200).send({ type: 'error', msg: 'ไม่มีรหัสนักเรียนนี้ในตาราง' })
         } catch (error) {
-            return res.status(200).send({ type:'error', msg: error.toString() })
+            return res.status(200).send({ type: 'error', msg: error.toString() })
         }
 
     })
@@ -353,6 +358,71 @@ module.exports = function (app, db, post, io) {
             });
         }
         try {
+            if (!req.body.notWrite) {
+                let path = process.env.STUDENT_CSV + '/' + req.body.studentID + subjectToNum[req.body.subject[0].toUpperCase()] + '.csv'
+                fs.readFile(path, (err, data) => {
+                    let date = new Date()
+                    let balance = 0
+                    if (err) {
+                        fs.writeFile(path, 'Date,Check In,Check Out,Increment,Decrement,Balance,Note\n0,0,0,0,0,0,This file was written by MonkeyAdmin\n', (err2) => {
+                            if (err2) throw err2
+                            if (parseInt(req.body.value) < 0) {
+                                fs.appendFile(path, ((date.getDate() > 9) ? date.getDate() : '0' + date.getDate()) + '/' +
+                                    ((date.getMonth() + 1 > 9) ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)) + '/' +
+                                    (date.getFullYear() + 543) + ',No Check In,' + date.toTimeString().split(' ')[0] +
+                                    ',,' + (-1 * parseInt(req.body.value)) + ',' + (parseInt(balance) + parseInt(req.body.value)) + ',' + req.body.reason + '\n', (err) => {
+                                        if (err) {
+                                            var dateobj = new Date()
+                                            var errlog = dateobj.toLocaleString() + ' // ' + err + '\r' + '\n'
+                                            fs.appendFile(config.get('studentfilelocation') + 'errlog.txt', errlog)
+                                            throw err
+                                        }
+                                    })
+                            } else {
+                                fs.appendFile(path, ((date.getDate() > 9) ? date.getDate() : '0' + date.getDate()) + '/' +
+                                    ((date.getMonth() + 1 > 9) ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)) + '/' +
+                                    (date.getFullYear() + 543) + ',No Check In,' + date.toTimeString().split(' ')[0] +
+                                    ',' + (parseInt(req.body.value)) + ',,' + (parseInt(balance) + parseInt(req.body.value)) + ',' + req.body.reason + '\n', (err) => {
+                                        if (err) {
+                                            var dateobj = new Date()
+                                            var errlog = dateobj.toLocaleString() + ' // ' + err + '\r' + '\n'
+                                            fs.appendFile(config.get('studentfilelocation') + 'errlog.txt', errlog)
+                                            throw err
+                                        }
+                                    })
+                            }
+                        })
+                    } else {
+                        temp = data.toString().split('\n')
+                        balance = parseInt(temp[temp.length - 2].split(',')[5])
+                        if (parseInt(req.body.value) < 0) {
+                            fs.appendFile(path, ((date.getDate() > 9) ? date.getDate() : '0' + date.getDate()) + '/' +
+                                ((date.getMonth() + 1 > 9) ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)) + '/' +
+                                (date.getFullYear() + 543) + ',No Check In,' + date.toTimeString().split(' ')[0] +
+                                ',,' + (-1 * parseInt(req.body.value)) + ',' + (parseInt(balance) + parseInt(req.body.value)) + ',' + req.body.reason + '\n', (err) => {
+                                    if (err) {
+                                        var dateobj = new Date()
+                                        var errlog = dateobj.toLocaleString() + ' // ' + err + '\r' + '\n'
+                                        fs.appendFile(config.get('studentfilelocation') + 'errlog.txt', errlog)
+                                        throw err
+                                    }
+                                })
+                        } else {
+                            fs.appendFile(path, ((date.getDate() > 9) ? date.getDate() : '0' + date.getDate()) + '/' +
+                                ((date.getMonth() + 1 > 9) ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)) + '/' +
+                                (date.getFullYear() + 543) + ',No Check In,' + date.toTimeString().split(' ')[0] +
+                                ',' + (parseInt(req.body.value)) + ',,' + (parseInt(balance) + parseInt(req.body.value)) + ',' + req.body.reason + '\n', (err) => {
+                                    if (err) {
+                                        var dateobj = new Date()
+                                        var errlog = dateobj.toLocaleString() + ' // ' + err + '\r' + '\n'
+                                        fs.appendFile(config.get('studentfilelocation') + 'errlog.txt', errlog)
+                                        throw err
+                                    }
+                                })
+                        }
+                    }
+                })
+            }
             let insObj = {
                 studentID: parseInt(req.body.studentID),
                 timestamp: req.body.timestamp ? new Date(parseInt(req.body.timestamp)) : new Date(),
@@ -702,7 +772,7 @@ function parseTransactionFHB(key, value) {
     if (allFieldFHB[key] == "ObjectID") return ObjectID(value);
     return value;
 }
-async function checkoutFHB(req, res, io, ioEmit, d , timestamp , round) {
+async function checkoutFHB(req, res, io, ioEmit, d, timestamp, round) {
     if (!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
@@ -731,8 +801,8 @@ async function checkoutFHB(req, res, io, ioEmit, d , timestamp , round) {
             err: 400,
             msg: 'Bad Reqeust'
         })
-    }else{
-        fhb = await hybridStudentDB.findOne({_id : ObjectID(req.body.hybridID)})
+    } else {
+        fhb = await hybridStudentDB.findOne({ _id: ObjectID(req.body.hybridID) })
     }
     let studentID = parseInt(req.body.studentID)
     let value = parseInt(req.body.value ? req.body.value : -800)
@@ -741,7 +811,7 @@ async function checkoutFHB(req, res, io, ioEmit, d , timestamp , round) {
         await Promise.all([
             transactionFHB.insertOne({
                 studentID: studentID,
-                timestamp: timestamp?timestamp:date,
+                timestamp: timestamp ? timestamp : date,
                 subject: req.body.subject[0].toUpperCase(),
                 value: value,
                 sender: studentID,
@@ -749,7 +819,7 @@ async function checkoutFHB(req, res, io, ioEmit, d , timestamp , round) {
                 remark: "",
                 hybridID: req.body.hybridID
             }),
-            addCheckoutLog(studentID, req.body.subject[0].toUpperCase(), round?round:new Date(fhb.day).getHours(), timestamp?timestamp:date)
+            addCheckoutLog(studentID, req.body.subject[0].toUpperCase(), round ? round : new Date(fhb.day).getHours(), timestamp ? timestamp : date)
         ])
         if (ioEmit) io.emit('updateCheckout')
         return res.status(200).send({ msg: "ok", type: 'fhb' })
@@ -762,7 +832,7 @@ async function checkoutFHB(req, res, io, ioEmit, d , timestamp , round) {
  * @param {studentID : int , courseID : string(optional)} req 
  * @param {*} res 
  */
-async function checkoutCR(req, res, io, ioEmit, d , timestamp , round) {
+async function checkoutCR(req, res, io, ioEmit, d, timestamp, round) {
     if (!(req.body.studentID)) {
         return res.status(400).send({
             err: 400,
@@ -785,7 +855,7 @@ async function checkoutCR(req, res, io, ioEmit, d , timestamp , round) {
             if (ensureCR) {
                 await transactionCR.insertOne({
                     studentID: studentID,
-                    timestamp: timestamp?timestamp:date,
+                    timestamp: timestamp ? timestamp : date,
                     courseID: courseID,
                     value: value,
                     sender: studentID,
@@ -793,7 +863,7 @@ async function checkoutCR(req, res, io, ioEmit, d , timestamp , round) {
                     remark: req.body.remark ? req.body.remark : "",
                 })
                 let courseName = ensureCR.subject + gradeBitToString(ensureCR.grade) + ensureCR.level
-                addCheckoutLog(studentID, ensureCR.subject, round?round:new Date(ensureCR.day).getHours() , date).then(() => {
+                addCheckoutLog(studentID, ensureCR.subject, round ? round : new Date(ensureCR.day).getHours(), date).then(() => {
                     if (ioEmit) io.emit('updateCheckout')
                     return res.status(200).send({ msg: "ok", type: 'cr', courseName: courseName })
                 })
@@ -825,14 +895,14 @@ async function checkoutCR(req, res, io, ioEmit, d , timestamp , round) {
                 await Promise.all([
                     transactionCR.insertOne({
                         studentID: studentID,
-                        timestamp: timestamp?timestamp:date,
+                        timestamp: timestamp ? timestamp : date,
                         courseID: courseID,
                         value: value,
                         sender: studentID,
                         reason: "CheckoutCR",
                         remark: req.body.remark ? req.body.remark : "",
                     }),
-                    addCheckoutLog(studentID, ensureCR.subject, round?round:new Date(ensureCR.day).getHours() , date)
+                    addCheckoutLog(studentID, ensureCR.subject, round ? round : new Date(ensureCR.day).getHours(), date)
                 ])
                 let courseName = ensureCR.subject + gradeBitToString(ensureCR.grade) + ensureCR.level
                 if (ioEmit) io.emit('updateCheckout')
@@ -857,13 +927,13 @@ function parseTransactionCR(key, value) {
     return value;
 }
 
-function addCheckoutLog(studentID, subject, checkoutRound , timestamp , recheck, recheckDate) {
+function addCheckoutLog(studentID, subject, checkoutRound, timestamp, recheck, recheckDate) {
     let promise = new Promise((res, rej) => {
         let obj = {
             studentID: studentID,
             subject: subject,
             checkoutRound: checkoutRound ? Number(checkoutRound) : new Date().getHours(),
-            timestamp : timestamp? new Date(timestamp) : new Date(),
+            timestamp: timestamp ? new Date(timestamp) : new Date(),
             recheck: recheck ? recheck : false
         }
         if (recheckDate) obj.recheckDate = new Date(recheckDate)

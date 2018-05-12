@@ -3,6 +3,7 @@ module.exports = function (app, db, pasport) {
     require('typescript-require');
     var ObjectId = require('mongodb').ObjectID;
     var chalk = require("chalk");
+    // var cookieParser = require("cookie-parser");
     var moment = require("moment");
     var path = require("path");
     var userDB = db.collection("user");
@@ -14,6 +15,7 @@ module.exports = function (app, db, pasport) {
     var courseSuggestDB = db.collection('courseSuggestion')
     var hybridDB = db.collection('hybridStudent')
     var skillDB = db.collection('skillStudent')
+    var workflowDB = db.collection('workflow')
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -91,6 +93,9 @@ module.exports = function (app, db, pasport) {
     })
     app.get('/test', function (req, res) {
         res.status(200).render('test', {})
+    })
+    app.get('/react', function (req, res) {
+        res.status(200).render('reactPage', {})
     })
     app.get('/', async function (req, res) {
         if (req.isAuthenticated()) {
@@ -505,6 +510,82 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminCoursedescription', local)
         else return404(req, res)
     })
+    app.get("/adminAllHybrid", auth.isLoggedIn, async function (req, res) {
+        let [config, allQ] = await Promise.all([
+            configDB.findOne({}),
+            quarterDB.find({}, { year: 1, quarter: 1, name: 1 }).sort({ _id: 1 }).toArray()
+        ]);
+        let year;
+        let quarter;
+        if (req.cookies.monkeyWebSelectedQuarter === undefined) {
+            year = config.defaultQuarter.quarter.year;
+            quarter = config.defaultQuarter.quarter.quarter;
+        } else {
+            year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
+            quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        }
+        let selectedQ = year + '-' + quarter;
+        let allHb = await hybridDB.find({
+            quarterID: year + ((quarter < 10) ? '0' + quarter : '' + quarter)
+        }).sort({ day: 1 }).toArray();
+        let newAllHb = [];
+        for (let i in allHb) {
+            let math = 0;
+            let phy = 0;
+            let chem = 0;
+            let eng = 0;
+            let t = moment(allHb[i].day).format('dddd HH:mm');
+            for (let j in allHb[i].student) {
+                if (allHb[i].student[j].subject.toLowerCase() === 'm') {
+                    math += 1;
+                } else if (allHb[i].student[j].subject.toLowerCase() === 'p') {
+                    phy += 1;
+                } else if (allHb[i].student[j].subject.toLowerCase() === 'c') {
+                    chem += 1;
+                } else if (allHb[i].student[j].subject.toLowerCase() === 'e') {
+                    eng += 1;
+                }
+            }
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: math,
+                subject: 'M'
+            });
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: phy,
+                subject: 'P'
+            });
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: chem,
+                subject: 'C'
+            });
+            newAllHb.push({
+                ID: allHb[i]._id,
+                day: t,
+                student: eng,
+                subject: 'E'
+            });
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            quarterList: allQ,
+            selectedQuarter: selectedQ,
+            hybridList: newAllHb
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllHybrid', local)
+        else return404(req, res)
+    })
     app.get("/adminHybridInfo", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
@@ -516,6 +597,147 @@ module.exports = function (app, db, pasport) {
             config: await configDB.findOne({})
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminHybridInfo', local)
+        else return404(req, res)
+    })
+    app.get("/adminAllskill", auth.isLoggedIn, async function (req, res) {
+        let [config, allQ] = await Promise.all([
+            configDB.findOne({}),
+            quarterDB.find({}, { year: 1, quarter: 1, name: 1 }).sort({ _id: 1 }).toArray()
+        ]);
+        let year;
+        let quarter;
+        if (req.cookies.monkeyWebSelectedQuarter === undefined) {
+            year = config.defaultQuarter.quarter.year;
+            quarter = config.defaultQuarter.quarter.quarter;
+        } else {
+            year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
+            quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        }
+        let selectedQ = year + '-' + quarter;
+        let allSk = await skillDB.find({
+            quarterID: year + ((quarter < 10) ? '0' + quarter : '' + quarter)
+        }).sort({ day: 1 }).toArray();
+        let newAllSk = [];
+        for (let i in allSk) {
+            let math = 0;
+            let eng = 0;
+            let t = moment(allSk[i].day).format('dddd HH:mm');
+            for (let j in allSk[i].student) {
+                if (allSk[i].student[j].subject.toLowerCase() === 'm') {
+                    math += 1;
+                } else if (allSk[i].student[j].subject.toLowerCase() === 'e') {
+                    eng += 1;
+                } else {
+                    math += 1;
+                    eng += 1;
+                }
+            }
+            newAllSk.push({
+                ID: allSk[i]._id,
+                day: t,
+                student: math,
+                subject: 'M'
+            });
+            newAllSk.push({
+                ID: allSk[i]._id,
+                day: t,
+                student: eng,
+                subject: 'E'
+            });
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            quarterList: allQ,
+            selectedQuarter: selectedQ,
+            skillList: newAllSk
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllskill', local)
+        else return404(req, res)
+    })
+    app.get("/adminSkillInfo", auth.isLoggedIn, async function (req, res) {
+        let config;
+        let skInfo;
+        if (req.cookies.monkeySelectedSkill === undefined) {
+            res.redirect('/adminAllskill');
+        } else {
+            let skID = req.cookies.monkeySelectedSkill.slice(0, -1);
+            [config, skInfo] = await Promise.all([
+                configDB.findOne({}),
+                skillDB.findOne({ _id: ObjectId(skID) })
+            ]);
+        }
+        let promise1 = [];
+        let promise2 = [];
+        let promise3 = [];
+        let year;
+        let quarter;
+        if (req.cookies.monkeyWebSelectedQuarter === undefined) {
+            year = config.defaultQuarter.quarter.year;
+            quarter = config.defaultQuarter.quarter.quarter;
+        } else {
+            year = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(0, 4));
+            quarter = parseInt(req.cookies.monkeyWebSelectedQuarter.slice(5));
+        }
+        for (let i in skInfo.student) {
+            if (skInfo.student[i].subject === "ME" || skInfo.student[i].subject === req.cookies.monkeySelectedSkill.slice(-1)) {
+                promise1.push(userDB.findOne({ _id: skInfo.student[i].studentID, position: 'student' }, {
+                    nickname: 1,
+                    firstname: 1,
+                    'student.grade': 1,
+                    'student.status': 1,
+                }));
+                promise2.push(courseDB.findOne({
+                    year: year,
+                    quarter: quarter,
+                    student: skInfo.student[i].studentID
+                }, { _id: 1 }));
+                promise3.push(hybridDB.findOne({
+                    quarterID: year + '' + ((quarter > 10) ? quarter : '0' + quarter),
+                    student: { $elemMatch: { studentID: skInfo.student[i].studentID } }
+                }, { _id: 1 }))
+            }
+        }
+        let [userInfo, crInfo, hbInfo] = await Promise.all([
+            Promise.all(promise1),
+            Promise.all(promise2),
+            Promise.all(promise3)
+        ]);
+        console.log(userInfo);
+        let skStd = [];
+        for (let i = 0; i < userInfo.length; i++) {
+            if (userInfo[i].student.status == "active") {
+                skStd.push({
+                    grade: userInfo[i].student.grade,
+                    hasCR: (crInfo[i] === null ? false : true),
+                    hasHB: (hbInfo[i] === null ? false : true),
+                    _id: userInfo[i]._id,
+                    firstname: userInfo[i].firstname,
+                    nickname: userInfo[i].nickname
+                });
+            }
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            skInfo: {
+                skillID: skInfo._id,
+                subject: req.cookies.monkeySelectedSkill.slice(-1),
+                day: moment(skInfo.day).format('dddd HH:mm')
+            },
+            skStd: skStd
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminSkillInfo', local)
         else return404(req, res)
     })
     app.get("/tutorCommentStudent", auth.isLoggedIn, async function (req, res) {
@@ -532,6 +754,7 @@ module.exports = function (app, db, pasport) {
         else return404(req, res)
     })
     app.get("/tutorEditProfile", auth.isLoggedIn, async function (req, res) {
+        let email = await userDB.findOne({ _id: parseInt(req.user._id) }, { email: 1 });
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -539,7 +762,8 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config: await configDB.findOne({})
+            config: await configDB.findOne({}),
+            email: email.email
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorEditProfile', local)
         else return404(req, res)
@@ -552,7 +776,7 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config: await configDB.findOne({})
+            config: await configDB.findOne({}),
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminStudentAttendanceModifier', local)
         else return404(req, res)
@@ -596,6 +820,19 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorCheck', local)
         else return404(req, res)
     })
+    app.get("/workflow", auth.isLoggedIn, async function (req, res) {
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: await configDB.findOne({})
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminWorkflow', local)
+        else return404(req, res)
+    })
     app.get("/tutorCourseMaterial", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
@@ -625,6 +862,19 @@ module.exports = function (app, db, pasport) {
                 }
             });
         }
+        else return404(req, res)
+    })
+    app.get("/adminCalendar", auth.isLoggedIn, async function (req, res) {
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: await configDB.findOne({})
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminCalendar', local)
         else return404(req, res)
     })
     app.get("/tutorQrGenerator", auth.isLoggedIn, async function (req, res) {

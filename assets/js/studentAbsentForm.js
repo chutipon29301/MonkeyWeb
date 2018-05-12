@@ -2,19 +2,22 @@
 let studentID;
 let year;
 let quarter;
+let quarterName;
 let timetable;
-let mHbMax;
-let pHbMax;
+let startDate;
+let endDate;
 let mHbFound;
 let pHbFound;
+let mHbMax;
+let pHbMax;
 
 // datePicker
-let startDate = moment();
-startDate.date(startDate.date() - 1);
+let initDate = moment();
+initDate.date(initDate.date() - 1);
 $("#absentDate").datetimepicker({
     format: "DD/MM/YYYY",
     daysOfWeekDisabled: [1, 3, 5],
-    minDate: startDate
+    minDate: initDate
 });
 
 // main
@@ -22,32 +25,34 @@ let cookies = getCookieDict();
 studentID = cookies.monkeyWebUser;
 
 getYearAndQuarter();
-function getYearAndQuarter() {
-    getConfig().then((config) => {
-        year = config.defaultQuarter.quarter.year;
-        quarter = config.defaultQuarter.quarter.quarter;
-        genBanner();
-        getTimetable();
-    });
+async function getYearAndQuarter() {
+    let [config, allQ] = await Promise.all([
+        getConfig(),
+        listQuarter('private')
+    ]);
+    year = config.defaultQuarter.quarter.year;
+    quarter = config.defaultQuarter.quarter.quarter;
+    for (let i in allQ.quarter) {
+        if (allQ.quarter[i].year === year && allQ.quarter[i].quarter === quarter) {
+            quarterName = allQ.quarter[i].name;
+            startDate = allQ.quarter[i].startDate;
+            endDate = allQ.quarter[i].endDate;
+        }
+    }
+    genBanner();
+    getTimetable();
 }
 
 function genBanner() {
-    $("#pageBanner").html("CR" + (year + 543 + "").slice(2) + "Q" + quarter);
+    $("#pageBanner").html(quarterName);
+    $("#tableLabel").html("(" + quarterName + ")");
 }
 
 async function getTimetable() {
-    mHbMax = 0;
-    pHbMax = 0;
     timetable = await $.post("post/v1/studentTimeTable", { year: year, quarter: quarter, studentID: studentID });
-    for (let i in timetable.hybrid) {
-        if (timetable.hybrid[i].subject === "M") {
-            mHbMax += 3;
-        } else {
-            pHbMax += 3;
-        }
-    }
     getHistory();
     fillButton();
+    showQuota();
 }
 
 function fillButton() {
@@ -57,7 +62,7 @@ function fillButton() {
     let cr = timetable.course;
     let hb = timetable.hybrid;
     if (pickDate.day() === 2 || pickDate.day() === 4) {
-        $(".label-8").html("17-19");
+        $(".label-8").html("16-18");
         for (let i in hb) {
             let t = moment(hb[i].day);
             if (t.day() === pickDate.day()) {
@@ -85,13 +90,8 @@ function fillButton() {
 }
 
 async function getHistory() {
-    mHbFound = 0;
-    pHbFound = 0;
     $("#absentTableBody").empty();
     $("#presentTableBody").empty();
-    let pickDate = $('#absentDate').data('DateTimePicker').date();
-    let startDate = pickDate.valueOf() - 7776000000;
-    let endDate = pickDate.valueOf() + 7776000000;
     let history = await $.post("post/v1/listAttendance", {
         studentID: studentID,
         studentStartDate: startDate,
@@ -110,11 +110,6 @@ async function getHistory() {
                     "<td class='text-center'>" + history[i].sender + "</td>" +
                     "</tr>"
                 );
-                if (history[i].hybridSubject === "M") {
-                    mHbFound += 1;
-                } else if (history[i].hybridSubject === "P") {
-                    pHbFound += 1;
-                }
             } else {
                 tableTarget.append(
                     "<tr>" +
@@ -134,34 +129,27 @@ async function getHistory() {
                     "<td class='text-center'>" + history[i].sender + "</td>" +
                     "</tr>"
                 );
-                if (history[i].subject === "M") {
-                    mHbFound -= 1;
-                } else if (history[i].subject === "P") {
-                    pHbFound -= 1;
-                }
             }
         }
     }
-    editQuota();
 }
 
-async function editQuota() {
-    let quota = await $.post("post/v1/listQuota", { studentID: studentID });
-    for (let i in quota.quotaCount) {
-        if (quota.quotaCount[i]._id === "M") {
-            mHbFound -= quota.quotaCount[i].value;
-        } else if (quota.quotaCount[i]._id === "P") {
-            pHbFound -= quota.quotaCount[i].value;
-        }
-    }
-    $("#mQuota").html("โควต้าลา FHB:M " + (mHbMax - mHbFound) + "/" + mHbMax);
-    $("#pQuota").html("โควต้าลา FHB:P " + (pHbMax - pHbFound) + "/" + pHbMax);
+async function showQuota() {
+    let [mQuota, pQuota] = await Promise.all([
+        $.post('post/v1/getStudentQuota', { studentID: studentID, subj: "M" }),
+        $.post('post/v1/getStudentQuota', { studentID: studentID, subj: "P" })
+    ]);
+    mHbFound = mQuota.usedQuota;
+    pHbFound = pQuota.usedQuota;
+    mHbMax = mQuota.totalQuota;
+    pHbMax = pQuota.totalQuota;
+    $("#mQuota").html("โควต้าลา FHB:M " + (mQuota.totalQuota - mQuota.usedQuota) + "/" + mQuota.totalQuota);
+    $("#pQuota").html("โควต้าลา FHB:P " + (pQuota.totalQuota - pQuota.usedQuota) + "/" + pQuota.totalQuota);
 }
 
 // add event when change pick date
 $("#absentDate").on("dp.change", function () {
     fillButton();
-    getHistory();
 });
 
 // toggle button
@@ -297,7 +285,7 @@ async function sendData() {
         if (pickDate.day() === 0 || pickDate.day() === 6) {
             notifyStr = notifyStr + thisButt.html() + " - " + classHour(thisButt) + ":00\n";
         } else {
-            notifyStr = notifyStr + thisButt.html() + " - 17:00\n";
+            notifyStr = notifyStr + thisButt.html() + " - 16:00\n";
         }
         if (thisButt.hasClass("cr")) {
             promise.push($.post("post/v1/addStudentAbsent", {

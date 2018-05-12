@@ -118,24 +118,24 @@ async function genTable(mainType) {
         let nextRemark;
         let link;
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
-            link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
         } else {
-            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i]._id + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i]._id + "\")'></span>";
         }
         if (emergencyAbsent(allAdtend[i].timestamp, allAdtend[i].date)) {
             style = "table-warning";
         }
         switch (allAdtend[i].remark) {
             case "1":
-                remark = "<span class='fa fa-lg fa-check-circle-o' style='color:orange'></span>"
+                remark = "<span class='far fa-fw fa-lg fa-check-circle' style='color:orange'></span>"
                 nextRemark = "next2";
                 break;
             case "2":
-                remark = "<span class='fa fa-lg fa-check-circle-o' style='color:green'></span>"
+                remark = "<span class='far fa-fw fa-lg fa-check-circle' style='color:green'></span>"
                 nextRemark = "next0";
                 break;
             default:
-                remark = "<span class='fa fa-lg fa-times-circle-o' style='color:red'></span>"
+                remark = "<span class='far fa-fw fa-lg fa-times-circle' style='color:red'></span>"
                 nextRemark = "next1";
                 break;
         }
@@ -167,7 +167,7 @@ async function genTable(mainType) {
                     "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
                     "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                    allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
                     "</tr>"
                 );
             } else if (type !== "FHB" && mainType === 2) {
@@ -183,7 +183,7 @@ async function genTable(mainType) {
                     "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
                     "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                     "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                    allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                    allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
                     "</tr>"
                 );
             }
@@ -212,7 +212,7 @@ async function genTable(mainType) {
                 "<td class='text-center " + nextRemark + " rm" + allAdtend[i]._id +
                 "' onclick='setRemark(\"" + allAdtend[i]._id + "\")'>" + remark + "</td>" +
                 "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-                allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+                allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
                 "</tr>"
             );
         }
@@ -335,19 +335,19 @@ function setRemark(adtendID) {
         $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "0" }).then((cb) => {
             log(cb);
             that.removeClass("next0").addClass("next1");
-            that.html("<span class='fa fa-lg fa-times-circle-o' style='color:red'></span>");
+            that.html("<span class='far fa-fw fa-lg fa-times-circle' style='color:red'></span>");
         });
     } else if (that.hasClass("next1")) {
         $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "1" }).then((cb) => {
             log(cb);
             that.removeClass("next1").addClass("next2");
-            that.html("<span class='fa fa-lg fa-check-circle-o' style='color:orange'></span>");
+            that.html("<span class='far fa-fw fa-lg fa-check-circle' style='color:orange'></span>");
         });
     } else if (that.hasClass("next2")) {
         $.post("post/v1/setAttendanceRemark", { attendanceID: adtendID, remark: "2" }).then((cb) => {
             log(cb);
             that.removeClass("next2").addClass("next0");
-            that.html("<span class='fa fa-lg fa-check-circle-o' style='color:green'></span>");
+            that.html("<span class='far fa-fw fa-lg fa-check-circle' style='color:green'></span>");
         });
     }
 }
@@ -384,9 +384,9 @@ async function genActivityTable(number) {
         startDate: acTime1.valueOf(),
         endDate: acTime2.valueOf()
     });
-    if (allAdtend.length === 0) {
-        $("#loadMoreButt").hide();
-    }
+    // if (allAdtend.length === 0) {
+    //     $("#loadMoreButt").hide();
+    // }
     for (let i = 0; i < allAdtend.length; i++) {
         let style;
         let timestamp = moment(allAdtend[i].timestamp).format("ddd DD/MM/YY - HH:mm");
@@ -417,9 +417,9 @@ async function genActivityTable(number) {
 
         }
         if (allAdtend[i].link !== undefined && allAdtend[i].link !== "") {
-            link = "<span class='fa fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-folder-open' onclick='showAdtendPic(\"" + allAdtend[i].link + "\")'></span>";
         } else {
-            link = "<span class='fa fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
+            link = "<span class='fas fa-fw fa-lg fa-plus-circle' onclick='showUploadModal(\"" + allAdtend[i].attendanceID + "\")'></span>";
         }
         $("#acTableBody").append(
             "<tr class='" + style + "' id='" + allAdtend[i]._id + "'>" +
@@ -432,7 +432,7 @@ async function genActivityTable(number) {
             "<td class='text-center'>" + link + "</td>" +
             "<td class='text-center'>" + allAdtend[i].sender + "</td>" +
             "<td class='text-center'><button class='btn btn-light col' onclick='removeAdtend(\"" +
-            allAdtend[i]._id + "\")'><span class='fa fa-lg fa-trash' style='color:red'></span></button></td>" +
+            allAdtend[i]._id + "\")'><span class='fas fa-fw fa-lg fa-trash' style='color:red'></span></button></td>" +
             "</tr>"
         );
     }
@@ -501,6 +501,8 @@ async function generateChart(type) {
     let maxSeat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let mhbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let phbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let chbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ehbStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let mcrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let pcrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ccrStatic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -509,6 +511,8 @@ async function generateChart(type) {
     // realtime data
     let mhbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let phbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let chbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let ehbReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let mcrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let pcrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let ccrReal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -548,8 +552,12 @@ async function generateChart(type) {
         maxSeat[dayIndex(i)] = allHbRoom[i].maxStudent;
         mhbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numMath;
         phbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numPhysics;
+        chbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numChemistry;
+        ehbStatic[dayIndex(i)] = allHbRoom[i].hybrid[0].numEnglish;
         mhbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numMath;
         phbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numPhysics;
+        chbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numChemistry;
+        ehbReal[dayIndex(i)] = allHbRoom[i].hybrid[0].numEnglish;
         if (allHbRoom[i].course !== undefined) {
             let cr = allHbRoom[i].course;
             for (let j in cr) {
@@ -644,6 +652,10 @@ async function generateChart(type) {
                             mhbReal[dayIndex(t)] -= 1;
                         } else if (attend[j].hybridSubject === "P") {
                             phbReal[dayIndex(t)] -= 1;
+                        } else if (attend[j].hybridSubject === "C") {
+                            chbReal[dayIndex(t)] -= 1;
+                        } else if (attend[j].hybridSubject === "E") {
+                            ehbReal[dayIndex(t)] -= 1;
                         }
                     } else {
                         if (attend[j].tutorID === 99000) {
@@ -669,22 +681,35 @@ async function generateChart(type) {
                             }
                         }
                     }
-                } else if (attend[j].type === 2) {
-                    let t = moment(attend[j].date).format("dddH").toLowerCase();
-                    if (attend[j].subject === "M") {
+                }
+            } else if (attend[j].type === 2) {
+                let t = moment(attend[j].date).format("dddH").toLowerCase();
+                switch (attend[j].subject) {
+                    case "M":
                         mhbReal[dayIndex(t)] += 1;
-                    } else if (attend[j].subject === "P") {
+                        break;
+                    case "P":
                         phbReal[dayIndex(t)] += 1;
-                    }
+                        break;
+                    case "C":
+                        chbReal[dayIndex(t)] += 1;
+                        break;
+                    case "E":
+                        ehbReal[dayIndex(t)] += 1;
+                        break;
+                    default:
+                        break;
                 }
             }
         }
     }
     for (let i in emptySeatReal) {
-        emptySeatReal[i] = maxSeat[i] - mhbReal[i] - phbReal[i] - mcrReal[i] - pcrReal[i] - ccrReal[i] - ecrReal[i];
+        emptySeatReal[i] = maxSeat[i] - mhbReal[i] - phbReal[i] - chbReal[i] - ehbReal[i] - mcrReal[i] - pcrReal[i] - ccrReal[i] - ecrReal[i];
     }
     cvZero(mhbStatic);
     cvZero(phbStatic);
+    cvZero(chbStatic);
+    cvZero(ehbStatic);
     cvZero(mcrStatic);
     cvZero(pcrStatic);
     cvZero(ccrStatic);
@@ -692,6 +717,8 @@ async function generateChart(type) {
     cvZero(emptySeat);
     cvZero(mhbReal);
     cvZero(phbReal);
+    cvZero(chbReal);
+    cvZero(ehbReal);
     cvZero(mcrReal);
     cvZero(pcrReal);
     cvZero(ccrReal);
@@ -771,6 +798,8 @@ async function generateChart(type) {
     if (firstTimeGen) {
         addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
         addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+        addDataSet("CHB(Static)", chbStatic, 0, "#ff8af3", "white");
+        addDataSet("EHB(Static)", ehbStatic, 0, "#bdbdbd", "white");
         addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
         addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
         addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
@@ -805,6 +834,8 @@ async function generateChart(type) {
         });
         addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
         addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+        addDataSet("CHB(Real)", chbReal, 1, "#ff3dec", "white");
+        addDataSet("EHB(Real)", ehbReal, 1, "#9e9e9e", "white");
         addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
         addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
         addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
@@ -889,6 +920,8 @@ async function generateChart(type) {
             case 1:
                 addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
                 addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("CHB(Static)", chbStatic, 0, "#ff8af3", "white");
+                addDataSet("EHB(Static)", ehbStatic, 0, "#bdbdbd", "white");
                 addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
                 addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
                 addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
@@ -927,6 +960,8 @@ async function generateChart(type) {
             case 3:
                 addDataSet("MHB(Static)", mhbStatic, 0, "rgb(255,153,0)", "white");
                 addDataSet("PHB(Static)", phbStatic, 0, "rgb(212,0,255)", "white");
+                addDataSet("CHB(Static)", chbStatic, 0, "#ff8af3", "white");
+                addDataSet("EHB(Static)", ehbStatic, 0, "#bdbdbd", "white");
                 addDataSet("Math(Static)", mcrStatic, 0, "rgba(0,0,0,0)", "rgb(255,153,0)", "rgb(255,153,0)");
                 addDataSet("Phy(Static)", pcrStatic, 0, "rgba(0,0,0,0)", "rgb(212,0,255)", "rgb(212,0,255)");
                 addDataSet("Che(Static)", ccrStatic, 0, "rgba(0,0,0,0)", "#ff8af3", "#ff8af3");
@@ -962,6 +997,8 @@ async function generateChart(type) {
             case 2:
                 addDataSet("MHB(Real)", mhbReal, 1, "#e64500", "white");
                 addDataSet("PHB(Real)", phbReal, 1, "#8a00e0", "white");
+                addDataSet("CHB(Real)", chbReal, 1, "#ff3dec", "white");
+                addDataSet("EHB(Real)", ehbReal, 1, "#9e9e9e", "white");
                 addDataSet("Math(Real)", mcrReal, 1, "rgba(0,0,0,0)", "#e64500", "#e64500");
                 addDataSet("Phy(Real)", pcrReal, 1, "rgba(0,0,0,0)", "#8a00e0", "#8a00e0");
                 addDataSet("Che(Real)", ccrReal, 1, "rgba(0,0,0,0)", "#ff3dec", "#ff3dec");
@@ -1414,14 +1451,23 @@ async function addNewPresentAttend() {
 }
 async function calStdQuota() {
     let selectStd = $("#addStdTypeahead").typeahead("getActive");
+    let allQ = await listQuarter('private');
     if (selectStd !== undefined) {
         let selectQ = $("#addAttendQuarterSelect").val();
         let now = moment();
-        let startDate = now.valueOf() - 7776000000;
-        let endDate = now.valueOf() + 7776000000;
+        let selectYear = parseInt(selectQ.slice(0, 4));
+        let selectQuarter = parseInt(selectQ.slice(5));
+        let startDate;
+        let endDate;
+        for (let i in allQ.quarter) {
+            if (allQ.quarter[i].year === selectYear && allQ.quarter[i].quarter === selectQuarter) {
+                startDate = allQ.quarter[i].startDate;
+                endDate = allQ.quarter[i].endDate;
+            }
+        }
         try {
             let [timetable, quota, stdAttend] = await Promise.all([
-                $.post("post/v1/studentTimeTable", { year: selectQ.slice(0, 4), quarter: selectQ.slice(5), studentID: selectStd.id }),
+                $.post("post/v1/studentTimeTable", { year: selectYear, quarter: selectQuarter, studentID: selectStd.id }),
                 $.post("post/v1/listQuota", { studentID: selectStd.id }),
                 $.post("post/v1/listAttendance", { studentStartDate: startDate, studentEndDate: endDate, studentID: selectStd.id })
             ]);
@@ -1432,10 +1478,10 @@ async function calStdQuota() {
             for (let i in timetable.hybrid) {
                 switch (timetable.hybrid[i].subject) {
                     case "M":
-                        maxM += 3;
+                        maxM += 2;
                         break;
                     case "P":
-                        maxP += 3;
+                        maxP += 2;
                         break;
                     default:
                         break;

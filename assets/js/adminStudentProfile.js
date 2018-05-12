@@ -91,8 +91,11 @@ $("#engCoverDowload").click(function () {
         genCover(3);
     }
 });
-$("#smCoverDowload").click(function () {
-    genSummerCover();
+$("#smMathCoverDowload").click(function () {
+    genSummerCover(1);
+});
+$("#smPhyCoverDowload").click(function () {
+    genSummerCover(2);
 });
 
 // load profileImg function
@@ -166,12 +169,12 @@ async function genStudentData() {
     $("#studentProfileContent").append(
         "<h4>" + studentData.firstname + " (" + studentData.nickname + ") " + studentData.lastname + "</h4>" +
         "<h4>" + studentData.firstnameEn + " (" + studentData.nicknameEn + ") " + studentData.lastnameEn + "</h4>" +
-        "<h4><span class='fa fa-graduation-cap'></span> " + (studentData.grade > 6 ? 'S' + (studentData.grade - 6) : 'P' + studentData.grade) +
-        " <span class='fa fa-id-card-o'></span> " + ID + "</h4>" +
+        "<h4><span class='fas fa-fw fa-lg fa-graduation-cap'></span> " + (studentData.grade > 6 ? 'S' + (studentData.grade - 6) : 'P' + studentData.grade) +
+        " <span class='far fa-fw fa-lg fa-id-card'></span> " + ID + "</h4>" +
         "<h5>Level: " + studentData.level + "</h5>" +
-        "<h5><span class='fa fa-envelope-o'></span> " + studentData.email + "</h5>" +
-        "<h5><span class='fa fa-phone'></span> Student: " + studentData.phone + "</h5>" +
-        "<h5><span class='fa fa-phone'></span> Parent: " + studentData.phoneParent + "</h5>"
+        "<h5><span class='far fa-fw fa-lg fa-envelope'></span> " + studentData.email + "</h5>" +
+        "<h5><span class='fas fa-fw fa-lg fa-phone'></span> Student: " + studentData.phone + "</h5>" +
+        "<h5><span class='fas fa-fw fa-lg fa-phone'></span> Parent: " + studentData.phoneParent + "</h5>"
     );
     if (parseInt(str.slice(5)) > 10) {
         $("#smCoverDowload").show();
@@ -417,7 +420,12 @@ async function genCover(type) {
         }
         return;
     }
-    let [profile, timeTable] = await Promise.all([studentProfile(ID), $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) })]);
+    let [profile, timeTable, registedData, allQ] = await Promise.all([
+        studentProfile(ID),
+        $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) }),
+        $.post('/v2/student/getRegistrationQuarter', { studentID: ID }),
+        listQuarter('private')
+    ]);
     let coverCanvas;
     let barcode;
     switch (type) {
@@ -474,8 +482,8 @@ async function genCover(type) {
     ctx.drawImage(barcode, 900, 115);
     ctx.fillText(profile.firstname + " (" + profile.nickname + ")", 600, 80);
     ctx.fillText(profile.lastname, 600, 170);
-    let w = [1289, 1508, 811, 1050];
-    let h = [315, 437, 559, 681, 875];
+    let w = [1289, 1508, 835, 1064];
+    let h = [383, 508, 633, 758, 875];
     let mw = [1335, 1416, 1498, 1580];
     let mh = [140, 220, 300, 380, 460];
     ctx.font = "bold 60px Cordia New";
@@ -526,6 +534,31 @@ async function genCover(type) {
         }
     }
     ctx.fillStyle = "black";
+    ctx.textAlign = "left";
+    let allRegisteredTemp = _.union(registedData.registration.course, registedData.registration.hybrid);
+    let diff = 0;
+    let quarterStr = '';
+    for (let i in allQ.quarter) {
+        let bool = i < allQ.quarter.length - 1;
+        if (allRegisteredTemp.indexOf(allQ.quarter[i].quarterID) > -1) {
+            if (allQ.quarter[i].quarter < 10) {
+                ctx.font = "50px Cordia New";
+                ctx.fillText(allQ.quarter[i].name + ((bool) ? ' / ' : ''), 35 + diff, 244);
+            } else {
+                ctx.font = "bold 50px Cordia New";
+                ctx.fillText(allQ.quarter[i].name, 35 + diff, 244);
+                ctx.font = "50px Cordia New";
+                if (bool) {
+                    ctx.fillText(' / ', 185 + diff, 244);
+                    diff += 30;
+                }
+            }
+            diff += 145;
+        }
+    }
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.font = "bold 50px Cordia New";
     if (type == 4 || type == 5) {
         if (type == 4) {
             var appRejCanvas = document.getElementById('appRejCover1');
@@ -585,20 +618,20 @@ const hourIndex = (day) => {
             return 4;
     }
 }
-async function genSummerCover() {
+async function genSummerCover(type) {
     let str = $("#quarterSelect").val();
     let startT = moment(0);
     startT.date(12).month(2).year(2018).hour(3);
     let endT = moment(0);
     endT.date(30).month(2).year(2018).hour(23);
-    let [allQ, timeTable, attend] = await Promise.all([
+    let [allQ, timeTable, stdName] = await Promise.all([
         listQuarter("private"),
         $.post("post/v1/studentTimeTable", { studentID: ID, year: str.slice(0, 4), quarter: str.slice(5) }),
-        $.post("post/v1/listAttendance", { studentStartDate: startT.valueOf(), studentEndDate: endT.valueOf(), studentID: ID })
+        name(ID)
     ]);
-    attend.sort((a, b) => {
-        return a.date - b.date;
-    });
+    // attend.sort((a, b) => {
+    //     return a.date - b.date;
+    // });
     let thisQ;
     for (let i in allQ.quarter) {
         if (allQ.quarter[i].year === parseInt(str.slice(0, 4)) && allQ.quarter[i].quarter === parseInt(str.slice(5))) {
@@ -608,51 +641,62 @@ async function genSummerCover() {
     let coverCanvas = document.getElementById('smCover');
     let ctx = coverCanvas.getContext('2d');
     let template = document.getElementById('smTableTemplate');
-    ctx.drawImage(template, 0, 0, 1244, 1760);
+    ctx.drawImage(template, 0, 0, 1241, 880);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "bold 180px Cordia New";
     ctx.fillText(thisQ.name, 340, 88);
-    ctx.font = "bold 80px Cordia New";
-    ctx.fillText(ID, 1100, 65);
+    ctx.font = "bold 85px Cordia New";
+    if (type === 1) {
+        ctx.fillText(ID + "1", 1070, 77);
+    } else if (type === 2) {
+        ctx.fillText(ID + "2", 1070, 77);
+    }
+    ctx.font = "bold 60px Cordia New";
+    ctx.fillText(stdName.firstname + " (" + stdName.nickname + ")", 980, 172);
+    ctx.font = "bold 150px Cordia New";
     let thisCr = timeTable.course;
-    let hIndex = { 8: 235, 10: 335, 13: 435 };
+    let hIndex = { 8: 350, 10: 530, 13: 710 };
     ctx.textAlign = "left";
     for (let i in thisCr) {
         let t = moment(thisCr[i].day);
         ctx.fillText(thisCr[i].courseName + " - " + thisCr[i].tutorName, 370, hIndex[t.hour()]);
     }
-    ctx.textAlign = "center";
-    ctx.font = "bold 65px Cordia New";
-    let temp = moment(0);
-    let index = -1;
-    let initH2 = 696;
-    for (let i in attend) {
-        let initH = 696;
-        let initW = { 8: 380, 10: 470, 13: 560 };
-        if (attend[i].reason === 'SummerAbsent') {
-            let t = moment(attend[i].date);
-            if (temp.date() === t.date() && temp.month() === t.month() && temp.year() === t.year()) {
-                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
-            } else {
-                index += 1;
-                ctx.fillText(t.date(), 120, initH + 69 * index);
-                ctx.fillText(t.month() + 1, 200, initH + 69 * index);
-                ctx.fillText((t.year() + '').slice(2), 280, initH + 69 * index);
-                ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
-            }
-            temp = t;
-        } else if (attend[i].type === 2) {
-            let t = moment(attend[i].date);
-            if (t.hour() === 15) {
-                ctx.fillText(t.date(), 660, initH2);
-                ctx.fillText(t.month() + 1, 750, initH2);
-                ctx.fillText((t.year() + '').slice(2), 840, initH2);
-                initH2 = initH2 + 69;
-            }
-        }
+    // ctx.textAlign = "center";
+    // ctx.font = "bold 65px Cordia New";
+    // let temp = moment(0);
+    // let index = -1;
+    // let initH2 = 696;
+    // for (let i in attend) {
+    //     let initH = 696;
+    //     let initW = { 8: 380, 10: 470, 13: 560 };
+    //     if (attend[i].reason === 'SummerAbsent') {
+    //         let t = moment(attend[i].date);
+    //         if (temp.date() === t.date() && temp.month() === t.month() && temp.year() === t.year()) {
+    //             ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+    //         } else {
+    //             index += 1;
+    //             ctx.fillText(t.date(), 120, initH + 69 * index);
+    //             ctx.fillText(t.month() + 1, 200, initH + 69 * index);
+    //             ctx.fillText((t.year() + '').slice(2), 280, initH + 69 * index);
+    //             ctx.fillText("✓", initW[t.hour()], initH + 69 * index);
+    //         }
+    //         temp = t;
+    //     } else if (attend[i].type === 2) {
+    //         let t = moment(attend[i].date);
+    //         if (t.hour() === 15) {
+    //             ctx.fillText(t.date(), 660, initH2);
+    //             ctx.fillText(t.month() + 1, 750, initH2);
+    //             ctx.fillText((t.year() + '').slice(2), 840, initH2);
+    //             initH2 = initH2 + 69;
+    //         }
+    //     }
+    // }
+    if (type === 1) {
+        downloadCanvas(6);
+    } else if (type === 2) {
+        downloadCanvas(7);
     }
-    downloadCanvas(6);
 }
 async function genSmAppRej(type) {
     let str = $("#quarterSelect").val();
@@ -690,7 +734,7 @@ async function genSmAppRej(type) {
         ctx.fillStyle = "green";
         ctx.fillText("FINISHED", ray, 0);
     }
-    downloadCanvas(7);
+    downloadCanvas(8);
 }
 function downloadCanvas(type) {
     let text = ""
@@ -722,9 +766,13 @@ function downloadCanvas(type) {
             break;
         case 6:
             canvas = document.getElementById('smCover');
-            text += ID + "sm.png";
+            text += ID + "1sm.png";
             break;
         case 7:
+            canvas = document.getElementById('smCover');
+            text += ID + "2sm.png";
+            break;
+        case 8:
             canvas = document.getElementById('smAppRejCover');
             text += ID + ".png";
             break;
@@ -807,9 +855,9 @@ async function showChatData() {
     $("#chatButt").empty();
     for (let i in chats) {
         if (chats[i].sender._id === parseInt(myID)) {
-            $("#chatButt").append("<row><p class='mb-0'><small><span class='fa fa-user-secret'></span>&nbsp;me</small></p><button class='btn btn-primary col-10'>" + chats[i].msg + "</button></row>");
+            $("#chatButt").append("<row><p class='mb-0'><small><span class='fas fa-fw fa-user-secret'></span>&nbsp;me</small></p><button class='btn btn-primary col-10'>" + chats[i].msg + "</button></row>");
         } else {
-            $("#chatButt").append("<row><p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fa fa-user'></span></small>&nbsp;</p><button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button></row>");
+            $("#chatButt").append("<row><p class='mb-0 float-right'><small>" + chats[i].sender.nicknameEn + "&nbsp;<span class='fas fa-fw fa-user'></span></small>&nbsp;</p><button class='btn btn-secondary col-10 offset-2'>" + chats[i].msg + "</button></row>");
         }
     }
 }
@@ -1003,10 +1051,10 @@ async function genCommentViewBody() {
             $commentContentBody.append(
                 "<div id=" + comment.comment[i].commentID + ">" +
                 "<h5>" +
-                "<span class='fa fa-thumb-tack' style=" + ((comment.comment[i].priority > 0) ? 'color:red' : 'color:silver') + " onclick=\"editComment(\'1\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].priority + "\');\"></span> " +
-                "<span class='fa fa-check-circle' style=" + ((comment.comment[i].isCleared) ? 'color:green' : 'color:silver') + " onclick=\"editComment(\'2\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].isCleared + "\');\"></span> " +
+                "<span class='fas fa-thumbtack' style=" + ((comment.comment[i].priority > 0) ? 'color:red' : 'color:silver') + " onclick=\"editComment(\'1\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].priority + "\');\"></span> " +
+                "<span class='fas fa-check-circle' style=" + ((comment.comment[i].isCleared) ? 'color:green' : 'color:silver') + " onclick=\"editComment(\'2\',\'" + comment.comment[i].commentID + "\',\'" + comment.comment[i].isCleared + "\');\"></span> " +
                 tutorComment[i].nickname + " (" + moment(comment.comment[i].timestamp).format('DD MMM') + ") " +
-                "<span class='fa fa-trash' style='color:red' onclick=\"editComment(\'3\',\'" + comment.comment[i].commentID + "\','');\"></span>" +
+                "<span class='fas fa-trash' style='color:red' onclick=\"editComment(\'3\',\'" + comment.comment[i].commentID + "\','');\"></span>" +
                 "</h5>" +
                 "<p>" + comment.comment[i].message + "</p>" +
                 "</div>"
@@ -1061,43 +1109,27 @@ $("#absentViewButt").click(function () {
 async function showStudentAbsentHistory() {
     let str = $("#quarterSelect").val();
     let table = $("#absentHistoryTableBody");
-    let today = moment();
-    let startDay = moment(0).year(today.year()).month(today.month() - 3).date(today.date());
-    let endDay = moment(0).year(today.year()).month(today.month() + 3).date(today.date());
-    let [history, quota, timetable] = await Promise.all([
-        $.post('post/v1/listAttendance', { studentStartDate: startDay.valueOf(), studentEndDate: endDay.valueOf(), studentID: ID }),
-        $.post('post/v1/listQuota', { studentID: ID }),
-        $.post('post/v1/studentTimeTable', { year: str.slice(0, 4), quarter: str.slice(5), studentID: ID })
+    let [config, allQ] = await Promise.all([
+        getConfig(),
+        listQuarter('private')
     ]);
-    let stdHB = timetable.hybrid;
-    let maxP = 0;
-    let maxM = 0;
-    let nowP = 0;
-    let nowM = 0;
-    for (let i in stdHB) {
-        if (stdHB[i].subject === "M") {
-            maxM += 3;
-        } else if (stdHB[i].subject === "P") {
-            maxP += 3;
+    let today = moment();
+    let startDay;
+    let endDay;
+    for (let i in allQ.quarter) {
+        if (allQ.quarter[i].year === config.defaultQuarter.quarter.year && allQ.quarter[i].quarter === config.defaultQuarter.quarter.quarter) {
+            log(allQ.quarter[i]);
+            startDay = moment(parseInt(allQ.quarter[i].startDate));
+            endDay = moment(parseInt(allQ.quarter[i].endDate));
         }
     }
-    log(history);
+    let [history, mQuota, pQuota] = await Promise.all([
+        $.post('post/v1/listAttendance', { studentStartDate: startDay.valueOf(), studentEndDate: endDay.valueOf(), studentID: ID }),
+        $.post('post/v1/getStudentQuota', { studentID: ID, subj: 'M' }),
+        $.post('post/v1/getStudentQuota', { studentID: ID, subj: 'P' })
+    ]);
+    table.empty();
     for (let i in history) {
-        if (history[i].type === 1) {
-            if (history[i].courseName === undefined) {
-                if (history[i].hybridSubject === "M") {
-                    nowM += 1;
-                } else if (history[i].hybridSubject === "P") {
-                    nowP += 1;
-                }
-            }
-        } else {
-            if (history[i].subject === "M") {
-                nowM -= 1;
-            } else if (history[i].subject === "P") {
-                nowP -= 1;
-            }
-        }
         let t1 = moment(history[i].date);
         let t2 = moment(history[i].timestamp);
         table.append(
@@ -1109,14 +1141,7 @@ async function showStudentAbsentHistory() {
             "</tr>"
         )
     }
-    for (let i in quota.quotaCount) {
-        if (quota.quotaCount[i]._id === "M") {
-            nowM -= quota.quotaCount[i].value;
-        } else if (quota.quotaCount[i]._id === "P") {
-            nowP -= quota.quotaCount[i].value;
-        }
-    }
-    $("#absentHistoryMQuota").html((maxM - nowM) + "/" + maxM);
-    $("#absentHistoryPQuota").html((maxP - nowP) + "/" + maxP);
+    $("#absentHistoryMQuota").html((mQuota.totalQuota - mQuota.usedQuota) + "/" + mQuota.totalQuota);
+    $("#absentHistoryPQuota").html((pQuota.totalQuota - pQuota.usedQuota) + "/" + pQuota.totalQuota);
     $("#viewAbsentModal").modal('show');
 }

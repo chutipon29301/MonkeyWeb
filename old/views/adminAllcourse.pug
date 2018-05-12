@@ -12,15 +12,15 @@ block body
                 form
                     .form-group
                         label
-                            span.fa.fa-lg.fa-th-large &nbsp;
+                            span.fas.fa-fw.fa-lg.fa-th-large &nbsp;
                             |Quarter
-                        select.form-control#quarter(onChange="quarterChange()")
+                        select.custom-select#quarter(onChange="quarterChange()")
                 form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
                         label
-                            span.fa.fa-lg.fa-filter &nbsp;
+                            span.fas.fa-fw.fa-lg.fa-filter &nbsp;
                             |Filter
-                        select.form-control#subject(onChange="getAllCourseContent()")
+                        select.custom-select#subject(onChange="getAllCourseContent()")
                             option(value="all") All Subject
                             option(value="M") Math
                             option(value="P") Physics
@@ -29,7 +29,7 @@ block body
                             option(value="S") Science
                 form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
-                        select.form-control#grade(onChange="getAllCourseContent()")
+                        select.custom-select#grade(onChange="getAllCourseContent()")
                             option(value="all") All grade
                             option(value="1") P1
                             option(value="2") P2
@@ -45,13 +45,13 @@ block body
                             option(value="12") S6
                 form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
-                        select.form-control#name(onChange="getAllCourseContent()")
+                        select.custom-select#name(onChange="getAllCourseContent()")
                             option(value="all") All Tutor
                             each i in tutor
                                 option(value=i.nicknameEn)= i.nicknameEn
                 form(class=webUser.position === "tutor" ? "invisible" : "")
                     .form-group
-                        select.form-control#time(onChange="getAllCourseContent()")
+                        select.custom-select#time(onChange="getAllCourseContent()")
                             option(value="all") All Time
                             option(value="176400000") Sat 8
                             option(value="183600000") Sat 10
@@ -88,7 +88,7 @@ block body
                             input(type='checkbox', value='o', checked, name="options[]", onClick="getAllCourseContent()")
                             | o
                 a(href="adminCourseTable" class=webUser.position === "tutor" ? "invisible" : "btn btn-link col")
-                    span.fa.fa-lg.fa-book
+                    span.fas.fa-fw.fa-lg.fa-book
                     |คัมภีร์เทวดา
             div.col-12.col-md-9.offset-md-3.col-xl-10.offset-xl-2.p-0
                 .table-responsive

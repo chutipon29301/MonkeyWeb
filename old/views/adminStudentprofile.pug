@@ -18,6 +18,7 @@ block head
             border-color: transparent!important;
         }
 block script
+    script(src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js")
     script(src="js/JsBarcode.code128.min.js" type="text/javascript")
     script(src="js/custom-file-input.js")
     script(src="js/adminStudentProfile.min.js")
@@ -37,7 +38,7 @@ block body
                         form
                             .form-group
                                 label
-                                    span.fa.fa-lg.fa-th-large &nbsp;
+                                    span.fas.fa-fw.fa-lg.fa-th-large &nbsp;
                                     |Quarter
                                 select.custom-select#quarterSelect
                 .row
@@ -116,7 +117,8 @@ block body
                             a#phyCoverDowload.dropdown-item.disabled(href="#") Physic cover
                             a#cheCoverDowload.dropdown-item.disabled(href="#") Chemistry cover
                             a#engCoverDowload.dropdown-item.disabled(href="#") English cover
-                            a#smCoverDowload.dropdown-item(href="#") Summer cover
+                            a#smMathCoverDowload.dropdown-item(href="#") Summer cover(Math)
+                            a#smPhyCoverDowload.dropdown-item(href="#") Summer cover(Physics)
                     .col-6.col-md-3
                         button.col.btn.btn-outline-info#commentViewButt(type='button') Comment
                     .col-6.col-md-3
@@ -129,10 +131,10 @@ block body
                         canvas#phyCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#cheCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#engCover(style="border:1px solid black" width="1654" height="1170" hidden='true')
-                        canvas#smCover(style="border:1px solid black" width="1244" height="1760" hidden='true')
+                        canvas#smCover(style="border:1px solid black" width="1241" height="880" hidden='true')
                         canvas#appRejCover1(style="border:1px solid black" width="1654" height="1170" hidden='true')
                         canvas#appRejCover2(style="border:1px solid black" width="1654" height="1170" hidden='true')
-                        canvas#smAppRejCover(style="border:1px solid black" width="1244" height="1760" hidden='true')
+                        canvas#smAppRejCover(style="border:1px solid black" width="1241" height="880" hidden='true')
             .col-12.offset-md-9.col-md-3.offset-xl-10.col-xl-2.p-0#statusSidebar
                 .dropdown
                     button.col-12.btn.dropdown-toggle#statusButton(type="button" data-toggle="dropdown") STATUS
@@ -200,7 +202,7 @@ block body
                     .modal-body
                         .form-group
                             label(for="nicknameInput")
-                                span.fa.fa-user-o
+                                span.far.fa-fw.fa-lg.fa-user
                                 |Name
                             input.form-control#nicknameInput(type="text")
                             input.form-control#firstnameInput(type="text")
@@ -210,7 +212,7 @@ block body
                             input.form-control#lastnameEInput(type="text")
                         .form-group
                             label(for="gradeInput")
-                                span.fa.fa-graduation-cap
+                                span.fas.fa-fw.fa-lg.fa-graduation-cap
                                 |Grade
                             select.form-control#gradeInput
                                 option(value="1") P1
@@ -227,17 +229,17 @@ block body
                                 option(value="12") S6
                         .form-group
                             label(for="levelInput")
-                                span.fa.fa-level-up
+                                span.fas.fa-fw.fa-lg.fa-level-up-alt
                                 |Level
                             input.form-control#levelInput(type="text")
                         .form-group
                             label(for="emailInput")
-                                span.fa.fa-envelope-o
+                                span.far.fa-fw.fa-lg.fa-envelope
                                 |Email
                             input.form-control#emailInput(type="text")
                         .form-group
                             label(for="phoneInput")
-                                span.fa.fa-phone
+                                span.fas.fa-fw.fa-lg.fa-phone
                                 |Phone
                             input.form-control#phoneInput(type="text")
                             input.form-control#parentPhoneInput(type="text")

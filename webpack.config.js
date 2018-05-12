@@ -1,7 +1,7 @@
 const path = require('path');
 var nodeExternals = require('webpack-node-externals');
 const NodemonPlugin = require('nodemon-webpack-plugin');
-
+require('dotenv').config()
 module.exports = {
     entry: './src/index.js',
     module: {
@@ -19,6 +19,7 @@ module.exports = {
         filename: 'bundle.js',
         path: path.join(__dirname, 'dist')
     },
+    mode: process.env.MODE,
     node: {
         __dirname: false
     },

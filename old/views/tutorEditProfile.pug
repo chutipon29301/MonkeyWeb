@@ -10,19 +10,23 @@ block body
             h1 Edit Profile
             p Input and submit to edit profile
     .container
+        .row
+            .col-12: h3 For edit user E-mail
         .input-group.mb-3
             .input-group-prepend
                 span.input-group-text
-                    span.fa.fa-envelope
+                    span.fas.fa-fw.fa-lg.fa-envelope
                     |&nbsp;E-mail
-            input#tutorEmail.form-control(type="text" placeholder="example@monkey.com")
+            input#tutorEmail.form-control(type="text" placeholder=email)
             .input-group-append
-                button#editEmail.btn.btn-success(type="submit") Edit
+                button#editEmail.btn.btn-success(type="submit") Submit
+        .row
+            .col-12: h3 For edit monkeyweb password
         .input-group
             .input-group-prepend
                 span.input-group-text
-                    span.fa.fa-lock
+                    span.fas.fa-fw.fa-lg.fa-lock
                     |&nbsp;Password
             input#tutorPwd.form-control(type="text" placeholder="********")
             .input-group-append
-                button#editPwd.btn.btn-success(type="submit") Edit
+                button#editPwd.btn.btn-success(type="submit") Submit
