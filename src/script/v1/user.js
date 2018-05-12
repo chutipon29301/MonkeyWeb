@@ -142,6 +142,7 @@ module.exports = function (app, db, post, CryptoJS) {
                 res.status(200).send('OK');
             });
     });
+    // for migration
     post('/post/v1/allUser', async function (req, res) {
         let user = await userDB.find({}, { password: 0 }).sort({ _id: 1 }).toArray();
         for (let i in user) {
@@ -154,5 +155,25 @@ module.exports = function (app, db, post, CryptoJS) {
             }
         }
         res.status(200).send(user);
+    });
+    post('/post/v1/studentState', async function (req, res) {
+        let user = await userDB.find({ position: 'student' }, { level: 1, student: 1, remark: 1 }).sort({ _id: 1 }).toArray();
+        let result = [];
+        for (let i in user) {
+            if (user[i].level == undefined) user[i].level = '';
+            if (user[i].remark == undefined) user[i].remark = '';
+            user[i].state = user[i].student.quarter;
+            for (let j in user[i].state) {
+                result.push({
+                    id: user[i]._id,
+                    grade: user[i].student.grade,
+                    level: user[i].level,
+                    remark: user[i].remark,
+                    quarter: user[i].state[j].year + '' + user[i].state[j].quarter,
+                    state: user[i].state[j].registrationState
+                });
+            }
+        }
+        res.status(200).send(result);
     });
 }
