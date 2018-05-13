@@ -1,3 +1,6 @@
+import { config } from 'dotenv';
+process.env = config().parsed;
+
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
@@ -9,6 +12,7 @@ import * as http from 'http';
 import model from './model/model'
 import * as fs from 'fs-extra';
 import { config } from 'dotenv';
+
 
 let app: express.Application = express();
 
