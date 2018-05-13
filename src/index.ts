@@ -36,6 +36,8 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
 app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
 app.use(logger('dev'));
 
+app.listen(process.env.PORT || 8080);
+
 const controller = new Controller(app);
 
 model.getUser(99011).subscribe(
