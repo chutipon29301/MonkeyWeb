@@ -1,6 +1,6 @@
 import { Connection, Request, ConnectionError } from "tedious";
-import { connect } from "./SQLconnection";
-import { model as user } from './v1/user'
+import connect from "./SQLconnection";
+import user from './v1/user';
 import { assignmentExpression } from "babel-types";
 
 let model = {

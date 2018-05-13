@@ -17,4 +17,4 @@ let connect = function(callback:(err:ConnectionError,connection:Connection)=>any
     })
 }
 
-export {connect};
+export default connect;

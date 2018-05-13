@@ -1,8 +1,8 @@
-import { connect } from '../SQLconnection'
+import connect from '../SQLconnection'
 import { Connection, Request, ConnectionError } from "tedious";
 import { Observer, Observable } from 'rx';
 
-let model = {
+let user = {
     getUser: (id: number): Observable<object> => {
         return Observable.create((observer) => {
             connect((err, connection) => {
@@ -23,4 +23,4 @@ let model = {
     }
 }
 
-export { model };
+export default user;

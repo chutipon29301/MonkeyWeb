@@ -15,6 +15,8 @@ import * as fs from 'fs-extra';
 
 let app: express.Application = express();
 
+console.log(process.env.DB_USERNAME)
+
 app.use(express.static(join(__dirname, '../public')));
 app.use(bodyParser.urlencoded({
     extended: true
