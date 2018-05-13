@@ -1,20 +1,21 @@
-import { Connection, Request, ConnectionError } from "tedious";
+import { Connection, ConnectionError } from 'tedious';
 
-let config = {
+/* tslint:disable:object-literal-sort-keys */
+const config = {
     userName : process.env.DB_USERNAME,
     password : process.env.DB_PASSWORD,
     server : 'monkeymonkey.database.windows.net',
     options : {
         encrypt : true,
-        database :'MonkeyDB'
+        database : 'MonkeyDB',
     },
 };
 
-let connect = function(callback:(err:ConnectionError,connection:Connection)=>any){
-    let connection = new Connection(config);
-    connection.on('connect',(err)=>{
-        callback(err,connection);
-    })
-}
+const connect = (callback: (err: ConnectionError, connection: Connection) => any) => {
+    const connection = new Connection(config);
+    connection.on('connect', (err) => {
+        callback(err, connection);
+    });
+};
 
 export default connect;
