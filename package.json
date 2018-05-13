@@ -5,7 +5,8 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --watch"
+    "build": "webpack --watch",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "@types/rx": "^4.1.1",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
+    "eslint": "^4.19.1",
     "i": "^0.3.6",
     "mocha": "^5.1.1",
     "npm": "^6.0.0",
