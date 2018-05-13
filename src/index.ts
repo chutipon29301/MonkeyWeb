@@ -1,3 +1,6 @@
+import { config } from 'dotenv';
+process.env = config().parsed;
+
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
@@ -8,6 +11,7 @@ import * as https from 'https';
 import * as http from 'http';
 import model from './model/model'
 import * as fs from 'fs-extra';
+
 
 let app: express.Application = express();
 
@@ -26,7 +30,7 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
     };
     https.createServer(credentials, app).listen(443);
     http.createServer(express().use((req, res) => {
-        res.redirect("https://"+req.hostname+req.url);
+        res.redirect("https://" + req.hostname + req.url);
     })).listen(80);
 }
 
@@ -36,13 +40,13 @@ app.use(logger('dev'));
 let controller = new Controller(app);
 
 model.getUser(99011).subscribe(
-    (data)=>{
+    (data) => {
         console.log(data)
     },
-    (err)=>{
-        if(err) throw err;
+    (err) => {
+        if (err) throw err;
     },
-    ()=>{
+    () => {
         console.log('complete!')
     }
 )
