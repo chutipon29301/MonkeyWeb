@@ -3,17 +3,34 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as logger from 'morgan';
 import { join } from 'path';
-import { Server } from 'http';
-import View from './views/View';
-let app:express.Application = express();
+import Controller from './controllers/Controller'
+import * as https from 'https';
+import * as http from 'http';
+import { existsSync, readFileSync } from 'fs';
+let app: express.Application = express();
 
-app.use(express.static(join(__dirname,"../public")));
+app.use(express.static(join(__dirname, '../public')));
 app.use(bodyParser.urlencoded({
-    extended:true
+    extended: true
 }));
-app.use(cookieParser(process.env.COOKIE_SECRET||"TEST"));
+
+var caPath = join(__dirname, "../MonkeyWebConfig/ca_bundle.crt");
+var keyPath = join(__dirname, "../MonkeyWebConfig/private.key");
+var certPath = join(__dirname, "../MonkeyWebConfig/certificate.crt");
+if (existsSync(caPath) && existsSync(keyPath) && existsSync(certPath)) {
+    var credentials = {
+        ca: readFileSync(caPath),
+        key: readFileSync(keyPath),
+        cert: readFileSync(certPath)
+    };
+    https.createServer(credentials, app).listen(443);
+    http.createServer(express().use((req, res) => {
+        res.redirect("https://"+req.hostname+req.url);
+    })).listen(80);
+}
+
+app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
 app.use(logger('dev'));
 
-let server:Server = app.listen(process.env.PORT||8080);
-let view = new View(app);
+let controller = new Controller(app);
 console.log('running........')
