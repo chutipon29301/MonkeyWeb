@@ -1,6 +1,7 @@
 import { Request } from 'tedious';
-import { connect } from './SQLconnection';
-import { model as user } from './v1/user';
+import connect from './SQLconnection';
+import user from './v1/user';
+
 const model = {
     ...user,
     query: (q: string) => {

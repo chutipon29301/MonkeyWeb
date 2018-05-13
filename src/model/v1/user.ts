@@ -1,8 +1,8 @@
 import { Observable } from 'rx';
 import { Request } from 'tedious';
-import { connect } from '../SQLconnection';
+import connect from '../SQLconnection';
 
-let user = {
+const user = {
     getUser: (id: number): Observable<object> => {
         return Observable.create((observer) => {
             connect((err, connection) => {
