@@ -8,8 +8,11 @@ import * as https from 'https';
 import * as http from 'http';
 import model from './model/model'
 import * as fs from 'fs-extra';
+import { config } from 'dotenv';
 
 let app: express.Application = express();
+
+console.log(process.env.DB_USERNAME)
 
 app.use(express.static(join(__dirname, '../public')));
 app.use(bodyParser.urlencoded({
@@ -26,7 +29,7 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
     };
     https.createServer(credentials, app).listen(443);
     http.createServer(express().use((req, res) => {
-        res.redirect("https://"+req.hostname+req.url);
+        res.redirect("https://" + req.hostname + req.url);
     })).listen(80);
 }
 
@@ -36,13 +39,13 @@ app.use(logger('dev'));
 let controller = new Controller(app);
 
 model.getUser(99011).subscribe(
-    (data)=>{
+    (data) => {
         console.log(data)
     },
-    (err)=>{
-        if(err) throw err;
+    (err) => {
+        if (err) throw err;
     },
-    ()=>{
+    () => {
         console.log('complete!')
     }
 )
