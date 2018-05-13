@@ -18,4 +18,4 @@ const connect = (callback: (err: ConnectionError, connection: Connection) => any
     });
 };
 
-export {connect};
+export default connect;

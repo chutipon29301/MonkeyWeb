@@ -2,7 +2,7 @@ import { Observable } from 'rx';
 import { Request } from 'tedious';
 import { connect } from '../SQLconnection';
 
-const model = {
+let user = {
     getUser: (id: number): Observable<object> => {
         return Observable.create((observer) => {
             connect((err, connection) => {
@@ -23,4 +23,4 @@ const model = {
     },
 };
 
-export { model };
+export default user;
