@@ -11,7 +11,6 @@ import * as https from 'https';
 import * as http from 'http';
 import model from './model/model'
 import * as fs from 'fs-extra';
-import { config } from 'dotenv';
 
 
 let app: express.Application = express();
