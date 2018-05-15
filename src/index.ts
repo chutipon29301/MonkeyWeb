@@ -1,5 +1,7 @@
+/* tslint:disable:import-sources-order */
 import { config } from 'dotenv';
 process.env = config().parsed;
+/* tslint:enable:import-sources-order */
 
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
@@ -10,11 +12,11 @@ import * as https from 'https';
 import * as logger from 'morgan';
 import { join } from 'path';
 import Controller from './controllers/Controller';
-import model from './model/model';
+import { Connection } from './model/Connection';
+import { IUserInfo } from './model/v1/interface/User';
+import { getUserInfo } from './model/v1/user';
 
 const app: express.Application = express();
-
-console.log(process.env.DB_USERNAME)
 
 app.use(express.static(join(__dirname, '../public')));
 app.use(bodyParser.urlencoded({
@@ -38,20 +40,15 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
 app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
 app.use(logger('dev'));
 
+Connection.getInstance();
 app.listen(process.env.PORT || 8080);
 
 const controller = new Controller(app);
 
-model.getUser(99011).subscribe(
-    (data) => {
-        console.log(data);
-    },
-    (err) => {
-        if (err) { throw err; }
-    },
-    () => {
-        console.log('complete!');
-    },
-);
-
 console.log('running........');
+
+// Handle for nodemon restarting
+process.once('SIGUSR2', () => {
+    Connection.getInstance().close();
+    process.kill(process.pid, 'SIGUSR2');
+});
