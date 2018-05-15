@@ -36,15 +36,6 @@ export class Connection {
         return Observable.fromPromise(this.pool.connect());
     }
 
-    public query<T>(statement: string): Observable<Array<_.Dictionary<T>>> {
-        return this.connect()
-            .flatMap((connection) => connection.request().query<IResult<T>>(statement))
-            .map((value) => value.recordset.toTable())
-            .map((results) => results.rows
-                .map((row) => _.zipObject<T>(results.columns.map((column) => column.name), row)),
-        );
-    }
-
     public prepareStatement(statement: string, fields: Array<{ key: string, type: ISqlTypeFactory }>): Observable<PreparedStatement> {
         return this.newStatement().flatMap((prepareStatement) => {
             for (const field of fields) {

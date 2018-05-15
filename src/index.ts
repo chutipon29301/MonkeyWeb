@@ -13,8 +13,6 @@ import * as logger from 'morgan';
 import { join } from 'path';
 import Controller from './controllers/Controller';
 import { Connection } from './model/Connection';
-import { IUserInfo } from './model/v1/interface/User';
-import { getUserInfo } from './model/v1/user';
 
 const app: express.Application = express();
 
@@ -47,8 +45,12 @@ const controller = new Controller(app);
 
 console.log('running........');
 
-// Handle for nodemon restarting
-process.once('SIGUSR2', () => {
+function exitHandler() {
     Connection.getInstance().close();
-    process.kill(process.pid, 'SIGUSR2');
-});
+}
+
+process.on('exit', exitHandler);
+process.on('SIGINT', exitHandler);
+process.on('SIGUSR1', exitHandler);
+process.on('SIGUSR2', exitHandler);
+process.on('uncaughtException', exitHandler);
