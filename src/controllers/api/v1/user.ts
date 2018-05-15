@@ -1,11 +1,8 @@
 import { Router } from 'express';
-import {  getUserInfo, listActiveTutor } from '../../../model/v1/user';
+import { body, oneOf, validationResult } from 'express-validator/check';
+import { getUserInfo, listActiveTutor } from '../../../model/v1/user';
 
 export const router = Router();
-
-router.post('/list', (req, res) => {
-    return res.status(200).send('OK');
-});
 
 router.post('/listTutor', (req, res) => {
     listActiveTutor().subscribe((value) => {
@@ -17,10 +14,17 @@ router.post('/listTutor', (req, res) => {
     });
 });
 
-router.post('/getUserInfo', (req, res) => {
-    getUserInfo(99009).subscribe((value) => {
-        return res.status(200).send(value[0]);
-    }, (error) => {
-        return res.status(500).send(error);
-    });
+router.post('/getUserInfo', oneOf([
+    [body('userID').isInt()],
+]), (req, res) => {
+    try {
+        validationResult(req).throw();
+        getUserInfo(req.body.userID).subscribe((value) => {
+            return res.status(200).send(value[0]);
+        }, (error) => {
+            return res.status(500).send(error);
+        });
+    } catch (err) {
+        return res.status(400).send(err);
+    }
 });
