@@ -38,8 +38,15 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
 app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
 app.use(logger('dev'));
 
-Connection.getInstance();
-app.listen(process.env.PORT || 8080);
+// Start listening on request after database connection has been made
+// tslint:disable-next-line:no-empty
+Connection.getInstance().connect().subscribe(() => {}, (error) => {
+    console.log(error);
+}, () => {
+    app.listen(process.env.PORT || 8080, () => {
+        console.log('Start listening');
+    });
+});
 
 const controller = new Controller(app);
 
