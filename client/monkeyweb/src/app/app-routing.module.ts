@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginFormComponent } from './login-form/login-form.component';
-import { HomeComponent } from './home/home.component';
+import { NavBarComponent } from './nav-bar/nav-bar.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: NavBarComponent },
   { path: 'login', component: LoginFormComponent },
 ];
 @NgModule({

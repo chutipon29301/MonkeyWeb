@@ -2,7 +2,7 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { NgModule } from '@angular/core';
 import {
   MatButtonModule,
-  MatCardModule, MatFormFieldModule, MatGridListModule, MatIconModule, MatInputModule, MatMenuModule, MatToolbarModule
+  MatCardModule, MatFormFieldModule, MatGridListModule, MatIconModule, MatInputModule, MatMenuModule, MatToolbarModule, MatSidenavModule, MatListModule
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { LoginFormComponent } from './login-form/login-form.component';
+import { NavBarComponent } from './nav-bar/nav-bar.component';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import { LoginFormComponent } from './login-form/login-form.component';
     LoginFormComponent,
     HomeComponent,
     DashboardComponent,
+    NavBarComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,7 +34,9 @@ import { LoginFormComponent } from './login-form/login-form.component';
     MatToolbarModule,
     MatGridListModule,
     MatMenuModule,
-    MatIconModule
+    MatIconModule,
+    MatSidenavModule,
+    MatListModule
   ],
   providers: [],
   bootstrap: [AppComponent]
