@@ -1,7 +1,7 @@
 export class Menu {
     children?: Menu[];
     name: string;
-    path: string;
+    path?: string;
 }
 
 export class FlatMenu {

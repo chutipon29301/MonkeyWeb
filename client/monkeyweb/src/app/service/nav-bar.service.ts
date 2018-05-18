@@ -18,7 +18,6 @@ export class NavBarService {
     },
     {
       name: 'Test3',
-      path: '/login',
       children: [
         {
           name: 'Test1',
@@ -26,6 +25,10 @@ export class NavBarService {
         },
         {
           name: 'Test2',
+          path: '/login'
+        },
+        {
+          name: 'Test3',
           path: '/login'
         }
       ]
