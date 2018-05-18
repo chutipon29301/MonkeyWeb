@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { Observable, of } from 'rxjs';
 import { NavBarService } from '../service/nav-bar.service';
-import { Menu, FlatMenu } from '../Types/nav-bar.types';
+import { Menu, FlatMenu } from '../types/nav-bar.types';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material';
 

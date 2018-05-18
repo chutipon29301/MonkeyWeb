@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Menu } from '../Types/nav-bar.types';
+import { Menu } from '../types/nav-bar.types';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,10 @@ import { Menu } from '../Types/nav-bar.types';
 export class NavBarService {
 
   private MENU: Menu[] = [
+    {
+      name: 'Test0',
+      path: '/login'
+    },
     {
       name: 'Test1',
       path: '/login'
