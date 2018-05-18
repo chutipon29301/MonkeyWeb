@@ -29,7 +29,7 @@ export class Connection {
 
     private constructor() {
         this.pool = new ConnectionPool(this.config);
-        this.pool.connect();
+        // this.pool.connect();
     }
 
     public connect(): Observable<ConnectionPool> {
