@@ -1,7 +1,7 @@
 import { Int } from 'mssql';
 import { Observable } from 'rx';
 import { Connection } from '../Connection';
-import { IRoom } from './interface/room';
+import { IRoom } from './types/room';
 
 const preparedStatement = {
     listRoom: () => Connection.getInstance().prepareStatement('SELECT RoomName, MaxSeat FROM Room JOIN Quarter ON Room.QuarterID = Quarter.ID WHERE StartDate < CURRENT_TIMESTAMP AND EndDate > CURRENT_TIMESTAMP', []),

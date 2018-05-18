@@ -2,7 +2,7 @@ import { Dictionary } from 'lodash';
 import { Int, PreparedStatement, VarChar } from 'mssql';
 import { Observable } from 'rx';
 import { Connection } from '../Connection';
-import { IUserInfo, IUserNicknameEn } from './interface/User';
+import { IUserInfo, IUserNicknameEn } from './types/User';
 
 const prepareStatement = {
     listStudent: () => Connection.getInstance().prepareStatement('', []),
