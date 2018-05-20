@@ -1,20 +1,39 @@
 import * as passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { getUserInfo } from './model/v1/user'
+import { Request, Response } from 'express';
 
-let opts = {
-    jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey : process.env.JWT_SECRET,
+interface Payload {
+    userID: any,
+    expire: string
 }
 
-passport.use(new Strategy(opts,(payload,done)=>{
-    console.log(payload)
-    getUserInfo(payload.userID).subscribe((user)=>{
-        if(user[0]) return done(null, user[0]);
-        else return done(null, false);
-    },(err)=>{
-        return done(err, false);
-    })
-}))
+let opts = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET,
+}
 
-export default passport;
+passport.use(new Strategy(opts, (payload: Payload, done) => {
+    let expire = new Date(payload.expire);
+    let today = new Date();
+    if (expire > today) {
+        getUserInfo(payload.userID).subscribe((user) => {
+            if (user[0]) {
+                return done(null, user[0]);
+            }
+            else return done(null, false);
+        }, (err) => {
+            return done(err, false);
+        })
+    } else {
+        done(null, false);
+    }
+}));
+
+//TODO:
+// login by check userID and password in req.body and send token of userID and expire back to client
+let login = (req: Request, res: Response) => {
+
+}
+
+export { passport, login };

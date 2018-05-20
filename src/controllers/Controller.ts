@@ -1,7 +1,6 @@
 import { Application } from 'express';
 import { router as api } from './api';
 import { router as test } from './api/test';
-import Auth from '../Auth'
 export default class Controller {
     public app: Application;
     constructor(app: Application) {

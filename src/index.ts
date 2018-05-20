@@ -15,7 +15,7 @@ import * as validator from 'express-validator';
 import { join } from 'path';
 import Controller from './controllers/Controller';
 import { Connection } from './model/Connection';
-import auth from './Auth'
+import { passport as auth } from './Auth'
 const app: express.Application = express();
 
 app.use(express.static(join(__dirname, '../public')));
@@ -26,13 +26,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
 app.use(validator());
 app.use(logger('dev'));
 app.use(auth.initialize());
-app.get('/',function(req,res){res.send({a:'b'})})
-app.post('/profile', passport.authenticate('jwt', { session: false }),
-    function(req, res) {
-        res.send(req.user);
-    }
-);
-
+app.use(passport.session());
 
 const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
 const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');
