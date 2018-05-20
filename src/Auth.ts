@@ -30,10 +30,4 @@ passport.use(new Strategy(opts, (payload: Payload, done) => {
     }
 }));
 
-//TODO:
-// login by check userID and password in req.body and send token of userID and expire back to client
-let login = (req: Request, res: Response) => {
-
-}
-
-export { passport, login };
+export { passport };
