@@ -1,0 +1,5 @@
+DB_USERNAME='your's user'
+DB_PASSWORD='your's password'
+DB_SERVER='server location'
+DB_NAME='db name'
+JWT_SECRET='secret'
