@@ -18,8 +18,8 @@ passport.use(new Strategy(opts, (payload: Payload, done) => {
     let today = new Date();
     if (expire > today) {
         getUserInfo(payload.userID).subscribe((user) => {
-            if (user[0]) {
-                return done(null, user[0]);
+            if (user) {
+                return done(null, user);
             }
             else return done(null, false);
         }, (err) => {
@@ -30,10 +30,4 @@ passport.use(new Strategy(opts, (payload: Payload, done) => {
     }
 }));
 
-//TODO:
-// login by check userID and password in req.body and send token of userID and expire back to client
-let login = (req: Request, res: Response) => {
-
-}
-
-export { passport, login };
+export { passport };
