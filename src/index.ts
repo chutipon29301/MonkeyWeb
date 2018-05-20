@@ -6,16 +6,16 @@ process.env = config().parsed;
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
+import * as validator from 'express-validator';
 import * as fs from 'fs-extra';
 import * as http from 'http';
 import * as https from 'https';
 import * as logger from 'morgan';
 import * as passport from 'passport';
-import * as validator from 'express-validator';
 import { join } from 'path';
+import { passport as auth } from './Auth';
 import Controller from './controllers/Controller';
 import { Connection } from './model/Connection';
-import { passport as auth } from './Auth'
 const app: express.Application = express();
 
 app.use(express.static(join(__dirname, '../public')));
@@ -34,27 +34,21 @@ const certPath = join(__dirname, '../MonkeyWebConfig/certificate.crt');
 if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) {
     const credentials = {
         ca: fs.readFileSync(caPath),
-        cert: fs.readFileSync(certPath),
-        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath),
     };
     https.createServer(credentials, app).listen(443);
-    http.createServer(express().use((req, res) => {
-        res.redirect('https://' + req.hostname + req.url);
-    })).listen(80);
+    http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
 }
-
 
 // Start listening on request after database connection has been made
 // tslint:disable-next-line:no-empty
-Connection.getInstance().connect().subscribe(() => {}, (error) => {
+Connection.getInstance().connect().subscribe(() => { }, (error) => {
     console.log(error);
 }, () => {
-    app.listen(process.env.PORT || 8080, () => {
-        console.log('Start listening');
-    });
+    app.listen(process.env.PORT || 8080, () => { console.log('Start listening'); });
 });
 
-const controller = new Controller(app);
+Controller.getInstance().setApp(app);
 
 console.log('running........');
 
