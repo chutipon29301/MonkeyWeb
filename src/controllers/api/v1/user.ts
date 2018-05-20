@@ -4,27 +4,27 @@ import { getUserInfo, listActiveTutor } from '../../../model/v1/user';
 
 export const router = Router();
 
-router.post('/listTutor', (req, res) => {
-    listActiveTutor().subscribe((value) => {
-        return res.status(200).send({
-            tutors: value,
-        });
-    }, (error) => {
-        return res.status(500).send(error);
-    });
-});
+router.post('/listTutor',
+    (req, res) => {
+        listActiveTutor()
+            .subscribe(
+                (tutors) => res.status(200).send({ tutors }),
+                (error) => res.status(500).send(error),
+        );
+    },
+);
 
-router.post('/getUserInfo', oneOf([
-    [body('userID').isInt()],
-]), (req, res) => {
-    try {
-        validationResult(req).throw();
-        getUserInfo(req.body.userID).subscribe((value) => {
-            return res.status(200).send(value[0]);
-        }, (error) => {
-            return res.status(500).send(error);
-        });
-    } catch (err) {
-        return res.status(400).send(err);
-    }
-});
+router.post('/getUserInfo',
+    body('userID').isInt(),
+    (req, res) => {
+        if (!validationResult(req).isEmpty()) {
+            return res.status(400).send(validationResult(req).mapped());
+        } else {
+            getUserInfo(req.body.userID)
+                .subscribe(
+                    (user) => res.status(200).send(user),
+                    (error) => res.status(500).send(error),
+            );
+        }
+    },
+);

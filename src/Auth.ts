@@ -18,8 +18,8 @@ passport.use(new Strategy(opts, (payload: Payload, done) => {
     let today = new Date();
     if (expire > today) {
         getUserInfo(payload.userID).subscribe((user) => {
-            if (user[0]) {
-                return done(null, user[0]);
+            if (user) {
+                return done(null, user);
             }
             else return done(null, false);
         }, (err) => {
