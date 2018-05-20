@@ -11,9 +11,11 @@ const prepareStatement = {
 };
 
 export function listActiveTutor(): Observable<IUserNicknameEn[]> {
-    return Connection.getInstance().observableOf(prepareStatement.listTutor(), { position: 'tutor', userStatus: 'active' });
+    return Connection.getInstance().observableOf<IUserNicknameEn>(prepareStatement.listTutor(), { position: 'tutor', userStatus: 'active' });
 }
 
-export function getUserInfo(id: number): Observable<IUserInfo[]> {
-    return Connection.getInstance().observableOf(prepareStatement.userInfo(), { id });
+export function getUserInfo(id: number): Observable<IUserInfo> {
+    return Connection.getInstance()
+        .observableOf<IUserInfo>(prepareStatement.userInfo(), { id })
+        .map((users) => users[0]);
 }
