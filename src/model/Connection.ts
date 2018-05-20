@@ -1,5 +1,4 @@
-import * as _ from 'lodash';
-import { ConnectionPool, IResult, ISqlType, ISqlTypeFactory, PreparedStatement } from 'mssql';
+import { ConnectionPool, ISqlType, PreparedStatement } from 'mssql';
 import { Observable } from 'rx';
 
 export class Connection {
@@ -35,10 +34,10 @@ export class Connection {
         return Observable.fromPromise(this.pool.connect());
     }
 
-    public prepareStatement(statement: string, fields: Array<{ key: string, type: ISqlTypeFactory }>): Observable<PreparedStatement> {
+    public prepareStatement(statement: string, fields: Array<{ key: string, type: (() => ISqlType) | ISqlType }>): Observable<PreparedStatement> {
         return this.newStatement().flatMap((prepareStatement) => {
             for (const field of fields) {
-                prepareStatement.input(field.key, {type: field.type} as ISqlType);
+                prepareStatement.input(field.key, field.type);
             }
             return Observable.create((observer) => {
                 prepareStatement.prepare(statement, (error) => {
