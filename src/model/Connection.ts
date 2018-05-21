@@ -42,6 +42,7 @@ export class Connection {
             return Observable.create((observer) => {
                 prepareStatement.prepare(statement, (error) => {
                     if (error) {
+                        console.log(error);
                         observer.onError(error);
                     }
                     observer.onNext(prepareStatement);

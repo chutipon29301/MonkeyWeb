@@ -1,5 +1,8 @@
-export interface ITopic {
+export interface ITopicID {
     ID: number;
+}
+
+export interface ITopic extends ITopicID {
     TopicSubject: string;
     Class: string;
     Topic: string;

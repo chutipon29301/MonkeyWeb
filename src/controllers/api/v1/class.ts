@@ -11,11 +11,11 @@ router.post('/list',
 );
 
 router.post('/addCourse',
-    body('className').exists(),
+    body('className').isString(),
     body('quarterID').isInt(),
     body('classDate').isISO8601(),
-    body('classSubject').exists(),
-    body('grade').isInt(),
+    body('classSubject').isString(),
+    body('grade').isString(),
     body('tutorID').isInt(),
     body('classTimes').isInt(),
     (req, res) => {
