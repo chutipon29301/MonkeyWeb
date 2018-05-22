@@ -1,0 +1,8 @@
+DB_USERNAME='your's user'
+DB_PASSWORD='your's password'
+DB_SERVER='server location'
+DB_NAME='db name'
+JWT_SECRET='secret'
+ONESIGNAL_USER_AUTH='Onesignal user auth for notification'
+ONESIGNAL_APP_AUTH='Onesignal app auth for notification'
+ONESIGNAL_APP_ID='Onesignal app id for notification'
