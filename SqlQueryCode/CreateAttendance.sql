@@ -1,0 +1,12 @@
+CREATE TABLE Attendance (
+    ID INT PRIMARY KEY NOT NULL IDENTITY(1,1),
+    AttendanceTimestamp DATETIME2 NOT NULL DEFAULT(GETDATE()),
+    StudentID INT NOT NULL FOREIGN KEY REFERENCES Users(ID),
+    ClassID INT NOT NULL FOREIGN KEY REFERENCES Class(ID),
+    AttendanceDate DATE NOT NULL,
+    AttendanceType VARCHAR(7) NOT NULL,
+    Reason NVARCHAR(MAX),
+    Remark VARCHAR(2),
+    Sender NVARCHAR(64),
+    AttendanceDocumentID INT FOREIGN KEY REFERENCES AttendanceDocument(ID)
+)
