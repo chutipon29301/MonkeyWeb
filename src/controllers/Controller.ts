@@ -8,7 +8,6 @@ import { passport as auth } from '../Auth';
 import { router as api } from './api';
 import { router as test } from './api/test';
 import { join } from 'path';
-
 let app = express();
 
 app.use(express.static(join(__dirname, '../public')));
@@ -20,5 +19,11 @@ app.use(validator());
 app.use(logger('dev'));
 app.use(auth.initialize());
 app.use(passport.session());
+
+app.use('/api', api);
+app.use('/testRouter', test);
+app.get('/testget', (req, res) => {
+    return res.status(200).send({ gg: 'ez' });
+});
 
 export default app;

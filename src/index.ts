@@ -3,19 +3,13 @@ import { config } from 'dotenv';
 process.env = config().parsed;
 /* tslint:enable:import-sources-order */
 
-import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import * as validator from 'express-validator';
 import * as fs from 'fs-extra';
 import * as http from 'http';
 import * as https from 'https';
-import * as logger from 'morgan';
-import * as passport from 'passport';
 import { join } from 'path';
-import { passport as auth } from './Auth';
-import { Connection } from './model/Connection';
 import app from './controllers/Controller';
+import { Connection } from './model/Connection';
 
 const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
 const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');
