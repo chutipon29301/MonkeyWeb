@@ -20,6 +20,7 @@ app.use(auth.initialize());
 app.use(passport.session());
 
 app.use('/api', api);
+
 app.get('/testget', (req, res) => {
     return res.status(200).send({ gg: 'ez' });
 });
