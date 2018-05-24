@@ -4,7 +4,7 @@
   "description": "This site is for using in [Monkey](https://monkey-monkey.com)",
   "main": "webpack.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --forceExit",
     "build": "webpack --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/bcrypt": "^2.0.0",
     "@types/body-parser": "^1.17.0",
+    "@types/chai": "^4.1.3",
     "@types/cookie-parser": "^1.4.1",
     "@types/cors": "^2.8.4",
     "@types/es6-promise": "^3.3.0",
@@ -31,14 +32,16 @@
     "@types/morgan": "^1.7.35",
     "@types/node": "^10.0.0",
     "@types/rx": "^4.1.1",
+    "@types/supertest": "^2.0.4",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "eslint": "^4.19.1",
     "i": "^0.3.6",
     "jest": "^22.4.4",
-    "mocha": "^5.1.1",
+    "mocha": "^5.2.0",
     "nodemon-webpack-plugin": "^4.0.3",
     "npm": "^6.0.0",
+    "supertest": "^3.1.0",
     "ts-jest": "^22.4.6",
     "ts-loader": "^4.3.0",
     "ts-node": "^6.0.3",
@@ -55,6 +58,7 @@
     "@types/passport": "^0.4.5",
     "@types/passport-jwt": "^3.0.1",
     "@types/passport-local": "^1.0.33",
+    "@types/sequelize": "^4.27.18",
     "@types/tedious": "^1.8.32",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.2",
@@ -76,7 +80,8 @@
     "passport-local": "^1.0.0",
     "pug": "^2.0.3",
     "rx": "^4.1.0",
-    "tedious": "^2.2.4",
+    "sequelize": "^4.37.8",
+    "tedious": "^2.6.1",
     "webpack-node-externals": "^1.7.2"
   }
 }
