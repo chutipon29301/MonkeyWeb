@@ -1,4 +1,4 @@
-import { Observable } from 'rx';
+import { Observable } from 'rxjs';
 import { Connection } from '../Connection';
 import { IQuarter } from './types/quarter';
 

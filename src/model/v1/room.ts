@@ -1,5 +1,5 @@
 import { Int } from 'mssql';
-import { Observable } from 'rx';
+import { Observable } from 'rxjs';
 import { Connection } from '../Connection';
 import { IRoom } from './types/room';
 

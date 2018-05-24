@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
-import { Observable } from 'rx';
+import { Observable } from 'rxjs';
 import { listRoom, listRoomWithQuarterID } from '../../../model/v1/room';
 import { IRoom } from '../../../model/v1/types/room';
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator/check';
+import { flatMap } from 'rxjs/operators';
 import { addSheet, addTopic, checkExistTopic } from '../../../model/v1/sheet';
 
 export const router = Router();
@@ -19,23 +20,38 @@ router.post('/addSheet',
             return res.status(400).send(validationResult(req).mapped());
         } else {
             checkExistTopic(req.body.subject, req.body.class, req.body.topic)
-                .flatMap((topic) => {
+                .pipe(flatMap((topic) => {
                     if (topic != null) {
                         return addSheet(topic.ID, req.body.level, req.body.number, req.body.subLevel || null, req.body.rev || null, req.body.path);
                     } else {
                         return addTopic(req.body.subject, req.body.class, req.body.topic, req.body.topicName || null)
-                            .flatMap((result) => {
+                            .pipe(flatMap((result) => {
                                 return checkExistTopic(req.body.subject, req.body.class, req.body.topic);
-                            })
-                            .flatMap((generateTopic) => {
+                            }))
+                            .pipe(flatMap((generateTopic) => {
                                 return addSheet(generateTopic.ID, req.body.level, req.body.number, req.body.subLevel || null, req.body.rev || null, req.body.path);
-                            });
+                            }));
                     }
-                })
-                .subscribe(
+                })).subscribe(
                     () => res.sendStatus(200),
                     (error) => res.status(500).send({ error: error.toString() }),
             );
         }
     },
 );
+
+// router.post('/test', (req, res) => {
+//     // for (let i = 0; i < 100, i++) {
+//     //     addSheet(19, 'T', 0, 'T', 1, 'asdfasfd').subscribe(
+//     //         () => { },
+//     //         (error) => console.log(error);
+//     //     );
+//     // }
+//     for (let i = 0; i < 100; i++){
+//         addSheet(19,'T',1,'T',1,'dgdfhghfg').subscribe(
+//             () => {},
+//             (err) => console.log(err),
+//         )
+//     }
+//     res.sendStatus(200);
+// });

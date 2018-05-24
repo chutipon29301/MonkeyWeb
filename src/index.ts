@@ -14,46 +14,27 @@ import * as logger from 'morgan';
 import * as passport from 'passport';
 import { join } from 'path';
 import { passport as auth } from './Auth';
-import Controller from './controllers/Controller';
-import { Connection } from './model/Connection';
-const app: express.Application = express();
+import Server from './controllers/Server';
+import { Connection } from './models/Connection';
 
-app.use(express.static(join(__dirname, '../public')));
-app.use(bodyParser.urlencoded({
-    extended: true,
-}));
-app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
-app.use(validator());
-app.use(logger('dev'));
-app.use(auth.initialize());
-app.use(passport.session());
+const server = new Server();
+server.getApp().subscribe((app) => {
+    const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
+    const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');
+    const certPath = join(__dirname, '../MonkeyWebConfig/certificate.crt');
+    if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+        const credentials = {
+            ca: fs.readFileSync(caPath),
+            cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath),
+        };
+        https.createServer(credentials, app).listen(443);
+        http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
+    }
 
-const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
-const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');
-const certPath = join(__dirname, '../MonkeyWebConfig/certificate.crt');
-if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-    const credentials = {
-        ca: fs.readFileSync(caPath),
-        cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath),
-    };
-    https.createServer(credentials, app).listen(443);
-    http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
-}
-
-// Start listening on request after database connection has been made
-// tslint:disable-next-line:no-empty
-Connection.getInstance().connect().subscribe(() => { }, (error) => {
-    console.log(error);
-}, () => {
-    app.listen(process.env.PORT || 8080, () => { console.log('Start listening'); });
+    app.listen(process.env.PORT || 8080, () => console.log('Start listening on port ' + process.env.PORT || 8080));
 });
 
-Controller.getInstance().setApp(app);
-
-console.log('running........');
-
 function exitHandler() {
-    Connection.getInstance().close();
 }
 
 process.on('exit', exitHandler);

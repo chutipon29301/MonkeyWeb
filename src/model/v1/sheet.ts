@@ -1,7 +1,8 @@
 import { Char, Int, Numeric, NVarChar, VarChar } from 'mssql';
-import { Observable } from 'rx';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Connection } from '../Connection';
-import { ITopic, ITopicID } from './types/sheet';
+import { ITopicID } from './types/sheet';
 
 const preparedStatement = {
     addSheet: () => Connection.getInstance().prepareStatement(
@@ -44,7 +45,7 @@ export function addTopic(
 ): Observable<void> {
     return Connection.getInstance().observableOf(preparedStatement.addTopic(),
         { topicSubject, class: topicClass, topic, topicName },
-    ).map((res) => null);
+    ).pipe(map((res) => null));
 }
 
 export function addSheet(
@@ -57,7 +58,7 @@ export function addSheet(
 ): Observable<void> {
     return Connection.getInstance().observableOf(preparedStatement.addSheet(),
         { topicID, sheetLevel, sheetNumber, subLevel, rev, sheetPath },
-    ).map((res) => null);
+    ).pipe(map((res) => null));
 }
 
 export function checkExistTopic(
@@ -67,11 +68,11 @@ export function checkExistTopic(
 ): Observable<ITopicID | null> {
     return Connection.getInstance().observableOf<ITopicID>(preparedStatement.checkExistTopic(),
         { topicSubject, class: topicClass, topic },
-    ).map((res) => {
+    ).pipe(map((res) => {
         if (res.length === 0) {
             return null;
         } else {
             return res[0];
         }
-    });
+    }));
 }

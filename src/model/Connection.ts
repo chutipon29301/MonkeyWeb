@@ -1,5 +1,6 @@
 import { ConnectionPool, ISqlType, PreparedStatement } from 'mssql';
-import { Observable } from 'rx';
+import { from, Observable, of } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
 
 export class Connection {
 
@@ -30,39 +31,43 @@ export class Connection {
         this.pool = new ConnectionPool(this.config);
     }
 
+    public isConnected(): boolean {
+        return this.pool.connected || false;
+    }
+
     public connect(): Observable<ConnectionPool> {
-        return Observable.fromPromise(this.pool.connect());
+        return from(this.pool.connect());
     }
 
     public prepareStatement(statement: string, fields: Array<{ key: string, type: (() => ISqlType) | ISqlType }>): Observable<PreparedStatement> {
-        return this.newStatement().flatMap((prepareStatement) => {
+        return this.newStatement().pipe(flatMap((prepareStatement) => {
             for (const field of fields) {
                 prepareStatement.input(field.key, field.type);
             }
-            return Observable.create((observer) => {
+            return new Observable((observer) => {
                 prepareStatement.prepare(statement, (error) => {
                     if (error) {
                         console.log(error);
-                        observer.onError(error);
+                        observer.error(error);
                     }
-                    observer.onNext(prepareStatement);
-                    observer.onCompleted();
+                    observer.next(prepareStatement);
+                    observer.complete();
                 });
             });
-        });
+        }));
     }
 
     public observableOf<T>(observable: Observable<PreparedStatement>, value?: object): Observable<T[]> {
-        return observable.flatMap((statement) => {
-            return Observable.create((observer) => {
+        return observable.pipe(flatMap(
+            (statement) => new Observable((observer) => {
                 statement.execute<T>(value || {}).then((value) => {
-                    observer.onNext(value.recordset);
-                    observer.onCompleted();
+                    observer.next(value.recordset);
+                    observer.complete();
                 }).catch((error) => {
-                    observer.onError(error);
+                    observer.error(error);
                 });
-            });
-        });
+            }),
+        ));
     }
 
     public close() {
@@ -71,11 +76,11 @@ export class Connection {
 
     private newStatement(): Observable<PreparedStatement> {
         if (this.pool.connected) {
-            return Observable.of(new PreparedStatement(this.pool));
+            return of(new PreparedStatement(this.pool));
         } else {
-            return this.connect().flatMap((connection) => {
-                return Observable.of(new PreparedStatement(this.pool));
-            });
+            this.connect().pipe(flatMap(
+                (connection) => of(new PreparedStatement(this.pool)),
+            ));
         }
     }
 

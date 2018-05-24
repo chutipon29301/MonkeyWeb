@@ -1,6 +1,6 @@
-import { Dictionary } from 'lodash';
-import { Int, PreparedStatement, VarChar } from 'mssql';
-import { Observable } from 'rx';
+import { Int, VarChar } from 'mssql';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Connection } from '../Connection';
 import { IUserInfo, IUserNicknameEn } from './types/User';
 
@@ -17,5 +17,5 @@ export function listActiveTutor(): Observable<IUserNicknameEn[]> {
 export function getUserInfo(id: number): Observable<IUserInfo> {
     return Connection.getInstance()
         .observableOf<IUserInfo>(prepareStatement.userInfo(), { id })
-        .map((users) => users[0]);
+        .pipe(map((users) => users[0]));
 }

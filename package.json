@@ -31,7 +31,6 @@
     "@types/jsonwebtoken": "^7.2.6",
     "@types/morgan": "^1.7.35",
     "@types/node": "^10.0.0",
-    "@types/rx": "^4.1.1",
     "@types/supertest": "^2.0.4",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
@@ -79,7 +78,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pug": "^2.0.3",
-    "rx": "^4.1.0",
+    "rxjs": "^6.2.0",
     "sequelize": "^4.37.8",
     "tedious": "^2.6.1",
     "webpack-node-externals": "^1.7.2"
