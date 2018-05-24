@@ -1,30 +1,24 @@
-import { Application } from 'express';
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
+import * as validator from 'express-validator';
+import * as logger from 'morgan';
+import * as passport from 'passport';
+import { passport as auth } from '../Auth';
 import { router as api } from './api';
 import { router as test } from './api/test';
-export default class Controller {
+import { join } from 'path';
 
-    public static getInstance(): Controller {
-        if (!Controller.instance) {
-            Controller.instance = new Controller();
-        }
-        return Controller.instance;
-    }
+let app = express();
 
-    private static instance: Controller;
-    private static app: Application;
+app.use(express.static(join(__dirname, '../public')));
+app.use(bodyParser.urlencoded({
+    extended: true,
+}));
+app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
+app.use(validator());
+app.use(logger('dev'));
+app.use(auth.initialize());
+app.use(passport.session());
 
-    private constructor() { }
-
-    public setApp(app: Application) {
-        Controller.app = app;
-        Controller.app.use('/api', api);
-        Controller.app.use('/testRouter', test);
-        Controller.app.get('/testget', (req, res) => {
-            return res.status(200).send({ gg: 'ez' });
-        });
-    }
-
-    public getApp(): Application {
-        return Controller.app;
-    }
-}
+export default app;
