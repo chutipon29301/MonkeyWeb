@@ -1,7 +1,7 @@
+import { Request, Response } from 'express';
 import * as passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { getUserInfo } from './model/v1/user'
-import { Request, Response } from 'express';
+import { getUserInfo } from './model/v1/user';
 
 interface Payload {
     userID: any,
@@ -20,8 +20,9 @@ passport.use(new Strategy(opts, (payload: Payload, done) => {
         getUserInfo(payload.userID).subscribe((user) => {
             if (user) {
                 return done(null, user);
+            } else {
+                return done(null, false);
             }
-            else return done(null, false);
         }, (err) => {
             return done(err, false);
         })
