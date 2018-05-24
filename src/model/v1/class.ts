@@ -37,7 +37,8 @@ export function addCourse(
     classTimes: number,
 ): Observable<void[]> {
     return Connection.getInstance().observableOf<void>(preparedStatement.addCourse(),
-        { className, quarterID, classDate, classSubject, grade, tutorID, classTimes });
+        { className, quarterID, classDate, classSubject, grade, tutorID, classTimes },
+    );
 }
 
 export function addHybrid(

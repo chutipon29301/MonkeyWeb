@@ -1,26 +1,32 @@
-.login-card {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  margin-top: -224px;
-  margin-left: -168px;
-  width: 300px;
-  height: 400px;
+.flex-container{
+    display: flex;
+    background-color: #FFD740;
+    height: 100vh;
+    width: 100vw;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
 }
-
-.card-container {
-    margin-top: 80px;  
+.flex-mobile-container{
+    display: flex;
+    height: 100vh;
+    width: 100vw;
 }
-
-.card-container>* {
-  margin-top: 5px;
-  width: 100%;
+mat-card{
+    padding: 36px 40px 36px 40px;
+    border-radius: 8px;
 }
-
-.card-footer {
-    margin-top: 80px;
+img{
+    margin: 0 !important;
+    max-width: 300px;
+    height: auto;
 }
-
-.footer-login-btn {
-    float: right;
+mat-card-content{
+    padding-top: 40px;
+}
+mat-form-field{
+    width: 100%;
+}
+mat-card-actions{
+    margin: 0 !important;
 }

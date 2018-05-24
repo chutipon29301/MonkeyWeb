@@ -1,5 +1,4 @@
-import * as _ from 'lodash';
-import { ConnectionPool, IResult, ISqlType, ISqlTypeFactory, PreparedStatement } from 'mssql';
+import { ConnectionPool, ISqlType, PreparedStatement } from 'mssql';
 import { Observable } from 'rx';
 
 export class Connection {
@@ -43,6 +42,7 @@ export class Connection {
             return Observable.create((observer) => {
                 prepareStatement.prepare(statement, (error) => {
                     if (error) {
+                        console.log(error);
                         observer.onError(error);
                     }
                     observer.onNext(prepareStatement);
