@@ -6,7 +6,6 @@ import * as logger from 'morgan';
 import * as passport from 'passport';
 import { passport as auth } from '../Auth';
 import { router as api } from './api';
-import { router as test } from './api/test';
 import { join } from 'path';
 let app = express();
 
@@ -21,7 +20,7 @@ app.use(auth.initialize());
 app.use(passport.session());
 
 app.use('/api', api);
-app.use('/testRouter', test);
+
 app.get('/testget', (req, res) => {
     return res.status(200).send({ gg: 'ez' });
 });
