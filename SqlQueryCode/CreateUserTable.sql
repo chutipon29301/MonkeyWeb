@@ -1,0 +1,14 @@
+CREATE TABLE Users(
+ID int PRIMARY KEY NOT NULL,
+Firstname NVARCHAR(64),
+Lastname NVARCHAR(64),
+Nickname NVARCHAR(64),
+FirstnameEn VARCHAR(64),
+LastnameEn VARCHAR(64),
+NicknameEn VARCHAR(64),
+Email VARCHAR(64),
+Phone VARCHAR(16),
+UserStatus VARCHAR(32) NOT NULL,
+Position VARCHAR(32) NOT NULL,
+SubPosition VARCHAR(64)
+)
