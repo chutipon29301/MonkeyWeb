@@ -10,7 +10,6 @@ import * as https from 'https';
 import { join } from 'path';
 
 import app from './controllers/Controller';
-import { Connection } from './model/Connection';
 
 const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
 const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');

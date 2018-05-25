@@ -5,10 +5,9 @@ import * as validator from 'express-validator';
 import * as logger from 'morgan';
 import * as passport from 'passport';
 import { join } from 'path';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { passport as auth } from '../Auth';
-import { Connection } from '../model/Connection';
 import { router as api } from './api';
 
 export default class Server {
@@ -32,13 +31,6 @@ export default class Server {
     }
 
     public getApp(): Observable<express.Application> {
-        if (Connection.getInstance().isConnected()) {
-            return new Observable((observer) => {
-                observer.next(this.app);
-                observer.complete();
-            });
-        } else {
-            return Connection.getInstance().connect().pipe(map(() => this.app));
-        }
+        return of(this.app);
     }
 }
