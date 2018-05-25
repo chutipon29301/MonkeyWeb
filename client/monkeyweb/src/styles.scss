@@ -1,0 +1,8 @@
+body { margin: 0; }
+@import '~@angular/material/theming';
+@include mat-core();
+$monkey-app-primary: mat-palette($mat-amber);
+$monkey-app-accent: mat-palette($mat-amber, A200, A100, A400);
+$monkey-app-warn: mat-palette($mat-red);
+$monkey-app-theme: mat-light-theme($monkey-app-primary, $monkey-app-accent, $monkey-app-warn);
+@include angular-material-theme($monkey-app-theme);
