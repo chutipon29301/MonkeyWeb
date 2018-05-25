@@ -7,7 +7,7 @@ export interface ITemplateModel {
 export type TemplateInstance = Sequelize.Instance<ITemplateModel> & ITemplateModel;
 
 // tslint:disable:object-literal-sort-keys
-export function sheetModel(sequalize: Sequelize.Sequelize) {
+export function templateModel(sequalize: Sequelize.Sequelize) {
     const attributes: SequelizeAttributes<ITemplateModel> = {
         ID: {
             type: Sequelize.INTEGER,
