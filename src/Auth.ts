@@ -1,30 +1,27 @@
+import { Request, Response } from 'express';
 import * as passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { getUserInfo } from './model/v1/user'
-import { Request, Response } from 'express';
+import { User } from './repositories/v1/User';
 
-interface Payload {
-    userID: any,
-    expire: string
+interface IPayload {
+    userID: any;
+    expire: string;
 }
 
-let opts = {
+const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET,
-}
+};
 
-passport.use(new Strategy(opts, (payload: Payload, done) => {
-    let expire = new Date(payload.expire);
-    let today = new Date();
+passport.use(new Strategy(opts, (payload: IPayload, done) => {
+    const expire = new Date(payload.expire);
+    const today = new Date();
     if (expire > today) {
-        getUserInfo(payload.userID).subscribe((user) => {
-            if (user) {
-                return done(null, user);
-            }
-            else return done(null, false);
-        }, (err) => {
-            return done(err, false);
-        })
+        User.getInstance().getUserInfo(payload.userID)
+            .subscribe(
+                (user) => done(null, user || false),
+                (error) => done(error, false),
+        );
     } else {
         done(null, false);
     }

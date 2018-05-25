@@ -3,30 +3,13 @@ import { config } from 'dotenv';
 process.env = config().parsed;
 /* tslint:enable:import-sources-order */
 
-import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import * as validator from 'express-validator';
 import * as fs from 'fs-extra';
 import * as http from 'http';
 import * as https from 'https';
-import * as logger from 'morgan';
-import * as passport from 'passport';
 import { join } from 'path';
-import { passport as auth } from './Auth';
-import Controller from './controllers/Controller';
-import { Connection } from './model/Connection';
-const app: express.Application = express();
 
-app.use(express.static(join(__dirname, '../public')));
-app.use(bodyParser.urlencoded({
-    extended: true,
-}));
-app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
-app.use(validator());
-app.use(logger('dev'));
-app.use(auth.initialize());
-app.use(passport.session());
+import app from './controllers/Controller';
 
 const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
 const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');
@@ -40,20 +23,11 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
     http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
 }
 
-// Start listening on request after database connection has been made
-// tslint:disable-next-line:no-empty
-Connection.getInstance().connect().subscribe(() => { }, (error) => {
-    console.log(error);
-}, () => {
-    app.listen(process.env.PORT || 8080, () => { console.log('Start listening'); });
-});
-
-Controller.getInstance().setApp(app);
-
-console.log('running........');
+app.listen(process.env.PORT || 8080,
+    () => console.log('Start listening on port %d', process.env.PORT || 8080),
+);
 
 function exitHandler() {
-    Connection.getInstance().close();
 }
 
 process.on('exit', exitHandler);
