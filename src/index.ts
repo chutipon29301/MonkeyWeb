@@ -24,15 +24,9 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
     http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
 }
 
-// Start listening on request after database connection has been made
-// tslint:disable-next-line:no-empty
-Connection.getInstance().connect().subscribe(() => { }, (error) => {
-    console.log(error);
-}, () => {
-    app.listen(process.env.PORT || 8080, () => { console.log('Start listening on port %d', process.env.PORT || 8080); });
-});
-
-console.log('running........');
+app.listen(process.env.PORT || 8080,
+    () => console.log('Start listening on port %d', process.env.PORT || 8080),
+);
 
 function exitHandler() {
 }

@@ -20,15 +20,16 @@ router.post('/login',
     body('userID').exists(),
     body('password').exists(),
     (req, res) => {
-        console.log(req.body)
+        console.log(req.body);
         getUserLogin(Number(req.body.userID), req.body.password).subscribe(
             (user) => {
                 if (user) {
-                    let expire = new Date();
+                    const expire = new Date();
                     expire.setDate(expire.getDate() + 7);
-                    let token = 'bearer ' + jwt.encode({
+                    // tslint:disable:object-literal-sort-keys
+                    const token = 'bearer ' + jwt.encode({
                         userID: req.body.userID,
-                        expire
+                        expire,
                     }, process.env.JWT_SECRET);
                     return res.status(200).send({ token, expire });
                 } else {
@@ -37,7 +38,7 @@ router.post('/login',
             },
             (err) => {
                 return res.status(400).send({ err });
-            }
-        )
-    }
+            },
+        );
+    },
 );

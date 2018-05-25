@@ -4,6 +4,7 @@
   "description": "This site is for using in [Monkey](https://monkey-monkey.com)",
   "main": "webpack.config.js",
   "scripts": {
+    "watch-test": "jest --forceExit --watch",
     "test": "jest --forceExit",
     "build": "webpack --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"

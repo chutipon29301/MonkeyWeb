@@ -2,24 +2,25 @@ import * as Sequelize from 'sequelize';
 import { topicModel } from './topic';
 
 export interface IHybridSheetModel {
-    ID: number;
+    ID?: number;
     TopicID: number;
     SheetLevel: string;
-    SheetNumber: string;
+    SheetNumber: number;
     SubLevel?: string;
-    Rev?: string;
+    Rev?: number;
     SheetPath: string;
 }
 
 export type HybridSheetInstance = Sequelize.Instance<IHybridSheetModel> & IHybridSheetModel;
 
 // tslint:disable:object-literal-sort-keys
-export function model(sequalize: Sequelize.Sequelize) {
+export function sheetModel(sequalize: Sequelize.Sequelize) {
     const attributes: SequelizeAttributes<IHybridSheetModel> = {
         ID: {
             type: Sequelize.INTEGER,
             allowNull: false,
             primaryKey: true,
+            autoIncrement: true,
         },
         TopicID: {
             type: Sequelize.INTEGER,
@@ -50,5 +51,8 @@ export function model(sequalize: Sequelize.Sequelize) {
             allowNull: false,
         },
     };
-    return sequalize.define<HybridSheetInstance, IHybridSheetModel>('HybridSheet', attributes);
+    return sequalize.define<HybridSheetInstance, IHybridSheetModel>('HybridSheet', attributes, {
+        tableName: 'HybridSheet',
+        timestamps: false,
+    });
 }

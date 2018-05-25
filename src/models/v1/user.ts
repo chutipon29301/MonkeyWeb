@@ -24,13 +24,15 @@ export interface IUserName extends IUserEnglishName, IUserThaiName { }
 export interface IUserInfo extends IUserName {
     Email?: string;
     Phone?: string;
-}
-
-export interface IUserModel extends IUserInfo {
     UserStatus: string;
     Position: string;
     SubPosition?: string;
+}
+
+export interface IUserModel extends IUserInfo {
     UserPassword?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export type UserInstance = Sequelize.Instance<IUserModel> & IUserModel;
@@ -87,6 +89,10 @@ export function userModel(sequalize: Sequelize.Sequelize) {
             type: Sequelize.STRING(128),
             allowNull: true,
         },
+        createdAt: Sequelize.DATE,
+        updatedAt: Sequelize.DATE,
     };
-    return sequalize.define<UserInstance, IUserModel>('Users', attributes);
+    return sequalize.define<UserInstance, IUserModel>('Users', attributes, {
+        timestamps: false,
+    });
 }

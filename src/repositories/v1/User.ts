@@ -1,7 +1,7 @@
 import { from, Observable } from 'rxjs';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
-import { IUserModel, IUserNicknameEn, UserInstance, userModel } from '../../models/v1/user';
+import { IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel } from '../../models/v1/user';
 
 export class User {
 
@@ -14,19 +14,34 @@ export class User {
 
     private static instance: User;
 
-    private model: Sequelize.Model<UserInstance, IUserModel>;
+    private userModel: Sequelize.Model<UserInstance, IUserModel>;
 
     private constructor() {
-        this.model = userModel(Connection.getInstance().getConnection());
+        this.userModel = userModel(Connection.getInstance().getConnection());
     }
 
     public listTutors(): Observable<IUserNicknameEn[]> {
         return from(
-            this.model.findAll<IUserNicknameEn>({
+            this.userModel.findAll<IUserNicknameEn>({
                 attributes: ['ID', 'NicknameEn'],
                 where: {
-                    Position: 'tutor',
+                    Position: {
+                        [Sequelize.Op.ne]: 'student',
+                    },
                     UserStatus: 'active',
+                },
+            }),
+        );
+    }
+
+    public getUserInfo(id: number): Observable<IUserInfo> {
+        return from(
+            this.userModel.findOne<IUserInfo>({
+                attributes: {
+                    exclude: ['UserPassword', 'createdAt', 'updatedAt'],
+                },
+                where: {
+                    ID: id,
                 },
             }),
         );

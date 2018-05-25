@@ -1,7 +1,7 @@
 import * as Sequelize from 'sequelize';
 
 export interface ITopicModel {
-    ID: number;
+    ID?: number;
     TopicSubject: string;
     Class: string;
     Topic: string;
@@ -17,6 +17,7 @@ export function topicModel(sequalize: Sequelize.Sequelize) {
             type: Sequelize.INTEGER,
             allowNull: false,
             primaryKey: true,
+            autoIncrement: true,
         },
         TopicSubject: {
             type: Sequelize.CHAR(1),
@@ -35,5 +36,8 @@ export function topicModel(sequalize: Sequelize.Sequelize) {
             allowNull: true,
         },
     };
-    return sequalize.define<TopicInstance, ITopicModel>('Topic', attributes);
+    return sequalize.define<TopicInstance, ITopicModel>('Topic', attributes, {
+        tableName: 'Topic',
+        timestamps: false,
+    });
 }

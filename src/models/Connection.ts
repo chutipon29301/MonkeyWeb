@@ -1,9 +1,9 @@
 import * as Sequelize from 'sequelize';
 
 declare global {
-  type SequelizeAttributes<T extends { [key: string]: any }> = {
-    [P in keyof T]: string | Sequelize.DataTypeAbstract | Sequelize.DefineAttributeColumnOptions;
-  };
+    type SequelizeAttributes<T extends { [key: string]: any }> = {
+        [P in keyof T]: string | Sequelize.DataTypeAbstract | Sequelize.DefineAttributeColumnOptions;
+    };
 }
 
 export class Connection {
@@ -29,6 +29,7 @@ export class Connection {
                     encrypt: true,
                 },
                 host: process.env.DB_SERVER,
+                logging: false, // Enable sql logging
             });
     }
 

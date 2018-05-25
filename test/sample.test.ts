@@ -1,16 +1,16 @@
-import { join } from 'path';
 import { config } from 'dotenv';
-process.env = config({path: join(__dirname,'../test.env')}).parsed;
-import app from '../src/controllers/Controller';
+import { join } from 'path';
+process.env = config({ path: join(__dirname, '../test.env') }).parsed;
 import * as request from 'supertest';
+import app from '../src/controllers/Controller';
 
 describe('Sample test function', () => {
     test('Test jest\n\tExpect to success', () => {
         expect(1 + 1).toBe(2);
     });
-    test('process env',()=>{
+    test('process env', () => {
         expect(process.env.DB_USERNAME).toBe('Non');
-    })
+    });
     test('Send post request\n\tExpect to be success', () => {
         expect(app).not.toBe(undefined);
         return request(app)
