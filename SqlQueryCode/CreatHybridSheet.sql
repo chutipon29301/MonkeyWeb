@@ -5,5 +5,5 @@ CREATE TABLE HybridSheet (
     SheetNumber NUMERIC(2,0) NOT NULL, -- 01,02
     SubLevel VARCHAR(2), -- a,b,c
     Rev NUMERIC(1,1), -- 1.1,2.0
-    SheetPath VARCHAR(128) NOT NULL
+    SheetPath VARCHAR(128) NOT NULL -- '/MATH_DB/...'
 )
