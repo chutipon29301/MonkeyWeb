@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { listQuarter } from '../../../model/v1/quarter';
 import { Quarter } from '../../../repositories/v1/Quarter';
 
 export const router = Router();
