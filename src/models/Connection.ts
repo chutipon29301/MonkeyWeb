@@ -38,8 +38,8 @@ export class Connection {
         return this.sequelize;
     }
 
-    public query(sql: string | { query: string, values: any[] }, options?: Sequelize.QueryOptions): Observable<any> {
-        return from(this.sequelize.query(sql, options));
+    public query<T>(sql: string | { query: string, values: any[] }, options?: Sequelize.QueryOptions): Observable<T[]> {
+        return from(this.sequelize.query<T>(sql, options));
     }
 
     public authenticate() {

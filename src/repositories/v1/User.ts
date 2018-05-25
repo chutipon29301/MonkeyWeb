@@ -2,7 +2,10 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
-import { IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel } from '../../models/v1/user';
+import { IAllStudentState, UserRegistrationStage } from '../../models/v1/studentState';
+import { IUserFullNameTh, IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel, UserStatus } from '../../models/v1/user';
+
+export type AllStudent = IUserFullNameTh & IAllStudentState;
 
 export class User {
 
@@ -29,9 +32,43 @@ export class User {
                     Position: {
                         [Sequelize.Op.ne]: 'student',
                     },
-                    UserStatus: 'active',
+                    UserStatus: UserStatus.active,
                 },
             }),
+        );
+    }
+
+    public listStudent(QuarterID: number, options?: { Stage?: UserRegistrationStage, UserStatus?: UserStatus, Grade?: number }): Observable<AllStudent[]> {
+        let statement = 'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark ' +
+            'FROM Users JOIN StudentState ON StudentState.StudentID = Users.ID ' +
+            'WHERE Users.Position = \'student\' AND StudentState.QuarterID = :QuarterID';
+        let replacements: any = { QuarterID };
+        if (options && options.Stage) {
+            statement += ' AND StudentState.Stage = :Stage';
+            replacements = {
+                ...replacements,
+                Stage: options.Stage,
+            };
+        }
+        if (options && options.UserStatus) {
+            statement += ' AND Users.UserStatus = :UserStatus';
+            replacements = {
+                ...replacements,
+                UserStatus: options.UserStatus,
+            };
+        }
+        if (options && options.Grade) {
+            statement += ' AND StudentState.Grade = :Grade';
+            replacements = {
+                ...replacements,
+                Grade: options.Grade,
+            };
+        }
+        return Connection.getInstance().query<AllStudent>(statement,
+            {
+                replacements,
+                type: Sequelize.QueryTypes.SELECT,
+            },
         );
     }
 
@@ -39,7 +76,7 @@ export class User {
         return from(
             this.userModel.findOne<IUserInfo>({
                 attributes: {
-                    exclude: ['UserPassword', 'createdAt', 'updatedAt'],
+                    exclude: ['UserPassword'],
                 },
                 where: { ID },
             }),

@@ -15,6 +15,66 @@ describe('POST /api/v1/user/listTutor', () => {
     });
 });
 
+describe('POST /api/v1/user/listStudent', () => {
+    test('empty body\n\tExpected 400', () => {
+        return request(app)
+            .post('/api/v1/user/listStudent')
+            .expect(400);
+    });
+
+    test('body with quarterID\n\tExpected 200', () => {
+        return request(app)
+            .post('/api/v1/user/listStudent')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({ quarterID: 20174 })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('students');
+            });
+    });
+
+    test('body with quarterID and valid grade\n\tExpected 200', () => {
+        return request(app)
+            .post('/api/v1/user/listStudent')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({ quarterID: 20174, grade: 10 })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('students');
+            });
+    });
+
+    test('body with quarterID and invalid grade\n\tExpected 200', () => {
+        return request(app)
+            .post('/api/v1/user/listStudent')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({ quarterID: 20174, grade: 0 })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('students');
+            });
+    });
+
+    test('body with quarterID and valid userStatus\n\tExpected 200', () => {
+        return request(app)
+            .post('/api/v1/user/listStudent')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({ quarterID: 20174, userStatus: 'active' })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('students');
+            });
+    });
+
+    test('body with quarterID and invalid userStatus\n\tExpected 400', () => {
+        return request(app)
+            .post('/api/v1/user/listStudent')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({ quarterID: 20174, userStatus: 'activeasdf' })
+            .expect(400);
+    });
+});
+
 describe('POST /api/v1/user/getUserInfo', () => {
     test('valid body\n\tExpect 200', () => {
         return request(app)
