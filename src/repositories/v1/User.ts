@@ -35,25 +35,20 @@ export class User {
         );
     }
 
-    public getUserInfo(id: number): Observable<IUserInfo> {
+    public getUserInfo(ID: number): Observable<IUserInfo> {
         return from(
             this.userModel.findOne<IUserInfo>({
                 attributes: {
                     exclude: ['UserPassword', 'createdAt', 'updatedAt'],
                 },
-                where: {
-                    ID: id,
-                },
+                where: { ID },
             }),
         );
     }
 
-    public login(id: number, password: string): Observable<boolean> {
+    public login(ID: number, UserPassword: string): Observable<boolean> {
         return from(this.userModel.count({
-            where: {
-                ID: id,
-                UserPassword: password,
-            },
+            where: { ID, UserPassword },
         })).pipe(map((count) => count !== 0));
     }
 }

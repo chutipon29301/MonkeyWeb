@@ -19,16 +19,13 @@ export class Room {
 
     private constructor() {
         this.roomModel = roomModel(Connection.getInstance().getConnection());
-        this.list();
     }
 
-    public list(quarterID?: number): Observable<IRoom[]> {
-        if (quarterID) {
+    public list(QuarterID?: number): Observable<IRoom[]> {
+        if (QuarterID) {
             return from(this.roomModel.findAll<IRoom>({
                 attributes: ['RoomName', 'MaxSeat'],
-                where: {
-                    QuarterID: quarterID,
-                },
+                where: { QuarterID },
             }));
         } else {
             return Connection.getInstance().query(
