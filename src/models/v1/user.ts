@@ -1,5 +1,12 @@
 import * as Sequelize from 'sequelize';
 
+export enum UserStatus {
+    active = 'active',
+    dropped = 'dropped',
+    inactive = 'inactive',
+    terminated = 'terminated',
+}
+
 export interface IUserID {
     ID: number;
 }
@@ -8,31 +15,36 @@ export interface IUserNicknameEn extends IUserID {
     NicknameEn?: string;
 }
 
-export interface IUserEnglishName extends IUserNicknameEn {
+export interface IUserNameEn extends IUserID {
     FirstnameEn?: string;
     LastnameEn?: string;
 }
 
-export interface IUserThaiName extends IUserID {
-    Firstname?: string;
-    Lastname?: string;
+export interface IUserFullNameEn extends IUserNicknameEn, IUserNameEn { }
+
+export interface IUserNicknameTh extends IUserID {
     Nickname?: string;
 }
 
-export interface IUserName extends IUserEnglishName, IUserThaiName { }
+export interface IUserNameTh extends IUserID {
+    Firstname?: string;
+    Lastname?: string;
+}
+
+export interface IUserFullNameTh extends IUserNicknameTh, IUserNameTh { }
+
+export interface IUserName extends IUserFullNameEn, IUserFullNameTh { }
 
 export interface IUserInfo extends IUserName {
     Email?: string;
     Phone?: string;
-    UserStatus: string;
+    UserStatus: UserStatus;
     Position: string;
     SubPosition?: string;
 }
 
 export interface IUserModel extends IUserInfo {
     UserPassword?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
 }
 
 export type UserInstance = Sequelize.Instance<IUserModel> & IUserModel;
@@ -89,8 +101,6 @@ export function userModel(sequalize: Sequelize.Sequelize) {
             type: Sequelize.STRING(128),
             allowNull: true,
         },
-        createdAt: Sequelize.DATE,
-        updatedAt: Sequelize.DATE,
     };
     return sequalize.define<UserInstance, IUserModel>('Users', attributes, {
         timestamps: false,

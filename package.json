@@ -4,8 +4,8 @@
   "description": "This site is for using in [Monkey](https://monkey-monkey.com)",
   "main": "webpack.config.js",
   "scripts": {
-    "watch-test": "jest --forceExit --watch",
-    "test": "jest --forceExit",
+    "watch-test": "jest `--detectOpenHandles` --watch",
+    "test": "jest `--detectOpenHandles`",
     "build": "webpack --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
@@ -50,6 +50,8 @@
     "webpack-cli": "^2.1.4"
   },
   "dependencies": {
+    "@types/bluebird": "^3.5.20",
+    "@types/continuation-local-storage": "^3.2.1",
     "@types/crypto-js": "^3.1.39",
     "@types/cryptojs": "^3.1.29",
     "@types/dotenv": "^4.0.3",
@@ -59,8 +61,8 @@
     "@types/passport": "^0.4.5",
     "@types/passport-jwt": "^3.0.1",
     "@types/passport-local": "^1.0.33",
-    "@types/sequelize": "^4.27.18",
     "@types/tedious": "^1.8.32",
+    "@types/validator": "^9.4.1",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
