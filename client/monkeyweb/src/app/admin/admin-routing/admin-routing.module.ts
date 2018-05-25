@@ -6,19 +6,33 @@ import {
   MatToolbarModule,
   MatSidenavModule,
   MatListModule,
+  MatTableModule
 } from '@angular/material';
 
 import { AdminNavComponent } from '../admin-nav/admin-nav.component';
+import { AdminStudentComponent } from '../admin-student/admin-student.component';
 
 const adminRoutes: Routes = [
   {
-    path: '',
+    path: 'student',
     component: AdminNavComponent,
+    children: [
+      {
+        path: 'student',
+        outlet: 'admincontent',
+        component: AdminStudentComponent,
+      }
+    ]
+  },
+  {
+    path: '',
+    redirectTo: '/admin/student/(admincontent:student)'
   }
 ];
 @NgModule({
   declarations: [
-    AdminNavComponent
+    AdminNavComponent,
+    AdminStudentComponent
   ],
   imports: [
     MatIconModule,
@@ -26,6 +40,7 @@ const adminRoutes: Routes = [
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
+    MatTableModule,
     RouterModule.forChild(adminRoutes)
   ],
   exports: [RouterModule],
