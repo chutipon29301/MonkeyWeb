@@ -1,3 +1,4 @@
+import { from, Observable } from 'rxjs';
 import * as Sequelize from 'sequelize';
 
 declare global {
@@ -35,6 +36,10 @@ export class Connection {
 
     public getConnection(): Sequelize.Sequelize {
         return this.sequelize;
+    }
+
+    public query(sql: string | { query: string, values: any[] }, options?: Sequelize.QueryOptions): Observable<any> {
+        return from(this.sequelize.query(sql, options));
     }
 
     public authenticate() {

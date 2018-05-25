@@ -12,10 +12,13 @@ export class ClassTemplate {
 
     private static instance: ClassTemplate;
 
-    // private model: Sequelize.Model<QuarterInstance, IQuarterModel>;
+    // private templateModel: Sequelize.Model<TemplateInstance, ITemplateModel>;
 
     private constructor() {
-        // this.model = ;
+        // this.templateModel = templateModel(Connection.getInstance().getConnection());
     }
 
+    // getModel(): Sequelize.Model<TemplateInstance, ITemplateModel> {
+    //     return this.templateModel;
+    // }
 }

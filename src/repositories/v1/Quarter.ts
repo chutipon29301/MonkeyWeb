@@ -20,6 +20,10 @@ export class Quarter {
         this.quarterModel = quarterModel(Connection.getInstance().getConnection());
     }
 
+    public getModel(): Sequelize.Model<QuarterInstance, IQuarterModel> {
+        return this.quarterModel;
+    }
+
     public listQuarter(): Observable<IQuarterModel[]> {
         return from(this.quarterModel.findAll());
     }

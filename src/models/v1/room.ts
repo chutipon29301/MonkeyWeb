@@ -1,17 +1,20 @@
 import * as Sequelize from 'sequelize';
 import { quarterModel } from './quarter';
 
-export interface IRoomModel {
-    ID?: number;
+export interface IRoom {
     RoomName: string;
-    QuarterID: number;
     MaxSeat: number;
+}
+
+export interface IRoomModel extends IRoom {
+    ID?: number;
+    QuarterID: number;
 }
 
 export type RoomInstance = Sequelize.Instance<IRoomModel> & IRoomModel;
 
 // tslint:disable:object-literal-sort-keys
-export function sheetModel(sequalize: Sequelize.Sequelize) {
+export function roomModel(sequalize: Sequelize.Sequelize) {
     const attributes: SequelizeAttributes<IRoomModel> = {
         ID: {
             type: Sequelize.INTEGER,

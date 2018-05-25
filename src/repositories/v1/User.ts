@@ -1,4 +1,5 @@
 import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel } from '../../models/v1/user';
@@ -45,5 +46,14 @@ export class User {
                 },
             }),
         );
+    }
+
+    public login(id: number, password: string): Observable<boolean> {
+        return from(this.userModel.count({
+            where: {
+                ID: id,
+                UserPassword: password,
+            },
+        })).pipe(map((count) => count !== 0));
     }
 }
