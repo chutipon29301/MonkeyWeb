@@ -8,7 +8,7 @@ describe('Sample test function', () => {
     test('Test jest\n\tExpect to success', () => {
         expect(1 + 1).toBe(2);
     });
-    test('process env',()=>{
+    test('Process env',()=>{
         expect(process.env.DB_USERNAME).toBe('Non');
     })
     test('Send post request\n\tExpect to be success', () => {
