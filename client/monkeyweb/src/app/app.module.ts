@@ -1,4 +1,4 @@
-// import { LayoutModule } from '@angular/cdk/layout';
+import { LayoutModule } from '@angular/cdk/layout';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
@@ -17,7 +17,7 @@ import { LoginComponent } from './login/login.component';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -28,6 +28,7 @@ import { LoginComponent } from './login/login.component';
     MatIconModule,
     MatButtonModule,
     MatInputModule,
+    LayoutModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
