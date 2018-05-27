@@ -1,5 +1,6 @@
 import { LayoutModule } from '@angular/cdk/layout';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import {
@@ -22,6 +23,7 @@ import { LoginComponent } from './login/login.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     AppRoutingModule,
     MatCardModule,
     MatFormFieldModule,
