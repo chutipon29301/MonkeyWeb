@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { StudentService } from '../student.service';
 import { MatSort, MatTableDataSource } from '@angular/material';
 
 @Component({
@@ -10,7 +11,7 @@ export class AdminStudentComponent implements OnInit {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
   @ViewChild(MatSort) sort: MatSort;
-  constructor() {
+  constructor(private studentService: StudentService) {
   }
 
 

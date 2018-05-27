@@ -14,19 +14,14 @@ import { AdminStudentComponent } from '../admin-student/admin-student.component'
 
 const adminRoutes: Routes = [
   {
-    path: 'student',
+    path: '',
     component: AdminNavComponent,
     children: [
       {
         path: 'student',
-        outlet: 'admincontent',
         component: AdminStudentComponent,
       }
     ]
-  },
-  {
-    path: '',
-    redirectTo: '/admin/student/(admincontent:student)'
   }
 ];
 @NgModule({
