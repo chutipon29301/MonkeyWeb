@@ -1,13 +1,14 @@
-import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
 import * as validator from 'express-validator';
 import * as logger from 'morgan';
 import * as passport from 'passport';
+import { join } from 'path';
 import { passport as auth } from '../Auth';
 import { router as api } from './api';
-import { join } from 'path';
-let app = express();
+
+const app = express();
 
 app.use(express.static(join(__dirname, '../public')));
 app.use(bodyParser.urlencoded({

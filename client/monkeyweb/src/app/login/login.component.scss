@@ -1,0 +1,41 @@
+@import '~@angular/material/theming';
+@include mat-core();
+$login-primary: mat-palette($mat-yellow, 600);
+$login-accent: mat-palette($mat-orange, A200, A100, A400);
+$login-theme: mat-light-theme($login-primary, $login-accent);
+@include mat-button-theme($login-theme);
+.flex-container{
+    display: flex;
+    background-color: #FFD740;
+    height: 100vh;
+    width: 100vw;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+}
+.flex-mobile-container{
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+mat-card{
+    padding: 36px 40px 36px 40px;
+    border-radius: 8px;
+}
+img{
+    margin: 0 !important;
+    max-width: 300px;
+    height: auto;
+}
+mat-card-content{
+    padding-top: 40px;
+}
+mat-form-field{
+    width: 100%;
+}
+mat-card-actions{
+    margin: 0 !important;
+}
+button{
+    color: #FFFFFF;
+}

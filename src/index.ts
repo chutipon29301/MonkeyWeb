@@ -8,8 +8,8 @@ import * as fs from 'fs-extra';
 import * as http from 'http';
 import * as https from 'https';
 import { join } from 'path';
+
 import app from './controllers/Controller';
-import { Connection } from './model/Connection';
 
 const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
 const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');
@@ -23,18 +23,11 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
     http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
 }
 
-// Start listening on request after database connection has been made
-// tslint:disable-next-line:no-empty
-Connection.getInstance().connect().subscribe(() => { }, (error) => {
-    console.log(error);
-}, () => {
-    app.listen(process.env.PORT || 8080, () => { console.log('Start listening'); });
-});
-
-console.log('running........');
+app.listen(process.env.PORT || 8080,
+    () => console.log('Start listening on port %d', process.env.PORT || 8080),
+);
 
 function exitHandler() {
-    Connection.getInstance().close();
 }
 
 process.on('exit', exitHandler);

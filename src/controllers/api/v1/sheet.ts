@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator/check';
-import { addSheet, addTopic, checkExistTopic } from '../../../model/v1/sheet';
+import { flatMap } from 'rxjs/operators';
+import { Sheet } from '../../../repositories/v1/Sheet';
+import { validateRequest } from '../../ApiValidator';
 
 export const router = Router();
 
@@ -14,28 +16,21 @@ router.post('/addSheet',
     body('rev').isNumeric().isLength({ min: 3, max: 3 }).optional(),
     body('topicName').isString().optional(),
     body('path').isString(),
+    validateRequest,
     (req, res) => {
-        if (!validationResult(req).isEmpty()) {
-            return res.status(400).send(validationResult(req).mapped());
-        } else {
-            checkExistTopic(req.body.subject, req.body.class, req.body.topic)
-                .flatMap((topic) => {
-                    if (topic != null) {
-                        return addSheet(topic.ID, req.body.level, req.body.number, req.body.subLevel || null, req.body.rev || null, req.body.path);
-                    } else {
-                        return addTopic(req.body.subject, req.body.class, req.body.topic, req.body.topicName || null)
-                            .flatMap((result) => {
-                                return checkExistTopic(req.body.subject, req.body.class, req.body.topic);
-                            })
-                            .flatMap((generateTopic) => {
-                                return addSheet(generateTopic.ID, req.body.level, req.body.number, req.body.subLevel || null, req.body.rev || null, req.body.path);
-                            });
-                    }
-                })
-                .subscribe(
-                    () => res.sendStatus(200),
-                    (error) => res.status(500).send({ error: error.toString() }),
-            );
-        }
+        Sheet.getInstance().addSheetWithTopic(
+            req.body.subject,
+            req.body.class,
+            req.body.topic,
+            req.body.level,
+            req.body.number,
+            req.body.subLevel || null,
+            req.body.rev || null,
+            req.body.topicName || null,
+            req.body.path)
+            .subscribe(
+                (sheet) => res.sendStatus(200),
+                (error) => res.status(500).send(error),
+        );
     },
 );
