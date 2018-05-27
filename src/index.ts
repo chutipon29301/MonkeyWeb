@@ -8,7 +8,7 @@ import * as fs from 'fs-extra';
 import * as http from 'http';
 import * as https from 'https';
 import { join } from 'path';
-
+import * as cors from 'cors';
 import app from './controllers/Controller';
 
 const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
@@ -22,7 +22,6 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
     https.createServer(credentials, app).listen(443);
     http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
 }
-
 app.listen(process.env.PORT || 8080,
     () => console.log('Start listening on port %d', process.env.PORT || 8080),
 );
