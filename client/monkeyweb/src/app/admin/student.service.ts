@@ -15,7 +15,7 @@ const param = new HttpParams().set('quarterID', '20181');
 
 export class StudentService {
   constructor(private http: HttpClient) {
-    // this.listStudent().subscribe((cb) => { console.log(cb); });
+    this.listStudent().subscribe((cb) => { console.log(cb); });
   }
   listStudent(): Observable<object> {
     return this.http.post<object>('http://localhost:8080/api/v1/user/listStudent', param, header);
