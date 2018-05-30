@@ -8,10 +8,11 @@ export const router = Router();
 router.post('/list',
     body('quarterID').isInt(),
     (req, res) => {
-        Room.getInstance().list(req.body.quarterID)
-            .subscribe(
-                (rooms) => res.status(200).send({ rooms }),
-                (error) => res.status(500).send(error),
+        Room.getInstance().list(
+            req.body.quarterID,
+        ).subscribe(
+            (rooms) => res.status(200).send({ rooms }),
+            (error) => res.status(500).send(error),
         );
     },
 );
