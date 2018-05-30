@@ -6,11 +6,19 @@ import {
   MatToolbarModule,
   MatSidenavModule,
   MatListModule,
-  MatTableModule
+  MatTableModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatCardModule,
+  MatGridListModule
 } from '@angular/material';
 
 import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { AdminStudentComponent } from '../admin-student/admin-student.component';
+import { AdminClassComponent } from '../admin-class/admin-class.component';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 const adminRoutes: Routes = [
   {
@@ -19,26 +27,33 @@ const adminRoutes: Routes = [
     children: [
       {
         path: 'student',
-        component: AdminStudentComponent,
+        component: AdminStudentComponent
+      },
+      {
+        path: 'class',
+        component: AdminClassComponent
       }
     ]
   }
 ];
 @NgModule({
-  declarations: [
-    AdminNavComponent,
-    AdminStudentComponent
-  ],
+  declarations: [AdminNavComponent, AdminStudentComponent, AdminClassComponent],
   imports: [
     MatIconModule,
     MatButtonModule,
     MatToolbarModule,
     MatSidenavModule,
+    CommonModule,
+    MatGridListModule,
+    MatFormFieldModule,
     MatListModule,
     MatTableModule,
+    MatInputModule,
+    FormsModule,
+    MatCardModule,
     RouterModule.forChild(adminRoutes)
   ],
   exports: [RouterModule],
   providers: []
 })
-export class AdminRoutingModule { }
+export class AdminRoutingModule {}
