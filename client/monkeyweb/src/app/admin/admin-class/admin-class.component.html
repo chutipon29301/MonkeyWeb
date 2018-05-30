@@ -1,0 +1,8 @@
+<div *ngFor="let i of temp">
+  <mat-card>
+    <mat-form-field>
+      <input matInput placeholder="Search" [(ngModel)]="val" (keypress)="onSearch($event)">
+    </mat-form-field>
+    {{val}}
+  </mat-card>
+</div>
