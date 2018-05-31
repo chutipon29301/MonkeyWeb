@@ -57,4 +57,10 @@ export class Portfolio {
         );
     }
 
+    public delete(
+        ID: number,
+    ): Observable<number> {
+        return from(this.portfolioModel.destroy({ where: { ID } }));
+    }
+
 }

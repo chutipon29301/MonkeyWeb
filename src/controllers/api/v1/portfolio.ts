@@ -58,3 +58,17 @@ router.post('/edit',
         );
     },
 );
+
+router.post('/delete',
+    body('portfolioID').isInt(),
+    validateRequest,
+    (req, res) => {
+        Portfolio.getInstance().delete(
+            req.body.portfolioID,
+        ).subscribe(
+            () => { },
+            (error) => res.status(500).send(error),
+            () => res.sendStatus(200),
+        );
+    },
+);

@@ -76,3 +76,17 @@ router.post('/edit',
         );
     },
 );
+
+router.post('/delete',
+    body('classLogID').isInt(),
+    validateRequest,
+    (req, res) => {
+        ClassLog.getInstance().delete(
+            req.body.classLogID,
+        ).subscribe(
+            () => { },
+            (error) => res.status(500).send(error),
+            () => res.sendStatus(200),
+        );
+    },
+);

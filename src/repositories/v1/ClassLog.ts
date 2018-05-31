@@ -72,6 +72,12 @@ export class ClassLog {
         return from(this.classLogModel.update(updateValue, { where: { ID } }))
             .pipe(
                 map((result) => result[1]),
-            );
+        );
+    }
+
+    public delete(
+        ID: number,
+    ): Observable<number> {
+        return from(this.classLogModel.destroy({ where: { ID } }));
     }
 }
