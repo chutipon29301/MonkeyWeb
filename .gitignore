@@ -10,3 +10,4 @@ err.log
 /WebData
 .env
 yarn.lock
+alterSQL.js

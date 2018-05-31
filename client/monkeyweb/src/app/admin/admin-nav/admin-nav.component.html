@@ -1,10 +1,9 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport="false" role='navigation' mode='side'>
+  <mat-sidenav #drawer class="sidenav" fixedInViewport="false" role='navigation' mode='over'>
     <mat-toolbar color="primary">Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item href="#">Link 1</a>
-      <a mat-list-item href="#">Link 2</a>
-      <a mat-list-item href="#">Link 3</a>
+      <a  mat-list-item routerLink="/admin/student" routerLinkActive="active" (click)="drawer.close()">Student</a>
+      <a  mat-list-item routerLink="/admin/class" routerLinkActive="active" (click)="drawer.close()">Class</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -14,6 +13,6 @@
       </button>
       <span>Admin Page</span>
     </mat-toolbar>
-    <router-outlet name='admincontent'></router-outlet>
+    <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
