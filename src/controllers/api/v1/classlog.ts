@@ -48,6 +48,7 @@ router.post('/list',
         );
     },
 );
+
 router.post('/edit',
     body('classLogID').isInt(),
     oneOf([

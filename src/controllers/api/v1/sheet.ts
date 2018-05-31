@@ -29,8 +29,9 @@ router.post('/addSheet',
             req.body.topicName || null,
             req.body.path,
         ).subscribe(
-            (sheet) => res.sendStatus(200),
+            () => { },
             (error) => res.status(500).send(error),
+            () => res.sendStatus(200),
         );
     },
 );
