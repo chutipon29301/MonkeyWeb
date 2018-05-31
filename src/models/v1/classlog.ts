@@ -1,5 +1,5 @@
 import * as Sequelize from 'sequelize';
-import { classModel } from 'src/models/v1/class';
+import { classModel } from './class';
 import { userModel } from './user';
 
 export interface IClassLogModel {
