@@ -28,10 +28,9 @@ router.post('/listStudent',
             Grade: req.body.grade,
             Stage: req.body.registrationStage,
             UserStatus: req.body.userStatus,
-        })
-            .subscribe(
-                (students) => res.status(200).send({ students }),
-                (error) => res.status(500).send(error),
+        }).subscribe(
+            (students) => res.status(200).send({ students }),
+            (error) => res.status(500).send(error),
         );
     },
 );
@@ -40,10 +39,11 @@ router.post('/getUserInfo',
     body('userID').isInt(),
     validateRequest,
     (req, res) => {
-        User.getInstance().getUserInfo(req.body.userID)
-            .subscribe(
-                (user) => res.status(200).send({ user }),
-                (error) => res.status(500).send(error),
+        User.getInstance().getUserInfo(
+            req.body.userID,
+        ).subscribe(
+            (user) => res.status(200).send({ user }),
+            (error) => res.status(500).send(error),
         );
     },
 );

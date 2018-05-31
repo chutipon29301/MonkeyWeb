@@ -21,10 +21,13 @@ export class Room {
         this.roomModel = roomModel(Connection.getInstance().getConnection());
     }
 
-    public list(QuarterID?: number): Observable<IRoom[]> {
+    public list(
+        QuarterID?: number,
+    ): Observable<IRoom[]> {
         if (QuarterID) {
             return from(this.roomModel.findAll<IRoom>({
                 attributes: ['RoomName', 'MaxSeat'],
+                raw: true,
                 where: { QuarterID },
             }));
         } else {
