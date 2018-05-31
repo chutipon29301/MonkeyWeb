@@ -22,7 +22,6 @@ router.post('/login',
     body('userID').isInt(),
     body('password').isString(),
     (req, res) => {
-        console.log(req.body);
         User.getInstance().login(
             req.body.userID,
             req.body.password,

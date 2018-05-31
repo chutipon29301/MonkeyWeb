@@ -48,3 +48,30 @@ router.post('/list',
         );
     },
 );
+router.post('/edit',
+    body('classLogID').isInt(),
+    oneOf([
+        body('checkInTime').isISO8601(),
+        body('checkOutTime').isISO8601(),
+        body('hybridSheetID').isInt(),
+        body('progress').isString(),
+        body('tutorID').isInt(),
+    ]),
+    validateRequest,
+    (req, res) => {
+        ClassLog.getInstance().edit(
+            req.body.classLogID,
+            {
+                CheckInTime: req.body.checkInTime,
+                CheckOutTime: req.body.checkOutTime,
+                HybridSheetID: req.body.hybridSheetID,
+                Progress: req.body.progress,
+                TutorID: req.body.tutorID,
+            },
+        ).subscribe(
+            () => { },
+            (error) => res.status(500).send(error),
+            () => res.sendStatus(200),
+        );
+    },
+);

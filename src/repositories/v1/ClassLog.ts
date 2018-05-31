@@ -51,13 +51,7 @@ export class ClassLog {
 
     public edit(
         ID: number,
-        value: {
-            CheckInTime?: Date,
-            CheckOutTime?: Date,
-            HybridSheetID?: number,
-            TutorID?: number,
-            Progress?: string,
-        },
+        value: Partial<IClassLogModel>,
     ): Observable<IClassLogModel[]> {
         let updateValue = {} as Partial<IClassLogModel>;
         if (value.CheckInTime) {
