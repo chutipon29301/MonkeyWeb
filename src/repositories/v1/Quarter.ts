@@ -25,7 +25,7 @@ export class Quarter {
     }
 
     public listQuarter(): Observable<IQuarterModel[]> {
-        return from(this.quarterModel.findAll());
+        return from(this.quarterModel.findAll({ raw: true }));
     }
 
 }

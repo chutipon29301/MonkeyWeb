@@ -28,6 +28,7 @@ export class User {
         return from(
             this.userModel.findAll<IUserNicknameEn>({
                 attributes: ['ID', 'NicknameEn'],
+                raw: true,
                 where: {
                     Position: {
                         [Sequelize.Op.ne]: 'student',
@@ -38,7 +39,14 @@ export class User {
         );
     }
 
-    public listStudent(QuarterID: number, options?: { Stage?: UserRegistrationStage, UserStatus?: UserStatus, Grade?: number }): Observable<AllStudent[]> {
+    public listStudent(
+        QuarterID: number,
+        options?: {
+            Stage?: UserRegistrationStage,
+            UserStatus?: UserStatus,
+            Grade?: number,
+        },
+    ): Observable<AllStudent[]> {
         let statement = 'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark ' +
             'FROM Users JOIN StudentState ON StudentState.StudentID = Users.ID ' +
             'WHERE Users.Position = \'student\' AND StudentState.QuarterID = :QuarterID';
@@ -72,7 +80,9 @@ export class User {
         );
     }
 
-    public getUserInfo(ID: number): Observable<IUserInfo> {
+    public getUserInfo(
+        ID: number,
+    ): Observable<IUserInfo> {
         return from(
             this.userModel.findOne<IUserInfo>({
                 attributes: {
@@ -83,9 +93,14 @@ export class User {
         );
     }
 
-    public login(ID: number, UserPassword: string): Observable<boolean> {
+    public login(
+        ID: number,
+        UserPassword: string,
+    ): Observable<boolean> {
         return from(this.userModel.count({
             where: { ID, UserPassword },
         })).pipe(map((count) => count !== 0));
     }
+
+    // public addUser(ID: number)
 }
