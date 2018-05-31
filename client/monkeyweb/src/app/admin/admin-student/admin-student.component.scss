@@ -1,0 +1,28 @@
+@import '~@angular/material/theming';
+table {
+    width: 100%;
+}
+.mat-row:hover{
+    background-color: #F1F1F2;
+}
+.mat-header-cell,.mat-cell{
+    text-align: center;
+}
+.mat-column-Index{
+    width: 10%;
+}
+.mat-column-ID{
+    width: 15%;
+}
+.mat-column-Grade{
+    width: 10%;
+}
+.mat-column-Nickname{
+    width: 20%;
+}
+.mat-column-Firstname{
+    width: 35%;
+}
+.mat-column-StudentLevel{
+    width: 10%;
+}
