@@ -63,4 +63,10 @@ export class Class {
         }));
     }
 
+    public deleteClass(
+        ID: number,
+    ): Observable<number> {
+        return from(this.classModel.destroy({ where: { ID } }));
+    }
+
 }

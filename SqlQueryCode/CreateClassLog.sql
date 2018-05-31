@@ -3,8 +3,8 @@ CREATE TABLE ClassLog (
     StudentID INT NOT NULL FOREIGN KEY REFERENCES Users(ID),
     ClassID INT NOT NULL FOREIGN KEY REFERENCES Class(ID),
     StudyDate DATE NOT NULL,
-    CheckIN TIME,
-    CheckOUT TIME,
+    CheckInTime TIME,
+    CheckOutTime TIME,
     HybridSheetID INT NOT NULL FOREIGN KEY REFERENCES HybridSheet(ID),
     TutorID INT NOT NULL FOREIGN KEY REFERENCES Users(ID),
     Progress VARCHAR(16)

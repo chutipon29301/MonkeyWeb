@@ -3,7 +3,7 @@ import { body, oneOf } from 'express-validator/check';
 import { Observable } from 'rxjs';
 import { IClassLogModel } from '../../../models/v1/classlog';
 import { ClassLog } from '../../../repositories/v1/ClassLog';
-import { validateRequest } from '../../ApiValidator';
+import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -22,9 +22,7 @@ router.post('/add',
             req.body.hybridSheetID,
             req.body.tutorID,
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -70,9 +68,7 @@ router.post('/edit',
                 TutorID: req.body.tutorID,
             },
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -84,9 +80,7 @@ router.post('/delete',
         ClassLog.getInstance().delete(
             req.body.classLogID,
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );

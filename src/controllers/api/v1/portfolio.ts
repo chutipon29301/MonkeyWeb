@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
 import { studentStateModel } from '../../../models/v1/studentState';
 import { Portfolio } from '../../../repositories/v1/Portfolio';
-import { validateRequest } from '../../ApiValidator';
+import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -15,9 +15,7 @@ router.post('/add',
             req.body.studentID,
             req.body.hybridSheetID,
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -52,9 +50,7 @@ router.post('/edit',
                 StartDate: req.body.startDate,
             },
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -66,9 +62,7 @@ router.post('/delete',
         Portfolio.getInstance().delete(
             req.body.portfolioID,
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );

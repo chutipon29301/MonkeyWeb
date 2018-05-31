@@ -4,8 +4,8 @@
   "description": "This site is for using in [Monkey](https://monkey-monkey.com)",
   "main": "webpack.config.js",
   "scripts": {
-    "watch-test": "jest `--detectOpenHandles` --watch",
-    "test": "jest `--detectOpenHandles`",
+    "watch-test": "jest --detectOpenHandles --watch",
+    "test": "jest --detectOpenHandles",
     "build": "webpack --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
 import { Quarter } from '../../../repositories/v1/Quarter';
-import { validateRequest } from '../../ApiValidator';
+import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -24,9 +24,7 @@ router.post('/add',
             req.body.quarterName,
             req.body.type,
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -48,9 +46,7 @@ router.post('/edit',
                 StartDate: req.body.startDate,
             },
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -62,9 +58,7 @@ router.post('/delete',
         Quarter.getInstance().delete(
             req.body.quarterID,
         ).subscribe(
-            () => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
