@@ -20,7 +20,7 @@ if (fs.existsSync(caPath) && fs.existsSync(keyPath) && fs.existsSync(certPath)) 
         cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath),
     };
     https.createServer(credentials, app).listen(443);
-    http.createServer(express().use((req, res) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
+    http.createServer(express().use((req:express.Request, res:express.Response) => { res.redirect('https://' + req.hostname + req.url); })).listen(80);
 }
 app.listen(process.env.PORT || 8080,
     () => console.log('Start listening on port %d', process.env.PORT || 8080),
