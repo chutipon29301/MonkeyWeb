@@ -8,11 +8,18 @@ import { MatSort, MatTableDataSource } from '@angular/material';
   styleUrls: ['./admin-student.component.scss']
 })
 export class AdminStudentComponent implements OnInit {
+  hasData = false;
   dataSource;
+  columnHead = ['Index', 'ID', 'Grade', 'Nickname', 'Firstname', 'StudentLevel', 'Remark', 'Chat'];
+
   constructor(private studentService: StudentService) { }
+
   ngOnInit() {
     this.studentService.listStudent().subscribe(
-      (allStd) => { this.dataSource = allStd.students; }
+      (allStudent) => {
+        this.dataSource = allStudent;
+        this.hasData = true;
+      }
     );
   }
 

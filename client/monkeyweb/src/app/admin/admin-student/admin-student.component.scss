@@ -1,28 +1,18 @@
 @import '~@angular/material/theming';
+.progress-container {
+    height: 100vh;
+    widows: 100vw;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+}
 table {
     width: 100%;
 }
-.mat-row:hover{
-    background-color: #F1F1F2;
+.mat-row:hover {
+    background-color: #FFFDE7;
 }
-.mat-header-cell,.mat-cell{
-    text-align: center;
-}
-.mat-column-Index{
-    width: 10%;
-}
-.mat-column-ID{
-    width: 15%;
-}
-.mat-column-Grade{
-    width: 10%;
-}
-.mat-column-Nickname{
-    width: 20%;
-}
-.mat-column-Firstname{
-    width: 35%;
-}
-.mat-column-StudentLevel{
-    width: 10%;
+.cdk-column-Chat {
+    flex-grow: 3;
 }
