@@ -52,7 +52,9 @@ export class Portfolio {
             updateValue = { ...updateValue, Score: value.Score };
         }
         return from(this.portfolioModel.update(updateValue, { where: { ID } }))
-            .pipe(map((result) => result[1]));
+            .pipe(
+                map((result) => result[1]),
+        );
     }
 
 }

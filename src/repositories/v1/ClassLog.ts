@@ -70,6 +70,8 @@ export class ClassLog {
             updateValue = { ...updateValue, Progress: value.Progress };
         }
         return from(this.classLogModel.update(updateValue, { where: { ID } }))
-            .pipe(map((result) => result[1]));
+            .pipe(
+                map((result) => result[1]),
+            );
     }
 }

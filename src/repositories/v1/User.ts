@@ -99,7 +99,9 @@ export class User {
     ): Observable<boolean> {
         return from(this.userModel.count({
             where: { ID, UserPassword },
-        })).pipe(map((count) => count !== 0));
+        })).pipe(
+            map((count) => count !== 0),
+        );
     }
 
     // public addUser(ID: number)
