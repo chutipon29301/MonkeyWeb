@@ -86,9 +86,8 @@ router.post('/getClass',
             req.body.classSubject,
             req.body.classType
         ).subscribe(
-            (result) => { },
+            (result) => res.status(200).send(result),
             (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
         );
     },
 );
