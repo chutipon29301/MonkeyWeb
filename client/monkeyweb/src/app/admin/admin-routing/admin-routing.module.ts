@@ -13,7 +13,8 @@ import {
   MatInputModule,
   MatCardModule,
   MatGridListModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatMenuModule
 } from '@angular/material';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
@@ -56,6 +57,7 @@ const adminRoutes: Routes = [
     MatInputModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    MatMenuModule,
     FontAwesomeModule
   ],
   exports: [RouterModule],
