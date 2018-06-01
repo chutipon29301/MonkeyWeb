@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-admin-nav',
@@ -6,7 +7,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./admin-nav.component.scss']
 })
 export class AdminNavComponent {
+  isHandset = false;
 
-  constructor() { }
+  constructor(breakpointObserver: BreakpointObserver) {
+    breakpointObserver.observe([
+      Breakpoints.Handset
+    ]).subscribe(result => {
+      if (result.matches) {
+        this.isHandset = true;
+      }
+    });
+  }
 
 }
