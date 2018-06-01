@@ -99,4 +99,21 @@ export class Class {
         }
         return from(this.classModel.findAll({ where }));
     }
+
+    public listStudentInClass(
+        ID: number,
+    ) {
+        const statement = 'SELECT * ' +
+            'FROM Class ' +
+            'JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
+            'JOIN Users ON Users.ID = ClassRegistration.StudentID ' +
+            'WHERE Class.ID = :ID';
+        return Connection.getInstance().query(statement,
+            {
+                raw: true,
+                replacements: { ID },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+    }
 }

@@ -31,9 +31,13 @@ export class Room {
                 where: { QuarterID },
             }));
         } else {
-            return Connection.getInstance().query(
-                'SELECT RoomName, MaxSeat FROM Room JOIN Quarter ON Room.QuarterID = Quarter.ID WHERE StartDate < CURRENT_TIMESTAMP AND EndDate > CURRENT_TIMESTAMP', {
+            return Connection.getInstance().query<IRoom>(
+                'SELECT RoomName, MaxSeat ' +
+                'FROM Room ' +
+                'JOIN Quarter ON Room.QuarterID = Quarter.ID ' +
+                'WHERE StartDate < CURRENT_TIMESTAMP AND EndDate > CURRENT_TIMESTAMP', {
                     model: this.roomModel,
+                    raw: true,
                 });
         }
     }
