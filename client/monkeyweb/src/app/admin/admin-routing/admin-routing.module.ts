@@ -48,6 +48,7 @@ const adminRoutes: Routes = [
     MatToolbarModule,
     MatSidenavModule,
     MatGridListModule,
+    MatButtonModule,
     MatFormFieldModule,
     MatListModule,
     MatTableModule,
