@@ -4,21 +4,22 @@
   "description": "This site is for using in [Monkey](https://monkey-monkey.com)",
   "main": "webpack.config.js",
   "scripts": {
-    "watch-test": "jest --detectOpenHandles --watch",
+    "start": "webpack && node dist/bundle.js",
+    "test-watch": "jest --detectOpenHandles --watch",
     "test": "jest --detectOpenHandles",
     "build": "webpack --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Pepewitch/MonkeyWeb.git"
+    "url": "git+https://github.com/monkey-monkey/MonkeyWeb.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Pepewitch/MonkeyWeb/issues"
+    "url": "https://github.com/monkey-monkey/MonkeyWeb/issues"
   },
-  "homepage": "https://github.com/Pepewitch/MonkeyWeb#readme",
+  "homepage": "https://github.com/monkey-monkey/MonkeyWeb#readme",
   "devDependencies": {
     "@types/bcrypt": "^2.0.0",
     "@types/body-parser": "^1.17.0",
@@ -52,7 +53,7 @@
   "dependencies": {
     "@types/bluebird": "^3.5.20",
     "@types/continuation-local-storage": "^3.2.1",
-    "@types/crypto-js": "^3.1.39",
+    "@types/crypto-js": "^3.1.40",
     "@types/cryptojs": "^3.1.29",
     "@types/dotenv": "^4.0.3",
     "@types/fs-extra": "^5.0.2",

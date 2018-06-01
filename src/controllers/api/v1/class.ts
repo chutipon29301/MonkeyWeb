@@ -93,7 +93,7 @@ router.post('/getClass',
             req.body.quarterID,
             req.body.classDate,
             req.body.classSubject,
-            req.body.classType
+            req.body.classType,
         ).subscribe(
             (result) => { },
             (error) => res.status(500).send(error),

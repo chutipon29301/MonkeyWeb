@@ -6,6 +6,7 @@ import { attendanceDocument, completionHandler, validateFile, validateRequest } 
 export const router = Router();
 
 router.post('/add',
+    attendanceDocument,
     body('studentID').isInt(),
     body('classID').isInt(),
     body('attendanceDate').isISO8601(),
@@ -13,17 +14,23 @@ router.post('/add',
     body('reason').isString(),
     body('sender').isString(),
     validateRequest,
-    attendanceDocument,
     (req, res) => {
-        Attendance.getInstance().add(
-            req.body.studentID,
-            req.body.classID,
-            req.body.attendanceDate,
-            req.body.attendanceType,
-            req.body.reason,
-            req.body.sender,
-        ).subscribe(
-            completionHandler(res),
-        );
+        console.log(req.file);
+        console.log(req.files);
+        if (req.file) {
+            console.log(req.file);
+        } else {
+            res.sendStatus(200);
+            // Attendance.getInstance().add(
+            //     req.body.studentID,
+            //     req.body.classID,
+            //     req.body.attendanceDate,
+            //     req.body.attendanceType,
+            //     req.body.reason,
+            //     req.body.sender,
+            // ).subscribe(
+            //     completionHandler(res),
+            // );
+        }
     },
 );
