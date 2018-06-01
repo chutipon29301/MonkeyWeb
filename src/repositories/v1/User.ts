@@ -1,4 +1,4 @@
-import { AES } from 'crypto-js';
+import { AES, enc } from 'crypto-js';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
@@ -98,10 +98,15 @@ export class User {
         ID: number,
         UserPassword: string,
     ): Observable<boolean> {
-        return from(this.userModel.count({
-            where: { ID, UserPassword },
+        return from(this.userModel.findOne<IUserModel>({
+            attributes: {
+                include: ['UserPassword'],
+            },
+            where: { ID },
         })).pipe(
-            map((count) => count !== 0),
+            map((user) => {
+                return AES.decrypt(user.UserPassword, process.env.PASSWORD_SECRET).toString(enc.Utf8) === UserPassword;
+            }),
         );
     }
 

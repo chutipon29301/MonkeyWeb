@@ -1,7 +1,9 @@
 import { from, Observable } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { AttendanceInstance, attendanceModel, IAttendanceModel } from '../../models/v1/attendance';
+import { AttendanceDocument } from './AttendanceDocument';
 
 export class Attendance {
 
@@ -36,5 +38,26 @@ export class Attendance {
             value = { ...value, AttendanceDocumentID };
         }
         return from(this.attendanceModel.create(value));
+    }
+
+    public delete(
+        ID: number,
+    ): Observable<number> {
+        return from(this.attendanceModel.findOne<IAttendanceModel>(
+            { where: { ID } },
+        )).pipe(
+            flatMap((attendance) => {
+                if (attendance.AttendanceDocumentID) {
+                    return AttendanceDocument.getInstance().find(
+                        attendance.AttendanceDocumentID,
+                    ).pipe(
+                        flatMap((document) => from(document.destroy)),
+                        flatMap((result) => from(attendance.destroy)),
+                    );
+                } else {
+                    return from(attendance.destroy);
+                }
+            }),
+        );
     }
 }
