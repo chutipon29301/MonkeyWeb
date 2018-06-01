@@ -1,0 +1,18 @@
+@import '~@angular/material/theming';
+.progress-container {
+    height: 100vh;
+    widows: 100vw;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+}
+table {
+    width: 100%;
+}
+.mat-row:hover {
+    background-color: #FFFDE7;
+}
+.cdk-column-Chat {
+    flex-grow: 3;
+}

@@ -79,3 +79,25 @@ router.post('/registration',
         );
     },
 );
+
+router.post('/getClass',
+    body('className').isString().optional(),
+    body('quarterID').isInt().optional(),
+    body('classDate').isISO8601().optional(),
+    body('classSubject').isString().optional(),
+    body('classType').isString().optional(),
+    validateRequest,
+    (req, res) => {
+        Class.getInstance().getClass(
+            req.body.className,
+            req.body.quarterID,
+            req.body.classDate,
+            req.body.classSubject,
+            req.body.classType
+        ).subscribe(
+            (result) => { },
+            (error) => res.status(500).send(error),
+            () => res.sendStatus(200),
+        );
+    },
+);

@@ -4,7 +4,6 @@ import { Connection } from '../../models/Connection';
 import { ClassInstance, classModel, IClassModel } from '../../models/v1/class';
 
 export class Class {
-
     public static getInstance(): Class {
         if (!this.instance) {
             this.instance = new Class();
@@ -33,10 +32,12 @@ export class Class {
         TutorID: number,
         ClassTimes: number,
     ): Observable<IClassModel> {
-        return from(this.classModel.create({
-            // tslint:disable-next-line:object-literal-sort-keys
-            ClassName, QuarterID, ClassDate, ClassSubject, Grade, TutorID, ClassTimes, ClassType: 'Course',
-        }));
+        return from(
+            this.classModel.create({
+                // tslint:disable-next-line:object-literal-sort-keys
+                ClassName, QuarterID, ClassDate, ClassSubject, Grade, TutorID, ClassTimes, ClassType: 'Course',
+            }),
+        );
     }
 
     public addHybrid(
@@ -45,10 +46,12 @@ export class Class {
         ClassDate: Date,
         ClassSubject: string,
     ): Observable<IClassModel> {
-        return from(this.classModel.create({
-            // tslint:disable-next-line:object-literal-sort-keys
-            ClassName, QuarterID, ClassDate, ClassSubject, ClassType: 'Hybrid',
-        }));
+        return from(
+            this.classModel.create({
+                // tslint:disable-next-line:object-literal-sort-keys
+                ClassName, QuarterID, ClassDate, ClassSubject, ClassType: 'Hybrid',
+            }),
+        );
     }
 
     public addSkill(
@@ -57,10 +60,12 @@ export class Class {
         ClassDate: Date,
         ClassSubject: string,
     ): Observable<IClassModel> {
-        return from(this.classModel.create({
-            // tslint:disable-next-line:object-literal-sort-keys
-            ClassName, QuarterID, ClassDate, ClassSubject, ClassType: 'Skill',
-        }));
+        return from(
+            this.classModel.create({
+                // tslint:disable-next-line:object-literal-sort-keys
+                ClassName, QuarterID, ClassDate, ClassSubject, ClassType: 'Skill',
+            }),
+        );
     }
 
     public deleteClass(
@@ -69,4 +74,29 @@ export class Class {
         return from(this.classModel.destroy({ where: { ID } }));
     }
 
+    public getClass(
+        ClassName: string,
+        QuarterID: number,
+        ClassDate: Date,
+        ClassSubject: string,
+        ClassType: string,
+    ): Observable<IClassModel[]> {
+        const where: Partial<IClassModel> = {};
+        if (ClassName) {
+            where.ClassName = ClassName;
+        }
+        if (QuarterID) {
+            where.QuarterID = QuarterID;
+        }
+        if (ClassDate) {
+            where.ClassDate = ClassDate;
+        }
+        if (ClassSubject) {
+            where.ClassSubject = ClassSubject;
+        }
+        if (ClassType) {
+            where.ClassType = ClassType;
+        }
+        return from(this.classModel.findAll({ where }));
+    }
 }
