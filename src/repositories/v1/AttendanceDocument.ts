@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { AttendanceDocumentInstance, attendanceDocumentModel, IAttendanceDocumentModel } from '../../models/v1/attendanceDocument';
@@ -14,16 +14,16 @@ export class AttendanceDocument {
 
     private static instance: AttendanceDocument;
 
-    private attendanceModel: Sequelize.Model<AttendanceDocumentInstance, IAttendanceDocumentModel>;
+    private attendanceDocumentModel: Sequelize.Model<AttendanceDocumentInstance, IAttendanceDocumentModel>;
 
     private constructor() {
-        this.attendanceModel = attendanceDocumentModel(Connection.getInstance().getConnection());
+        this.attendanceDocumentModel = attendanceDocumentModel(Connection.getInstance().getConnection());
     }
 
-    // public add(
-    //     file: File,
-    // ):Observable<IAttendanceDocumentModel> {
-
-    // }
+    public add(
+        DocumentPath: string,
+    ): Observable<IAttendanceDocumentModel> {
+        return from(this.attendanceDocumentModel.create({ DocumentPath }));
+    }
 
 }

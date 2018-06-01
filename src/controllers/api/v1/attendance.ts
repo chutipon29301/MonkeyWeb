@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { body } from 'express-validator/check';
+import { Observable } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
+import { IAttendanceModel } from '../../../models/v1/attendance';
 import { Attendance } from '../../../repositories/v1/Attendance';
-import { attendanceDocument, completionHandler, validateFile, validateRequest } from '../../ApiHandler';
+import { AttendanceDocument } from '../../../repositories/v1/AttendanceDocument';
+import { attendanceDocument, completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -15,22 +19,35 @@ router.post('/add',
     body('sender').isString(),
     validateRequest,
     (req, res) => {
-        console.log(req.file);
-        console.log(req.files);
+        let observable: Observable<IAttendanceModel>;
         if (req.file) {
-            console.log(req.file);
+            observable = AttendanceDocument.getInstance().add(
+                req.file.path,
+            ).pipe(
+                flatMap((attendanceDocument) =>
+                    Attendance.getInstance().add(
+                        req.body.studentID,
+                        req.body.classID,
+                        req.body.attendanceDate,
+                        req.body.attendanceType,
+                        req.body.reason,
+                        req.body.sender,
+                        attendanceDocument.ID,
+                    ),
+                ),
+            );
         } else {
-            res.sendStatus(200);
-            // Attendance.getInstance().add(
-            //     req.body.studentID,
-            //     req.body.classID,
-            //     req.body.attendanceDate,
-            //     req.body.attendanceType,
-            //     req.body.reason,
-            //     req.body.sender,
-            // ).subscribe(
-            //     completionHandler(res),
-            // );
+            observable = Attendance.getInstance().add(
+                req.body.studentID,
+                req.body.classID,
+                req.body.attendanceDate,
+                req.body.attendanceType,
+                req.body.reason,
+                req.body.sender,
+            );
         }
+        observable.subscribe(
+            completionHandler(res),
+        );
     },
 );
