@@ -51,13 +51,7 @@ export class ClassLog {
 
     public edit(
         ID: number,
-        value: {
-            CheckInTime?: Date,
-            CheckOutTime?: Date,
-            HybridSheetID?: number,
-            TutorID?: number,
-            Progress?: string,
-        },
+        value: Partial<IClassLogModel>,
     ): Observable<IClassLogModel[]> {
         let updateValue = {} as Partial<IClassLogModel>;
         if (value.CheckInTime) {
@@ -76,6 +70,14 @@ export class ClassLog {
             updateValue = { ...updateValue, Progress: value.Progress };
         }
         return from(this.classLogModel.update(updateValue, { where: { ID } }))
-            .pipe(map((result) => result[1]));
+            .pipe(
+                map((result) => result[1]),
+        );
+    }
+
+    public delete(
+        ID: number,
+    ): Observable<number> {
+        return from(this.classLogModel.destroy({ where: { ID } }));
     }
 }

@@ -17,8 +17,4 @@ export class ClassTemplate {
     private constructor() {
         // this.templateModel = templateModel(Connection.getInstance().getConnection());
     }
-
-    // public getModel(): Sequelize.Model<TemplateInstance, ITemplateModel> {
-    //     return this.templateModel;
-    // }
 }

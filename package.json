@@ -4,8 +4,8 @@
   "description": "This site is for using in [Monkey](https://monkey-monkey.com)",
   "main": "webpack.config.js",
   "scripts": {
-    "watch-test": "jest `--detectOpenHandles` --watch",
-    "test": "jest `--detectOpenHandles`",
+    "watch-test": "jest --detectOpenHandles --watch",
+    "test": "jest --detectOpenHandles",
     "build": "webpack --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
@@ -58,6 +58,7 @@
     "@types/fs-extra": "^5.0.2",
     "@types/jwt-simple": "^0.5.33",
     "@types/lodash": "^4.14.109",
+    "@types/multer": "^1.3.6",
     "@types/passport": "^0.4.5",
     "@types/passport-jwt": "^3.0.1",
     "@types/passport-local": "^1.0.33",
@@ -81,6 +82,7 @@
     "mongodb": "^3.1.0-beta4",
     "morgan": "^1.9.0",
     "mssql": "^4.1.0",
+    "multer": "^1.3.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
