@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator/check';
+import { body, param } from 'express-validator/check';
 import { Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { IAttendanceModel } from '../../../models/v1/attendance';
@@ -47,6 +47,31 @@ router.post('/add',
             );
         }
         observable.subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.get('/image/:id',
+    param('id').isInt(),
+    validateRequest,
+    (req, res) => {
+        AttendanceDocument.getInstance().getPath(
+            req.params.id,
+        ).subscribe(
+            (path) => res.status(200).sendFile(path),
+            (error) => res.status(500).send(error),
+        );
+    },
+);
+
+router.post('/delete',
+    body('attendanceID').isInt(),
+    validateRequest,
+    (req, res) => {
+        Attendance.getInstance().delete(
+            req.body.attendanceID,
+        ).subscribe(
             completionHandler(res),
         );
     },
