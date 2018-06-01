@@ -3,7 +3,7 @@ import { body } from 'express-validator/check';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
 import { User } from '../../../repositories/v1/User';
-import { validateRequest } from '../../ApiValidator';
+import { validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 

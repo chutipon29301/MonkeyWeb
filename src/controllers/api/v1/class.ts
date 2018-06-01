@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { body } from 'express-validator/check';
 import { Class } from '../../../repositories/v1/Class';
-import { validateRequest } from '../../ApiValidator';
+import { ClassRegistration } from '../../../repositories/v1/ClassRegistration';
+import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -24,9 +25,7 @@ router.post('/addCourse',
             req.body.tutorID,
             req.body.classTimes,
         ).subscribe(
-            (result) => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -44,9 +43,7 @@ router.post('/addHybrid',
             req.body.classDate,
             req.body.classSubject,
         ).subscribe(
-            (result) => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
         );
     },
 );
@@ -64,9 +61,21 @@ router.post('/addSkill',
             req.body.classDate,
             req.body.classSubject,
         ).subscribe(
-            (result) => { },
-            (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
+            completionHandler(res),
+        );
+    },
+);
+
+router.post('/registration',
+    body('studentID').isInt(),
+    body('classID').isInt(),
+    validateRequest,
+    (req, res) => {
+        ClassRegistration.getInstance().add(
+            req.body.studentID,
+            req.body.classID,
+        ).subscribe(
+            completionHandler(res),
         );
     },
 );

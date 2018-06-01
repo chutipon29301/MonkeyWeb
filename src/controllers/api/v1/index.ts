@@ -4,6 +4,7 @@ import * as jwt from 'jwt-simple';
 import { User } from '../../../repositories/v1/User';
 import { router as course } from './class';
 import { router as classlog } from './classlog';
+import { router as portfolio } from './portfolio';
 import { router as quarter } from './quarter';
 import { router as room } from './room';
 import { router as sheet } from './sheet';
@@ -12,17 +13,17 @@ import { router as user } from './user';
 export const router = Router();
 
 router.use('/class', course);
+router.use('/classlog', classlog);
+router.use('/portfolio', portfolio);
 router.use('/quarter', quarter);
 router.use('/room', room);
 router.use('/sheet', sheet);
 router.use('/user', user);
-router.use('/classlog', classlog);
 
 router.post('/login',
     body('userID').isInt(),
     body('password').isString(),
     (req, res) => {
-        console.log(req.body);
         User.getInstance().login(
             req.body.userID,
             req.body.password,

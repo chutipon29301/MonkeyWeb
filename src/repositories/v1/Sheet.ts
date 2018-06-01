@@ -36,7 +36,9 @@ export class Sheet {
         sheetPath: string,
     ): Observable<IHybridSheetModel> {
         return this.ensureTopic(topicSubject, topicClass, topic, topicName)
-            .pipe(flatMap((result) => this.addSheet(result.ID, sheetLevel, sheetNumber, subLevel, rev, sheetPath)));
+            .pipe(
+                flatMap((result) => this.addSheet(result.ID, sheetLevel, sheetNumber, subLevel, rev, sheetPath)),
+            );
     }
 
     public ensureTopic(
@@ -48,8 +50,9 @@ export class Sheet {
         return from(this.topicModel.findCreateFind<ITopicModel>({
             where: { TopicSubject, Class, Topic },
             defaults: { TopicSubject, Class, Topic, TopicName },
-        }))
-            .pipe(map((result) => result[0]));
+        })).pipe(
+            map((result) => result[0]),
+        );
     }
 
     public addSheet(

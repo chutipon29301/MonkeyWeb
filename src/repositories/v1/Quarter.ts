@@ -1,4 +1,5 @@
 import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { IQuarterModel, QuarterInstance, quarterModel } from '../../models/v1/quarter';
@@ -26,6 +27,39 @@ export class Quarter {
 
     public listQuarter(): Observable<IQuarterModel[]> {
         return from(this.quarterModel.findAll({ raw: true }));
+    }
+
+    public add(
+        QuarterName: string,
+        Type: string,
+    ): Observable<IQuarterModel> {
+        return from(this.quarterModel.create({ QuarterName, Type }));
+    }
+
+    public edit(
+        ID: number,
+        value: Partial<IQuarterModel>,
+    ): Observable<IQuarterModel[]> {
+        let updateValue = {} as Partial<IQuarterModel>;
+        if (value.StartDate) {
+            updateValue = { ...updateValue, StartDate: value.StartDate };
+        }
+        if (value.EndDate) {
+            updateValue = { ...updateValue, EndDate: value.EndDate };
+        }
+        if (value.QuarterName) {
+            updateValue = { ...updateValue, QuarterName: value.QuarterName };
+        }
+        return from(this.quarterModel.update(updateValue, { where: { ID } }))
+            .pipe(
+                map((quarter) => quarter[1]),
+        );
+    }
+
+    public delete(
+        ID: number,
+    ): Observable<number> {
+        return from(this.quarterModel.destroy({ where: { ID } }));
     }
 
 }

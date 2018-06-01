@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body, validationResult } from 'express-validator/check';
 import { flatMap } from 'rxjs/operators';
 import { Sheet } from '../../../repositories/v1/Sheet';
-import { validateRequest } from '../../ApiValidator';
+import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -29,8 +29,7 @@ router.post('/addSheet',
             req.body.topicName || null,
             req.body.path,
         ).subscribe(
-            (sheet) => res.sendStatus(200),
-            (error) => res.status(500).send(error),
+            completionHandler(res),
         );
     },
 );

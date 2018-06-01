@@ -1,11 +1,11 @@
 import * as Sequelize from 'sequelize';
 
 export interface IQuarterModel {
-    ID: number;
+    ID?: number;
     QuarterName: string;
     Type: string;
-    StartDate: Date;
-    EndDate: Date;
+    StartDate?: Date;
+    EndDate?: Date;
 }
 
 export type QuarterInstance = Sequelize.Instance<IQuarterModel> & IQuarterModel;
