@@ -1,3 +1,4 @@
+import { LayoutModule } from '@angular/cdk/layout';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -40,6 +41,7 @@ const adminRoutes: Routes = [
 @NgModule({
   declarations: [AdminNavComponent, AdminStudentComponent, AdminClassComponent],
   imports: [
+    LayoutModule,
     RouterModule.forChild(adminRoutes),
     CommonModule,
     FormsModule,
