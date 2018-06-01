@@ -1,5 +1,7 @@
-FROM node
+FROM node:9
 WORKDIR /app
-ADD . /app
-RUN ["npm","install"]
-CMD ["npm","run","build"]
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD [ "npm", "start" ]

@@ -3,7 +3,7 @@ import { body } from 'express-validator/check';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
 import { User } from '../../../repositories/v1/User';
-import { validateRequest } from '../../ApiHandler';
+import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -44,6 +44,20 @@ router.post('/getUserInfo',
         ).subscribe(
             (user) => res.status(200).send({ user }),
             (error) => res.status(500).send(error),
+        );
+    },
+);
+
+router.post('/updatePassword',
+    body('userID').isInt(),
+    body('password').isString(),
+    validateRequest,
+    (req, res) => {
+        User.getInstance().updatePassword(
+            req.body.userID,
+            req.body.password,
+        ).subscribe(
+            completionHandler(res),
         );
     },
 );
