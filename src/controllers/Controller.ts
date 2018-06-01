@@ -1,4 +1,5 @@
-import * as bodyParser from 'body-parser';
+// import * as bodyParser from 'body-parser';
+import { urlencoded } from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as validator from 'express-validator';
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.static(join(__dirname, '../public')));
-app.use(bodyParser.urlencoded({
+app.use(urlencoded({
   extended: true,
 }));
 app.use(cookieParser(process.env.COOKIE_SECRET || 'TEST'));
