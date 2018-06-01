@@ -1,3 +1,4 @@
+import { AES } from 'crypto-js';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
@@ -105,4 +106,13 @@ export class User {
     }
 
     // public addUser(ID: number)
+
+    public updatePassword(ID: number, password: string): Observable<IUserModel[]> {
+        return from(this.userModel.update({
+            UserPassword: AES.encrypt(password, process.env.PASSWORD_SECRET).toString(),
+        }, { where: { ID } }),
+        ).pipe(
+            map((result) => result[1]),
+        );
+    }
 }

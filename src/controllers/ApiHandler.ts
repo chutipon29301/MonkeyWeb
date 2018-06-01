@@ -31,7 +31,7 @@ export function validateFile(req: Request, res: Response, next: NextFunction): v
 }
 
 const upload = multer({
-    dest: process.env.DOCUMENT_PATH,
+    dest: process.env.DOCUMENT_PATH + 'tmp/',
 });
 
 export const attendanceDocument = upload.single();
