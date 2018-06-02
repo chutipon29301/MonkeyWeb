@@ -30,10 +30,11 @@ export class AttendanceDocument {
     public getPath(
         ID: number,
     ): Observable<string> {
-        return from(this.attendanceDocumentModel.findOne<string>({
+        return from(this.attendanceDocumentModel.findOne({
             attributes: {
                 include: ['DocumentPath'],
             },
+            raw: true,
             where: { ID },
         })).pipe(
             map((result) => result.DocumentPath),
