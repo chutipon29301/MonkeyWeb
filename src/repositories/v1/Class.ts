@@ -1,8 +1,12 @@
-import { from, Observable } from 'rxjs';
+import { forkJoin, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
-import { ClassInstance, classModel, IClassModel } from '../../models/v1/class';
+import { ClassInstance, classModel, IClassInfo, IClassModel } from '../../models/v1/class';
+import { IGradeStudentState } from '../../models/v1/studentState';
+import { IUserFullNameTh } from '../../models/v1/user';
+
+export type StudentInClass = IUserFullNameTh & IGradeStudentState;
 
 export class Class {
     public static getInstance(): Class {
@@ -101,20 +105,14 @@ export class Class {
         return from(this.classModel.findAll({ where }));
     }
 
-    public listStudentInClass(
+    public getClassInfo(
         ID: number,
-    ) {
-        const statement = 'SELECT * ' +
-            'FROM Class ' +
-            'JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
-            'JOIN Users ON Users.ID = ClassRegistration.StudentID ' +
-            'WHERE Class.ID = :ID';
-        return Connection.getInstance().query(statement,
-            {
-                raw: true,
-                replacements: { ID },
-                type: Sequelize.QueryTypes.SELECT,
-            },
+    ): Observable<{ info: IClassInfo, students: StudentInClass[] }> {
+        return forkJoin(
+            this.getInfo(ID),
+            this.listStudentInClass(ID),
+        ).pipe(
+            map((result) => ({ info: result[0], students: result[1] })),
         );
     }
 
@@ -161,4 +159,47 @@ export class Class {
                 map((result) => result[1][0]),
         );
     }
+
+    private getInfo(
+        ID: number,
+    ): Observable<IClassInfo> {
+        return from(this.classModel.findOne<IClassInfo>(
+            {
+                attributes: {
+                    exclude: ['ID', 'QuarterID', 'ClassSubject', 'Suggestion'],
+                },
+                raw: true,
+                where: { ID },
+            },
+        ));
+    }
+
+    private listStudentInClass(
+        ID: number,
+    ): Observable<StudentInClass[]> {
+        const statement = 'SELECT Users.ID, StudentState.Grade, Users.Nickname, Users.Firstname, Users.Lastname ( ' +
+            'SELECT COUNT(*) ' +
+            'FROM ClassRegistration ' +
+            'JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
+            'WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Course\' ' +
+            ') AS CountCourse, ( ' +
+            'SELECT COUNT(*) ' +
+            'FROM ClassRegistration ' +
+            'JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
+            'WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Hybrid\' ' +
+            ') AS CountHybrid ' +
+            'FROM Class ' +
+            'JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
+            'JOIN Users ON ClassRegistration.StudentID = Users.ID ' +
+            'JOIN StudentState ON Class.QuarterID = StudentState.QuarterID AND Users.ID = StudentState.StudentID ' +
+            'WHERE Class.ID = :ID';
+        return Connection.getInstance().query<StudentInClass>(statement,
+            {
+                raw: true,
+                replacements: { ID },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+    }
+
 }

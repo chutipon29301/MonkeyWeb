@@ -151,3 +151,16 @@ router.post('/edit',
         );
     },
 );
+
+router.post('/info',
+    body('classID').isInt(),
+    validateRequest,
+    (req, res) => {
+        Class.getInstance().getClassInfo(
+            req.body.classID,
+        ).subscribe(
+            (result) => res.status(200).send(result),
+            (error) => res.status(500).send(error),
+        );
+    },
+);

@@ -3,19 +3,22 @@ import { quarterModel } from './quarter';
 import { roomModel } from './room';
 import { userModel } from './user';
 
-export interface IClassModel {
-    ID?: number;
+export interface IClassInfo {
     ClassName: string;
-    QuarterID: number;
     ClassDate: Date;
-    ClassSubject: string;
-    Grade?: string;
+    ClassDescription?: string;
     TutorID?: number;
     RoomID?: number;
-    ClassDescription?: string;
-    Suggestion?: string;
+    Grade?: string;
     ClassTimes?: number;
     ClassType?: string;
+}
+
+export interface IClassModel extends IClassInfo {
+    ID?: number;
+    QuarterID: number;
+    ClassSubject: string;
+    Suggestion?: string;
 }
 
 export type ClassInstance = Sequelize.Instance<IClassModel> & IClassModel;
