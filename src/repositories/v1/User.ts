@@ -3,10 +3,11 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
+import { IChatMessage } from '../../models/v1/chat';
 import { IAllStudentState, UserRegistrationStage } from '../../models/v1/studentState';
 import { IUserFullNameTh, IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel, UserStatus } from '../../models/v1/user';
 
-export type AllStudent = IUserFullNameTh & IAllStudentState;
+export type AllStudent = IUserFullNameTh & IAllStudentState & IChatMessage;
 
 export class User {
 
@@ -48,9 +49,15 @@ export class User {
             Grade?: number,
         },
     ): Observable<AllStudent[]> {
-        let statement = 'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark ' +
+        let statement = 'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark, Chat.ChatMessage ' +
             'FROM Users ' +
             'JOIN StudentState ON StudentState.StudentID = Users.ID ' +
+            'LEFT JOIN Chat ON Chat.StudentID = Users.ID AND Chat.ID = ( ' +
+            'SELECT TOP(1) ID ' +
+            'FROM Chat ' +
+            'WHERE Chat.StudentID = Users.ID ' +
+            'ORDER BY Chat.ChatTimestamp DESC ' +
+            ') ' +
             'WHERE Users.Position = \'student\' AND StudentState.QuarterID = :QuarterID';
         let replacements: any = { QuarterID };
         if (options && options.Stage) {

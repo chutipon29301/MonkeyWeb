@@ -1,10 +1,13 @@
 import * as Sequelize from 'sequelize';
 
-export interface IChatModel {
+export interface IChatMessage {
+    ChatMessage: string;
+}
+
+export interface IChatModel extends IChatMessage {
     ID?: number;
     StudentID: number;
     ChatTimestamp?: Date;
-    ChatMessage: string;
     QuarterID: number;
     SenderID: number;
 }
@@ -26,7 +29,7 @@ export function chatModel(sequalize: Sequelize.Sequelize) {
         },
         ChatTimestamp: {
             type: Sequelize.DATE,
-            allowNull: false,
+            allowNull: true,
         },
         ChatMessage: {
             type: Sequelize.STRING,
