@@ -12,8 +12,11 @@ export enum UserRegistrationStage {
     registered = 'registered',
 }
 
-export interface IAllStudentState {
+export interface IGradeStudentState {
     Grade: number;
+}
+
+export interface IAllStudentState extends IGradeStudentState {
     StudentLevel?: string;
     Stage: UserRegistrationStage;
     Remark?: string;
