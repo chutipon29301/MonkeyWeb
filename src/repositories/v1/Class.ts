@@ -6,7 +6,7 @@ import { ClassInstance, classModel, IClassInfo, IClassModel } from '../../models
 import { IGradeStudentState } from '../../models/v1/studentState';
 import { IUserFullNameTh } from '../../models/v1/user';
 
-export type StudentInClass = IUserFullNameTh & IGradeStudentState;
+export type StudentInClass = IUserFullNameTh & IGradeStudentState & {CountCourse: number, CountHybrid: number};
 
 export class Class {
     public static getInstance(): Class {
