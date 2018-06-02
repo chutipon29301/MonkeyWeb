@@ -1,4 +1,5 @@
 import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { ClassInstance, classModel, IClassModel } from '../../models/v1/class';
@@ -98,5 +99,66 @@ export class Class {
             where.ClassType = ClassType;
         }
         return from(this.classModel.findAll({ where }));
+    }
+
+    public listStudentInClass(
+        ID: number,
+    ) {
+        const statement = 'SELECT * ' +
+            'FROM Class ' +
+            'JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
+            'JOIN Users ON Users.ID = ClassRegistration.StudentID ' +
+            'WHERE Class.ID = :ID';
+        return Connection.getInstance().query(statement,
+            {
+                raw: true,
+                replacements: { ID },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+    }
+
+    public edit(
+        ID: number,
+        value: Partial<IClassModel>,
+    ): Observable<IClassModel> {
+        let updateValue = {} as Partial<IClassModel>;
+        if (value.ClassName) {
+            updateValue = { ...updateValue, ClassName: value.ClassName };
+        }
+        if (value.QuarterID) {
+            updateValue = { ...updateValue, QuarterID: value.QuarterID };
+        }
+        if (value.ClassDate) {
+            updateValue = { ...updateValue, ClassDate: value.ClassDate };
+        }
+        if (value.ClassSubject) {
+            updateValue = { ...updateValue, ClassSubject: value.ClassSubject };
+        }
+        if (value.Grade) {
+            updateValue = { ...updateValue, Grade: value.Grade };
+        }
+        if (value.TutorID) {
+            updateValue = { ...updateValue, TutorID: value.TutorID };
+        }
+        if (value.RoomID) {
+            updateValue = { ...updateValue, RoomID: value.RoomID };
+        }
+        if (value.ClassDescription) {
+            updateValue = { ...updateValue, ClassDescription: value.ClassDescription };
+        }
+        if (value.Suggestion) {
+            updateValue = { ...updateValue, Suggestion: value.Suggestion };
+        }
+        if (value.ClassTimes) {
+            updateValue = { ...updateValue, ClassTimes: value.ClassTimes };
+        }
+        if (value.ClassType) {
+            updateValue = { ...updateValue, ClassType: value.ClassType };
+        }
+        return from(this.classModel.update(updateValue, { where: { ID } }))
+            .pipe(
+                map((result) => result[1][0]),
+        );
     }
 }

@@ -27,4 +27,21 @@ export class ClassRegistration {
     public delete(ID: number): Observable<number> {
         return from(this.classRegistrationModel.destroy({ where: { ID } }));
     }
+
+    public listStudentClass(
+        ID: number,
+        QuarterID: number,
+    ) {
+        const statement = 'SELECT * ' +
+            'FROM ClassRegistration ' +
+            'JOIN Class ON Class.ID = ClassRegistration.ClassID ' +
+            'WHERE ClassRegistration.StudentID = :ID AND Class.QuarterID = :QuarterID';
+        return Connection.getInstance().query(statement,
+            {
+                raw: true,
+                replacements: { ID, QuarterID },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+    }
 }

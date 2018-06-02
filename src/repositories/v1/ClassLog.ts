@@ -52,7 +52,7 @@ export class ClassLog {
     public edit(
         ID: number,
         value: Partial<IClassLogModel>,
-    ): Observable<IClassLogModel[]> {
+    ): Observable<IClassLogModel> {
         let updateValue = {} as Partial<IClassLogModel>;
         if (value.CheckInTime) {
             updateValue = { ...updateValue, CheckInTime: value.CheckInTime };
@@ -71,7 +71,7 @@ export class ClassLog {
         }
         return from(this.classLogModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((result) => result[1]),
+                map((result) => result[1][0]),
         );
     }
 

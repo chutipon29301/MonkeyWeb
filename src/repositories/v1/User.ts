@@ -49,7 +49,8 @@ export class User {
         },
     ): Observable<AllStudent[]> {
         let statement = 'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark ' +
-            'FROM Users JOIN StudentState ON StudentState.StudentID = Users.ID ' +
+            'FROM Users ' +
+            'JOIN StudentState ON StudentState.StudentID = Users.ID ' +
             'WHERE Users.Position = \'student\' AND StudentState.QuarterID = :QuarterID';
         let replacements: any = { QuarterID };
         if (options && options.Stage) {
@@ -75,6 +76,7 @@ export class User {
         }
         return Connection.getInstance().query<AllStudent>(statement,
             {
+                raw: true,
                 replacements,
                 type: Sequelize.QueryTypes.SELECT,
             },
