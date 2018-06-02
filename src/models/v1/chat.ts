@@ -3,7 +3,7 @@ import * as Sequelize from 'sequelize';
 export interface IChatModel {
     ID?: number;
     StudentID: number;
-    ChatTimestamp: Date;
+    ChatTimestamp?: Date;
     ChatMessage: string;
     QuarterID: number;
     SenderID: number;
