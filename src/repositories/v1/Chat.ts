@@ -58,4 +58,8 @@ export class Chat {
     ): Observable<number> {
         return from(this.chatModel.destroy({ where: { ID } }));
     }
+
+    // public listByStudentID(
+    //     StudentID: number,
+    // ): Observable<ICha
 }

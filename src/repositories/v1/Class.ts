@@ -177,7 +177,7 @@ export class Class {
     private listStudentInClass(
         ID: number,
     ): Observable<StudentInClass[]> {
-        const statement = 'SELECT Users.ID, StudentState.Grade, Users.Nickname, Users.Firstname, Users.Lastname ( ' +
+        const statement = 'SELECT Users.ID, StudentState.Grade, Users.Nickname, Users.Firstname, Users.Lastname, ( ' +
             'SELECT COUNT(*) ' +
             'FROM ClassRegistration ' +
             'JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
