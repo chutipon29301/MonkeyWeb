@@ -34,7 +34,7 @@ export class ClassRegistration {
     ) {
         const statement = 'SELECT * ' +
             'FROM ClassRegistration ' +
-            'JOIN Class ON Class.ID = ClassRegistration.ClassID ' +
+            '   JOIN Class ON Class.ID = ClassRegistration.ClassID ' +
             'WHERE ClassRegistration.StudentID = :ID AND Class.QuarterID = :QuarterID';
         return Connection.getInstance().query(statement,
             {

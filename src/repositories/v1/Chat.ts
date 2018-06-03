@@ -72,7 +72,7 @@ export class Chat {
         }
         statement += 'Chat.ChatMessage, Chat.ChatTimestamp, Users.NicknameEn ' +
             'FROM Chat ' +
-            'JOIN Users ON Users.ID = Chat.SenderID ' +
+            '   JOIN Users ON Users.ID = Chat.SenderID ' +
             'WHERE StudentID = :StudentID ' +
             'ORDER BY Chat.ChatTimestamp DESC';
         return Connection.getInstance().query<ChatMessage>(statement,
