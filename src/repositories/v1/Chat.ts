@@ -2,7 +2,10 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
-import { ChatInstance, chatModel, IChatModel } from '../../models/v1/chat';
+import { ChatInstance, chatModel, IChat, IChatModel } from '../../models/v1/chat';
+import { IUserNicknameEn } from '../../models/v1/user';
+
+export type ChatMessage = IChat & IUserNicknameEn;
 
 export class Chat {
 
@@ -59,7 +62,25 @@ export class Chat {
         return from(this.chatModel.destroy({ where: { ID } }));
     }
 
-    // public listByStudentID(
-    //     StudentID: number,
-    // ): Observable<ICha
+    public list(
+        StudentID: number,
+        limit?: number,
+    ): Observable<ChatMessage[]> {
+        let statement = 'SELECT ';
+        if (limit) {
+            statement += 'TOP(' + limit + ') ';
+        }
+        statement += 'Chat.ChatMessage, Chat.ChatTimestamp, Users.NicknameEn ' +
+            'FROM Chat ' +
+            'JOIN Users ON Users.ID = Chat.SenderID ' +
+            'WHERE StudentID = :StudentID ' +
+            'ORDER BY Chat.ChatTimestamp DESC';
+        return Connection.getInstance().query<ChatMessage>(statement,
+            {
+                raw: true,
+                replacements: { StudentID },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+    }
 }
