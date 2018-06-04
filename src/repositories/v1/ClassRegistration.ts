@@ -24,8 +24,17 @@ export class ClassRegistration {
         return from(this.classRegistrationModel.create({ StudentID, ClassID }));
     }
 
-    public delete(ID: number): Observable<number> {
+    public delete(
+        ID: number,
+    ): Observable<number> {
         return from(this.classRegistrationModel.destroy({ where: { ID } }));
+    }
+
+    public deleteByClass(
+        StudentID: number,
+        ClassID: number,
+    ): Observable<number> {
+        return from(this.classRegistrationModel.destroy({ where: { StudentID, ClassID } }));
     }
 
     public listStudentClass(

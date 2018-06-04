@@ -7,8 +7,16 @@ export enum UserStatus {
     terminated = 'terminated',
 }
 
+export enum UserPosition {
+    student = 'student',
+    tutor = 'tutor',
+    admin = 'admin',
+    dev = 'dev',
+    mel = 'mel',
+}
+
 export interface IUserID {
-    ID: number;
+    ID?: number;
 }
 
 export interface IUserNicknameEn extends IUserID {
@@ -39,7 +47,7 @@ export interface IUserInfo extends IUserName {
     Email?: string;
     Phone?: string;
     UserStatus: UserStatus;
-    Position: string;
+    Position: UserPosition;
     SubPosition?: string;
 }
 

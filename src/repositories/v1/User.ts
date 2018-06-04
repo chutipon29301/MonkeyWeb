@@ -5,7 +5,7 @@ import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { IChatMessage } from '../../models/v1/chat';
 import { IAllStudentState, UserRegistrationStage } from '../../models/v1/studentState';
-import { IUserFullNameTh, IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel, UserStatus } from '../../models/v1/user';
+import { IUserFullNameTh, IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel, UserPosition, UserStatus } from '../../models/v1/user';
 
 export type AllStudent = IUserFullNameTh & IAllStudentState & IChatMessage;
 
@@ -107,26 +107,99 @@ export class User {
         ID: number,
         UserPassword: string,
     ): Observable<boolean> {
+        return this.decryptPassword(
+            ID,
+        ).pipe(
+            map((result) => result === UserPassword),
+        );
+    }
+
+    public decryptPassword(
+        ID: number,
+    ): Observable<string> {
         return from(this.userModel.findOne<IUserModel>({
             attributes: {
                 include: ['UserPassword'],
             },
             where: { ID },
         })).pipe(
-            map((user) => {
-                return AES.decrypt(user.UserPassword, process.env.PASSWORD_SECRET).toString(enc.Utf8) === UserPassword;
-            }),
+            map((result) => AES.decrypt(result.UserPassword, process.env.PASSWORD_SECRET).toString(enc.Utf8)),
         );
     }
 
-    // public addUser(ID: number)
-
-    public updatePassword(ID: number, password: string): Observable<IUserModel[]> {
-        return from(this.userModel.update({
+    public addTutor(
+        Firstname: string,
+        Lastname: string,
+        Nickname: string,
+        FirstnameEn: string,
+        LastnameEn: string,
+        NicknameEn: string,
+        Email: string,
+        Phone: string,
+        password: string,
+    ): Observable<number> {
+        // tslint:disable:object-literal-sort-keys
+        return from(this.userModel.create({
+            Firstname,
+            Lastname,
+            Nickname,
+            FirstnameEn,
+            LastnameEn,
+            NicknameEn,
+            Email,
+            Phone,
             UserPassword: AES.encrypt(password, process.env.PASSWORD_SECRET).toString(),
-        }, { where: { ID } }),
-        ).pipe(
-            map((result) => result[1]),
+            UserStatus: UserStatus.active,
+            Position: UserPosition.tutor,
+        })).pipe(
+            map((result) => result.ID),
+        );
+    }
+
+    public edit(
+        ID: number,
+        value: Partial<IUserModel>,
+    ): Observable<IUserModel> {
+        let updateValue = {} as Partial<IUserModel>;
+        if (value.Firstname) {
+            updateValue = { ...updateValue, Firstname: value.Firstname };
+        }
+        if (value.Lastname) {
+            updateValue = { ...updateValue, Lastname: value.Lastname };
+        }
+        if (value.Nickname) {
+            updateValue = { ...updateValue, Nickname: value.Nickname };
+        }
+        if (value.FirstnameEn) {
+            updateValue = { ...updateValue, FirstnameEn: value.FirstnameEn };
+        }
+        if (value.LastnameEn) {
+            updateValue = { ...updateValue, LastnameEn: value.LastnameEn };
+        }
+        if (value.NicknameEn) {
+            updateValue = { ...updateValue, NicknameEn: value.NicknameEn };
+        }
+        if (value.Email) {
+            updateValue = { ...updateValue, Email: value.Email };
+        }
+        if (value.Phone) {
+            updateValue = { ...updateValue, Phone: value.Phone };
+        }
+        if (value.UserPassword) {
+            updateValue = { ...updateValue, UserPassword: AES.encrypt(value.UserPassword, process.env.PASSWORD_SECRET).toString() };
+        }
+        if (value.UserStatus) {
+            updateValue = { ...updateValue, UserStatus: value.UserStatus };
+        }
+        if (value.Position) {
+            updateValue = { ...updateValue, Position: value.Position };
+        }
+        if (value.SubPosition) {
+            updateValue = { ...updateValue, SubPosition: value.SubPosition };
+        }
+        return from(this.userModel.update(updateValue, { where: { ID } }))
+            .pipe(
+                map((result) => result[1][0]),
         );
     }
 }
