@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator/check';
+import { body, oneOf } from 'express-validator/check';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
 import { User } from '../../../repositories/v1/User';
@@ -55,14 +55,78 @@ router.post('/getUserInfo',
     },
 );
 
-router.post('/updatePassword',
+router.post('/decryptPassword',
     body('userID').isInt(),
+    validateRequest,
+    // TODO: Validate with userstatus dev or higher
+    (req, res) => {
+        User.getInstance().decryptPassword(
+            req.body.userID,
+        ).subscribe(
+            (password) => res.status(200).send({ password }),
+            (error) => res.status(500).send(error),
+        );
+    },
+);
+
+router.post('/addTutor',
+    body('firstName').isString(),
+    body('lastname').isString(),
+    body('nickname').isString(),
+    body('firstnameEn').isString(),
+    body('lastnameEn').isString(),
+    body('nicknameEn').isString(),
+    body('email').isEmail(),
+    body('phone').isMobilePhone('th-TH'),
     body('password').isString(),
     validateRequest,
     (req, res) => {
-        User.getInstance().updatePassword(
-            req.body.userID,
+        User.getInstance().addTutor(
+            req.body.firstName,
+            req.body.lastname,
+            req.body.nickname,
+            req.body.firstnameEn,
+            req.body.lastnameEn,
+            req.body.nicknameEn,
+            req.body.email,
+            req.body.phone,
             req.body.password,
+        ).subscribe(
+            (userID) => res.status(200).send({ userID }),
+            (error) => res.status(500).send(error),
+        );
+    },
+);
+
+router.post('/edit',
+    body('userID').isInt(),
+    oneOf([
+        body('firstName').isString(),
+        body('lastname').isString(),
+        body('nickname').isString(),
+        body('firstnameEn').isString(),
+        body('lastnameEn').isString(),
+        body('nicknameEn').isString(),
+        body('email').isEmail(),
+        body('phone').isMobilePhone('th-TH'),
+        body('password').isString(),
+    ]),
+    validateRequest,
+    (req, res) => {
+        // tslint:disable:object-literal-sort-keys
+        User.getInstance().edit(
+            req.body.userID,
+            {
+                Firstname: req.body.firstName,
+                Lastname: req.body.lastname,
+                Nickname: req.body.nickname,
+                FirstnameEn: req.body.firstnameEn,
+                LastnameEn: req.body.lastnameEn,
+                NicknameEn: req.body.nicknameEn,
+                Email: req.body.email,
+                Phone: req.body.phone,
+                UserPassword: req.body.password,
+            },
         ).subscribe(
             completionHandler(res),
         );

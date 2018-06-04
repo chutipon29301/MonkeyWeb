@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator/check';
+import { body, oneOf } from 'express-validator/check';
 import { Class } from '../../../repositories/v1/Class';
 import { ClassRegistration } from '../../../repositories/v1/ClassRegistration';
 import { completionHandler, validateRequest } from '../../ApiHandler';
@@ -80,6 +80,20 @@ router.post('/registration',
     },
 );
 
+router.post('/unregistration',
+    body('studentID').isInt(),
+    body('classID').isInt(),
+    validateRequest,
+    (req, res) => {
+        ClassRegistration.getInstance().deleteByClass(
+            req.body.studentID,
+            req.body.classID,
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
 router.post('/getClass',
     body('className').isString().optional(),
     body('quarterID').isInt().optional(),
@@ -94,6 +108,69 @@ router.post('/getClass',
             req.body.classDate,
             req.body.classSubject,
             req.body.classType,
+        ).subscribe(
+            (result) => res.status(200).send(result),
+            (error) => res.status(500).send(error),
+        );
+    },
+);
+
+router.post('/delete',
+    body('classID').isInt(),
+    validateRequest,
+    (req, res) => {
+        Class.getInstance().deleteClass(
+            req.body.classID,
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.post('/edit',
+    body('classID').isInt(),
+    oneOf([
+        body('classDate').isISO8601(),
+        body('classDescripion').isString(),
+        body('className').isString(),
+        body('classSubject').isString(),
+        body('classTime').isInt(),
+        body('classType').isString(),
+        body('grade').isString(),
+        body('quarterID').isInt(),
+        body('roomID').isInt(),
+        body('suggestion').isString(),
+        body('tutorID').isInt(),
+    ]),
+    validateRequest,
+    (req, res) => {
+        Class.getInstance().edit(
+            req.body.classID,
+            {
+                ClassDate: req.body.classDate,
+                ClassDescription: req.body.classDescripion,
+                ClassName: req.body.className,
+                ClassSubject: req.body.classSubject,
+                ClassTimes: req.body.classTime,
+                ClassType: req.body.classType,
+                Grade: req.body.grade,
+                QuarterID: req.body.quarterID,
+                RoomID: req.body.roomID,
+                Suggestion: req.body.suggestion,
+                TutorID: req.body.tutorID,
+            },
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.post('/info',
+    body('classID').isInt(),
+    validateRequest,
+    (req, res) => {
+        Class.getInstance().getClassInfo(
+            req.body.classID,
         ).subscribe(
             (result) => res.status(200).send(result),
             (error) => res.status(500).send(error),

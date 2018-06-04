@@ -3,6 +3,7 @@ import { body } from 'express-validator/check';
 import * as jwt from 'jwt-simple';
 import { User } from '../../../repositories/v1/User';
 import { router as attendance } from './attendance';
+import { router as chat } from './chat';
 import { router as course } from './class';
 import { router as classlog } from './classlog';
 import { router as portfolio } from './portfolio';
@@ -14,6 +15,7 @@ import { router as user } from './user';
 export const router = Router();
 
 router.use('/attendance', attendance);
+router.use('/chat', chat);
 router.use('/class', course);
 router.use('/classlog', classlog);
 router.use('/portfolio', portfolio);

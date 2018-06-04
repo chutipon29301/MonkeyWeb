@@ -1,7 +1,13 @@
-import { from, Observable } from 'rxjs';
+import { forkJoin, from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
-import { ClassInstance, classModel, IClassModel } from '../../models/v1/class';
+import { ClassInstance, classModel, IClassInfo, IClassModel } from '../../models/v1/class';
+import { IGradeStudentState } from '../../models/v1/studentState';
+import { IUserFullNameEn, IUserFullNameTh } from '../../models/v1/user';
+
+export type StudentInClass = IUserFullNameTh & IGradeStudentState & { CountCourse: number, CountHybrid: number };
+export type ClassInfo = IClassInfo & IUserFullNameEn;
 
 export class Class {
     public static getInstance(): Class {
@@ -99,4 +105,108 @@ export class Class {
         }
         return from(this.classModel.findAll({ where }));
     }
+
+    public getClassInfo(
+        ID: number,
+    ): Observable<{ info: IClassInfo, students: StudentInClass[] }> {
+        return forkJoin(
+            this.getInfo(ID),
+            this.listStudentInClass(ID),
+        ).pipe(
+            map((result) => ({ info: result[0], students: result[1] })),
+        );
+    }
+
+    public edit(
+        ID: number,
+        value: Partial<IClassModel>,
+    ): Observable<IClassModel> {
+        let updateValue = {} as Partial<IClassModel>;
+        if (value.ClassName) {
+            updateValue = { ...updateValue, ClassName: value.ClassName };
+        }
+        if (value.QuarterID) {
+            updateValue = { ...updateValue, QuarterID: value.QuarterID };
+        }
+        if (value.ClassDate) {
+            updateValue = { ...updateValue, ClassDate: value.ClassDate };
+        }
+        if (value.ClassSubject) {
+            updateValue = { ...updateValue, ClassSubject: value.ClassSubject };
+        }
+        if (value.Grade) {
+            updateValue = { ...updateValue, Grade: value.Grade };
+        }
+        if (value.TutorID) {
+            updateValue = { ...updateValue, TutorID: value.TutorID };
+        }
+        if (value.RoomID) {
+            updateValue = { ...updateValue, RoomID: value.RoomID };
+        }
+        if (value.ClassDescription) {
+            updateValue = { ...updateValue, ClassDescription: value.ClassDescription };
+        }
+        if (value.Suggestion) {
+            updateValue = { ...updateValue, Suggestion: value.Suggestion };
+        }
+        if (value.ClassTimes) {
+            updateValue = { ...updateValue, ClassTimes: value.ClassTimes };
+        }
+        if (value.ClassType) {
+            updateValue = { ...updateValue, ClassType: value.ClassType };
+        }
+        return from(this.classModel.update(updateValue, { where: { ID } }))
+            .pipe(
+                map((result) => result[1][0]),
+        );
+    }
+
+    private getInfo(
+        ID: number,
+    ): Observable<ClassInfo> {
+        const statement =
+            'SELECT Class.ClassName, Class.ClassDate, Class.ClassDescription, Class.TutorID, Class.RoomID, Class.Grade, Class.ClassTimes, Class.ClassType, Users.FirstnameEn, Users.LastnameEn, Users.NicknameEn ' +
+            'FROM Class ' +
+            '   JOIN Users ON Users.ID = Class.TutorID ' +
+            'WHERE Class.ID = :ID';
+        return Connection.getInstance().query<ClassInfo>(statement,
+            {
+                raw: true,
+                replacements: { ID },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        ).pipe(
+            map((result) => result[0]),
+        );
+    }
+
+    private listStudentInClass(
+        ID: number,
+    ): Observable<StudentInClass[]> {
+        const statement =
+            'SELECT Users.ID, StudentState.Grade, Users.Nickname, Users.Firstname, Users.Lastname, ( ' +
+            '   SELECT COUNT(*) ' +
+            '   FROM ClassRegistration ' +
+            '       JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
+            '   WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Course\' ' +
+            ') AS CountCourse, ( ' +
+            '   SELECT COUNT(*) ' +
+            '   FROM ClassRegistration ' +
+            '       JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
+            '   WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Hybrid\' ' +
+            ') AS CountHybrid ' +
+            'FROM Class ' +
+            '   JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
+            '   JOIN Users ON ClassRegistration.StudentID = Users.ID ' +
+            '   JOIN StudentState ON Class.QuarterID = StudentState.QuarterID AND Users.ID = StudentState.StudentID ' +
+            'WHERE Class.ID = :ID';
+        return Connection.getInstance().query<StudentInClass>(statement,
+            {
+                raw: true,
+                replacements: { ID },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+    }
+
 }

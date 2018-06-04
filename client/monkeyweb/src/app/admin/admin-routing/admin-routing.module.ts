@@ -1,3 +1,4 @@
+import { LayoutModule } from '@angular/cdk/layout';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -12,7 +13,8 @@ import {
   MatInputModule,
   MatCardModule,
   MatGridListModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatMenuModule
 } from '@angular/material';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
@@ -40,6 +42,7 @@ const adminRoutes: Routes = [
 @NgModule({
   declarations: [AdminNavComponent, AdminStudentComponent, AdminClassComponent],
   imports: [
+    LayoutModule,
     RouterModule.forChild(adminRoutes),
     CommonModule,
     FormsModule,
@@ -55,6 +58,7 @@ const adminRoutes: Routes = [
     MatInputModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    MatMenuModule,
     FontAwesomeModule
   ],
   exports: [RouterModule],

@@ -1,5 +1,5 @@
 <section class="mat-typography">
-  <div [class]="classTitle">
+  <div [class]="(isMobile)?'flex-mobile-container':'flex-container'">
     <mat-card>
       <img mat-card-image src="../../assets/images/banner.png">
       <mat-card-subtitle>Please login to continue</mat-card-subtitle>

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express-serve-static-core';
 import { validationResult } from 'express-validator/check';
 import * as multer from 'multer';
+import { join } from 'path';
 import { Observer, PartialObserver, Subscriber } from 'rxjs';
 import { SubjectSubscriber } from 'rxjs/internal/Subject';
 
@@ -30,8 +31,11 @@ export function validateFile(req: Request, res: Response, next: NextFunction): v
     }
 }
 
-const upload = multer({
-    dest: process.env.DOCUMENT_PATH + 'tmp/',
-});
-
-export const attendanceDocument = upload.single();
+export const attendanceDocument = multer({
+    storage: multer.diskStorage({
+        destination: join(process.env.DOCUMENT_PATH, 'attendance/'),
+        filename: (req, file, cb) => {
+            cb(null, (new Date()).toISOString());
+        },
+    }),
+}).single('attendanceDocument');
