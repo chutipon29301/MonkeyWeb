@@ -80,6 +80,20 @@ router.post('/registration',
     },
 );
 
+router.post('/unregistration',
+    body('studentID').isInt(),
+    body('classID').isInt(),
+    validateRequest,
+    (req, res) => {
+        ClassRegistration.getInstance().deleteByClass(
+            req.body.studentID,
+            req.body.classID,
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
 router.post('/getClass',
     body('className').isString().optional(),
     body('quarterID').isInt().optional(),

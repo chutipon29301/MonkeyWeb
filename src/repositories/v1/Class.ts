@@ -4,9 +4,10 @@ import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { ClassInstance, classModel, IClassInfo, IClassModel } from '../../models/v1/class';
 import { IGradeStudentState } from '../../models/v1/studentState';
-import { IUserFullNameTh } from '../../models/v1/user';
+import { IUserFullNameEn, IUserFullNameTh } from '../../models/v1/user';
 
-export type StudentInClass = IUserFullNameTh & IGradeStudentState & {CountCourse: number, CountHybrid: number};
+export type StudentInClass = IUserFullNameTh & IGradeStudentState & { CountCourse: number, CountHybrid: number };
+export type ClassInfo = IClassInfo & IUserFullNameEn;
 
 export class Class {
     public static getInstance(): Class {
@@ -162,36 +163,42 @@ export class Class {
 
     private getInfo(
         ID: number,
-    ): Observable<IClassInfo> {
-        return from(this.classModel.findOne<IClassInfo>(
+    ): Observable<ClassInfo> {
+        const statement =
+            'SELECT Class.ClassName, Class.ClassDate, Class.ClassDescription, Class.TutorID, Class.RoomID, Class.Grade, Class.ClassTimes, Class.ClassType, Users.FirstnameEn, Users.LastnameEn, Users.NicknameEn ' +
+            'FROM Class ' +
+            '   JOIN Users ON Users.ID = Class.TutorID ' +
+            'WHERE Class.ID = :ID';
+        return Connection.getInstance().query<ClassInfo>(statement,
             {
-                attributes: {
-                    exclude: ['ID', 'QuarterID', 'ClassSubject', 'Suggestion'],
-                },
                 raw: true,
-                where: { ID },
+                replacements: { ID },
+                type: Sequelize.QueryTypes.SELECT,
             },
-        ));
+        ).pipe(
+            map((result) => result[0]),
+        );
     }
 
     private listStudentInClass(
         ID: number,
     ): Observable<StudentInClass[]> {
-        const statement = 'SELECT Users.ID, StudentState.Grade, Users.Nickname, Users.Firstname, Users.Lastname ( ' +
-            'SELECT COUNT(*) ' +
-            'FROM ClassRegistration ' +
-            'JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
-            'WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Course\' ' +
+        const statement =
+            'SELECT Users.ID, StudentState.Grade, Users.Nickname, Users.Firstname, Users.Lastname, ( ' +
+            '   SELECT COUNT(*) ' +
+            '   FROM ClassRegistration ' +
+            '       JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
+            '   WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Course\' ' +
             ') AS CountCourse, ( ' +
-            'SELECT COUNT(*) ' +
-            'FROM ClassRegistration ' +
-            'JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
-            'WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Hybrid\' ' +
+            '   SELECT COUNT(*) ' +
+            '   FROM ClassRegistration ' +
+            '       JOIN Class course ON course.ID = ClassRegistration.ClassID ' +
+            '   WHERE ClassRegistration.StudentID = Users.ID AND course.QuarterID = Class.QuarterID AND course.ClassType = \'Hybrid\' ' +
             ') AS CountHybrid ' +
             'FROM Class ' +
-            'JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
-            'JOIN Users ON ClassRegistration.StudentID = Users.ID ' +
-            'JOIN StudentState ON Class.QuarterID = StudentState.QuarterID AND Users.ID = StudentState.StudentID ' +
+            '   JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
+            '   JOIN Users ON ClassRegistration.StudentID = Users.ID ' +
+            '   JOIN StudentState ON Class.QuarterID = StudentState.QuarterID AND Users.ID = StudentState.StudentID ' +
             'WHERE Class.ID = :ID';
         return Connection.getInstance().query<StudentInClass>(statement,
             {

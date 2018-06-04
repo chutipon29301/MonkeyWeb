@@ -56,3 +56,18 @@ router.post('/edit',
         );
     },
 );
+
+router.post('/list',
+    body('studentID').isInt(),
+    body('limit').isInt().optional(),
+    validateRequest,
+    (req, res) => {
+        Chat.getInstance().list(
+            req.body.studentID,
+            req.body.limit,
+        ).subscribe(
+            (chats) => res.status(200).send({ chats }),
+            (error) => res.status(500).send(error),
+        );
+    },
+);

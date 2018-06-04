@@ -34,3 +34,28 @@ describe('POST /api/v1/class/addCourse', () => {
     });
 
 });
+
+describe('POST /api/v1/class/info', () => {
+
+    test('invalid body\n\tExpect 400', () => {
+        return request(app)
+            .post('/api/v1/class/info')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .expect(400);
+    });
+
+    test('valid body\n\tExpect 400', () => {
+        return request(app)
+            .post('/api/v1/class/info')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({
+                classID: 2456,
+            })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('info');
+                expect(res.body).toHaveProperty('students');
+            });
+    });
+
+});
