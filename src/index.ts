@@ -2,7 +2,6 @@
 import { config } from 'dotenv';
 process.env = config().parsed;
 /* tslint:enable:import-sources-order */
-
 import * as express from 'express';
 import * as fs from 'fs-extra';
 import * as http from 'http';
@@ -10,7 +9,6 @@ import * as https from 'https';
 import { join } from 'path';
 import * as cors from 'cors';
 import app from './controllers/Controller';
-
 const caPath = join(__dirname, '../MonkeyWebConfig/ca_bundle.crt');
 const keyPath = join(__dirname, '../MonkeyWebConfig/private.key');
 const certPath = join(__dirname, '../MonkeyWebConfig/certificate.crt');

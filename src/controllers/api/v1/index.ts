@@ -46,16 +46,5 @@ router.post('/login',
             },
             (error) => res.status(500).send(error),
         );
-        // getUserLogin(Number(req.body.userID), req.body.password).subscribe(
-        //     (user) => {
-        //         if (user) {
-        //         } else {
-        //             return res.sendStatus(400);
-        //         }
-        //     },
-        //     (err) => {
-        //         return res.status(400).send({ err });
-        //     },
-        // );
     },
 );

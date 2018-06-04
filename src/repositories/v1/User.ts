@@ -115,4 +115,8 @@ export class User {
             map((result) => result[1]),
         );
     }
+
+    public getAllStudent(){
+        return from(this.userModel.findAll({where:{Position:'student'}}))
+    }
 }
