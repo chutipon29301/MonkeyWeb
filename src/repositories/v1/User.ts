@@ -1,11 +1,12 @@
 import { AES, enc } from 'crypto-js';
 import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { flatMap, map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { IChatMessage } from '../../models/v1/chat';
 import { IAllStudentState, UserRegistrationStage } from '../../models/v1/studentState';
-import { IUserFullNameTh, IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel, UserPosition, UserStatus } from '../../models/v1/user';
+import { IUserFullNameTh, IUserID, IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel, UserPosition, UserStatus } from '../../models/v1/user';
+import { StudentState } from './StudentState';
 
 export type AllStudent = IUserFullNameTh & IAllStudentState & IChatMessage;
 
@@ -123,7 +124,7 @@ export class User {
             },
             where: { ID },
         })).pipe(
-            map((result) => AES.decrypt(result.UserPassword, process.env.PASSWORD_SECRET).toString(enc.Utf8)),
+            map((result) => this.decrypt(result.UserPassword)),
         );
     }
 
@@ -148,11 +149,59 @@ export class User {
             NicknameEn,
             Email,
             Phone,
-            UserPassword: AES.encrypt(password, process.env.PASSWORD_SECRET).toString(),
+            UserPassword: this.encrypt(password),
             UserStatus: UserStatus.active,
             Position: UserPosition.tutor,
         })).pipe(
             map((result) => result.ID),
+        );
+    }
+
+    public addStudent(
+    ): Observable<IUserID & { password: string }> {
+        const password = this.generatePassword();
+        return from(this.userModel.create({
+            Position: UserPosition.student,
+            UserStatus: UserStatus.inactive,
+            UserPassword: this.encrypt(password),
+        })).pipe(
+            map((result) => ({ ID: result.ID, password })),
+        );
+    }
+
+    public registerStudent(
+        ID: number,
+        Firstname: string,
+        Lastname: string,
+        Nickname: string,
+        FirstnameEn: string,
+        LastnameEn: string,
+        NicknameEn: string,
+        Email: string,
+        Phone: string,
+        Grade: number,
+        QuarterID: number,
+    ): Observable<IUserModel> {
+        return StudentState.getInstance().add(
+            ID,
+            QuarterID,
+            Grade,
+            UserRegistrationStage.unregistered,
+        ).pipe(
+            flatMap(() => this.edit(
+                ID,
+                {
+                    Firstname,
+                    Lastname,
+                    Nickname,
+                    FirstnameEn,
+                    LastnameEn,
+                    NicknameEn,
+                    Email,
+                    Phone,
+                    UserStatus: UserStatus.active,
+                },
+            )),
         );
     }
 
@@ -186,7 +235,7 @@ export class User {
             updateValue = { ...updateValue, Phone: value.Phone };
         }
         if (value.UserPassword) {
-            updateValue = { ...updateValue, UserPassword: AES.encrypt(value.UserPassword, process.env.PASSWORD_SECRET).toString() };
+            updateValue = { ...updateValue, UserPassword: this.encrypt(value.UserPassword) };
         }
         if (value.UserStatus) {
             updateValue = { ...updateValue, UserStatus: value.UserStatus };
@@ -205,5 +254,28 @@ export class User {
 
     public getAllStudent(){
         return from(this.userModel.findAll({where:{Position:'student'}}))
+    }
+    private encrypt(password: string): string {
+        return AES.encrypt(password, process.env.PASSWORD_SECRET).toString();
+    }
+
+    private decrypt(password: string): string {
+        return AES.decrypt(password, process.env.PASSWORD_SECRET).toString();
+    }
+
+    private generatePassword(): string {
+        const randomPassword = '' + Math.floor(Math.random() * 10000);
+        switch (randomPassword.length) {
+            case 0:
+                return '0000';
+            case 1:
+                return '000' + randomPassword;
+            case 2:
+                return '00' + randomPassword;
+            case 3:
+                return '0' + randomPassword;
+            default:
+                return randomPassword;
+        }
     }
 }

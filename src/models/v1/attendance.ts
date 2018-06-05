@@ -1,5 +1,4 @@
 import * as Sequelize from 'sequelize';
-import { attendanceDocumentModel } from './attendanceDocument';
 import { classModel } from './class';
 import { userModel } from './user';
 
@@ -13,7 +12,7 @@ export interface IAttendanceModel {
     Reason?: string;
     Remark?: string;
     Sender?: string;
-    AttendanceDocumentID?: number;
+    AttendanceDocument?: string;
 }
 
 export type AttendanceInstance = Sequelize.Instance<IAttendanceModel> & IAttendanceModel;
@@ -68,13 +67,9 @@ export function attendanceModel(sequalize: Sequelize.Sequelize) {
             type: Sequelize.STRING(64),
             allowNull: true,
         },
-        AttendanceDocumentID: {
-            type: Sequelize.INTEGER,
+        AttendanceDocument: {
+            type: Sequelize.STRING(128),
             allowNull: true,
-            references: {
-                model: attendanceDocumentModel(sequalize),
-                key: 'ID',
-            },
         },
     };
 

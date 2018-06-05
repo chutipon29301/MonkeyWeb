@@ -8,5 +8,5 @@ CREATE TABLE Attendance (
     Reason NVARCHAR(MAX), -- 'go to travel'
     Remark VARCHAR(2), -- '1','2',etc.
     Sender NVARCHAR(64), -- 'Mom'
-    AttendanceDocumentID INT FOREIGN KEY REFERENCES AttendanceDocument(ID)
+    AttendanceDocument VARCHAR(128)
 )
