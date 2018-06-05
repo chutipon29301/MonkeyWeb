@@ -20,8 +20,15 @@ export class ClassRegistration {
         this.classRegistrationModel = classRegistrationModel(Connection.getInstance().getConnection());
     }
 
-    public add(StudentID: number, ClassID: number): Observable<IClassRegistrationModel> {
+    public add(
+        StudentID: number,
+        ClassID: number,
+    ): Observable<IClassRegistrationModel> {
         return from(this.classRegistrationModel.create({ StudentID, ClassID }));
+    }
+
+    public bulkAdd(classes: Array<{ StudentID: number, ClassID: number }>): Observable<IClassRegistrationModel[]> {
+        return from(this.classRegistrationModel.bulkCreate(classes));
     }
 
     public delete(

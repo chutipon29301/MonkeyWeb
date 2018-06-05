@@ -1,10 +1,10 @@
+import { Promise } from 'bluebird';
 import { Router } from 'express';
-import { body, param } from 'express-validator/check';
+import { body, oneOf, param } from 'express-validator/check';
 import { Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { IAttendanceModel } from '../../../models/v1/attendance';
 import { Attendance } from '../../../repositories/v1/Attendance';
-import { AttendanceDocument } from '../../../repositories/v1/AttendanceDocument';
 import { attendanceDocument, completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
@@ -12,29 +12,39 @@ export const router = Router();
 router.post('/add',
     attendanceDocument,
     body('studentID').isInt(),
-    body('classID').isInt(),
+    oneOf([
+        body('classID').isInt(),
+        body('classID').custom((value) => {
+            return new Promise((reslove, reject) => {
+                if (value instanceof Array) {
+                    value.forEach((element) => {
+                        if (typeof element !== 'number') {
+                            reject('element of classID should be a number');
+                        }
+                    });
+                    reslove();
+                } else {
+                    reject('classID should be an array');
+                }
+            });
+        }),
+    ]),
     body('attendanceDate').isISO8601(),
     body('attendanceType').isString(),
     body('reason').isString(),
     body('sender').isString(),
     validateRequest,
     (req, res) => {
-        let observable: Observable<IAttendanceModel>;
-        if (req.file) {
-            observable = AttendanceDocument.getInstance().add(
-                req.file.path,
-            ).pipe(
-                flatMap((attendanceDocument) =>
-                    Attendance.getInstance().add(
-                        req.body.studentID,
-                        req.body.classID,
-                        req.body.attendanceDate,
-                        req.body.attendanceType,
-                        req.body.reason,
-                        req.body.sender,
-                        attendanceDocument.ID,
-                    ),
-                ),
+        let observable: Observable<any>;
+        if (req.body.classID instanceof Array) {
+            observable = Attendance.getInstance().bulkAdd(
+                req.body.studentID,
+                req.body.classID,
+                req.body.attendanceDate,
+                req.body.attendanceType,
+                req.body.reason,
+                req.body.sender,
+                req.file === undefined ? undefined : req.file.path,
             );
         } else {
             observable = Attendance.getInstance().add(
@@ -44,6 +54,7 @@ router.post('/add',
                 req.body.attendanceType,
                 req.body.reason,
                 req.body.sender,
+                req.file === undefined ? undefined : req.file.path,
             );
         }
         observable.subscribe(
@@ -56,7 +67,7 @@ router.get('/image/:id',
     param('id').isInt(),
     validateRequest,
     (req, res) => {
-        AttendanceDocument.getInstance().getPath(
+        Attendance.getInstance().getPath(
             req.params.id,
         ).subscribe(
             (path) => res.status(200).sendFile(path),

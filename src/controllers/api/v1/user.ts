@@ -125,3 +125,46 @@ router.post('/edit',
         );
     },
 );
+
+router.post('/generateStudent',
+    // TODO: validate with position admin or higher
+    (req, res) => {
+        User.getInstance().addStudent(
+        ).subscribe(
+            (user) => res.status(200).send(user),
+            (error) => res.status(500).send(error),
+        );
+    },
+);
+
+router.post('/register',
+    body('userID').isInt(),
+    body('firstName').isString(),
+    body('lastname').isString(),
+    body('nickname').isString(),
+    body('firstnameEn').isString(),
+    body('lastnameEn').isString(),
+    body('nicknameEn').isString(),
+    body('email').isEmail(),
+    body('phone').isMobilePhone('th-TH'),
+    body('grade').isInt({ min: 1, max: 12 }),
+    body('quarterID').isInt(),
+    validateRequest,
+    (req, res) => {
+        User.getInstance().registerStudent(
+            req.body.userID,
+            req.body.firstName,
+            req.body.lastname,
+            req.body.nickname,
+            req.body.firstnameEn,
+            req.body.lastnameEn,
+            req.body.nicknameEn,
+            req.body.email,
+            req.body.phone,
+            req.body.grade,
+            req.body.quarterID,
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
