@@ -10,6 +10,7 @@ import { router as portfolio } from './portfolio';
 import { router as quarter } from './quarter';
 import { router as room } from './room';
 import { router as sheet } from './sheet';
+import { router as studentState } from './studentState';
 import { router as user } from './user';
 
 export const router = Router();
@@ -22,6 +23,7 @@ router.use('/portfolio', portfolio);
 router.use('/quarter', quarter);
 router.use('/room', room);
 router.use('/sheet', sheet);
+router.use('/studentState', studentState);
 router.use('/user', user);
 
 router.post('/login',

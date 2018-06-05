@@ -1,4 +1,5 @@
 import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { IStudentStateModel, StudentStateInstance, studentStateModel, UserRegistrationStage } from '../../models/v1/studentState';
@@ -30,5 +31,29 @@ export class StudentState {
             // tslint:disable-next-line:object-literal-sort-keys
             StudentID, QuarterID, Grade, Stage,
         }));
+    }
+
+    public edit(
+        StudentID: number,
+        QuarterID: number,
+        value: Partial<IStudentStateModel>,
+    ): Observable<IStudentStateModel> {
+        let updateValue = {} as Partial<IStudentStateModel>;
+        if (value.Grade) {
+            updateValue = { ...updateValue, Grade: value.Grade };
+        }
+        if (value.StudentLevel) {
+            updateValue = { ...updateValue, StudentLevel: value.StudentLevel };
+        }
+        if (value.Stage) {
+            updateValue = { ...updateValue, Stage: value.Stage };
+        }
+        if (value.Remark) {
+            updateValue = { ...updateValue, Remark: value.Remark };
+        }
+        return from(this.studentStateModel.update(updateValue, { where: { StudentID, QuarterID } }))
+            .pipe(
+                map((result) => result[1][0]),
+        );
     }
 }

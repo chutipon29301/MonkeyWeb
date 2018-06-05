@@ -147,7 +147,7 @@ router.post('/register',
     body('nicknameEn').isString(),
     body('email').isEmail(),
     body('phone').isMobilePhone('th-TH'),
-    body('grade').isInt(),
+    body('grade').isInt({ min: 1, max: 12 }),
     body('quarterID').isInt(),
     validateRequest,
     (req, res) => {

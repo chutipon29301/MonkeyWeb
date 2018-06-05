@@ -206,3 +206,12 @@ router.post('/info',
         );
     },
 );
+
+router.post('/list',
+    body('quarterID').isInt(),
+    body('type').isIn(['Course', 'Hybrid', 'Skill']),
+    validateRequest,
+    (req, res) => {
+
+    },
+);
