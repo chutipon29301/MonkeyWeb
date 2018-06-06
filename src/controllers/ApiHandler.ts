@@ -1,6 +1,7 @@
 import { Promise } from 'bluebird';
 import { NextFunction, Request, Response } from 'express-serve-static-core';
 import { validationResult } from 'express-validator/check';
+import * as _ from 'lodash';
 import * as multer from 'multer';
 import { join } from 'path';
 import { Observer, PartialObserver, Subscriber } from 'rxjs';
@@ -44,31 +45,13 @@ export const attendanceDocument = multer({
 export function validateIntArray(value: any): Promise<string> {
     return new Promise((reslove, reject) => {
         if (value instanceof Array) {
-            value.forEach((element) => {
-                if (typeof element !== 'number') {
-                    reject('element of classID should be a number');
-                }
-            });
-            reslove();
+            if (_.every(value.map((o) => +o), _.isNumber)) {
+                reslove();
+            } else {
+                reject('element of field should be a number');
+            }
         } else {
-            reject('classID should be an array');
+            reject('field should be an array');
         }
     });
 }
-
-// export function validateArray<T>(): ((value: any) => Promise<string>) {
-//     return (value: any) => new Promise((reslove, reject) => {
-//         if (value instanceof Array) {
-//             value.forEach((element) => {
-//                 if (element instanceof T) {
-//                 }
-//                 // if (typeof element !== 'number') {
-//                 //     reject('element of classID should be a number');
-//                 // }
-//             });
-//             reslove();
-//         } else {
-//             reject('field should be an array');
-//         }
-//     });
-// }

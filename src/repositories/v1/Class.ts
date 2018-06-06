@@ -165,9 +165,10 @@ export class Class {
 
     public list(
         QuarterID: number,
-        ClassType: string,
+        ClassType?: string,
     ): Observable<ClassList[]> {
-        const statement =
+        let replacements: Partial<IClassModel> = { QuarterID };
+        let statement =
             'SELECT Class.ClassName, Class.ClassDate, Class.Grade, Room.RoomName, Users.NicknameEn , (' +
             '   SELECT COUNT(*)' +
             '   FROM ClassRegistration' +
@@ -178,10 +179,14 @@ export class Class {
             'FROM Class' +
             '   LEFT JOIN Room ON Class.RoomID = Room.ID' +
             '   LEFT JOIN Users ON Class.TutorID = Users.ID' +
-            'WHERE Class.QuarterID = :QuarterID AND Class.ClassType = :ClassType';
+            'WHERE Class.QuarterID = :QuarterID';
+        if (ClassType) {
+            statement += ' AND Class.ClassType = :ClassType';
+            replacements = { ...replacements, ClassType };
+        }
         return Connection.getInstance().query<ClassList>(statement, {
             raw: true,
-            replacements: { QuarterID, ClassType },
+            replacements,
             type: Sequelize.QueryTypes.SELECT,
         });
     }
@@ -223,7 +228,7 @@ export class Class {
             '   JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
             '   JOIN Users ON ClassRegistration.StudentID = Users.ID ' +
             '   JOIN StudentState ON Class.QuarterID = StudentState.QuarterID AND Users.ID = StudentState.StudentID ' +
-            'WHERE Class.ID = :ID';
+            'WHERE StudentState.Stage <> \'dropped\' AND Users.UserStatus <> \'terminated\' AND Class.ID = :ID';
         return Connection.getInstance().query<StudentInClass>(statement,
             {
                 raw: true,

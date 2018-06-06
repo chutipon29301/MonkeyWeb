@@ -1,4 +1,4 @@
-import { from, Observable } from 'rxjs';
+import { from, Observable, PartialObserver } from 'rxjs';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { ClassRegistrationInstance, classRegistrationModel, IClassRegistrationModel } from '../../models/v1/classRegistration';
@@ -27,8 +27,15 @@ export class ClassRegistration {
         return from(this.classRegistrationModel.create({ StudentID, ClassID }));
     }
 
-    public bulkAdd(classes: Array<{ StudentID: number, ClassID: number }>): Observable<IClassRegistrationModel[]> {
-        return from(this.classRegistrationModel.bulkCreate(classes));
+    public bulkAdd(
+        StudentID: number,
+        classesID: number[],
+    ): Observable<IClassRegistrationModel[]> {
+        const value: IClassRegistrationModel[] = [];
+        classesID.forEach((element) => {
+            value.push({ StudentID, ClassID: element });
+        });
+        return from(this.classRegistrationModel.bulkCreate(value));
     }
 
     public delete(
