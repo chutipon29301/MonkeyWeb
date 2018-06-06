@@ -63,6 +63,44 @@ router.post('/add',
     },
 );
 
+router.post('/addWithPath',
+    body('studentID').isInt(),
+    oneOf([
+        body('classID').isInt(),
+        body('classID').custom((value) => {
+            return new Promise((reslove, reject) => {
+                if (value instanceof Array) {
+                    value.forEach((element) => {
+                        if (typeof element !== 'number') {
+                            reject('element of classID should be a number');
+                        }
+                    });
+                    reslove();
+                } else {
+                    reject('classID should be an array');
+                }
+            });
+        }),
+    ]),
+    body('attendanceDate').isISO8601(),
+    body('attendanceType').isString(),
+    body('reason').isString(),
+    body('sender').isString(),
+    body('path').isString(),
+    validateRequest,
+    (req,res)=>{
+        Attendance.getInstance().add(
+            req.body.studentID,
+            req.body.classID,
+            req.body.attendanceDate,
+            req.body.attendanceType,
+            req.body.reason,
+            req.body.sender,
+            req.body.path,
+        ).subscribe(completionHandler(res));
+    }
+)
+
 router.get('/image/:id',
     param('id').isInt(),
     validateRequest,
