@@ -3,13 +3,16 @@ import { quarterModel } from './quarter';
 import { roomModel } from './room';
 import { userModel } from './user';
 
-export interface IClassInfo {
+export interface IClassList {
     ClassName: string;
     ClassDate: Date;
+    Grade?: string;
+}
+
+export interface IClassInfo extends IClassList {
     ClassDescription?: string;
     TutorID?: number;
     RoomID?: number;
-    Grade?: string;
     ClassTimes?: number;
     ClassType?: string;
 }

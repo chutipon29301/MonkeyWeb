@@ -137,9 +137,8 @@ router.post('/getClass',
             req.body.classSubject,
             req.body.classType,
         ).subscribe(
-            (result) => { },
+            (result) => res.status(200).send(result),
             (error) => res.status(500).send(error),
-            () => res.sendStatus(200),
         );
     },
 );
@@ -212,6 +211,12 @@ router.post('/list',
     body('type').isIn(['Course', 'Hybrid', 'Skill']),
     validateRequest,
     (req, res) => {
-
+        Class.getInstance().list(
+            req.body.quarterID,
+            req.body.type,
+        ).subscribe(
+            (classes) => res.status(200).send({ classes }),
+            (error) => res.status(500).send(error),
+        );
     },
 );

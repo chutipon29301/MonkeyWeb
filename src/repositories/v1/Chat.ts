@@ -36,7 +36,7 @@ export class Chat {
     public edit(
         ID: number,
         value: Partial<IChatModel>,
-    ): Observable<IChatModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IChatModel>;
         if (value.ChatMessage) {
             updateValue = { ...updateValue, ChatMessage: value.ChatMessage };
@@ -52,7 +52,7 @@ export class Chat {
         }
         return from(this.chatModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((result) => result[1][0]),
+                map((result) => result[0]),
         );
     }
 

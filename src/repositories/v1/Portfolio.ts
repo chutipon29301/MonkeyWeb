@@ -40,7 +40,7 @@ export class Portfolio {
     public edit(
         ID: number,
         value: Partial<IPortfolioModel>,
-    ): Observable<IPortfolioModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IPortfolioModel>;
         if (value.StartDate) {
             updateValue = { ...updateValue, StartDate: value.StartDate };
@@ -53,7 +53,7 @@ export class Portfolio {
         }
         return from(this.portfolioModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((result) => result[1][0]),
+                map((result) => result[0]),
         );
     }
 
