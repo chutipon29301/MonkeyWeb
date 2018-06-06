@@ -214,52 +214,88 @@ export class User {
       );
   }
 
-  public edit(ID: number, value: Partial<IUserModel>): Observable<IUserModel> {
-    let updateValue = {} as Partial<IUserModel>;
-    if (value.Firstname) {
-      updateValue = { ...updateValue, Firstname: value.Firstname };
+    public registerStudent(
+        ID: number,
+        Firstname: string,
+        Lastname: string,
+        Nickname: string,
+        FirstnameEn: string,
+        LastnameEn: string,
+        NicknameEn: string,
+        Email: string,
+        Phone: string,
+        Grade: number,
+        QuarterID: number,
+    ): Observable<number> {
+        return StudentState.getInstance().add(
+            ID,
+            QuarterID,
+            Grade,
+            UserRegistrationStage.unregistered,
+        ).pipe(
+            flatMap(() => this.edit(
+                ID,
+                {
+                    Firstname,
+                    Lastname,
+                    Nickname,
+                    FirstnameEn,
+                    LastnameEn,
+                    NicknameEn,
+                    Email,
+                    Phone,
+                    UserStatus: UserStatus.active,
+                },
+            )),
+        );
     }
-    if (value.Lastname) {
-      updateValue = { ...updateValue, Lastname: value.Lastname };
-    }
-    if (value.Nickname) {
-      updateValue = { ...updateValue, Nickname: value.Nickname };
-    }
-    if (value.FirstnameEn) {
-      updateValue = { ...updateValue, FirstnameEn: value.FirstnameEn };
-    }
-    if (value.LastnameEn) {
-      updateValue = { ...updateValue, LastnameEn: value.LastnameEn };
-    }
-    if (value.NicknameEn) {
-      updateValue = { ...updateValue, NicknameEn: value.NicknameEn };
-    }
-    if (value.Email) {
-      updateValue = { ...updateValue, Email: value.Email };
-    }
-    if (value.Phone) {
-      updateValue = { ...updateValue, Phone: value.Phone };
-    }
-    if (value.UserPassword) {
-      updateValue = {
-        ...updateValue,
-        UserPassword: this.encrypt(value.UserPassword)
-      };
-    }
-    if (value.UserStatus) {
-      updateValue = { ...updateValue, UserStatus: value.UserStatus };
-    }
-    if (value.Position) {
-      updateValue = { ...updateValue, Position: value.Position };
-    }
-    if (value.SubPosition) {
-      updateValue = { ...updateValue, SubPosition: value.SubPosition };
-    }
-    return from(this.userModel.update(updateValue, { where: { ID } })).pipe(
-      map(result => result[1][0])
-    );
-  }
 
+    public edit(
+        ID: number,
+        value: Partial<IUserModel>,
+    ): Observable<number> {
+        let updateValue = {} as Partial<IUserModel>;
+        if (value.Firstname) {
+            updateValue = { ...updateValue, Firstname: value.Firstname };
+        }
+        if (value.Lastname) {
+            updateValue = { ...updateValue, Lastname: value.Lastname };
+        }
+        if (value.Nickname) {
+            updateValue = { ...updateValue, Nickname: value.Nickname };
+        }
+        if (value.FirstnameEn) {
+            updateValue = { ...updateValue, FirstnameEn: value.FirstnameEn };
+        }
+        if (value.LastnameEn) {
+            updateValue = { ...updateValue, LastnameEn: value.LastnameEn };
+        }
+        if (value.NicknameEn) {
+            updateValue = { ...updateValue, NicknameEn: value.NicknameEn };
+        }
+        if (value.Email) {
+            updateValue = { ...updateValue, Email: value.Email };
+        }
+        if (value.Phone) {
+            updateValue = { ...updateValue, Phone: value.Phone };
+        }
+        if (value.UserPassword) {
+            updateValue = { ...updateValue, UserPassword: this.encrypt(value.UserPassword) };
+        }
+        if (value.UserStatus) {
+            updateValue = { ...updateValue, UserStatus: value.UserStatus };
+        }
+        if (value.Position) {
+            updateValue = { ...updateValue, Position: value.Position };
+        }
+        if (value.SubPosition) {
+            updateValue = { ...updateValue, SubPosition: value.SubPosition };
+        }
+        return from(this.userModel.update(updateValue, { where: { ID } }))
+            .pipe(
+                map((result) => result[0]),
+        );
+  }
   public getAllStudent() {
     return from(this.userModel.findAll({ where: { Position: 'student' } }));
   }
