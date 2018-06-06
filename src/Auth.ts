@@ -81,7 +81,7 @@ class Auth {
               userID: userID,
               expire: expire.toString()
             };
-            return Auth.generateToken(payload);
+            return {...Auth.generateToken(payload) , position:user.Position};
           } else {
             throw new Error('Failed to login');
           }
