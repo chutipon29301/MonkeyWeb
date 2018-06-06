@@ -5,12 +5,28 @@
       <mat-card-subtitle>Please login to continue</mat-card-subtitle>
       <mat-card-content class="card-container">
         <mat-form-field>
-          <input [(ngModel)]="userID" matInput placeholder="User ID" type="number" required>
+          <input
+            matInput
+            [(ngModel)]="userID" 
+            placeholder="User ID"
+            type="number"
+            required
+            autofocus
+            #id="ngModel">
           <fa-icon matSuffix [icon]="faUser"></fa-icon>
+          <mat-error *ngIf="id.invalid">Enter user ID</mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input [(ngModel)]="userPwd" matInput placeholder="Password" type="password" required>
+          <input
+            matInput
+            [(ngModel)]="userPwd"
+            placeholder="Password"
+            type="password"
+            required
+            #pwd="ngModel"
+            (keydown.enter)="checkAuth();">
           <fa-icon matSuffix [icon]="faUnlockAlt"></fa-icon>
+          <mat-error *ngIf="pwd.invalid">Enter password</mat-error>
         </mat-form-field>
       </mat-card-content>
       <mat-card-actions align="end">

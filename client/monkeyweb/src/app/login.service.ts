@@ -11,6 +11,7 @@ import { Token } from './datatype';
 export class LoginService {
 
   constructor(private router: Router, private http: HttpClient) { }
+
   getLoginData = (id: number, pwd: string) => {
     const header = {
       headers: new HttpHeaders({
@@ -24,6 +25,7 @@ export class LoginService {
         err => { console.log(err); }
       );
   }
+
   goToAdminPage = () => {
     this.router.navigate(['admin/student']);
   }

@@ -6,7 +6,9 @@ import { CanLoad } from '@angular/router';
 })
 export class AuthGuard implements CanLoad {
   isAdminLogin = true;
+
   constructor() { }
+
   canLoad() {
     console.log('AuthGuard#canLoad called');
     return this.isAdminLogin;

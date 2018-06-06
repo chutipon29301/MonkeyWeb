@@ -16,7 +16,7 @@ export function validateRequest(req: Request, res: Response, next: NextFunction)
 export function completionHandler(res: Response): Subscriber<any> {
     return SubjectSubscriber.create(
         () => { },
-        (error) => res.status(500).send(error),
+        (error) => res.status(500).send({error: error.toString()}),
         () => res.sendStatus(200),
     );
 }
