@@ -223,7 +223,7 @@ export class Class {
             '   JOIN ClassRegistration ON ClassRegistration.ClassID = Class.ID ' +
             '   JOIN Users ON ClassRegistration.StudentID = Users.ID ' +
             '   JOIN StudentState ON Class.QuarterID = StudentState.QuarterID AND Users.ID = StudentState.StudentID ' +
-            'WHERE Class.ID = :ID';
+            'WHERE StudentState.Stage <> \'dropped\' AND Users.UserStatus <> \'terminated\' AND Class.ID = :ID';
         return Connection.getInstance().query<StudentInClass>(statement,
             {
                 raw: true,
