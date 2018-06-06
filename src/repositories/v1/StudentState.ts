@@ -37,7 +37,7 @@ export class StudentState {
         StudentID: number,
         QuarterID: number,
         value: Partial<IStudentStateModel>,
-    ): Observable<IStudentStateModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IStudentStateModel>;
         if (value.Grade) {
             updateValue = { ...updateValue, Grade: value.Grade };
@@ -53,7 +53,7 @@ export class StudentState {
         }
         return from(this.studentStateModel.update(updateValue, { where: { StudentID, QuarterID } }))
             .pipe(
-                map((result) => result[1][0]),
+                map((result) => result[0]),
         );
     }
 }

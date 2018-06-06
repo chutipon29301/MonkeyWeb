@@ -2,12 +2,14 @@ import { forkJoin, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
-import { ClassInstance, classModel, IClassInfo, IClassModel } from '../../models/v1/class';
+import { ClassInstance, classModel, IClassInfo, IClassList, IClassModel } from '../../models/v1/class';
+import { IRoomName } from '../../models/v1/room';
 import { IGradeStudentState } from '../../models/v1/studentState';
-import { IUserFullNameEn, IUserFullNameTh } from '../../models/v1/user';
+import { IUserFullNameEn, IUserFullNameTh, IUserNicknameEn } from '../../models/v1/user';
 
 export type StudentInClass = IUserFullNameTh & IGradeStudentState & { CountCourse: number, CountHybrid: number };
 export type ClassInfo = IClassInfo & IUserFullNameEn;
+export type ClassList = IClassList & IRoomName & IUserNicknameEn & { StudentCount: number };
 
 export class Class {
     public static getInstance(): Class {
@@ -120,7 +122,7 @@ export class Class {
     public edit(
         ID: number,
         value: Partial<IClassModel>,
-    ): Observable<IClassModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IClassModel>;
         if (value.ClassName) {
             updateValue = { ...updateValue, ClassName: value.ClassName };
@@ -157,8 +159,31 @@ export class Class {
         }
         return from(this.classModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((result) => result[1][0]),
+                map((result) => result[0]),
         );
+    }
+
+    public list(
+        QuarterID: number,
+        ClassType: string,
+    ): Observable<ClassList[]> {
+        const statement =
+            'SELECT Class.ClassName, Class.ClassDate, Class.Grade, Room.RoomName, Users.NicknameEn , (' +
+            '   SELECT COUNT(*)' +
+            '   FROM ClassRegistration' +
+            '       LEFT JOIN Users ON ClassRegistration.StudentID = Users.ID' +
+            '       LEFT JOIN StudentState ON Users.ID = StudentState.StudentID' +
+            '   WHERE ClassRegistration.ClassID = Class.ID AND Users.UserStatus <> \'terminated\' AND StudentState.Stage <> \'dropped\' AND StudentState.QuarterID = Class.QuarterID' +
+            ') AS StudentCount' +
+            'FROM Class' +
+            '   LEFT JOIN Room ON Class.RoomID = Room.ID' +
+            '   LEFT JOIN Users ON Class.TutorID = Users.ID' +
+            'WHERE Class.QuarterID = :QuarterID AND Class.ClassType = :ClassType';
+        return Connection.getInstance().query<ClassList>(statement, {
+            raw: true,
+            replacements: { QuarterID, ClassType },
+            type: Sequelize.QueryTypes.SELECT,
+        });
     }
 
     private getInfo(
@@ -169,12 +194,11 @@ export class Class {
             'FROM Class ' +
             '   JOIN Users ON Users.ID = Class.TutorID ' +
             'WHERE Class.ID = :ID';
-        return Connection.getInstance().query<ClassInfo>(statement,
-            {
-                raw: true,
-                replacements: { ID },
-                type: Sequelize.QueryTypes.SELECT,
-            },
+        return Connection.getInstance().query<ClassInfo>(statement, {
+            raw: true,
+            replacements: { ID },
+            type: Sequelize.QueryTypes.SELECT,
+        },
         ).pipe(
             map((result) => result[0]),
         );

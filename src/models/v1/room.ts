@@ -1,8 +1,11 @@
 import * as Sequelize from 'sequelize';
 import { quarterModel } from './quarter';
 
-export interface IRoom {
+export interface IRoomName {
     RoomName: string;
+}
+
+export interface IRoom extends IRoomName {
     MaxSeat: number;
 }
 
