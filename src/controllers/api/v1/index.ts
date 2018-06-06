@@ -38,3 +38,16 @@ router.post(
     );
   }
 );
+
+router.post(
+    '/token',
+    body('refreshToken').isString(),
+    (req,res)=>{
+        let newToken = Auth.refresh(req.body.refreshToken);
+        if(newToken){
+            return res.status(200).send(newToken);
+        }else{
+            return res.sendStatus(401);
+        }
+    }
+)
