@@ -17,6 +17,11 @@ interface IToken {
   refreshToken: string;
 }
 
+interface ITokenResponse {
+  token: string;
+  expire: Date;
+}
+
 const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET,
@@ -61,13 +66,26 @@ class Auth {
       process.env.JWT_SECRET
     );
     let response = {
-      token: 'bearer ' + jwt.encode(payload, process.env.JWT_SECRET),
+      token: jwt.encode(payload, process.env.JWT_SECRET),
       refreshToken: refreshToken
     };
     this.refreshTokens[refreshToken] = response.token;
     return response;
   }
-  public static refresh() {}
+  public static refresh(token: string): null | ITokenResponse {
+    let refreshToken: IPayload = jwt.decode(token, process.env.JWT_SECRET);
+    if (new Date(refreshToken.expire) > new Date()) {
+      let expire = new Date();
+      expire.setDate(expire.getDate() + 7);
+      let payload: IPayload = {
+        userID: refreshToken.userID,
+        expire: expire.toString()
+      };
+      let newToken = jwt.encode(payload, process.env.JWT_SECRET);
+      this.refreshTokens[token] = newToken;
+      return { token: newToken , expire };
+    } else return null;
+  }
   public static login(userID: number, password: string): Observable<IToken> {
     return User.getInstance()
       .login(userID, password)
@@ -106,7 +124,8 @@ class Auth {
               ID,
               SubPosition,
               Email,
-              Phone
+              Phone,
+              expire
             };
           } else {
             throw new Error('Failed to login');
