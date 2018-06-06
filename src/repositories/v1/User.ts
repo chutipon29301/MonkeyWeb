@@ -4,7 +4,7 @@ import { flatMap, map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { IChatMessage } from '../../models/v1/chat';
-import { IAllStudentState, UserRegistrationStage } from '../../models/v1/studentState';
+import { IAllStudentState, IStudentStateModel, UserRegistrationStage } from '../../models/v1/studentState';
 import { IUserFullNameTh, IUserID, IUserInfo, IUserModel, IUserNicknameEn, UserInstance, userModel, UserPosition, UserStatus } from '../../models/v1/user';
 import { StudentState } from './StudentState';
 
@@ -60,7 +60,7 @@ export class User {
             '       ORDER BY Chat.ChatTimestamp DESC ' +
             '   ) ' +
             'WHERE Users.Position = \'student\' AND StudentState.QuarterID = :QuarterID';
-        let replacements: any = { QuarterID };
+        let replacements: Partial<IStudentStateModel & IUserModel> = { QuarterID };
         if (options && options.Stage) {
             statement += ' AND StudentState.Stage = :Stage';
             replacements = {

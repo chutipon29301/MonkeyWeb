@@ -195,7 +195,7 @@ router.post('/info',
 
 router.post('/list',
     body('quarterID').isInt(),
-    body('type').isIn(['Course', 'Hybrid', 'Skill']),
+    body('type').isIn(['Course', 'Hybrid', 'Skill']).optional(),
     validateRequest,
     (req, res) => {
         Class.getInstance().list(
