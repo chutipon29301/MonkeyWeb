@@ -3,7 +3,6 @@ import { flatMap, map } from 'rxjs/operators';
 import * as Sequelize from 'sequelize';
 import { Connection } from '../../models/Connection';
 import { AttendanceInstance, attendanceModel, IAttendanceModel } from '../../models/v1/attendance';
-import { AttendanceDocument } from './AttendanceDocument';
 
 export class Attendance {
 
@@ -29,15 +28,46 @@ export class Attendance {
         AttendanceType: string,
         Reason: string,
         Sender: string,
-        AttendanceDocumentID?: number,
+        AttendanceDocument?: string,
     ): Observable<IAttendanceModel> {
         let value = {
             AttendanceDate, AttendanceType, ClassID, Reason, Sender, StudentID,
         } as IAttendanceModel;
-        if (AttendanceDocumentID) {
-            value = { ...value, AttendanceDocumentID };
+        if (AttendanceDocument) {
+            value = { ...value, AttendanceDocument };
         }
         return from(this.attendanceModel.create(value));
+    }
+
+    public bulkAdd(
+        StudentID: number,
+        ClassID: number[],
+        AttendanceDate: Date,
+        AttendanceType: string,
+        Reason: string,
+        Sender: string,
+        AttendanceDocument?: string,
+    ): Observable<IAttendanceModel[]> {
+        const value: IAttendanceModel[] = [];
+        ClassID.forEach((element) => {
+            value.push({
+                AttendanceDate, AttendanceType, ClassID: element, Reason, Sender, StudentID,
+            });
+        });
+        return from(this.attendanceModel.bulkCreate(value));
+    }
+
+    public getPath(
+        ID: number,
+    ): Observable<string> {
+        return from(this.attendanceModel.findOne<string>({
+            attributes: {
+                include: ['AttendanceDocument'],
+            },
+            where: { ID },
+        })).pipe(
+            map((result) => result.AttendanceDocument),
+        );
     }
 
     public delete(

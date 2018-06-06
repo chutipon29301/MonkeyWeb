@@ -4,10 +4,13 @@ export interface IChatMessage {
     ChatMessage: string;
 }
 
-export interface IChatModel extends IChatMessage {
+export interface IChat extends IChatMessage {
+    ChatTimestamp?: Date;
+}
+
+export interface IChatModel extends IChat {
     ID?: number;
     StudentID: number;
-    ChatTimestamp?: Date;
     QuarterID: number;
     SenderID: number;
 }

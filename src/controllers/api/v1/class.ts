@@ -1,5 +1,7 @@
+import { Promise } from 'bluebird';
 import { Router } from 'express';
-import { body, oneOf } from 'express-validator/check';
+import { body, oneOf, validationResult } from 'express-validator/check';
+import { Observable } from 'rxjs';
 import { Class } from '../../../repositories/v1/Class';
 import { ClassRegistration } from '../../../repositories/v1/ClassRegistration';
 import { completionHandler, validateRequest } from '../../ApiHandler';
@@ -66,12 +68,52 @@ router.post('/addSkill',
     },
 );
 
-router.post('/registration',
+router.post('/register',
+    oneOf([
+        [
+            body('studentID').isInt(),
+            body('classID').isInt(),
+        ],
+        body('classes').custom(((value) => {
+            return new Promise((reslove, reject) => {
+                if (value instanceof Array) {
+                    value.forEach((element) => {
+                        if (!element.StudentID || !element.ClassID) {
+                            reject('invalid object inside classes array');
+                        }
+                    });
+                    reslove();
+                } else {
+                    reject('classes parameter is not an array');
+                }
+            });
+        })),
+    ]),
+    validateRequest,
+    (req, res) => {
+        let observer: Observable<any>;
+        if (req.body.classes) {
+            observer = ClassRegistration.getInstance().bulkAdd(
+                req.body.classes,
+            );
+        } else {
+            observer = ClassRegistration.getInstance().add(
+                req.body.studentID,
+                req.body.classID,
+            );
+        }
+        observer.subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.post('/unregistration',
     body('studentID').isInt(),
     body('classID').isInt(),
     validateRequest,
     (req, res) => {
-        ClassRegistration.getInstance().add(
+        ClassRegistration.getInstance().deleteByClass(
             req.body.studentID,
             req.body.classID,
         ).subscribe(
@@ -162,5 +204,14 @@ router.post('/info',
             (result) => res.status(200).send(result),
             (error) => res.status(500).send(error),
         );
+    },
+);
+
+router.post('/list',
+    body('quarterID').isInt(),
+    body('type').isIn(['Course', 'Hybrid', 'Skill']),
+    validateRequest,
+    (req, res) => {
+
     },
 );

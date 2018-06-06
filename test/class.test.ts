@@ -34,3 +34,76 @@ describe('POST /api/v1/class/addCourse', () => {
     });
 
 });
+
+describe('POST /api/v1/class/info', () => {
+
+    test('invalid body\n\tExpect 400', () => {
+        return request(app)
+            .post('/api/v1/class/info')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .expect(400);
+    });
+
+    test('valid body\n\tExpect 400', () => {
+        return request(app)
+            .post('/api/v1/class/info')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({
+                classID: 2456,
+            })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('info');
+                expect(res.body).toHaveProperty('students');
+            });
+    });
+
+});
+
+describe('POST /api/v1/class/register', () => {
+
+    test('invalid body with no header\n\tExpect 400', () => {
+        return request(app)
+            .post('/api/v1/class/register')
+            .expect(400);
+    });
+
+    test('invalid body with header\n\tExpect 400', () => {
+        return request(app)
+            .post('/api/v1/class/register')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .expect(400);
+    });
+
+    test('send studentID and classID\n\tExpecte 200', () => {
+        return request(app)
+            .post('/api/v1/class/register')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({
+                classID: 2258,
+                studentID: 15999,
+            })
+            .expect(200);
+    });
+
+    test('send array of studentID and classID', () => {
+        return request(app)
+            .post('/api/v1/class/register')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send({
+                classes: [
+                    {
+                        classID: 2258,
+                        studentID: 15999,
+                    }, {
+                        classID: 2258,
+                        studentID: 15999,
+                    }, {
+                        classID: 2258,
+                        studentID: 15999,
+                    },
+                ],
+            })
+            .expect(200);
+    });
+});

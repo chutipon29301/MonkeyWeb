@@ -20,12 +20,28 @@ export class ClassRegistration {
         this.classRegistrationModel = classRegistrationModel(Connection.getInstance().getConnection());
     }
 
-    public add(StudentID: number, ClassID: number): Observable<IClassRegistrationModel> {
+    public add(
+        StudentID: number,
+        ClassID: number,
+    ): Observable<IClassRegistrationModel> {
         return from(this.classRegistrationModel.create({ StudentID, ClassID }));
     }
 
-    public delete(ID: number): Observable<number> {
+    public bulkAdd(classes: Array<{ StudentID: number, ClassID: number }>): Observable<IClassRegistrationModel[]> {
+        return from(this.classRegistrationModel.bulkCreate(classes));
+    }
+
+    public delete(
+        ID: number,
+    ): Observable<number> {
         return from(this.classRegistrationModel.destroy({ where: { ID } }));
+    }
+
+    public deleteByClass(
+        StudentID: number,
+        ClassID: number,
+    ): Observable<number> {
+        return from(this.classRegistrationModel.destroy({ where: { StudentID, ClassID } }));
     }
 
     public listStudentClass(
@@ -34,7 +50,7 @@ export class ClassRegistration {
     ) {
         const statement = 'SELECT * ' +
             'FROM ClassRegistration ' +
-            'JOIN Class ON Class.ID = ClassRegistration.ClassID ' +
+            '   JOIN Class ON Class.ID = ClassRegistration.ClassID ' +
             'WHERE ClassRegistration.StudentID = :ID AND Class.QuarterID = :QuarterID';
         return Connection.getInstance().query(statement,
             {
