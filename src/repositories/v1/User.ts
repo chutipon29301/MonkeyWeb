@@ -11,7 +11,6 @@ import { StudentState } from './StudentState';
 export type AllStudent = IUserFullNameTh & IAllStudentState & IChatMessage;
 
 export class User {
-
     public static getInstance(): User {
         if (!this.instance) {
             this.instance = new User();
@@ -45,12 +44,13 @@ export class User {
     public listStudent(
         QuarterID: number,
         options?: {
-            Stage?: UserRegistrationStage,
-            UserStatus?: UserStatus,
-            Grade?: number,
+            Stage?: UserRegistrationStage;
+            UserStatus?: UserStatus;
+            Grade?: number;
         },
     ): Observable<AllStudent[]> {
-        let statement = 'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark, Chat.ChatMessage ' +
+        let statement =
+            'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark, Chat.ChatMessage ' +
             'FROM Users ' +
             '   JOIN StudentState ON StudentState.StudentID = Users.ID ' +
             '   LEFT JOIN Chat ON Chat.StudentID = Users.ID AND Chat.ID = ( ' +
@@ -60,7 +60,7 @@ export class User {
             '       ORDER BY Chat.ChatTimestamp DESC ' +
             '   ) ' +
             'WHERE Users.Position = \'student\' AND StudentState.QuarterID = :QuarterID';
-        let replacements: Partial<IStudentStateModel & IUserModel> = { QuarterID };
+        let replacements: any = { QuarterID };
         if (options && options.Stage) {
             statement += ' AND StudentState.Stage = :Stage';
             replacements = {
@@ -82,23 +82,20 @@ export class User {
                 Grade: options.Grade,
             };
         }
-        return Connection.getInstance().query<AllStudent>(statement,
-            {
-                raw: true,
-                replacements,
-                type: Sequelize.QueryTypes.SELECT,
-            },
-        );
+        return Connection.getInstance().query<AllStudent>(statement, {
+            raw: true,
+            replacements,
+            type: Sequelize.QueryTypes.SELECT,
+        });
     }
 
-    public getUserInfo(
-        ID: number,
-    ): Observable<IUserInfo> {
+    public getUserInfo(ID: number): Observable<IUserInfo> {
         return from(
             this.userModel.findOne<IUserInfo>({
                 attributes: {
                     exclude: ['UserPassword'],
                 },
+                raw: true,
                 where: { ID },
             }),
         );
@@ -107,25 +104,32 @@ export class User {
     public login(
         ID: number,
         UserPassword: string,
-    ): Observable<boolean> {
-        return this.decryptPassword(
-            ID,
+    ): Observable<IUserModel | null> {
+        return from(
+            this.userModel.findOne<IUserModel>({
+                attributes: { include: ['ID', 'UserPassword', 'Position'] },
+                where: { ID },
+            }),
         ).pipe(
-            map((result) => result === UserPassword),
+            map((user: IUserModel) => {
+                if (this.decrypt(user.UserPassword) === UserPassword) {
+                    return user;
+                } else {
+                    return null;
+                }
+            }),
         );
     }
 
-    public decryptPassword(
-        ID: number,
-    ): Observable<string> {
-        return from(this.userModel.findOne<IUserModel>({
-            attributes: {
-                include: ['UserPassword'],
-            },
-            where: { ID },
-        })).pipe(
-            map((result) => this.decrypt(result.UserPassword)),
-        );
+    public decryptPassword(ID: number): Observable<string> {
+        return from(
+            this.userModel.findOne<IUserModel>({
+                attributes: {
+                    include: ['UserPassword'],
+                },
+                where: { ID },
+            }),
+        ).pipe(map((result) => this.decrypt(result.UserPassword)));
     }
 
     public addTutor(
@@ -140,33 +144,32 @@ export class User {
         password: string,
     ): Observable<number> {
         // tslint:disable:object-literal-sort-keys
-        return from(this.userModel.create({
-            Firstname,
-            Lastname,
-            Nickname,
-            FirstnameEn,
-            LastnameEn,
-            NicknameEn,
-            Email,
-            Phone,
-            UserPassword: this.encrypt(password),
-            UserStatus: UserStatus.active,
-            Position: UserPosition.tutor,
-        })).pipe(
-            map((result) => result.ID),
-        );
+        return from(
+            this.userModel.create({
+                Firstname,
+                Lastname,
+                Nickname,
+                FirstnameEn,
+                LastnameEn,
+                NicknameEn,
+                Email,
+                Phone,
+                UserPassword: this.encrypt(password),
+                UserStatus: UserStatus.active,
+                Position: UserPosition.tutor,
+            }),
+        ).pipe(map((result) => result.ID));
     }
 
-    public addStudent(
-    ): Observable<IUserID & { password: string }> {
+    public addStudent(): Observable<IUserID & { password: string }> {
         const password = this.generatePassword();
-        return from(this.userModel.create({
-            Position: UserPosition.student,
-            UserStatus: UserStatus.inactive,
-            UserPassword: this.encrypt(password),
-        })).pipe(
-            map((result) => ({ ID: result.ID, password })),
-        );
+        return from(
+            this.userModel.create({
+                Position: UserPosition.student,
+                UserStatus: UserStatus.inactive,
+                UserPassword: this.encrypt(password),
+            }),
+        ).pipe(map((result) => ({ ID: result.ID, password })));
     }
 
     public registerStudent(
@@ -182,33 +185,26 @@ export class User {
         Grade: number,
         QuarterID: number,
     ): Observable<number> {
-        return StudentState.getInstance().add(
-            ID,
-            QuarterID,
-            Grade,
-            UserRegistrationStage.unregistered,
-        ).pipe(
-            flatMap(() => this.edit(
-                ID,
-                {
-                    Firstname,
-                    Lastname,
-                    Nickname,
-                    FirstnameEn,
-                    LastnameEn,
-                    NicknameEn,
-                    Email,
-                    Phone,
-                    UserStatus: UserStatus.active,
-                },
-            )),
+        return StudentState.getInstance()
+            .add(ID, QuarterID, Grade, UserRegistrationStage.unregistered)
+            .pipe(
+                flatMap(() =>
+                    this.edit(ID, {
+                        Firstname,
+                        Lastname,
+                        Nickname,
+                        FirstnameEn,
+                        LastnameEn,
+                        NicknameEn,
+                        Email,
+                        Phone,
+                        UserStatus: UserStatus.active,
+                    }),
+                ),
         );
     }
 
-    public edit(
-        ID: number,
-        value: Partial<IUserModel>,
-    ): Observable<number> {
+    public edit(ID: number, value: Partial<IUserModel>): Observable<number> {
         let updateValue = {} as Partial<IUserModel>;
         if (value.Firstname) {
             updateValue = { ...updateValue, Firstname: value.Firstname };
@@ -235,7 +231,10 @@ export class User {
             updateValue = { ...updateValue, Phone: value.Phone };
         }
         if (value.UserPassword) {
-            updateValue = { ...updateValue, UserPassword: this.encrypt(value.UserPassword) };
+            updateValue = {
+                ...updateValue,
+                UserPassword: this.encrypt(value.UserPassword),
+            };
         }
         if (value.UserStatus) {
             updateValue = { ...updateValue, UserStatus: value.UserStatus };
@@ -246,18 +245,19 @@ export class User {
         if (value.SubPosition) {
             updateValue = { ...updateValue, SubPosition: value.SubPosition };
         }
-        return from(this.userModel.update(updateValue, { where: { ID } }))
-            .pipe(
-                map((result) => result[0]),
+        return from(this.userModel.update(updateValue, { where: { ID } })).pipe(
+            map((result) => result[0]),
         );
     }
-
+    public getAllStudent() {
+        return from(this.userModel.findAll({ where: { Position: 'student' } }));
+    }
     private encrypt(password: string): string {
         return AES.encrypt(password, process.env.PASSWORD_SECRET).toString();
     }
 
     private decrypt(password: string): string {
-        return AES.decrypt(password, process.env.PASSWORD_SECRET).toString();
+        return AES.decrypt(password, process.env.PASSWORD_SECRET).toString(enc.Utf8);
     }
 
     private generatePassword(): string {
