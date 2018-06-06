@@ -56,7 +56,7 @@ export class Room {
     public edit(
         ID: number,
         value: Partial<IRoomModel>,
-    ): Observable<IRoomModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IRoomModel>;
         if (value.RoomName) {
             updateValue = { ...updateValue, RoomName: value.RoomName };
@@ -69,7 +69,7 @@ export class Room {
         }
         return from(this.roomModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((result) => result[1][0]),
+                map((result) => result[0]),
         );
     }
 

@@ -39,7 +39,7 @@ export class Quarter {
     public edit(
         ID: number,
         value: Partial<IQuarterModel>,
-    ): Observable<IQuarterModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IQuarterModel>;
         if (value.StartDate) {
             updateValue = { ...updateValue, StartDate: value.StartDate };
@@ -52,7 +52,7 @@ export class Quarter {
         }
         return from(this.quarterModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((quarter) => quarter[1][0]),
+                map((quarter) => quarter[0]),
         );
     }
 

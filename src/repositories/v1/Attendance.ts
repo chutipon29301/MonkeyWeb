@@ -79,7 +79,7 @@ export class Attendance {
     public edit(
         ID: number,
         value: Partial<IAttendanceModel>,
-    ): Observable<IAttendanceModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IAttendanceModel>;
         if (value.AttendanceDate) {
             updateValue = { ...updateValue, AttendanceDate: value.AttendanceDate };
@@ -98,7 +98,7 @@ export class Attendance {
         }
         return from(this.attendanceModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((result) => result[1][0]),
+                map((result) => result[0]),
         );
     }
 }

@@ -181,7 +181,7 @@ export class User {
         Phone: string,
         Grade: number,
         QuarterID: number,
-    ): Observable<IUserModel> {
+    ): Observable<number> {
         return StudentState.getInstance().add(
             ID,
             QuarterID,
@@ -208,7 +208,7 @@ export class User {
     public edit(
         ID: number,
         value: Partial<IUserModel>,
-    ): Observable<IUserModel> {
+    ): Observable<number> {
         let updateValue = {} as Partial<IUserModel>;
         if (value.Firstname) {
             updateValue = { ...updateValue, Firstname: value.Firstname };
@@ -248,7 +248,7 @@ export class User {
         }
         return from(this.userModel.update(updateValue, { where: { ID } }))
             .pipe(
-                map((result) => result[1][0]),
+                map((result) => result[0]),
         );
     }
 
