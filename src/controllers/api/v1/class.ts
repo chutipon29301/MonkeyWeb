@@ -4,7 +4,7 @@ import { body, oneOf, validationResult } from 'express-validator/check';
 import { Observable } from 'rxjs';
 import { Class } from '../../../repositories/v1/Class';
 import { ClassRegistration } from '../../../repositories/v1/ClassRegistration';
-import { completionHandler, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateIntArray, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -69,32 +69,18 @@ router.post('/addSkill',
 );
 
 router.post('/register',
+    body('studentID').isInt(),
     oneOf([
-        [
-            body('studentID').isInt(),
-            body('classID').isInt(),
-        ],
-        body('classes').custom(((value) => {
-            return new Promise((reslove, reject) => {
-                if (value instanceof Array) {
-                    value.forEach((element) => {
-                        if (!element.StudentID || !element.ClassID) {
-                            reject('invalid object inside classes array');
-                        }
-                    });
-                    reslove();
-                } else {
-                    reject('classes parameter is not an array');
-                }
-            });
-        })),
+        body('classID').isInt(),
+        body('classesID').custom(validateIntArray),
     ]),
     validateRequest,
     (req, res) => {
         let observer: Observable<any>;
-        if (req.body.classes) {
+        if (req.body.classesID) {
             observer = ClassRegistration.getInstance().bulkAdd(
-                req.body.classes,
+                req.body.studentID,
+                req.body.classesID,
             );
         } else {
             observer = ClassRegistration.getInstance().add(
