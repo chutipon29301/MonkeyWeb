@@ -45,13 +45,13 @@ export const attendanceDocument = multer({
 export function validateIntArray(value: any): Promise<string> {
     return new Promise((reslove, reject) => {
         if (value instanceof Array) {
-            if (_.every(value, _.isNumber)) {
+            if (_.every(value.map((o) => +o), _.isNumber)) {
                 reslove();
             } else {
-                reject('element of classID should be a number');
+                reject('element of field should be a number');
             }
         } else {
-            reject('classID should be an array');
+            reject('field should be an array');
         }
     });
 }
