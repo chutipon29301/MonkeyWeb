@@ -261,18 +261,7 @@ export class User {
     }
 
     private generatePassword(): string {
-        const randomPassword = '' + Math.floor(Math.random() * 10000);
-        switch (randomPassword.length) {
-            case 0:
-                return '0000';
-            case 1:
-                return '000' + randomPassword;
-            case 2:
-                return '00' + randomPassword;
-            case 3:
-                return '0' + randomPassword;
-            default:
-                return randomPassword;
-        }
+        const randomPassword = '' + Math.random();
+        return randomPassword.substr(2, 4);
     }
 }
