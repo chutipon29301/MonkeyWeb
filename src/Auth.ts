@@ -81,7 +81,33 @@ class Auth {
               userID: userID,
               expire: expire.toString()
             };
-            return {...Auth.generateToken(payload) , position:user.Position};
+            let {
+              Position,
+              Nickname,
+              NicknameEn,
+              Firstname,
+              FirstnameEn,
+              Lastname,
+              LastnameEn,
+              ID,
+              SubPosition,
+              Email,
+              Phone
+            } = user;
+            return {
+              ...Auth.generateToken(payload),
+              Position,
+              Nickname,
+              NicknameEn,
+              Firstname,
+              FirstnameEn,
+              Lastname,
+              LastnameEn,
+              ID,
+              SubPosition,
+              Email,
+              Phone
+            };
           } else {
             throw new Error('Failed to login');
           }
