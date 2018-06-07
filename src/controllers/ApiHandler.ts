@@ -26,7 +26,7 @@ export function completionHandler(
 ): Subscriber<any> {
     return SubjectSubscriber.create(
         () => { },
-        (error) => res.status(500).send({error: error.toString()}),
+        (error) => res.status(500).send({ error: error.toString() }),
         () => res.sendStatus(200),
     );
 }
@@ -53,6 +53,15 @@ export const attendanceDocument = multer({
         },
     }),
 }).single('attendanceDocument');
+
+export const commentImage = multer({
+    storage: multer.diskStorage({
+        destination: join(process.env.DOCUMENT_PATH, 'comment/'),
+        filename: (req, file, cb) => {
+            cb(null, (new Date()).toISOString());
+        },
+    }),
+}).single('commentImage');
 
 export function validateNumberArray(
     value: any,

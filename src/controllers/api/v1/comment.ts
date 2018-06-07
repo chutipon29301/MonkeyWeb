@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
+import { Comment as CommentManager } from '../../../repositories/v1/Comment';
 import { CommentConfig } from '../../../repositories/v1/CommentConfig';
 import { CommentText } from '../../../repositories/v1/CommentText';
-import { completionHandler, validateUserPosition } from '../../ApiHandler';
+import { commentImage, completionHandler, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -96,6 +97,70 @@ router.post(
         CommentConfig.getInstance().delete(
             req.body.userID,
             req.body.commentTextID,
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.post(
+    '/add',
+    commentImage,
+    body('studentID').isInt(),
+    body('commentTextID').isInt().optional(),
+    body('quarterID').isInt(),
+    body('senderID').isInt(),
+    body('commentType').isString(),
+    (req, res) => {
+        CommentManager.getInstance().add(
+            req.body.studentID,
+            req.body.quarterID,
+            req.body.senderID,
+            req.body.commentType,
+            {
+                CommentImagePath: req.file === undefined ? undefined : req.file.path,
+                CommentTextID: req.body.commentTextID,
+            },
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.post(
+    '/delete',
+    body('commentID').isInt(),
+    (req, res) => {
+        CommentManager.getInstance().delete(
+            req.body.commentID,
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.post(
+    '/edit',
+    body('commentID').isInt(),
+    oneOf([
+        body('commentType').isString(),
+        body('commentTextID').isInt(),
+        body('quarterID').isInt(),
+        body('studentID').isInt(),
+        body('remark').isString(),
+        body('senderID').isInt(),
+    ]),
+    (req, res) => {
+        CommentManager.getInstance().edit(
+            req.body.commentID,
+            {
+                CommentTextID: req.body.commentTextID,
+                CommentType: req.body.commentType,
+                QuarterID: req.body.quarterID,
+                Remark: req.body.remark,
+                SenderID: req.body.senderID,
+                StudentID: req.body.studentID,
+            },
         ).subscribe(
             completionHandler(res),
         );
