@@ -27,15 +27,15 @@ export class Comment {
         SenderID: number,
         CommentType: string,
         commentValue: {
-            CommentImagePath?: string,
+            ImagePath?: string,
             CommentTextID?: number,
         },
     ): Observable<ICommentModel> {
-        if (commentValue.CommentImagePath && commentValue.CommentTextID) {
+        if (commentValue.ImagePath && commentValue.CommentTextID) {
             return from(this.commentModel.create({
-                CommentImagePath: commentValue.CommentImagePath,
                 CommentTextID: commentValue.CommentTextID,
                 CommentType,
+                ImagePath: commentValue.ImagePath,
                 QuarterID,
                 SenderID,
                 StudentID,
@@ -54,8 +54,8 @@ export class Comment {
         if (value.CommentTextID) {
             updateValue = { ...updateValue, CommentTextID: value.CommentTextID };
         }
-        if (value.CommentImagePath) {
-            updateValue = { ...updateValue, CommentImagePath: value.CommentImagePath };
+        if (value.ImagePath) {
+            updateValue = { ...updateValue, ImagePath: value.ImagePath };
         }
         if (value.QuarterID) {
             updateValue = { ...updateValue, QuarterID: value.QuarterID };

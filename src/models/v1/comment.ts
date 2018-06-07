@@ -8,7 +8,7 @@ export interface ICommentModel {
     StudentID: number;
     CommentTimestamp?: Date;
     CommentTextID?: number;
-    CommentImagePath?: string;
+    ImagePath?: string;
     QuarterID: number;
     SenderID: number;
     Remark?: string;
@@ -47,7 +47,7 @@ export function commentModel(sequalize: Sequelize.Sequelize) {
                 key: 'ID',
             },
         },
-        CommentImagePath: {
+        ImagePath: {
             type: Sequelize.STRING,
             allowNull: true,
         },

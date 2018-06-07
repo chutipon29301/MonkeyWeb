@@ -118,8 +118,8 @@ router.post(
             req.body.senderID,
             req.body.commentType,
             {
-                CommentImagePath: req.file === undefined ? undefined : req.file.path,
                 CommentTextID: req.body.commentTextID,
+                ImagePath: req.file === undefined ? undefined : req.file.path,
             },
         ).subscribe(
             completionHandler(res),
