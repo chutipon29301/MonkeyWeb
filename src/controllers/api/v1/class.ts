@@ -1,14 +1,14 @@
-import { Promise } from 'bluebird';
 import { Router } from 'express';
-import { body, oneOf, validationResult } from 'express-validator/check';
+import { body, oneOf } from 'express-validator/check';
 import { Observable } from 'rxjs';
 import { Class } from '../../../repositories/v1/Class';
 import { ClassRegistration } from '../../../repositories/v1/ClassRegistration';
-import { completionHandler, validateIntArray, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateNumberArray, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
 router.post('/addCourse',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('className').isString(),
     body('quarterID').isInt(),
     body('classDate').isISO8601(),
@@ -33,6 +33,7 @@ router.post('/addCourse',
 );
 
 router.post('/addHybrid',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('className').isString(),
     body('quarterID').isInt(),
     body('classDate').isISO8601(),
@@ -51,6 +52,7 @@ router.post('/addHybrid',
 );
 
 router.post('/addSkill',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('className').isString(),
     body('quarterID').isInt(),
     body('classDate').isISO8601(),
@@ -69,10 +71,11 @@ router.post('/addSkill',
 );
 
 router.post('/register',
+    validateUserPosition('student', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     oneOf([
         body('classID').isInt(),
-        body('classesID').custom(validateIntArray),
+        body('classesID').custom(validateNumberArray),
     ]),
     validateRequest,
     (req, res) => {
@@ -95,6 +98,7 @@ router.post('/register',
 );
 
 router.post('/unregistration',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('classID').isInt(),
     validateRequest,
@@ -109,6 +113,7 @@ router.post('/unregistration',
 );
 
 router.post('/getClass',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('className').isString().optional(),
     body('quarterID').isInt().optional(),
     body('classDate').isISO8601().optional(),
@@ -130,6 +135,7 @@ router.post('/getClass',
 );
 
 router.post('/delete',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('classID').isInt(),
     validateRequest,
     (req, res) => {
@@ -142,6 +148,7 @@ router.post('/delete',
 );
 
 router.post('/edit',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('classID').isInt(),
     oneOf([
         body('classDate').isISO8601(),
@@ -180,6 +187,7 @@ router.post('/edit',
 );
 
 router.post('/info',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('classID').isInt(),
     validateRequest,
     (req, res) => {
@@ -193,6 +201,7 @@ router.post('/info',
 );
 
 router.post('/list',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('quarterID').isInt(),
     body('type').isIn(['Course', 'Hybrid', 'Skill']).optional(),
     validateRequest,

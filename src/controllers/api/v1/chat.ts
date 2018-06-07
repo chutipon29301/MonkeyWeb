@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
 import { Chat } from '../../../repositories/v1/Chat';
-import { completionHandler, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
 router.post('/add',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('chatMessage').isString(),
     body('quarterID').isInt(),
@@ -24,6 +25,7 @@ router.post('/add',
 );
 
 router.post('/delete',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('chatID').isInt(),
     validateRequest,
     (req, res) => {
@@ -36,6 +38,7 @@ router.post('/delete',
 );
 
 router.post('/edit',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('chatID').isInt(),
     oneOf([
         body('chatMessage').isString(),
@@ -58,6 +61,7 @@ router.post('/edit',
 );
 
 router.post('/list',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('limit').isInt().optional(),
     validateRequest,

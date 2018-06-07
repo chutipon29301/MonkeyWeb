@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
-import { studentStateModel } from '../../../models/v1/studentState';
 import { Portfolio } from '../../../repositories/v1/Portfolio';
 import { completionHandler, validateRequest } from '../../ApiHandler';
 

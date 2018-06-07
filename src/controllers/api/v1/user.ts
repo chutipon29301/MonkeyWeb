@@ -4,7 +4,6 @@ import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
 import { User } from '../../../repositories/v1/User';
 import { completionHandler, validateRequest } from '../../ApiHandler';
-import Auth from '../../../Auth';
 
 export const router = Router();
 
@@ -36,13 +35,12 @@ router.post('/listStudent',
     },
 );
 
-router.post('/getAllStudent',Auth.authenticate(),(req,res)=>{
-    console.log(req.user)
+router.post('/getAllStudent', (req, res) => {
     User.getInstance().getAllStudent().subscribe(
         (students) => res.status(200).send({ students }),
         (error) => res.status(500).send(error),
     );
-})
+});
 
 router.post('/getUserInfo',
     body('userID').isInt(),
