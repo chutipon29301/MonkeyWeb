@@ -16,7 +16,8 @@ export class HttpService {
   ): Observable<T> {
     const header = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer ' + localStorage.token
       })
     };
     if (inputHeader) {

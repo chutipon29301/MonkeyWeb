@@ -1,38 +1,41 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, of, forkJoin, timer } from 'rxjs';
+import { forkJoin, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Student, Students } from '../datatype';
-
-const header = {
-  headers: new HttpHeaders({
-    'Content-Type': 'application/x-www-form-urlencoded'
-  })
-};
+import { HttpService } from '../http-service.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class StudentService {
-  constructor(private http: HttpClient) { }
-  listStudent(): Observable<Array<Student & { color: string }>> {
-    const param = new HttpParams().set('quarterID', '20181');
-    return forkJoin(this.http.post<Students>('http://localhost:8080/api/v1/user/listStudent', param, header), timer(1000))
-      .pipe(
-        map(result => result[0].students),
-        map(result => {
-          return result.map(student => {
-            switch (student.Remark) {
-              case '1':
-                return { ...student, Remark: 'check_circle_outline', color: 'green' };
-              case '2':
-                return { ...student, Remark: 'check_circle_outline', color: 'blue' };
-              default:
-                return { ...student, Remark: 'clear', color: 'red' };
-            }
-          });
-        })
-      );
+  constructor(private httpService: HttpService) { }
+  listStudent = () => {
+    return forkJoin(
+      this.httpService.post<Students>('http://localhost:8080/api/v1/user/listStudent', { 'quarterID': '20181' }),
+      timer(1000)
+    ).pipe(
+      map(res => res[0].students),
+      map(res => res.map(student => {
+        if (student.ChatMessage === null) { student.ChatMessage = ''; }
+        const result = student as Student & { color: string, gradeString: string };
+        result.gradeString = (result.Grade > 6) ? 'S' + (result.Grade - 6) : 'P' + result.Grade;
+        switch (student.Remark) {
+          case '1':
+            result.Remark = 'check_circle_outline';
+            result.color = 'green';
+            break;
+          case '2':
+            result.Remark = 'check_circle_outline';
+            result.color = 'blue';
+            break;
+          default:
+            result.Remark = 'clear';
+            result.color = 'red';
+            break;
+        }
+        return result;
+      }))
+    );
   }
 }

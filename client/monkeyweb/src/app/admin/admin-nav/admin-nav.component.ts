@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-nav',
@@ -9,7 +10,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 export class AdminNavComponent {
   isHandset = false;
 
-  constructor(breakpointObserver: BreakpointObserver) {
+  constructor(breakpointObserver: BreakpointObserver, private router: Router) {
     breakpointObserver.observe([
       Breakpoints.Handset
     ]).subscribe(result => {
@@ -19,6 +20,11 @@ export class AdminNavComponent {
         this.isHandset = false;
       }
     });
+  }
+
+  logout = () => {
+    localStorage.clear();
+    this.router.navigate(['']);
   }
 
 }
