@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 })
 export class AdminNavComponent {
   isHandset = false;
+  userName = localStorage.NicknameEn + ' ' + localStorage.FirstnameEn;
 
   constructor(breakpointObserver: BreakpointObserver, private router: Router) {
     breakpointObserver.observe([
