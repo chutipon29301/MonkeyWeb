@@ -63,6 +63,7 @@
     "@types/passport": "^0.4.5",
     "@types/passport-jwt": "^3.0.1",
     "@types/passport-local": "^1.0.33",
+    "@types/socket.io": "^1.4.34",
     "@types/tedious": "^1.8.32",
     "@types/validator": "^9.4.1",
     "axios": "^0.18.0",
@@ -92,6 +93,7 @@
     "qs": "^6.5.2",
     "rxjs": "^6.2.0",
     "sequelize": "^4.37.8",
+    "socket.io": "^2.1.1",
     "tedious": "^2.6.1",
     "webpack-node-externals": "^1.7.2"
   }
