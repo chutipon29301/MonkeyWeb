@@ -91,18 +91,12 @@ describe('POST /api/v1/class/register', () => {
             .post('/api/v1/class/register')
             .set('Content-Type', 'application/x-www-form-urlencoded')
             .send({
-                classes: [
-                    {
-                        classID: 2258,
-                        studentID: 15999,
-                    }, {
-                        classID: 2258,
-                        studentID: 15999,
-                    }, {
-                        classID: 2258,
-                        studentID: 15999,
-                    },
+                classesID: [
+                    2258,
+                    2258,
+                    2258,
                 ],
+                studentID: 15999,
             })
             .expect(200);
     });

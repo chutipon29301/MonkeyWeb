@@ -1,20 +1,18 @@
-import { Promise } from 'bluebird';
 import { Router } from 'express';
 import { body, oneOf, param } from 'express-validator/check';
 import { Observable } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
-import { IAttendanceModel } from '../../../models/v1/attendance';
 import { Attendance } from '../../../repositories/v1/Attendance';
-import { attendanceDocument, completionHandler, validateIntArray, validateRequest } from '../../ApiHandler';
+import { attendanceDocument, completionHandler, validateNumberArray, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
 router.post('/add',
+    validateUserPosition('student', 'admin', 'dev', 'mel'),
     attendanceDocument,
     body('studentID').isInt(),
     oneOf([
         body('classID').isInt(),
-        body('classID').custom(validateIntArray),
+        body('classID').custom(validateNumberArray),
     ]),
     body('attendanceDate').isISO8601(),
     body('attendanceType').isString(),
@@ -51,23 +49,11 @@ router.post('/add',
 );
 
 router.post('/addWithPath',
+    validateUserPosition('student', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     oneOf([
         body('classID').isInt(),
-        body('classID').custom((value) => {
-            return new Promise((reslove, reject) => {
-                if (value instanceof Array) {
-                    value.forEach((element) => {
-                        if (typeof element !== 'number') {
-                            reject('element of classID should be a number');
-                        }
-                    });
-                    reslove();
-                } else {
-                    reject('classID should be an array');
-                }
-            });
-        }),
+        body('classID').custom(validateNumberArray),
     ]),
     body('attendanceDate').isISO8601(),
     body('attendanceType').isString(),
@@ -75,7 +61,7 @@ router.post('/addWithPath',
     body('sender').isString(),
     body('path').isString(),
     validateRequest,
-    (req,res)=>{
+    (req, res) => {
         Attendance.getInstance().add(
             req.body.studentID,
             req.body.classID,
@@ -84,11 +70,14 @@ router.post('/addWithPath',
             req.body.reason,
             req.body.sender,
             req.body.path,
-        ).subscribe(completionHandler(res));
-    }
-)
+        ).subscribe(
+            completionHandler(res),
+        );
+    },
+);
 
 router.get('/image/:id',
+    validateUserPosition('student', 'admin', 'dev', 'mel'),
     param('id').isInt(),
     validateRequest,
     (req, res) => {
@@ -102,6 +91,7 @@ router.get('/image/:id',
 );
 
 router.post('/delete',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('attendanceID').isInt(),
     validateRequest,
     (req, res) => {

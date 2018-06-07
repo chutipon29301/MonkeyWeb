@@ -3,18 +3,18 @@ import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as validator from 'express-validator';
 import * as logger from 'morgan';
-import * as passport from 'passport';
 import { join } from 'path';
 import Auth from '../Auth';
-import { router as api } from './api';
 import { IUserModel } from '../models/v1/user';
+import { router as api } from './api';
+
 const app = express();
 app.use((req, res, next) => {
   // Allow access from other domain
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization',
   );
   // No cache kept in local
   res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -38,7 +38,8 @@ app.get('/testget', (req, res) => {
 });
 
 declare global {
-  namespace Express{
+  namespace Express {
+      // tslint:disable:interface-name
       interface Request {
           user?: User;
       }
