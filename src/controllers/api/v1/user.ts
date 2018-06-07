@@ -3,12 +3,13 @@ import { body, oneOf } from 'express-validator/check';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
 import { User } from '../../../repositories/v1/User';
-import { completionHandler, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
 router.post(
     '/listTutor',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     (req, res) => {
         User.getInstance().listTutors()
             .subscribe(
@@ -20,6 +21,7 @@ router.post(
 
 router.post(
     '/listStudent',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('quarterID').isInt(),
     body('userStatus').isIn(Object.keys(UserStatus)).optional(),
     body('registrationStage').isIn(Object.keys(UserRegistrationStage)).optional(),
@@ -38,15 +40,18 @@ router.post(
 );
 
 router.post(
-    '/getAllStudent', (req, res) => {
-    User.getInstance().getAllStudent().subscribe(
-        (students) => res.status(200).send({ students }),
-        (error) => res.status(500).send(error),
-    );
-});
+    '/getAllStudent',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
+    (req, res) => {
+        User.getInstance().getAllStudent().subscribe(
+            (students) => res.status(200).send({ students }),
+            (error) => res.status(500).send(error),
+        );
+    });
 
 router.post(
     '/getUserInfo',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     body('userID').isInt(),
     validateRequest,
     (req, res) => {
@@ -61,9 +66,9 @@ router.post(
 
 router.post(
     '/decryptPassword',
+    validateUserPosition('dev', 'mel'),
     body('userID').isInt(),
     validateRequest,
-    // TODO: Validate with userstatus dev or higher
     (req, res) => {
         User.getInstance().decryptPassword(
             req.body.userID,
@@ -76,6 +81,7 @@ router.post(
 
 router.post(
     '/addTutor',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('firstName').isString(),
     body('lastname').isString(),
     body('nickname').isString(),
@@ -106,6 +112,7 @@ router.post(
 
 router.post(
     '/edit',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     body('userID').isInt(),
     oneOf([
         body('firstName').isString(),
@@ -142,7 +149,7 @@ router.post(
 
 router.post(
     '/generateStudent',
-    // TODO: validate with position admin or higher
+    validateUserPosition('admin', 'dev', 'mel'),
     (req, res) => {
         User.getInstance().addStudent(
         ).subscribe(
@@ -154,6 +161,7 @@ router.post(
 
 router.post(
     '/register',
+    validateUserPosition('student', 'admin', 'dev', 'mel'),
     body('userID').isInt(),
     body('firstName').isString(),
     body('lastname').isString(),
