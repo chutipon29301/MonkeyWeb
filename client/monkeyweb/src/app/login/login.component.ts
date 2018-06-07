@@ -3,7 +3,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import * as _ from 'lodash';
 import { faUser, faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
 import { LoginService } from '../login.service';
 
 @Component({
@@ -70,7 +69,7 @@ export class LoginComponent implements OnInit {
   }
 
   openDialog(title: string, content: string) {
-    const dialogRef = this.dialog.open(DialogTemplateComponent, {
+    this.dialog.open(DialogTemplateComponent, {
       width: '350px',
       data: {
         title: title,
