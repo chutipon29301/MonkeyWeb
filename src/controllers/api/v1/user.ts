@@ -3,11 +3,13 @@ import { body, oneOf } from 'express-validator/check';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
 import { User } from '../../../repositories/v1/User';
-import { completionHandler, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/listTutor',
+router.post(
+    '/listTutor',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     (req, res) => {
         User.getInstance().listTutors()
             .subscribe(
@@ -17,7 +19,9 @@ router.post('/listTutor',
     },
 );
 
-router.post('/listStudent',
+router.post(
+    '/listStudent',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('quarterID').isInt(),
     body('userStatus').isIn(Object.keys(UserStatus)).optional(),
     body('registrationStage').isIn(Object.keys(UserRegistrationStage)).optional(),
@@ -35,14 +39,19 @@ router.post('/listStudent',
     },
 );
 
-router.post('/getAllStudent', (req, res) => {
-    User.getInstance().getAllStudent().subscribe(
-        (students) => res.status(200).send({ students }),
-        (error) => res.status(500).send(error),
-    );
-});
+router.post(
+    '/getAllStudent',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
+    (req, res) => {
+        User.getInstance().getAllStudent().subscribe(
+            (students) => res.status(200).send({ students }),
+            (error) => res.status(500).send(error),
+        );
+    });
 
-router.post('/getUserInfo',
+router.post(
+    '/getUserInfo',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     body('userID').isInt(),
     validateRequest,
     (req, res) => {
@@ -55,10 +64,11 @@ router.post('/getUserInfo',
     },
 );
 
-router.post('/decryptPassword',
+router.post(
+    '/decryptPassword',
+    validateUserPosition('dev', 'mel'),
     body('userID').isInt(),
     validateRequest,
-    // TODO: Validate with userstatus dev or higher
     (req, res) => {
         User.getInstance().decryptPassword(
             req.body.userID,
@@ -69,7 +79,9 @@ router.post('/decryptPassword',
     },
 );
 
-router.post('/addTutor',
+router.post(
+    '/addTutor',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('firstName').isString(),
     body('lastname').isString(),
     body('nickname').isString(),
@@ -98,7 +110,9 @@ router.post('/addTutor',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     body('userID').isInt(),
     oneOf([
         body('firstName').isString(),
@@ -133,8 +147,9 @@ router.post('/edit',
     },
 );
 
-router.post('/generateStudent',
-    // TODO: validate with position admin or higher
+router.post(
+    '/generateStudent',
+    validateUserPosition('admin', 'dev', 'mel'),
     (req, res) => {
         User.getInstance().addStudent(
         ).subscribe(
@@ -144,7 +159,9 @@ router.post('/generateStudent',
     },
 );
 
-router.post('/register',
+router.post(
+    '/register',
+    validateUserPosition('student', 'admin', 'dev', 'mel'),
     body('userID').isInt(),
     body('firstName').isString(),
     body('lastname').isString(),

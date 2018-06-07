@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
 import { Quarter } from '../../../repositories/v1/Quarter';
-import { completionHandler, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/list',
+router.post(
+    '/list',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     (req, res) => {
         Quarter.getInstance().listQuarter()
             .subscribe(
@@ -15,7 +17,9 @@ router.post('/list',
     },
 );
 
-router.post('/add',
+router.post(
+    '/add',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('quarterName').isString(),
     body('type').isString(),
     validateRequest,
@@ -29,7 +33,9 @@ router.post('/add',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('quarterID').isInt(),
     oneOf([
         body('quarterName').isString(),
@@ -51,7 +57,9 @@ router.post('/edit',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('quarterID').isInt(),
     validateRequest,
     (req, res) => {

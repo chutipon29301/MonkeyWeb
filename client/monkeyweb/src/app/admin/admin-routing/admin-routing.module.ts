@@ -1,6 +1,6 @@
 import { LayoutModule } from '@angular/cdk/layout';
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
   MatIconModule,
@@ -22,21 +22,24 @@ import { FormsModule } from '@angular/forms';
 import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { AdminStudentComponent } from '../admin-student/admin-student.component';
 import { AdminClassComponent } from '../admin-class/admin-class.component';
+import { Routes } from '../../types/route';
 
-const adminRoutes: Routes = [
+export const adminRoutes: Routes = [
   {
     path: '',
     component: AdminNavComponent,
     children: [
       {
         path: 'student',
-        component: AdminStudentComponent
+        component: AdminStudentComponent,
+        name: 'Student'
       },
       {
         path: 'class',
-        component: AdminClassComponent
-      }
-    ]
+        component: AdminClassComponent,
+        name: 'Class'
+      },
+    ],
   }
 ];
 @NgModule({

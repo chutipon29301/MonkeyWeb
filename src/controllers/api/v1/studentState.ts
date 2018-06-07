@@ -2,11 +2,13 @@ import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { StudentState } from '../../../repositories/v1/StudentState';
-import { validateRequest } from '../../ApiHandler';
+import { validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/edit',
+router.post(
+    '/edit',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('quarterID').isInt(),
     oneOf([

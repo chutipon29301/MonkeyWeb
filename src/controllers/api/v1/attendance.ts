@@ -6,7 +6,8 @@ import { attendanceDocument, completionHandler, validateNumberArray, validateReq
 
 export const router = Router();
 
-router.post('/add',
+router.post(
+    '/add',
     validateUserPosition('student', 'admin', 'dev', 'mel'),
     attendanceDocument,
     body('studentID').isInt(),
@@ -48,7 +49,8 @@ router.post('/add',
     },
 );
 
-router.post('/addWithPath',
+router.post(
+    '/addWithPath',
     validateUserPosition('student', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     oneOf([
@@ -76,7 +78,8 @@ router.post('/addWithPath',
     },
 );
 
-router.get('/image/:id',
+router.get(
+    '/image/:id',
     validateUserPosition('student', 'admin', 'dev', 'mel'),
     param('id').isInt(),
     validateRequest,
@@ -90,7 +93,8 @@ router.get('/image/:id',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
     validateUserPosition('admin', 'dev', 'mel'),
     body('attendanceID').isInt(),
     validateRequest,

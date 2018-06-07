@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator/check';
 import { Portfolio } from '../../../repositories/v1/Portfolio';
-import { completionHandler, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/add',
+router.post(
+    '/add',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('hybridSheetID').isInt(),
     validateRequest,
@@ -19,7 +21,9 @@ router.post('/add',
     },
 );
 
-router.post('/list',
+router.post(
+    '/list',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     validateRequest,
     (req, res) => {
@@ -32,7 +36,9 @@ router.post('/list',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('portfolioID').isInt(),
     oneOf([
         body('startDate').isISO8601(),
@@ -54,7 +60,9 @@ router.post('/edit',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('portfolioID').isInt(),
     validateRequest,
     (req, res) => {
