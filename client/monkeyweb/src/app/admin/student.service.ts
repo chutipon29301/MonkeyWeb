@@ -2,25 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of, forkJoin, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Student, Students } from '../datatype';
 
 const header = {
   headers: new HttpHeaders({
     'Content-Type': 'application/x-www-form-urlencoded'
   })
 };
-
-interface Student {
-  ID: number;
-  Firstname: string;
-  Nickname: string;
-  Grade: number;
-  StudentLevel?: string;
-  Remark?: string;
-}
-
-interface Students {
-  students: Student[];
-}
 
 @Injectable({
   providedIn: 'root'

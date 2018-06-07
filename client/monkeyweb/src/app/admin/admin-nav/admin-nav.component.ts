@@ -15,6 +15,8 @@ export class AdminNavComponent {
     ]).subscribe(result => {
       if (result.matches) {
         this.isHandset = true;
+      } else {
+        this.isHandset = false;
       }
     });
   }

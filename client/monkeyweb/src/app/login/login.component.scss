@@ -6,7 +6,7 @@ $login-theme: mat-light-theme($login-primary, $login-accent);
 @include mat-button-theme($login-theme);
 .flex-container{
     display: flex;
-    background-color: #FFD740;
+    background-color: #FFB300;
     height: 100vh;
     width: 100vw;
     flex-flow: row nowrap;
