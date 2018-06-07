@@ -28,8 +28,7 @@
 <mat-sidenav-container>
   <mat-sidenav #drawer fixedInViewport="true" role='navigation' [mode]="(isHandset)?'over':'side'" [ngStyle]="{'margin-top': (isHandset)?'56px':'64px'}">
     <mat-nav-list>
-      <a mat-list-item routerLink="/admin/student" routerLinkActive="active" (click)="drawer.close()">Student</a>
-      <a mat-list-item routerLink="/admin/class" routerLinkActive="active" (click)="drawer.close()">Class</a>
+      <a *ngFor="let navItem of navItems" mat-list-item routerLink="{{navItem.link}}" routerLinkActive="active" (click)="drawer.close()">{{navItem.name}}</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content [ngStyle]="{'margin-top': (isHandset)?'56px':'64px'}">
