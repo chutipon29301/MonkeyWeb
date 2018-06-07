@@ -18,4 +18,8 @@ export class Comment {
     private constructor() {
         this.commentModel = commentModel(Connection.getInstance().getConnection());
     }
+
+    // public add(
+
+    // )
 }

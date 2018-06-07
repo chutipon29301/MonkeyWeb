@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { body, validationResult } from 'express-validator/check';
-import { flatMap } from 'rxjs/operators';
+import { body } from 'express-validator/check';
 import { Sheet } from '../../../repositories/v1/Sheet';
 import { completionHandler, validateRequest } from '../../ApiHandler';
 
