@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AdminNavService, IAdminNav } from './admin-nav.service';
 import { LifecycleHooks } from '@angular/compiler/src/lifecycle_reflector';
+import { AdminNavService, IAdminNav } from '../admin-nav.service';
 
 @Component({
   selector: 'app-admin-nav',
