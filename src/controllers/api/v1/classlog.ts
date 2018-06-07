@@ -3,12 +3,13 @@ import { body, oneOf } from 'express-validator/check';
 import { Observable } from 'rxjs';
 import { IClassLogModel } from '../../../models/v1/classlog';
 import { ClassLog } from '../../../repositories/v1/ClassLog';
-import { completionHandler, validateRequest } from '../../ApiHandler';
+import { completionHandler, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
 router.post(
     '/add',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('classID').isInt(),
     body('studyDate').isISO8601(),
@@ -30,6 +31,7 @@ router.post(
 
 router.post(
     '/list',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     oneOf([
         body('studentID').isInt(),
         body('studyDate').isISO8601(),
@@ -51,6 +53,7 @@ router.post(
 
 router.post(
     '/edit',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('classLogID').isInt(),
     oneOf([
         body('checkInTime').isISO8601(),
@@ -78,6 +81,7 @@ router.post(
 
 router.post(
     '/delete',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('classLogID').isInt(),
     validateRequest,
     (req, res) => {

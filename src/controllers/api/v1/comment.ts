@@ -105,6 +105,7 @@ router.post(
 
 router.post(
     '/add',
+    validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     commentImage,
     body('studentID').isInt(),
     body('commentTextID').isInt().optional(),
@@ -129,6 +130,7 @@ router.post(
 
 router.post(
     '/delete',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('commentID').isInt(),
     (req, res) => {
         CommentManager.getInstance().delete(
@@ -141,6 +143,7 @@ router.post(
 
 router.post(
     '/edit',
+    validateUserPosition('admin', 'dev', 'mel'),
     body('commentID').isInt(),
     oneOf([
         body('commentType').isString(),
