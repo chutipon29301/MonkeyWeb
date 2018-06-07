@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Token } from './datatype';
 import { HttpService } from './http-service.service';
-import { AdminGuard } from './authen.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +9,7 @@ import { AdminGuard } from './authen.service';
 
 export class LoginService {
 
-  constructor(private router: Router, private http: HttpService, private adminGuard: AdminGuard) { }
+  constructor(private router: Router, private http: HttpService) { }
 
   getLoginData = (id: number, pwd: string) => {
     const param = {

@@ -5,6 +5,7 @@ export interface Student {
     Grade: number;
     StudentLevel?: string;
     Remark?: string;
+    ChatMessage?: string;
 }
 
 export interface Students {
@@ -15,7 +16,7 @@ export interface Token {
     ID: number;
     token: string;
     refreshToken: string;
-    // expire: string;
+    expire: string;
     Position: string;
     Nickname: string;
     NicknameEn: string;
