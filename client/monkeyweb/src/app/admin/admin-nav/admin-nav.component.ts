@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { LifecycleHooks } from '@angular/compiler/src/lifecycle_reflector';
 import { AdminNavService, IAdminNav } from '../admin-nav.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-nav',
@@ -11,9 +12,10 @@ import { AdminNavService, IAdminNav } from '../admin-nav.service';
 export class AdminNavComponent implements OnInit {
 
   isHandset = false;
+  userName = localStorage.NicknameEn + ' ' + localStorage.FirstnameEn;
   navItems: IAdminNav[];
 
-  constructor(private navBarService: AdminNavService, breakpointObserver: BreakpointObserver) {
+  constructor(breakpointObserver: BreakpointObserver, private router: Router, private navBarService: AdminNavService) {
     breakpointObserver.observe([
       Breakpoints.Handset
     ]).subscribe(result => {
@@ -34,4 +36,9 @@ export class AdminNavComponent implements OnInit {
       (navItems) => this.navItems = navItems,
     );
   }
+  logout = () => {
+    localStorage.clear();
+    this.router.navigate(['']);
+  }
+
 }

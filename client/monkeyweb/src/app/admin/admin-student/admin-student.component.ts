@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StudentService } from '../student.service';
-import { MatSort, MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-admin-student',

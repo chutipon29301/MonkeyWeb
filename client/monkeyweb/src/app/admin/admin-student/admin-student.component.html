@@ -17,7 +17,7 @@
 
     <ng-container matColumnDef="Grade">
       <mat-header-cell *matHeaderCellDef> Grade </mat-header-cell>
-      <mat-cell *matCellDef="let std"> {{std.Grade}} </mat-cell>
+      <mat-cell *matCellDef="let std"> {{std.gradeString}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="Nickname">
@@ -37,7 +37,7 @@
 
     <ng-container matColumnDef="Chat">
       <mat-header-cell *matHeaderCellDef> Chat </mat-header-cell>
-      <mat-cell *matCellDef="let std">This feild for KMel & GG chat</mat-cell>
+      <mat-cell *matCellDef="let std">{{std.ChatMessage}}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="Remark">
