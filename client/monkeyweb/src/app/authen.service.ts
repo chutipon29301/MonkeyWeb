@@ -4,13 +4,11 @@ import { CanLoad } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanLoad {
-  isAdminLogin = true;
 
+export class AdminGuard implements CanLoad {
   constructor() { }
 
   canLoad() {
-    console.log('AuthGuard#canLoad called');
-    return this.isAdminLogin;
+    return localStorage.isAdminLogin === 'true';
   }
 }
