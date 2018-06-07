@@ -5,7 +5,8 @@ import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/addSheet',
+router.post(
+    '/addSheet',
     body('subject').isString().isLength({ min: 1, max: 1 }),
     body('class').isString().isLength({ min: 1, max: 1 }),
     body('topic').isString().isLength({ min: 1, max: 3 }),

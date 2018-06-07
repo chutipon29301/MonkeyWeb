@@ -7,7 +7,8 @@ import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/listTutor',
+router.post(
+    '/listTutor',
     (req, res) => {
         User.getInstance().listTutors()
             .subscribe(
@@ -17,7 +18,8 @@ router.post('/listTutor',
     },
 );
 
-router.post('/listStudent',
+router.post(
+    '/listStudent',
     body('quarterID').isInt(),
     body('userStatus').isIn(Object.keys(UserStatus)).optional(),
     body('registrationStage').isIn(Object.keys(UserRegistrationStage)).optional(),
@@ -35,14 +37,16 @@ router.post('/listStudent',
     },
 );
 
-router.post('/getAllStudent', (req, res) => {
+router.post(
+    '/getAllStudent', (req, res) => {
     User.getInstance().getAllStudent().subscribe(
         (students) => res.status(200).send({ students }),
         (error) => res.status(500).send(error),
     );
 });
 
-router.post('/getUserInfo',
+router.post(
+    '/getUserInfo',
     body('userID').isInt(),
     validateRequest,
     (req, res) => {
@@ -55,7 +59,8 @@ router.post('/getUserInfo',
     },
 );
 
-router.post('/decryptPassword',
+router.post(
+    '/decryptPassword',
     body('userID').isInt(),
     validateRequest,
     // TODO: Validate with userstatus dev or higher
@@ -69,7 +74,8 @@ router.post('/decryptPassword',
     },
 );
 
-router.post('/addTutor',
+router.post(
+    '/addTutor',
     body('firstName').isString(),
     body('lastname').isString(),
     body('nickname').isString(),
@@ -98,7 +104,8 @@ router.post('/addTutor',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
     body('userID').isInt(),
     oneOf([
         body('firstName').isString(),
@@ -133,7 +140,8 @@ router.post('/edit',
     },
 );
 
-router.post('/generateStudent',
+router.post(
+    '/generateStudent',
     // TODO: validate with position admin or higher
     (req, res) => {
         User.getInstance().addStudent(
@@ -144,7 +152,8 @@ router.post('/generateStudent',
     },
 );
 
-router.post('/register',
+router.post(
+    '/register',
     body('userID').isInt(),
     body('firstName').isString(),
     body('lastname').isString(),

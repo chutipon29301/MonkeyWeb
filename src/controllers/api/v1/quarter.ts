@@ -5,7 +5,8 @@ import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/list',
+router.post(
+    '/list',
     (req, res) => {
         Quarter.getInstance().listQuarter()
             .subscribe(
@@ -15,7 +16,8 @@ router.post('/list',
     },
 );
 
-router.post('/add',
+router.post(
+    '/add',
     body('quarterName').isString(),
     body('type').isString(),
     validateRequest,
@@ -29,7 +31,8 @@ router.post('/add',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
     body('quarterID').isInt(),
     oneOf([
         body('quarterName').isString(),
@@ -51,7 +54,8 @@ router.post('/edit',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
     body('quarterID').isInt(),
     validateRequest,
     (req, res) => {

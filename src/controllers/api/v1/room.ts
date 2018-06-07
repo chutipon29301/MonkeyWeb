@@ -6,7 +6,8 @@ import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/list',
+router.post(
+    '/list',
     body('quarterID').isInt(),
     (req, res) => {
         Room.getInstance().list(
@@ -18,7 +19,8 @@ router.post('/list',
     },
 );
 
-router.post('/add',
+router.post(
+    '/add',
     body('roomName').isString(),
     body('quarterID').isInt(),
     body('maxSeat').isInt(),
@@ -34,7 +36,8 @@ router.post('/add',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
     body('roomID').isInt(),
     oneOf([
         body('roomName').isString(),
@@ -56,7 +59,8 @@ router.post('/edit',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
     body('roomID').isInt(),
     validateRequest,
     (req, res) => {

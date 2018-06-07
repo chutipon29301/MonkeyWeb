@@ -45,6 +45,6 @@ export class CommentText {
 
     public list(
     ): Observable<ICommentTextModel[]> {
-        return from(this.commentTextModel.findAll());
+        return from(this.commentTextModel.findAll<ICommentTextModel>());
     }
 }

@@ -7,7 +7,8 @@ import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/add',
+router.post(
+    '/add',
     body('studentID').isInt(),
     body('classID').isInt(),
     body('studyDate').isISO8601(),
@@ -27,7 +28,8 @@ router.post('/add',
     },
 );
 
-router.post('/list',
+router.post(
+    '/list',
     oneOf([
         body('studentID').isInt(),
         body('studyDate').isISO8601(),
@@ -47,7 +49,8 @@ router.post('/list',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
     body('classLogID').isInt(),
     oneOf([
         body('checkInTime').isISO8601(),
@@ -73,7 +76,8 @@ router.post('/edit',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
     body('classLogID').isInt(),
     validateRequest,
     (req, res) => {

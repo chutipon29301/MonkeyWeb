@@ -20,6 +20,12 @@ export class CommentConfig {
         this.commentConfigModel = commentConfigModel(Connection.getInstance().getConnection());
     }
 
+    public list(
+        UserID: number,
+    ): Observable<ICommentConfigModel[]> {
+        return from(this.commentConfigModel.findAll<ICommentConfigModel>({ where: { UserID } }));
+    }
+
     public add(
         UserID: number,
         CommentTextID: number,

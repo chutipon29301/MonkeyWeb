@@ -7,7 +7,8 @@ import { completionHandler, validateNumberArray, validateRequest, validateUserPo
 
 export const router = Router();
 
-router.post('/addCourse',
+router.post(
+    '/addCourse',
     validateUserPosition('admin', 'dev', 'mel'),
     body('className').isString(),
     body('quarterID').isInt(),
@@ -32,7 +33,8 @@ router.post('/addCourse',
     },
 );
 
-router.post('/addHybrid',
+router.post(
+    '/addHybrid',
     validateUserPosition('admin', 'dev', 'mel'),
     body('className').isString(),
     body('quarterID').isInt(),
@@ -51,7 +53,8 @@ router.post('/addHybrid',
     },
 );
 
-router.post('/addSkill',
+router.post(
+    '/addSkill',
     validateUserPosition('admin', 'dev', 'mel'),
     body('className').isString(),
     body('quarterID').isInt(),
@@ -70,7 +73,8 @@ router.post('/addSkill',
     },
 );
 
-router.post('/register',
+router.post(
+    '/register',
     validateUserPosition('student', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     oneOf([
@@ -97,7 +101,8 @@ router.post('/register',
     },
 );
 
-router.post('/unregistration',
+router.post(
+    '/unregistration',
     validateUserPosition('admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('classID').isInt(),
@@ -112,7 +117,8 @@ router.post('/unregistration',
     },
 );
 
-router.post('/getClass',
+router.post(
+    '/getClass',
     validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('className').isString().optional(),
     body('quarterID').isInt().optional(),
@@ -134,7 +140,8 @@ router.post('/getClass',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
     validateUserPosition('admin', 'dev', 'mel'),
     body('classID').isInt(),
     validateRequest,
@@ -147,7 +154,8 @@ router.post('/delete',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
     validateUserPosition('admin', 'dev', 'mel'),
     body('classID').isInt(),
     oneOf([
@@ -186,7 +194,8 @@ router.post('/edit',
     },
 );
 
-router.post('/info',
+router.post(
+    '/info',
     validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('classID').isInt(),
     validateRequest,
@@ -200,7 +209,8 @@ router.post('/info',
     },
 );
 
-router.post('/list',
+router.post(
+    '/list',
     validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('quarterID').isInt(),
     body('type').isIn(['Course', 'Hybrid', 'Skill']).optional(),

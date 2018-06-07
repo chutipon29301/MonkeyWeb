@@ -5,7 +5,8 @@ import { completionHandler, validateRequest, validateUserPosition } from '../../
 
 export const router = Router();
 
-router.post('/add',
+router.post(
+    '/add',
     validateUserPosition('admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('chatMessage').isString(),
@@ -24,7 +25,8 @@ router.post('/add',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
     validateUserPosition('admin', 'dev', 'mel'),
     body('chatID').isInt(),
     validateRequest,
@@ -37,7 +39,8 @@ router.post('/delete',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
     validateUserPosition('admin', 'dev', 'mel'),
     body('chatID').isInt(),
     oneOf([
@@ -60,7 +63,8 @@ router.post('/edit',
     },
 );
 
-router.post('/list',
+router.post(
+    '/list',
     validateUserPosition('tutor', 'admin', 'dev', 'mel'),
     body('studentID').isInt(),
     body('limit').isInt().optional(),

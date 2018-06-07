@@ -5,7 +5,8 @@ import { completionHandler, validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/add',
+router.post(
+    '/add',
     body('studentID').isInt(),
     body('hybridSheetID').isInt(),
     validateRequest,
@@ -19,7 +20,8 @@ router.post('/add',
     },
 );
 
-router.post('/list',
+router.post(
+    '/list',
     body('studentID').isInt(),
     validateRequest,
     (req, res) => {
@@ -32,7 +34,8 @@ router.post('/list',
     },
 );
 
-router.post('/edit',
+router.post(
+    '/edit',
     body('portfolioID').isInt(),
     oneOf([
         body('startDate').isISO8601(),
@@ -54,7 +57,8 @@ router.post('/edit',
     },
 );
 
-router.post('/delete',
+router.post(
+    '/delete',
     body('portfolioID').isInt(),
     validateRequest,
     (req, res) => {

@@ -6,7 +6,8 @@ import { validateRequest } from '../../ApiHandler';
 
 export const router = Router();
 
-router.post('/edit',
+router.post(
+    '/edit',
     body('studentID').isInt(),
     body('quarterID').isInt(),
     oneOf([
