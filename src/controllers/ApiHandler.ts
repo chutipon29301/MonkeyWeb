@@ -26,7 +26,7 @@ export function completionHandler(
 ): Subscriber<any> {
     return SubjectSubscriber.create(
         () => { },
-        (error) => res.status(500).send(error),
+        (error) => res.status(500).send({error: error.toString()}),
         () => res.sendStatus(200),
     );
 }

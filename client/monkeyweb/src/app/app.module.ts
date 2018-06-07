@@ -10,16 +10,21 @@ import {
   MatIconModule,
   MatButtonModule,
   MatInputModule,
+  MatDialogModule
 } from '@angular/material';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent, DialogTemplateComponent } from './login/login.component';
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
+    DialogTemplateComponent
+  ],
+  entryComponents: [
+    DialogTemplateComponent
   ],
   imports: [
     BrowserModule,
@@ -31,6 +36,7 @@ import { LoginComponent } from './login/login.component';
     MatIconModule,
     MatButtonModule,
     MatInputModule,
+    MatDialogModule,
     LayoutModule,
     FontAwesomeModule,
     FormsModule
