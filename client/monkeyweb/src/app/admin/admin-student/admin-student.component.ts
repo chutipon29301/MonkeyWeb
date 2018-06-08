@@ -24,6 +24,8 @@ export class AdminStudentComponent implements OnInit {
     });
   }
 
+  t = (data) => { console.log(data); };
+
   ngOnInit() {
     this.studentService.listStudent().subscribe(
       (allStudent) => {
