@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Student, Students } from '../datatype';
+import { Student, Students } from '../types/user';
 import { HttpService } from '../http-service.service';
 
 @Injectable({
