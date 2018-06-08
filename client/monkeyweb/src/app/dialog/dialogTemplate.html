@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<mat-dialog-content style="margin-bottom:50px">{{data.content}}</mat-dialog-content>
+<mat-dialog-actions style="display:flex; flex-flow:row-reverse wrap">
+    <button *ngFor="let i of data.action"
+        mat-raised-button
+        [style.background-color]="i.color"
+        [style.color]="i.txtColor"
+        (click)="(i.close)?'':i.func"
+        [mat-dialog-close]="i.close">
+        {{i.txt}}
+    </button>
+</mat-dialog-actions>
