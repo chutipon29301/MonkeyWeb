@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { adminRoutes } from './admin-routing/admin-routing.module';
+import { adminRoutes } from '../admin-routing/admin-routing.module';
 import { map } from 'rxjs/operators';
 
 @Injectable({

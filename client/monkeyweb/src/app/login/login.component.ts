@@ -1,9 +1,9 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import * as _ from 'lodash';
 import { faUser, faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
-import { LoginService } from '../login.service';
+import { LoginService } from '../service/login.service';
+import { DialogService } from '../dialog/dialog.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   constructor(
     breakpointObserver: BreakpointObserver,
     private loginService: LoginService,
-    private dialog: MatDialog
+    private dialog: DialogService
   ) {
     breakpointObserver.observe([
       Breakpoints.Handset
@@ -57,7 +57,12 @@ export class LoginComponent implements OnInit {
             this.checkLocalStorage();
           },
           (err) => {
-            this.openDialog('Error', 'Incorrect userID or password.');
+            this.dialog.openDialog(
+              'Error',
+              'Incorrect userID or password.',
+              [{ txt: 'OK', close: true, func: '', color: 'red', txtColor: '#FF1744' }],
+              '350px'
+            );
           }
         );
     }
@@ -67,30 +72,4 @@ export class LoginComponent implements OnInit {
     if (localStorage.isAdminLogin === 'true') { this.loginService.goToAdminPage(); }
     if (localStorage.isStudentLogin === 'true') { this.loginService.goToAdminPage(); }
   }
-
-  openDialog(title: string, content: string) {
-    this.dialog.open(DialogTemplateComponent, {
-      width: '350px',
-      data: {
-        title: title,
-        content: content
-      }
-    });
-  }
-
-}
-
-// Dailog component
-@Component({
-  selector: 'app-dialog-template',
-  template: `
-    <h1 mat-dialog-title>{{data.title}}</h1>
-    <mat-dialog-content style="margin-bottom:50px">{{data.content}}</mat-dialog-content>
-    <mat-dialog-actions style="display:flex; flex-flow:row-reverse wrap">
-      <button mat-raised-button [mat-dialog-close]="true" >OK</button>
-    </mat-dialog-actions>
-  `
-})
-export class DialogTemplateComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }
 }

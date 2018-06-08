@@ -16,7 +16,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { LoginComponent, DialogTemplateComponent } from './login/login.component';
+import { LoginComponent } from './login/login.component';
+import { DialogTemplateComponent } from './dialog/dialog.component';
+
 @NgModule({
   declarations: [
     AppComponent,
