@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { LifecycleHooks } from '@angular/compiler/src/lifecycle_reflector';
 import { AdminNavService, IAdminNav } from '../admin-nav.service';
 import { Router } from '@angular/router';
 
