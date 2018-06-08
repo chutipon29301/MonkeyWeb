@@ -3,7 +3,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import * as _ from 'lodash';
 import { faUser, faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
-import { LoginService } from '../login.service';
+import { LoginService } from '../service/login.service';
 
 @Component({
   selector: 'app-login',

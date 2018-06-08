@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AdminNavService, IAdminNav } from '../admin-nav.service';
+import { AdminNavService, IAdminNav } from '../service/admin-nav.service';
 import { Router } from '@angular/router';
 
 @Component({

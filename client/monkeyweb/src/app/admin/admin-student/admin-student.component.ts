@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StudentService } from '../student.service';
+import { StudentService } from '../service/student.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({

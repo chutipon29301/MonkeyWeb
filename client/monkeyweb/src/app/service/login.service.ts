@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Token } from './types/token';
+import { Token } from '../types/token';
 import { HttpService } from './http-service.service';
 
 @Injectable({
