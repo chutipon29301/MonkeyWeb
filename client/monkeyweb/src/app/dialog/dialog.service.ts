@@ -10,7 +10,7 @@ export class DialogService {
 
   constructor(private dialog: MatDialog) { }
 
-  openDialog(title: string, content: string, action: [DialogAction], width: string) {
+  openDialog(title: string, content: string, action: DialogAction[], width: string) {
     this.dialog.open(DialogTemplateComponent, {
       width: width,
       data: {
