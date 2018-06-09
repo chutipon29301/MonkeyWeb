@@ -1,5 +1,5 @@
 import { LayoutModule } from '@angular/cdk/layout';
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
@@ -26,6 +26,7 @@ import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { AdminStudentComponent } from '../admin-student/admin-student.component';
 import { AdminClassComponent } from '../admin-class/admin-class.component';
 import { Routes } from '../../types/route';
+import { AdminClassInfoComponent } from '../admin-class/admin-class-info/admin-class-info.component';
 
 export const adminRoutes: Routes = [
   {
@@ -40,7 +41,13 @@ export const adminRoutes: Routes = [
       {
         path: 'class',
         component: AdminClassComponent,
-        name: 'Class'
+        name: 'Class',
+        children: [
+          {
+            path: ':id',
+            component: AdminClassInfoComponent
+          }
+        ]
       }
     ]
   }
@@ -50,6 +57,7 @@ export const adminRoutes: Routes = [
     AdminNavComponent,
     AdminStudentComponent,
     AdminClassComponent,
+    AdminClassInfoComponent
   ],
   imports: [
     LayoutModule,
@@ -65,6 +73,7 @@ export const adminRoutes: Routes = [
     MatOptionModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatDialogModule,
     MatListModule,
     MatTableModule,
     MatInputModule,

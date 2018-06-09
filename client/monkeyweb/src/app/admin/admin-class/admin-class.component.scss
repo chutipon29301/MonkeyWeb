@@ -49,8 +49,21 @@ $screen-xl-min: 1200px;
 
 .classCard {
   width: 100%;
+  margin-bottom: 3px;
 }
 
+.classCardContent {
+  display: grid;
+  grid: 25% / auto auto auto;
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+.classCardContentItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .example-header-image {
   background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
   background-size: cover;
@@ -63,29 +76,26 @@ $screen-xl-min: 1200px;
   @include md {
     width: 750px;
   }
-  height: 100vh;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center; // align-items: flex-start;
+  height: 100vh; // justify-content: center; // align-items: flex-start;
   // align-content: flex-start;
 }
 
-.searchContainer {
-  justify-content: center;
-  display: inline;
-  @include xs {
-    height: 150px;
-  }
-  @include md {
-    height: 75px;
-  }
+.formFilter {
+  width: 100%;
+  padding: 5px;
 }
 
-.formFilter {
+.classSidenav {
+  margin: 5px;
+  padding: 10px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-content: start;
   @include xs {
-    width: 45%;
+    width: 150px;
   }
   @include md {
-    width: 200px;
+    width: 250px;
   }
 }
