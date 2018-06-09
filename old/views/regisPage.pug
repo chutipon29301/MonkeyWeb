@@ -53,7 +53,7 @@ mixin fhbSelectButt(value)
                     option(value="0") +
                     option(value=i._id) FHB:M
                     option(value=i._id) FHB:P
-                    if parseInt(webUser.level.slice(0,-1)) > 8
+                    if parseInt(webUser.level.slice(0,-1)) > 8 &&( thisD == 2 || thisD == 4 )
                         option(value=i._id) FHB:C
                         option(value=i._id) FHB:E
 mixin skSelectButt(value)
