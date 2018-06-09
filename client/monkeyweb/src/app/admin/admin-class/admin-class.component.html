@@ -1,20 +1,41 @@
-<div class="classContainer">
-  <mat-card class="classCard" *ngFor="let i of temp">
-    <mat-card-header>
-      <div mat-card-avatar class="example-header-image"></div>
-      <mat-card-title>Shiba Inu</mat-card-title>
-      <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-    </mat-card-header>
-    <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
-    <mat-card-content>
-      <mat-form-field>
+<div align="center">
+  <div class="classContainer">
+    <div class="searchContainer">
+      <mat-form-field class="formFilter">
+        <mat-select placeholder="Quarter">
+          <mat-option *ngFor="let option of Quarter" [value]="option" >
+            {{ option }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="formFilter" style="margin-left: 10px" >
+        <mat-select placeholder="Sort by" [(ngModel)]="filter" (ngModelChange)="filterChange($event)">
+          <mat-option *ngFor="let option of filters" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field style="margin-left: 10px" class="formFilter">
         <input matInput placeholder="Search" [(ngModel)]="val" (keypress)="onSearch($event)">
       </mat-form-field>
-      {{val}}
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button routerLink="/admin/student" routerLinkActive="active">LIKE</button>
-      <button mat-button>SHARE</button>
-    </mat-card-actions>
-  </mat-card>
+      <button mat-raised-button style="margin-left: 10px" (click)="onSearch({which:13})">Search!</button>
+    </div>
+    <div class="classCard" *ngFor="let class of classes" [hidden]="!class.show">
+      <mat-card>
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>{{class.ClassName}}</mat-card-title>
+          {{class.date.toString().split(' ')[0]}} {{class.date.toString().split(' ')[4]}}
+          <mat-card-subtitle>{{class.NicknameEn}}</mat-card-subtitle>
+        </mat-card-header>
+        <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
+        <mat-card-content>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button routerLink="/admin/student" routerLinkActive="active">LIKE</button>
+          <button mat-button>SHARE</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
 </div>

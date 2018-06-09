@@ -1,0 +1,91 @@
+$screen-sm-min: 576px;
+$screen-xs-min: 0px;
+// Small tablets (portrait view)
+$screen-md-min: 768px;
+// Tablets and small desktops
+$screen-lg-min: 992px;
+// Large tablets and desktops
+$screen-xl-min: 1200px;
+@mixin xs {
+  @media (min-width: #{$screen-xs-min}) {
+    @content;
+  }
+}
+
+@mixin sm {
+  @media (min-width: #{$screen-sm-min}) {
+    @content;
+  }
+}
+
+// Medium devices
+@mixin md {
+  @media (min-width: #{$screen-md-min}) {
+    @content;
+  }
+}
+
+// Large devices
+@mixin lg {
+  @media (min-width: #{$screen-lg-min}) {
+    @content;
+  }
+}
+
+// Extra large devices
+@mixin xl {
+  @media (min-width: #{$screen-xl-min}) {
+    @content;
+  }
+}
+
+[hidden] {
+  display: none;
+}
+
+.highlighted {
+  background: yellow
+}
+
+.classCard {
+  width: 100%;
+}
+
+.example-header-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+
+.classContainer {
+  @include xs {
+    width: 100%;
+  }
+  @include md {
+    width: 750px;
+  }
+  height: 100vh;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center; // align-items: flex-start;
+  // align-content: flex-start;
+}
+
+.searchContainer {
+  justify-content: center;
+  display: inline;
+  @include xs {
+    height: 150px;
+  }
+  @include md {
+    height: 75px;
+  }
+}
+
+.formFilter {
+  @include xs {
+    width: 45%;
+  }
+  @include md {
+    width: 200px;
+  }
+}
