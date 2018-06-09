@@ -3,6 +3,13 @@
   <h1 class="mat-h1">Loading student data</h1>
 </div>
 <div *ngIf="hasData">
+  <mat-form-field>
+    <mat-select placeholder="Favorite food" (selectionChange)="t($event)">
+      <mat-option value="1">1</mat-option>
+      <mat-option value="2">2</mat-option>
+      <mat-option value="3">3</mat-option>
+    </mat-select>
+  </mat-form-field>
   <mat-table [dataSource]="dataSource">
 
     <ng-container matColumnDef="Index">
