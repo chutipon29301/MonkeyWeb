@@ -20,14 +20,8 @@ import { LoginComponent } from './login/login.component';
 import { DialogTemplateComponent } from './dialog/dialog.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    DialogTemplateComponent
-  ],
-  entryComponents: [
-    DialogTemplateComponent
-  ],
+  declarations: [AppComponent, LoginComponent, DialogTemplateComponent],
+  entryComponents: [DialogTemplateComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -46,4 +40,4 @@ import { DialogTemplateComponent } from './dialog/dialog.component';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
