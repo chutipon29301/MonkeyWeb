@@ -2,17 +2,21 @@ import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AdminClassService, AdminClass } from '../service/admin-class.service';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-admin-class',
   templateUrl: './admin-class.component.html',
   styleUrls: ['./admin-class.component.scss']
 })
 export class AdminClassComponent implements OnInit {
+  public static openClassBuffer = true;
   open = true;
-  val = '';
+  mode = 'side';
+  searchString = '';
   filter = '';
   filters = ['Time', 'Tutor'];
   isMobile = false;
+  datePriority = [6, 0, 1, 2, 3, 4, 5];
   classes: (AdminClass & {
     key: string;
     show: boolean;
@@ -20,21 +24,39 @@ export class AdminClassComponent implements OnInit {
   })[] = [];
   constructor(
     private adminService: AdminClassService,
-    breakpointObserver: BreakpointObserver
+    breakpointObserver: BreakpointObserver,
+    private router: Router
   ) {
     breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.isMobile = true;
+        this.mode = 'over';
       } else {
         this.isMobile = false;
+        this.mode = 'side';
       }
       this.open = !this.isMobile;
     });
   }
+  public static openClassBufferHandler(ms: number) {
+    if (AdminClassComponent.openClassBuffer) {
+      AdminClassComponent.openClassBuffer = false;
+      setTimeout(() => {
+        AdminClassComponent.openClassBuffer = true;
+      }, ms);
+    }
+  }
+  getOpenBuffer(): boolean {
+    return AdminClassComponent.openClassBuffer;
+  }
   filterChange(e) {
     switch (e) {
       case 'Time':
-        this.classes.sort((a, b) => a.date.valueOf() - b.date.valueOf());
+        this.classes.sort(
+          (a, b) =>
+            this.datePriority[a.date.getDay()] -
+            this.datePriority[b.date.getDay()]
+        );
         break;
       case 'Tutor':
         this.classes.sort(
@@ -48,11 +70,13 @@ export class AdminClassComponent implements OnInit {
         break;
     }
   }
+  go(link: string) {
+    this.router.navigate([link]);
+  }
   onSearch(e) {
-    console.log(e);
     for (const c of this.classes) {
       let show = true;
-      const keys = this.val
+      const keys = this.searchString
         .toLowerCase()
         .trim()
         .split(/\s+/);
