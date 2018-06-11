@@ -3,7 +3,7 @@ export interface DialogAction {
     close: boolean;
     func?: (a: string) => void;
     color: string;
-    txtColor: string;
+    txtColor?: string;
 }
 
 export interface Dialog {

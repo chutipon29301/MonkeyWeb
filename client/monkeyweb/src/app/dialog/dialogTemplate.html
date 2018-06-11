@@ -4,9 +4,9 @@
     <button *ngFor="let i of data.action"
         mat-raised-button
         [style.background-color]="i.color"
-        [style.color]="i.txtColor"
+        [style.color]="(i.txtColor)?i.txtColor:black"
         [style.margin-left.px]="(i!=0)?8:0"
-        (click)="(i.func)?i.func():''"
+        (click)="(!i.close)?i.func():''"
         [mat-dialog-close]="i.close">
         {{i.txt}}
     </button>

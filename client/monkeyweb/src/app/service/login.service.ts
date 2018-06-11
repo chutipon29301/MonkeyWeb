@@ -16,7 +16,7 @@ export class LoginService {
       userID: id,
       password: pwd
     };
-    return this.http.post<Token>('http://localhost:8080/api/v1/login', param);
+    return this.http.post<Token>('api/v1/login', param);
   }
 
   goToAdminPage = () => {

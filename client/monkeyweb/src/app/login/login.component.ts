@@ -37,39 +37,32 @@ export class LoginComponent implements OnInit {
 
   checkAuth = () => {
     if (this.userID && this.userPwd) {
-      this.loginService.getLoginData(this.userID, this.userPwd).subscribe(
-        res => {
-          localStorage.clear();
-          _.forEach(res, (value, key) => {
-            localStorage.setItem(key, value + '');
-          });
-          switch (res.Position) {
-            case 'student':
-              localStorage.setItem('isStudentLogin', 'true');
-              break;
-            default:
-              localStorage.setItem('isAdminLogin', 'true');
-              break;
+      this.loginService.getLoginData(this.userID, this.userPwd)
+        .subscribe(
+          (res) => {
+            localStorage.clear();
+            _.forEach(res, (value, key) => {
+              localStorage.setItem(key, value + '');
+            });
+            switch (res.Position) {
+              case 'student':
+                localStorage.setItem('isStudentLogin', 'true');
+                break;
+              default:
+                localStorage.setItem('isAdminLogin', 'true');
+                break;
+            }
+            this.checkLocalStorage();
+          },
+          (err) => {
+            this.dialog.openDialog(
+              'Error',
+              'Incorrect userID or password.',
+              [{ txt: 'OK', close: true, func: () => { }, color: 'red', txtColor: 'white' }],
+              '350px'
+            );
           }
-          this.checkLocalStorage();
-        },
-        err => {
-          this.dialog.openDialog(
-            'Error',
-            'Incorrect userID or password.',
-            [
-              {
-                txt: 'OK',
-                close: true,
-                func: (a: string) => {},
-                color: 'red',
-                txtColor: '#FF1744'
-              }
-            ],
-            '350px'
-          );
-        }
-      );
+        );
     }
   }
 
