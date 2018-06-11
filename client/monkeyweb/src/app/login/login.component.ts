@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit {
             this.dialog.openDialog(
               'Error',
               'Incorrect userID or password.',
-              [{ txt: 'OK', close: true, func: '', color: 'red', txtColor: '#FF1744' }],
+              [{ txt: 'OK', close: true, func: () => { }, color: 'red', txtColor: 'white' }],
               '350px'
             );
           }

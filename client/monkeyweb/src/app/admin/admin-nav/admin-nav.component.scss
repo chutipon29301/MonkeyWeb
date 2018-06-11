@@ -1,15 +1,15 @@
-mat-toolbar {
+.admin-nav {
   position: fixed;
   z-index: 2;
 }
-mat-sidenav-container {
+.admin-container {
   min-height: 100vh;
 }
-mat-sidenav {
+.admin-sidenav {
   width: 200px;
   box-shadow: 3px 0 6px rgba(0,0,0,.24);
 }
-mat-sidenav-content{
+.admin-content {
   background-color: #FFFDE7;
 }
 .avatar-img {
