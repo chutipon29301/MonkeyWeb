@@ -11,6 +11,7 @@ export class AdminStudentComponent implements OnInit {
   hasData = false;
   dataSource;
   columnHead = ['Index', 'ID', 'Grade', 'Nickname', 'Firstname', 'StudentLevel', 'Remark', 'Chat'];
+  selected;
 
   constructor(private studentService: StudentService, breakpointObserver: BreakpointObserver) {
     breakpointObserver.observe([
@@ -23,8 +24,6 @@ export class AdminStudentComponent implements OnInit {
       }
     });
   }
-
-  t = (data) => { console.log(data); };
 
   ngOnInit() {
     this.studentService.listStudent().subscribe(
