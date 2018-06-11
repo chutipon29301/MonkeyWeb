@@ -22,9 +22,7 @@ export class LoginComponent implements OnInit {
     private loginService: LoginService,
     private dialog: DialogService
   ) {
-    breakpointObserver.observe([
-      Breakpoints.Handset
-    ]).subscribe(result => {
+    breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.isMobile = true;
       } else {
@@ -69,7 +67,11 @@ export class LoginComponent implements OnInit {
   }
 
   checkLocalStorage = () => {
-    if (localStorage.isAdminLogin === 'true') { this.loginService.goToAdminPage(); }
-    if (localStorage.isStudentLogin === 'true') { this.loginService.goToAdminPage(); }
+    if (localStorage.isAdminLogin === 'true') {
+      this.loginService.goToAdminPage();
+    }
+    if (localStorage.isStudentLogin === 'true') {
+      this.loginService.goToAdminPage();
+    }
   }
 }
