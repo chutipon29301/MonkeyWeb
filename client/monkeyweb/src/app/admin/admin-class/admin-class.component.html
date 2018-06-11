@@ -1,7 +1,7 @@
 <mat-drawer-container class="example-container">
-  <mat-drawer class="classSidenav" mode="side" [(opened)]="open">
+  <mat-drawer class="classSidenav" [(mode)]="mode" [(opened)]="open">
     <mat-form-field class="formFilter">
-      <input matInput placeholder="Search(space for multiple keys)" [(ngModel)]="val" (ngModelChange)="onSearch($event)">
+      <input matInput placeholder="Search(space for multiple keys)" [(ngModel)]="searchString" (ngModelChange)="onSearch($event)">
     </mat-form-field>
     <mat-form-field class="formFilter">
       <mat-select placeholder="Quarter">
@@ -11,7 +11,7 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field class="formFilter">
-      <mat-select placeholder="Sort by" [(ngModel)]="filter" (ngModelChange)="filterChange($event)" autofilled>
+      <mat-select placeholder="Sort by" [(ngModel)]="filter" (ngModelChange)="filterChange($event)">
         <mat-option *ngFor="let option of filters" [value]="option">
           {{ option }}
         </mat-option>
@@ -19,7 +19,6 @@
     </mat-form-field>
   </mat-drawer>
   <mat-drawer-content>
-
     <div align="center">
       <div class="classContainer">
         <div align="left" *ngIf="isMobile">
@@ -42,7 +41,7 @@
               <div class="classCardContentItem">
                 Time : {{class.date.toString().split(' ')[4].substr(0,5)}}
               </div>
-              <button mat-button routerLink="/admin/class/{{class.StudentCount}}">Student : {{class.StudentCount}}</button>
+              <button mat-button (click)="go('admin/class/'+class.ID);">Student : {{class.StudentCount}}</button>
             </mat-card-content>
             <!-- <mat-card-actions>
               <button mat-button routerLink="/admin/student" routerLinkActive="active">LIKE</button>
@@ -52,7 +51,6 @@
         </div>
       </div>
     </div>
-
   </mat-drawer-content>
 </mat-drawer-container>
 <router-outlet></router-outlet>

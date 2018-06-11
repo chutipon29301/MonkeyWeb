@@ -72,11 +72,13 @@ $screen-xl-min: 1200px;
 .classContainer {
   @include xs {
     width: 100%;
+    height: calc(100vh - 56px);
   }
   @include md {
     width: 750px;
+    height: calc(100vh - 104px);
   }
-  height: 100vh; // justify-content: center; // align-items: flex-start;
+  // justify-content: center; // align-items: flex-start;
   // align-content: flex-start;
 }
 
@@ -93,7 +95,7 @@ $screen-xl-min: 1200px;
   justify-content: center;
   align-content: start;
   @include xs {
-    width: 150px;
+    width: 250px;
   }
   @include md {
     width: 250px;
