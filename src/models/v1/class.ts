@@ -4,6 +4,7 @@ import { roomModel } from './room';
 import { userModel } from './user';
 
 export interface IClassList {
+    ID?: number;
     ClassName: string;
     ClassDate: Date;
     Grade?: string;
@@ -18,7 +19,6 @@ export interface IClassInfo extends IClassList {
 }
 
 export interface IClassModel extends IClassInfo {
-    ID?: number;
     QuarterID: number;
     ClassSubject: string;
     Suggestion?: string;
