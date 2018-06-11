@@ -41,7 +41,7 @@
               <div class="classCardContentItem">
                 Time : {{class.date.toString().split(' ')[4].substr(0,5)}}
               </div>
-              <button mat-button (click)="go('admin/class/'+class.StudentCount);">Student : {{class.StudentCount}}</button>
+              <button mat-button (click)="go('admin/class/'+class.ID);">Student : {{class.StudentCount}}</button>
             </mat-card-content>
             <!-- <mat-card-actions>
               <button mat-button routerLink="/admin/student" routerLinkActive="active">LIKE</button>

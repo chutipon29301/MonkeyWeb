@@ -169,7 +169,7 @@ export class Class {
     ): Observable<ClassList[]> {
         let replacements: Partial<IClassModel> = { QuarterID };
         let statement =
-            `SELECT Class.ID Class.ClassName, Class.ClassDate, Class.Grade, Room.RoomName, Users.NicknameEn, (
+            `SELECT Class.ID, Class.ClassName, Class.ClassDate, Class.Grade, Room.RoomName, Users.NicknameEn, (
                 SELECT COUNT(*)
                 FROM ClassRegistration
                     LEFT JOIN Users ON ClassRegistration.StudentID = Users.ID

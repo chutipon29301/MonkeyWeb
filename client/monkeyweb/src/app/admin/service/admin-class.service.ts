@@ -7,12 +7,13 @@ import { HttpService } from '../../service/http-service.service';
 export class AdminClassService {
   constructor(private http: HttpService) {}
   getAdminClass(): Observable<{ classes: AdminClass[] }> {
-    return this.http.post('http://192.168.1.110:8080/api/v1/class/list', {
+    return this.http.post('api/v1/class/list', {
       quarterID: 20181
     });
   }
 }
 export interface AdminClass {
+  ID: number;
   ClassDate: string;
   ClassName: string;
   Grade: string;
