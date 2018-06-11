@@ -1,5 +1,5 @@
 import { LayoutModule } from '@angular/cdk/layout';
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
@@ -14,7 +14,10 @@ import {
   MatCardModule,
   MatGridListModule,
   MatProgressSpinnerModule,
-  MatMenuModule
+  MatMenuModule,
+  MatOptionModule,
+  MatDialogModule,
+  MatSelectModule
 } from '@angular/material';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +26,7 @@ import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { AdminStudentComponent } from '../admin-student/admin-student.component';
 import { AdminClassComponent } from '../admin-class/admin-class.component';
 import { Routes } from '../../types/route';
+import { AdminClassInfoComponent } from '../admin-class/admin-class-info/admin-class-info.component';
 
 export const adminRoutes: Routes = [
   {
@@ -37,13 +41,24 @@ export const adminRoutes: Routes = [
       {
         path: 'class',
         component: AdminClassComponent,
-        name: 'Class'
-      },
-    ],
+        name: 'Class',
+        children: [
+          {
+            path: ':id',
+            component: AdminClassInfoComponent
+          }
+        ]
+      }
+    ]
   }
 ];
 @NgModule({
-  declarations: [AdminNavComponent, AdminStudentComponent, AdminClassComponent],
+  declarations: [
+    AdminNavComponent,
+    AdminStudentComponent,
+    AdminClassComponent,
+    AdminClassInfoComponent
+  ],
   imports: [
     LayoutModule,
     RouterModule.forChild(adminRoutes),
@@ -55,16 +70,21 @@ export const adminRoutes: Routes = [
     MatSidenavModule,
     MatGridListModule,
     MatButtonModule,
+    MatOptionModule,
+    MatSelectModule,
     MatFormFieldModule,
+    MatDialogModule,
     MatListModule,
     MatTableModule,
     MatInputModule,
     MatCardModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    MatDialogModule,
+    MatSelectModule,
     FontAwesomeModule
   ],
   exports: [RouterModule],
   providers: []
 })
-export class AdminRoutingModule { }
+export class AdminRoutingModule {}

@@ -1,10 +1,10 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" class="admin-nav">
   <button type="button" mat-icon-button (click)="drawer.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
   <span>Admin Page</span>
   <span style="flex: auto;"></span>
-  <span>{{userName}}</span>
+  <span [hidden]="isHandset">{{userName}}</span>
   <img src="../../../assets/images/NoAvatar.jpg" alt="Avatar" class="avatar-img" [matMenuTriggerFor]="logoutMenu">
   <mat-menu #logoutMenu="matMenu" [overlapTrigger]="false">
     <button mat-menu-item>
@@ -19,19 +19,27 @@
       <mat-icon>location_off</mat-icon>
       <span>Check out</span>
     </button>
-    <button mat-menu-item (click)="logout();">
+    <button mat-menu-item (click)="logoutCheck();">
       <mat-icon>lock_open</mat-icon>
       <span>Logout</span>
     </button>
   </mat-menu>
 </mat-toolbar>
-<mat-sidenav-container>
-  <mat-sidenav #drawer fixedInViewport="true" role='navigation' [mode]="(isHandset)?'over':'side'" [ngStyle]="{'margin-top': (isHandset)?'56px':'64px'}">
+<mat-sidenav-container class="admin-container">
+  <mat-sidenav #drawer
+    class="admin-sidenav"
+    fixedInViewport="true"
+    role='navigation'
+    [mode]="(isHandset)?'over':'side'"
+    [ngStyle]="{'margin-top': (isHandset)?'56px':'64px'}">
     <mat-nav-list>
       <a *ngFor="let navItem of navItems" mat-list-item routerLink="{{navItem.link}}" routerLinkActive="active" (click)="drawer.close()">{{navItem.name}}</a>
     </mat-nav-list>
   </mat-sidenav>
-  <mat-sidenav-content [ngStyle]="{'margin-top': (isHandset)?'56px':'64px'}">
+  <mat-sidenav-content
+    class="admin-content"
+    [style.margin-top.px]="(isHandset)?'56':'64'"
+    [style.padding.px]="(isHandset)?'0':'16'">
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

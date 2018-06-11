@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Student, Students } from '../datatype';
-import { HttpService } from '../http-service.service';
+import { Student, Students } from '../../types/user';
+import { HttpService } from '../../service/http-service.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +10,10 @@ import { HttpService } from '../http-service.service';
 
 export class StudentService {
   constructor(private httpService: HttpService) { }
+
   listStudent = () => {
     return forkJoin(
-      this.httpService.post<Students>('http://localhost:8080/api/v1/user/listStudent', { 'quarterID': '20181' }),
+      this.httpService.post<Students>('api/v1/user/listStudent', { 'quarterID': '20181' }),
       timer(1000)
     ).pipe(
       map(res => res[0].students),
@@ -38,4 +39,7 @@ export class StudentService {
       }))
     );
   }
+  // getQuarter = () => {
+  //   this.httpService.post()
+  // }
 }

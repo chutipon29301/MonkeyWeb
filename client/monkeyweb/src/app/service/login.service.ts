@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Token } from './datatype';
+import { Token } from '../types/token';
 import { HttpService } from './http-service.service';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class LoginService {
       userID: id,
       password: pwd
     };
-    return this.http.post<Token>('http://localhost:8080/api/v1/login', param);
+    return this.http.post<Token>('api/v1/login', param);
   }
 
   goToAdminPage = () => {
@@ -26,4 +26,5 @@ export class LoginService {
   goToStudentPage = () => {
     this.router.navigate(['/admin']);
   }
+
 }
