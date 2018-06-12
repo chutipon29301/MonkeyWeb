@@ -93,12 +93,7 @@ export function validateTutorLogDetailArray(
 }
 
 export const attendanceDocument = multer({
-    storage: multer.diskStorage({
-        destination: join(process.env.DOCUMENT_PATH, 'attendance/'),
-        filename: (req, file, cb) => {
-            cb(null, (new Date()).toISOString());
-        },
-    }),
+    storage: multer.diskStorage({}),
 }).single('attendanceDocument');
 
 export const commentImage = multer({

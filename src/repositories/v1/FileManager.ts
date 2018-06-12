@@ -27,6 +27,10 @@ export class FileManager {
         res.status(404).sendFile(this.assetPath('attendance') + '/not-found.jpg');
     }
 
+    public static sendNotFoundCommentImage(res: Response): void {
+        res.status(404).sendFile(this.assetPath('comment') + '/not-found.jpg');
+    }
+
     private static instance: FileManager;
 
     private static assetPath(folder: string): string {
@@ -53,6 +57,14 @@ export class FileManager {
 
     public downloadAttendanceImage(fileName: string): Observable<string> {
         return this.download(fileName, 'attendance', FileManager.assetPath('attendance') + fileName + '.jpg');
+    }
+
+    public uploadCommentImage(fileName: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
+        return this.uploadAndRemove(fileName, 'comment', image);
+    }
+
+    public downloadCommentImage(fileName: string): Observable<string> {
+        return this.download(fileName, 'comment', FileManager.assetPath('comment') + fileName + '.jpg');
     }
 
     private uploadAndRemove(fileName: string, container: string, file: Express.Multer.File): Observable<BlobService.BlobResult> {
