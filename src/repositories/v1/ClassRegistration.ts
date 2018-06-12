@@ -55,10 +55,11 @@ export class ClassRegistration {
         ID: number,
         QuarterID: number,
     ) {
-        const statement = 'SELECT * ' +
-            'FROM ClassRegistration ' +
-            '   JOIN Class ON Class.ID = ClassRegistration.ClassID ' +
-            'WHERE ClassRegistration.StudentID = :ID AND Class.QuarterID = :QuarterID';
+        const statement =
+            `SELECT *
+            FROM ClassRegistration
+                JOIN Class ON Class.ID = ClassRegistration.ClassID
+            WHERE ClassRegistration.StudentID = :ID AND Class.QuarterID = :QuarterID`;
         return Connection.getInstance().query(statement,
             {
                 raw: true,

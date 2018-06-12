@@ -50,16 +50,16 @@ export class User {
         },
     ): Observable<AllStudent[]> {
         let statement =
-            'SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark, Chat.ChatMessage ' +
-            'FROM Users ' +
-            '   JOIN StudentState ON StudentState.StudentID = Users.ID ' +
-            '   LEFT JOIN Chat ON Chat.StudentID = Users.ID AND Chat.ID = ( ' +
-            '       SELECT TOP(1) ID ' +
-            '       FROM Chat ' +
-            '       WHERE Chat.StudentID = Users.ID ' +
-            '       ORDER BY Chat.ChatTimestamp DESC ' +
-            '   ) ' +
-            'WHERE Users.Position = \'student\' AND StudentState.QuarterID = :QuarterID';
+            `SELECT Users.ID, Users.Firstname, Users.Nickname, StudentState.Grade, StudentState.StudentLevel, StudentState.Remark, Chat.ChatMessage
+            FROM Users
+                JOIN StudentState ON StudentState.StudentID = Users.ID
+                LEFT JOIN Chat ON Chat.StudentID = Users.ID AND Chat.ID = (
+                    SELECT TOP(1) ID
+                        FROM Chat
+                        WHERE Chat.StudentID = Users.ID
+                        ORDER BY Chat.ChatTimestamp DESC
+                    )
+            WHERE Users.Position = 'student' AND StudentState.QuarterID = :QuarterID`;
         let replacements: any = { QuarterID };
         if (options && options.Stage) {
             statement += ' AND StudentState.Stage = :Stage';

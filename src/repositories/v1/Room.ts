@@ -43,10 +43,10 @@ export class Room {
             }));
         } else {
             return Connection.getInstance().query<IRoom>(
-                'SELECT RoomName, MaxSeat ' +
-                'FROM Room ' +
-                'JOIN Quarter ON Room.QuarterID = Quarter.ID ' +
-                'WHERE StartDate < CURRENT_TIMESTAMP AND EndDate > CURRENT_TIMESTAMP', {
+                `SELECT RoomName, MaxSeat
+                FROM Room
+                    JOIN Quarter ON Room.QuarterID = Quarter.ID
+                WHERE StartDate < CURRENT_TIMESTAMP AND EndDate > CURRENT_TIMESTAMP`, {
                     model: this.roomModel,
                     raw: true,
                 });
