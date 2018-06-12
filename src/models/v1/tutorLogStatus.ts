@@ -2,11 +2,16 @@ import * as Sequelize from 'sequelize';
 import { tutorLogIntervalModel } from './tutorLogInterval';
 import { userModel } from './user';
 
+export enum TutorLogUserStatus {
+    done = 'done',
+    pending = 'pending',
+}
+
 export interface ITutorLogStatusModel {
     ID?: number;
     UserID: number;
     TutorLogIntervalID: number;
-    TutorLogStatus?: string;
+    TutorLogStatus?: TutorLogUserStatus;
 }
 
 export type TutorLogStatusInstance = Sequelize.Instance<ITutorLogStatusModel> & ITutorLogStatusModel;

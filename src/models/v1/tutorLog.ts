@@ -31,7 +31,7 @@ export interface ITutorLogModel {
     TutorLogStatus?: TutorLogStatus;
 }
 
-export type TemplateInstance = Sequelize.Instance<ITutorLogModel> & ITutorLogModel;
+export type TutorLogInstance = Sequelize.Instance<ITutorLogModel> & ITutorLogModel;
 
 // tslint:disable:object-literal-sort-keys
 export function tutorLogModel(sequalize: Sequelize.Sequelize) {
@@ -100,7 +100,7 @@ export function tutorLogModel(sequalize: Sequelize.Sequelize) {
         },
     };
 
-    return sequalize.define<TemplateInstance, ITutorLogModel>('TutorLog', attributes, {
+    return sequalize.define<TutorLogInstance, ITutorLogModel>('TutorLog', attributes, {
         tableName: 'TutorLog',
         timestamps: false,
     });

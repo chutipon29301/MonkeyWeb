@@ -2,12 +2,15 @@ import * as Sequelize from 'sequelize';
 import { tutorLogIntervalModel } from './tutorLogInterval';
 import { userModel } from './user';
 
-export interface ITutorLogExtraModel {
-    ID?: number;
+export interface ITutorExtra {
     UserID: number;
-    TutorLogIntervalID: number;
     Note?: string;
     ExtraValue: number;
+}
+
+export interface ITutorLogExtraModel extends ITutorExtra {
+    ID?: number;
+    TutorLogIntervalID: number;
 }
 
 export type TutorLogExtraInstance = Sequelize.Instance<ITutorLogExtraModel> & ITutorLogExtraModel;
