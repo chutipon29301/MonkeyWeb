@@ -41,32 +41,10 @@ export class FileManager {
 
     public uploadProfilePicture(userID: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
         return this.uploadAndRemove(userID, 'profile-picture', image);
-        // return new Observable((observer) => {
-        //     this.blobService.createAppendBlobFromLocalFile('profile-picture', userID, images.path, (err, result) => {
-        //         if (err) {
-        //             observer.error(err);
-        //         } else {
-        //             removeSync(images.path);
-        //             observer.next(result);
-        //             observer.complete();
-        //         }
-        //     });
-        // });
     }
 
     public downloadProfilePicture(userID: string): Observable<string> {
         return this.download(userID, 'profile-picture', join(FileManager.assetPath('profile'), userID + '.jpg'));
-        // return new Observable((observer) => {
-        //     const filePath = join(__dirname, '../assets/profile/', userID + '.jpg');
-        //     this.blobService.getBlobToLocalFile('profile-picture', userID, filePath, (err) => {
-        //         if (err) {
-        //             observer.error(err);
-        //         } else {
-        //             observer.next(filePath);
-        //             observer.complete();
-        //         }
-        //     });
-        // });
     }
 
     public uploadAttendanceImage(fileName: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
