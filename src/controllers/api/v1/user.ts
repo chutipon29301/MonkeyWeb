@@ -1,9 +1,13 @@
 import { Router } from 'express';
-import { body, oneOf } from 'express-validator/check';
+import { body, oneOf, param } from 'express-validator/check';
+import { removeSync } from 'fs-extra';
+import { join } from 'path';
+import { flatMap } from 'rxjs/operators';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
+import { FileManager } from '../../../repositories/v1/FileManager';
 import { User } from '../../../repositories/v1/User';
-import { completionHandler, validateRequest, validateUserPosition } from '../../ApiHandler';
+import { completionHandler, profileImage, validateFile, validateRequest, validateUserPosition } from '../../ApiHandler';
 
 export const router = Router();
 
@@ -189,6 +193,41 @@ router.post(
             req.body.quarterID,
         ).subscribe(
             completionHandler(res),
+        );
+    },
+);
+
+router.post(
+    '/uploadProfile',
+    profileImage,
+    body('userID').isInt(),
+    validateFile,
+    validateRequest,
+    (req, res) => {
+        FileManager.getInstance().uploadProfilePicture(req.body.userID, req.file).subscribe(
+            completionHandler(res),
+        );
+    },
+);
+
+router.get(
+    '/profile/:id',
+    param('id').isInt(),
+    validateRequest,
+    (req, res) => {
+        let imagePath: string;
+        FileManager.getInstance().downloadProfilePicture(req.params.id).subscribe(
+            (image) => {
+                imagePath = image;
+                res.status(200).sendFile(image);
+
+            },
+            (error) => res.status(200).sendFile(join(__dirname, '../assets/profile/blank-profile.jpg')),
+            () => {
+                res.on('finish', () => {
+                    removeSync(imagePath);
+                });
+            },
         );
     },
 );
