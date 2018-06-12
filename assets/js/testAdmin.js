@@ -389,6 +389,7 @@ const listCourseSuggest = () => {
                 }
             }
             Promise.all(promise).then(cb2 => {
+                let index = 0;
                 for (let i in data) {
                     $("#listCourseSuggestTable thead tr").append(
                         "<th class='text-center'>" + data[i].level + "</th>"
@@ -398,8 +399,9 @@ const listCourseSuggest = () => {
                     );
                     for (let j in data[i].courseID) {
                         $("#listCourseSuggestTableBody" + i).html(
-                            $("#listCourseSuggestTableBody" + i).html() + cb2[j].courseName + "<BR>"
+                            $("#listCourseSuggestTableBody" + i).html() + cb2[index].courseName + "<BR>"
                         );
+                        index++;
                     }
                 }
             });
