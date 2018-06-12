@@ -1,8 +1,5 @@
 import { Router } from 'express';
 import { body, oneOf, param } from 'express-validator/check';
-import { removeSync } from 'fs-extra';
-import { join } from 'path';
-import { flatMap } from 'rxjs/operators';
 import { UserRegistrationStage } from '../../../models/v1/studentState';
 import { UserStatus } from '../../../models/v1/user';
 import { FileManager } from '../../../repositories/v1/FileManager';
@@ -199,6 +196,7 @@ router.post(
 
 router.post(
     '/uploadProfile',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     profileImage,
     body('userID').isInt(),
     validateFile,
@@ -212,6 +210,7 @@ router.post(
 
 router.get(
     '/profile/:id',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
     param('id').isInt(),
     validateRequest,
     (req, res) => {
@@ -219,15 +218,10 @@ router.get(
         FileManager.getInstance().downloadProfilePicture(req.params.id).subscribe(
             (image) => {
                 imagePath = image;
-                res.status(200).sendFile(image);
-
+                res.status(200).sendFile(imagePath);
             },
-            (error) => res.status(200).sendFile(join(__dirname, '../assets/profile/blank-profile.jpg')),
-            () => {
-                res.on('finish', () => {
-                    removeSync(imagePath);
-                });
-            },
+            () => FileManager.sendNotFoundProfilePicture(res),
+            () => FileManager.cleanUp(res, imagePath),
         );
     },
 );

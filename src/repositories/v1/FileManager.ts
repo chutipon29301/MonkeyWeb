@@ -1,5 +1,6 @@
 import { BlobService, createBlobService } from 'azure-storage';
-import { createReadStream, createWriteStream, removeSync, WriteStream } from 'fs-extra';
+import { Response } from 'express';
+import { removeSync } from 'fs-extra';
 import { join } from 'path';
 import { Observable } from 'rxjs';
 
@@ -12,7 +13,25 @@ export class FileManager {
         return this.instance;
     }
 
+    public static cleanUp(res: Response, path: string) {
+        res.on('finish', () => {
+            removeSync(path);
+        });
+    }
+
+    public static sendNotFoundProfilePicture(res: Response): void {
+        res.status(404).sendFile(this.assetPath('profile') + '/blank-profile.jpg');
+    }
+
+    public static sendNotFoundAttendanceImage(res: Response): void {
+        res.status(404).sendFile(this.assetPath('attendance') + '/not-found.jpg');
+    }
+
     private static instance: FileManager;
+
+    private static assetPath(folder: string): string {
+        return join(__dirname, '../assets/', folder);
+    }
 
     private blobService: BlobService;
 
@@ -20,13 +39,51 @@ export class FileManager {
         this.blobService = createBlobService();
     }
 
-    public uploadProfilePicture(userID: string, images: Express.Multer.File): Observable<BlobService.BlobResult> {
+    public uploadProfilePicture(userID: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
+        return this.uploadAndRemove(userID, 'profile-picture', image);
+        // return new Observable((observer) => {
+        //     this.blobService.createAppendBlobFromLocalFile('profile-picture', userID, images.path, (err, result) => {
+        //         if (err) {
+        //             observer.error(err);
+        //         } else {
+        //             removeSync(images.path);
+        //             observer.next(result);
+        //             observer.complete();
+        //         }
+        //     });
+        // });
+    }
+
+    public downloadProfilePicture(userID: string): Observable<string> {
+        return this.download(userID, 'profile-picture', join(FileManager.assetPath('profile'), userID + '.jpg'));
+        // return new Observable((observer) => {
+        //     const filePath = join(__dirname, '../assets/profile/', userID + '.jpg');
+        //     this.blobService.getBlobToLocalFile('profile-picture', userID, filePath, (err) => {
+        //         if (err) {
+        //             observer.error(err);
+        //         } else {
+        //             observer.next(filePath);
+        //             observer.complete();
+        //         }
+        //     });
+        // });
+    }
+
+    public uploadAttendanceImage(fileName: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
+        return this.uploadAndRemove(fileName, 'attendance', image);
+    }
+
+    public downloadAttendanceImage(fileName: string): Observable<string> {
+        return this.download(fileName, 'attendance', FileManager.assetPath('attendance') + fileName + '.jpg');
+    }
+
+    private uploadAndRemove(fileName: string, container: string, file: Express.Multer.File): Observable<BlobService.BlobResult> {
         return new Observable((observer) => {
-            this.blobService.createAppendBlobFromLocalFile('profile-picture', userID, images.path, (err, result) => {
-                if (err) {
-                    observer.error(err);
+            this.blobService.createAppendBlobFromLocalFile(container, fileName, file.path, (error, result) => {
+                if (error) {
+                    observer.error(error);
                 } else {
-                    removeSync(images.path);
+                    removeSync(file.path);
                     observer.next(result);
                     observer.complete();
                 }
@@ -34,14 +91,13 @@ export class FileManager {
         });
     }
 
-    public downloadProfilePicture(userID: string): Observable<string> {
+    private download(key: string, container: string, tempPath: string): Observable<string> {
         return new Observable((observer) => {
-            const filePath = join(__dirname, '../assets/profile/', userID + '.jpg');
-            this.blobService.getBlobToLocalFile('profile-picture', userID, filePath, (err) => {
-                if (err) {
-                    observer.error(err);
+            this.blobService.getBlobToLocalFile(container, key, tempPath, (error) => {
+                if (error) {
+                    observer.error(error);
                 } else {
-                    observer.next(filePath);
+                    observer.next(tempPath);
                     observer.complete();
                 }
             });
