@@ -59,13 +59,14 @@ block body
                 table.table.table-hover.table-bordered.mt-3
                     thead
                         tr
-                            th.text-center CourseID
+                            //- th.text-center CourseID
                             th.text-center CourseName
                             th.text-center Day
                             th.text-center Grade
                             th.text-center Room
                             th.text-center Student count
                             th.text-center Tutor name
+                            th.text-center Description
                     tbody#allCourseTableBody
         +dropdownCard("gradeCoursePane","List grade course","post/gradeCourse")
             .row 
