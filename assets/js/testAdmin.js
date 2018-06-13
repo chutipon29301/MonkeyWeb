@@ -91,17 +91,19 @@ const listAllCourse = () => {
     let quarter = $("#allCourseQuarterSelect").val().slice(5);
     $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(data => {
         $("#allCourseTableBody").empty();
+        data = _.sortBy(data, 'courseName');
+        console.log(data)
         for (let i in data) {
-            data = _.sortBy(data, 'courseName');
             $("#allCourseTableBody").append(
                 "<tr>" +
-                "<td class='text-center'>" + data[i].courseID + "</td>" +
+                // "<td class='text-center'>" + data[i].courseID + "</td>" +
                 "<td class='text-center'>" + data[i].courseName + "</td>" +
                 "<td class='text-center'>" + moment(data[i].day).format("ddd H") + "</td>" +
                 "<td class='text-center'>" + data[i].grade + "</td>" +
                 "<td class='text-center'>" + data[i].room + "</td>" +
                 "<td class='text-center'>" + data[i].studentCount + "</td>" +
                 "<td class='text-center'>" + data[i].tutorName + "</td>" +
+                "<td>" + data[i].description + "</td>" +
                 "</tr>"
             );
         }
