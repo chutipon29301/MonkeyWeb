@@ -136,10 +136,11 @@ block body
                     .col
                         .row
                             .col
-                                h5 Description
+                                h5 คำอธิบายคอร์ส
                                 each i in allCr
                                     if(i.description!=' ' && i.description!='-' && i.description!='')
                                         p=i.courseName + " คือ " + i.description
+                                h4(style="color:green") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่อนุญาตให้ลงทะเบียน
                     .table-responsive
                         table.table.table-bordered
                             thead.thead-light
@@ -165,21 +166,21 @@ block body
                                     td: +crSelectButt("6-15")
                                     td: +crSelectButt("0-15")
                     .col
-                        .row
-                            .col
-                                h3(style="color:green") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่อนุญาตให้ลงทะเบียน
-                                //- if parseInt(webUser.level.slice(0,-1)) < 8
-                                //-     h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์สที่ไฮไลต์ เพื่อเพิ่มประสิทธิภาพในการเรียน
-                                //- if parseInt(webUser.level.slice(0,-1)) > 4 && parseInt(webUser.level.slice(0,-1)) < 7
-                                //-     h5(style="color:green") วิชาภาษาอังกฤษให้เลือกลงได้ 1 คอร์สเท่านั้น
-                                //- if parseInt(webUser.level.slice(0,-1)) == 7
-                                //-     h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES1a หรือ ES1c คู่กับ ES123z ได้
-                                //-     h5(style="color:green") วิชาฟิสิกส์ให้เลือกลงได้เพียง 1 คอร์สเท่านั้น
-                                //- if parseInt(webUser.level.slice(0,-1)) > 7 && parseInt(webUser.level.slice(0,-1)) < 10
-                                //-     h5(style="color:green") ลงทะเบียนเลขและฟิสิกส์ได้เพียงวิชาละคอร์สเท่านั้น
-                                //-     h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES23b หรือ ES23a คู่กับ ES123z ได้
-                                //- if parseInt(webUser.level.slice(0,-1)) > 9
-                                //-     h5(style="color:green") ลงทะเบียนได้เพียงวิชาละคอร์สเท่านั้น
+                        //- .row
+                        //-     .col
+                                
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) < 8
+                        //-         //-     h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์สที่ไฮไลต์ เพื่อเพิ่มประสิทธิภาพในการเรียน
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) > 4 && parseInt(webUser.level.slice(0,-1)) < 7
+                        //-         //-     h5(style="color:green") วิชาภาษาอังกฤษให้เลือกลงได้ 1 คอร์สเท่านั้น
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) == 7
+                        //-         //-     h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES1a หรือ ES1c คู่กับ ES123z ได้
+                        //-         //-     h5(style="color:green") วิชาฟิสิกส์ให้เลือกลงได้เพียง 1 คอร์สเท่านั้น
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) > 7 && parseInt(webUser.level.slice(0,-1)) < 10
+                        //-         //-     h5(style="color:green") ลงทะเบียนเลขและฟิสิกส์ได้เพียงวิชาละคอร์สเท่านั้น
+                        //-         //-     h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES23b หรือ ES23a คู่กับ ES123z ได้
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) > 9
+                        //-         //-     h5(style="color:green") ลงทะเบียนได้เพียงวิชาละคอร์สเท่านั้น
                         .row
                             .col
                                 button.float-right.btn.btn-success#gotoHBBtn Next
