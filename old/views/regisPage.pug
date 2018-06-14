@@ -136,11 +136,15 @@ block body
                     .col
                         .row
                             .col
+                                h3(style="color:red") *ต้องอ่านก่อนลงทะเบียน
                                 h5 คำอธิบายคอร์ส
                                 each i in allCr
                                     if(i.description!=' ' && i.description!='-' && i.description!='')
-                                        p=i.courseName + " คือ " + i.description
-                                h4(style="color:green") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่อนุญาตให้ลงทะเบียน
+                                        p
+                                            strong= i.courseName + " : "
+                                            =i.description
+                                //- h4(style="color:green") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่อนุญาตให้ลงทะเบียน
+                                h3(style="color:green") *คอร์สกรอบสีเขียวคือคอร์สที่ควรลงทะเบียน (ต้องลงขั้นต่ำ 2 คอร์ส)
                     .table-responsive
                         table.table.table-bordered
                             thead.thead-light
