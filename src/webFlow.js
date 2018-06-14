@@ -330,6 +330,8 @@ module.exports = function (app, db, pasport) {
                             { 'student': 0, 'submission': 0, 'room': 0, 'year': 0, 'quarter': 0 }
                         ).toArray();
                         allCr = allCr.filter((a) => {
+                            if (req.user.level == '8z' && a._id == '5b1f9a77a0731503209276fe') return true;
+                            if (req.user.level == '9x' && a._id == '5b1fa3cca073150320927739') return true;
                             if (gradeBitToArray(a.grade).findIndex(x => x == parseInt(stdGrade)) > -1) return true;
                             return false;
                         });
