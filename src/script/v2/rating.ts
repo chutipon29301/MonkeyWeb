@@ -5,14 +5,14 @@ import { Observable } from "rx";
 export const router = Router();
 
 router.post("/add", (req, res) => {
-    let { type, studentID, score, tutorID } = req.body;
-    if (!(type && studentID && score && tutorID)) {
+    let { type, studentID, score } = req.body;
+    if (!(type && studentID && score)) {
         return res.status(400).send({
             err: 0,
             msg: 'Bad Request',
         });
     }
-    RatingManager.add(score, studentID, type, tutorID, req.body.courseID).subscribe(_ => {
+    RatingManager.add(score, studentID, type, req.user._id, req.body.courseID).subscribe(_ => {
         return res.status(200).send({
             msg: "OK"
         });
@@ -22,15 +22,15 @@ router.post("/add", (req, res) => {
 });
 
 router.post("/addMany", (req, res) => {
-    let { type, scores, tutorID } = req.body;
-    if (!(type && scores && tutorID)) {
+    let { type, scores } = req.body;
+    if (!(type && scores)) {
         return res.status(400).send({
             err: 0,
             msg: 'Bad Request',
         });
     }
     Observable.forkJoin((scores as Array<{ score: number, studentID: number }>).map(score => {
-        return RatingManager.add(score.score, score.studentID, type, tutorID, req.body.courseID);
+        return RatingManager.add(score.score, score.studentID, type, req.user._id, req.body.courseID);
     })).subscribe(_ => {
         return res.status(200).send({
             msg: "OK"
