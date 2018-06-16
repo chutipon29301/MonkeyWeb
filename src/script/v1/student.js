@@ -14,6 +14,7 @@ module.exports = function (app, db, post, gradeBitToString) {
     var chatDB = db.collection('chat');
     var skillStudentDB = db.collection('skillStudent');
     var quotaDB = db.collection('quota');
+    var ratingDB = db.collection('rating');
     const NONE = 0;
     const ABSENT = 1;
     const PRESENT = 2;
@@ -474,7 +475,7 @@ module.exports = function (app, db, post, gradeBitToString) {
                 }
                 quarterID = year + quarter;
             }
-            let [student, course, hybrid, skill, chat] = await Promise.all([
+            let [student, course, hybrid, skill, chat, rating] = await Promise.all([
                 userDB.find({ position: 'student' }).sort({ _id: 1 }).toArray(),
                 courseDB.aggregate([
                     { $match: { quarter: quarterObj.quarter, year: quarterObj.year } },
@@ -525,7 +526,18 @@ module.exports = function (app, db, post, gradeBitToString) {
                     { $sort: { timestamp: -1 } },
                     { $lookup: { from: 'user', localField: 'sender', foreignField: '_id', as: 'senderObj' } },
                     { $group: { _id: "$studentID", data: { $push: { msg: "$msg", sender: "$senderObj", _id: "$_id" } } } }
-                ]).toArray()
+                ]).toArray(),
+                ratingDB.aggregate(
+                    [
+                        {
+                            $group:
+                            {
+                                _id: "$studentID",
+                                avgScore: { $avg: '$score' },
+                            }
+                        }
+                    ]
+                ).toArray()
             ])
             let courseSet = new Set(course[0] ? course[0].student : [])
             let fhbSet = new Set(hybrid[0] ? hybrid[0].student : [])
@@ -534,6 +546,8 @@ module.exports = function (app, db, post, gradeBitToString) {
                 user.inCourse = courseSet.has(user._id)
                 user.inHybrid = fhbSet.has(user._id)
                 user.inSkill = skillSet.has(user._id)
+                let index = _.findIndex(rating, o => o._id === user._id);
+                user.rating = index === -1 ? undefined : rating[index].avgScore;
                 user.chats = []
                 for (let i in chat) {
                     if (chat[i]._id == user._id) {
