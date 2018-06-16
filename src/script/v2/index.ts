@@ -8,6 +8,7 @@ import { router as student } from "./student";
 import { router as feedback } from "./feedback";
 import { router as calendar } from "./calendar";
 import { router as tutor } from "./tutor";
+import { router as rating } from "./rating";
 
 
 // Add user property to request object
@@ -56,15 +57,16 @@ export function app(passport: any) {
             process.exit(0);
         });
     });
-
+    
     app.use(passport.isLoggedIn);
-
+    
     app.use("/workflow", workflow);
     app.use("/slideshow", slideshow);
     app.use("/student", student);
     app.use("/feedback", feedback);
     app.use("/calendar", calendar);
     app.use("/tutor", tutor);
+    app.use("/rating", rating);
 
     return app;
 }
