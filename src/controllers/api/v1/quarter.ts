@@ -70,3 +70,11 @@ router.post(
         );
     },
 );
+
+router.post(
+    '/default',
+    validateUserPosition('student', 'tutor', 'admin', 'dev', 'mel'),
+    (req, res) => {
+        
+    }
+)

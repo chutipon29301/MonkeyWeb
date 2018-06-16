@@ -62,4 +62,13 @@ export class Quarter {
         return from(this.quarterModel.destroy({ where: { ID } }));
     }
 
+    public default(
+    ): Observable<IQuarterModel>{
+        return from(this.quarterModel.findOne({
+            where:{
+                StartDate: Sequelize.Op.le 
+            }
+        }))
+    }
+
 }

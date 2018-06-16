@@ -109,6 +109,10 @@ export const profileImage = multer({
     storage: multer.diskStorage({}),
 }).single('profileImage');
 
+export const receiptImage = multer({
+    storage: multer.diskStorage({}),
+}).single('receiptImage');
+
 export function validateUserPosition(
     ...position: Array<'student' | 'tutor' | 'admin' | 'dev' | 'mel'>,
 ): (req: Request, res: Response, next: NextFunction) => void {

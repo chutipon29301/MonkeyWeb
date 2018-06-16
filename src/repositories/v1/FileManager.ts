@@ -51,12 +51,19 @@ export class FileManager {
         return this.download(userID, 'profile-picture', join(FileManager.assetPath('profile'), userID + '.jpg'));
     }
 
+    public deleteProfilePicture(userID: string): Observable<void> {
+        return this.delete(userID, 'profile-picture');
+    }
     public uploadAttendanceImage(fileName: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
         return this.uploadAndRemove(fileName, 'attendance', image);
     }
 
     public downloadAttendanceImage(fileName: string): Observable<string> {
         return this.download(fileName, 'attendance', FileManager.assetPath('attendance') + fileName + '.jpg');
+    }
+
+    public deleteAttendanceImage(fileName: string): Observable<void> {
+        return this.delete(fileName, 'attendance');
     }
 
     public uploadCommentImage(fileName: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
@@ -67,30 +74,69 @@ export class FileManager {
         return this.download(fileName, 'comment', FileManager.assetPath('comment') + fileName + '.jpg');
     }
 
+    public deleteCommentImage(fileName: string): Observable<void> {
+        return this.delete(fileName, 'comment');
+    }
+
+    public uploadReceiptImage(fileName: string, image: Express.Multer.File): Observable<BlobService.BlobResult> {
+        return this.uploadAndRemove(fileName, 'receipt', image);
+    }
+
+    public downloadReceiptImage(fileName: string): Observable<string> {
+        return this.download(fileName, 'receipt', FileManager.assetPath('receipt') + fileName + '.jpg');
+    }
+
+    public deleteReceiptImage(fileName: string): Observable<void> {
+        return this.delete(fileName, 'receipt');
+    }
+
     private uploadAndRemove(fileName: string, container: string, file: Express.Multer.File): Observable<BlobService.BlobResult> {
         return new Observable((observer) => {
-            this.blobService.createAppendBlobFromLocalFile(container, fileName, file.path, (error, result) => {
-                if (error) {
-                    observer.error(error);
-                } else {
-                    removeSync(file.path);
-                    observer.next(result);
-                    observer.complete();
-                }
-            });
+            this.blobService.createAppendBlobFromLocalFile(
+                container,
+                fileName,
+                file.path,
+                (error, result) => {
+                    if (error) {
+                        observer.error(error);
+                    } else {
+                        removeSync(file.path);
+                        observer.next(result);
+                        observer.complete();
+                    }
+                });
         });
     }
 
     private download(key: string, container: string, tempPath: string): Observable<string> {
         return new Observable((observer) => {
-            this.blobService.getBlobToLocalFile(container, key, tempPath, (error) => {
-                if (error) {
-                    observer.error(error);
-                } else {
-                    observer.next(tempPath);
-                    observer.complete();
-                }
-            });
+            this.blobService.getBlobToLocalFile(
+                container,
+                key,
+                tempPath,
+                (error) => {
+                    if (error) {
+                        observer.error(error);
+                    } else {
+                        observer.next(tempPath);
+                        observer.complete();
+                    }
+                });
+        });
+    }
+
+    private delete(key: string, container: string): Observable<void> {
+        return new Observable((observer) => {
+            this.blobService.deleteBlobIfExists(
+                container,
+                key,
+                (error) => {
+                    if (error) {
+                        observer.error(error);
+                    } else {
+                        observer.complete();
+                    }
+                });
         });
     }
 }
