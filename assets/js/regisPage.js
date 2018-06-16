@@ -11,6 +11,8 @@ $("#gotoHBBtn").click(function () {
     let l = $("td .btn-success").length;
     if (l < 2) {
         alert('ต้องลงอย่างน้อย 2 คอร์ส');
+    } else if (checkAllHb()) {
+        alert('ต้องลงคอร์สที่เรียนด้วยครูอย่างน้อย 1 คอร์ส');
     } else if (confirm('ไปยังหน้าลงทะเบียนFHB ?')) {
         let body = {};
         body.page = 2;
@@ -21,6 +23,18 @@ $("#gotoHBBtn").click(function () {
         relocate('regisPage', body);
     }
 });
+// check all HB cr
+checkAllHb = () => {
+    let count = 0;
+    let l = $("td .btn-success").length;
+    for (let i = 0; i < l; i++) {
+        let str = $("td .btn-success")[i].innerHTML;
+        str = str.trim();
+        if (str.slice(-6) !== "Hybrid") { count++ }
+    }
+    if (count === 0) return true;
+    else return false;
+}
 // add hb next btn click event
 $("#gotoSkBtn").click(function () {
     if (confirm('ไปยังหน้าลงทะเบียนSkill ?')) {

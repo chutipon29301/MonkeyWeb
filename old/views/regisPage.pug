@@ -53,7 +53,7 @@ mixin fhbSelectButt(value)
                     option(value="0") +
                     option(value=i._id) FHB:M
                     option(value=i._id) FHB:P
-                    if parseInt(webUser.level.slice(0,-1)) > 8
+                    if parseInt(webUser.level.slice(0,-1)) > 6 &&( thisD == 2 || thisD == 4 )
                         option(value=i._id) FHB:C
                         option(value=i._id) FHB:E
 mixin skSelectButt(value)
@@ -129,10 +129,22 @@ block body
                 .card-body
                     p=webUser.nickname + " " + webUser.firstname
                     p="ชั้น: " + ((webUser.grade>6)?"มัธยม " + (webUser.grade-6):"ประถม " + webUser.grade)
-                    p="Level: " + webUser.level
+                    //- p="Level: " + webUser.level
         case thisPage
             when 1
                 .row
+                    .col
+                        .row
+                            .col
+                                h3(style="color:red") *ต้องอ่านก่อนลงทะเบียน
+                                h5 คำอธิบายคอร์ส
+                                each i in allCr
+                                    if(i.description!=' ' && i.description!='-' && i.description!='')
+                                        p
+                                            strong= i.courseName + " : "
+                                            =i.description
+                                //- h4(style="color:green") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่อนุญาตให้ลงทะเบียน
+                                h3(style="color:green") *ในกรอบสีเขียว เป็นคอร์สที่ควรกดลงทะเบียน (ต้องลงขั้นต่ำ 2 คอร์ส)
                     .table-responsive
                         table.table.table-bordered
                             thead.thead-light
@@ -158,25 +170,21 @@ block body
                                     td: +crSelectButt("6-15")
                                     td: +crSelectButt("0-15")
                     .col
-                        .row
-                            .col
-                                h5(style="color:red") *คอร์สที่มีไฮไลต์สีเขียวคือคอร์สที่แนะนำให้ลงทะเบียน
-                                if parseInt(webUser.level.slice(0,-1)) < 8
-                                    h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์สที่ไฮไลต์ เพื่อเพิ่มประสิทธิภาพในการเรียน
-                                if parseInt(webUser.level.slice(0,-1)) > 4 && parseInt(webUser.level.slice(0,-1)) < 7
-                                    h5(style="color:green") วิชาภาษาอังกฤษให้เลือกลงได้ 1 คอร์สเท่านั้น
-                                if parseInt(webUser.level.slice(0,-1)) == 7
-                                    h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES1a หรือ ES1c คู่กับ ES123z ได้
-                                    h5(style="color:green") วิชาฟิสิกส์ให้เลือกลงได้เพียง 1 คอร์สเท่านั้น
-                                if parseInt(webUser.level.slice(0,-1)) > 7 && parseInt(webUser.level.slice(0,-1)) < 10
-                                    h5(style="color:green") ลงทะเบียนเลขและฟิสิกส์ได้เพียงวิชาละคอร์สเท่านั้น
-                                    h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES23b หรือ ES23a คู่กับ ES123z ได้
-                                if parseInt(webUser.level.slice(0,-1)) > 9
-                                    h5(style="color:green") ลงทะเบียนได้เพียงวิชาละคอร์สเท่านั้น
-                                h5 Description
-                                each i in allCr
-                                    if(i.description!=' ' && i.description!='-' && i.description!='')
-                                        p=i.courseName + " คือ " + i.description
+                        //- .row
+                        //-     .col
+                                
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) < 8
+                        //-         //-     h5(style="color:green") ควรลงทะเบียนคณิตศาสตร์ทั้ง 2 คอร์สที่ไฮไลต์ เพื่อเพิ่มประสิทธิภาพในการเรียน
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) > 4 && parseInt(webUser.level.slice(0,-1)) < 7
+                        //-         //-     h5(style="color:green") วิชาภาษาอังกฤษให้เลือกลงได้ 1 คอร์สเท่านั้น
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) == 7
+                        //-         //-     h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES1a หรือ ES1c คู่กับ ES123z ได้
+                        //-         //-     h5(style="color:green") วิชาฟิสิกส์ให้เลือกลงได้เพียง 1 คอร์สเท่านั้น
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) > 7 && parseInt(webUser.level.slice(0,-1)) < 10
+                        //-         //-     h5(style="color:green") ลงทะเบียนเลขและฟิสิกส์ได้เพียงวิชาละคอร์สเท่านั้น
+                        //-         //-     h5(style="color:green") วิชาภาษาอังกฤษเลือกลง ES23b หรือ ES23a คู่กับ ES123z ได้
+                        //-         //- if parseInt(webUser.level.slice(0,-1)) > 9
+                        //-         //-     h5(style="color:green") ลงทะเบียนได้เพียงวิชาละคอร์สเท่านั้น
                         .row
                             .col
                                 button.float-right.btn.btn-success#gotoHBBtn Next
@@ -184,10 +192,10 @@ block body
                 .row
                     .col-12
                         if parseInt(webUser.level.slice(0,-1)) > 7
-                            h5(style="color:green") ทุกคนควรลง FHB:M อย่างน้อย 1 ช่อง
+                            h4(style="color:green") ทุกคนควรลง FHB:M อย่างน้อย 1 ช่อง
                         label.control-label ข้อกำหนด:
                         p 1. สำหรับนักเรียนที่ไม่ต้องการเรียน Full Hybrid สามารถข้ามหน้านี้ได้เลย
-                        p 2. สำหรับนักเรียนที่ไม่ได้เปิดระบบ Full Hybrid จะต้องทำการเปิดระบบก่อน โดยอ่านรายละเอียดได้ที่หน้าแรก(Monkey)
+                        p 2. สำหรับนักเรียนที่ไม่ได้เปิดระบบ Full Hybrid จะต้องทำการเปิดระบบก่อน โดยอ่านรายละเอียดได้ที่หน้าแรก(กดที่ปุ่ม Monkey)
                     .table-responsive
                         table.table.table-bordered
                             thead.thead-light

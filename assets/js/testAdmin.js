@@ -42,9 +42,9 @@ async function initGlobalData() {
         "<option value='Sci'>Science</option>"
     );
     let [config, allQuarter, allTutor] = await Promise.all([getConfig(), listQuarter("private"), $.post("post/v1/listTutorJson")]);
-    log(config);
-    log(allQuarter);
-    log(allTutor);
+    // log(config);
+    // log(allQuarter);
+    // log(allTutor);
     // Init some data with config
     $("#setDefaultQYearInput").attr("placeholder", config.defaultQuarter.quarter.year);
     $("#setDefaultQQuarterInput").attr("placeholder", config.defaultQuarter.quarter.quarter);
@@ -91,16 +91,19 @@ const listAllCourse = () => {
     let quarter = $("#allCourseQuarterSelect").val().slice(5);
     $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(data => {
         $("#allCourseTableBody").empty();
+        data = _.sortBy(data, 'courseName');
+        console.log(data)
         for (let i in data) {
             $("#allCourseTableBody").append(
                 "<tr>" +
-                "<td class='text-center'>" + data[i].courseID + "</td>" +
+                // "<td class='text-center'>" + data[i].courseID + "</td>" +
                 "<td class='text-center'>" + data[i].courseName + "</td>" +
                 "<td class='text-center'>" + moment(data[i].day).format("ddd H") + "</td>" +
                 "<td class='text-center'>" + data[i].grade + "</td>" +
                 "<td class='text-center'>" + data[i].room + "</td>" +
                 "<td class='text-center'>" + data[i].studentCount + "</td>" +
                 "<td class='text-center'>" + data[i].tutorName + "</td>" +
+                "<td>" + data[i].description + "</td>" +
                 "</tr>"
             );
         }
@@ -112,6 +115,7 @@ const listGradeCourse = () => {
     $.post("post/gradeCourse", { year: year, quarter: quarter, grade: $("#gradeCourseGradeSelect").val() }).then(cb => {
         $("#gradeCourseTableBody").empty();
         let data = cb.course;
+        data = _.sortBy(data, 'courseName');
         for (let i in data) {
             $("#gradeCourseTableBody").append(
                 "<tr>" +
@@ -129,6 +133,7 @@ $("#crInfoQuarterSelect").change(function () {
     if (this.value !== "0") {
         $.post("post/v1/allCourse", { year: this.value.slice(0, 4), quarter: this.value.slice(5) }).then(data => {
             $("#crInfoCourseSelect").empty();
+            data = _.sortBy(data, 'courseName');
             for (let i in data) {
                 $("#crInfoCourseSelect").append(
                     "<option value=" + data[i].courseID + ">" + data[i].courseName + "-" + data[i].tutorName + "</option>"
@@ -208,6 +213,7 @@ $("#editCourseQuarterSelect").change(function () {
         $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
             $("#editCourseSelect").empty();
             $("#editCourseSelect").append("<option value=0>Select Course</option>");
+            cb = _.sortBy(cb, 'courseName');
             for (let i in cb) {
                 $("#editCourseSelect").append(
                     "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
@@ -274,6 +280,7 @@ $("#removeCourseQuarterSelect").change(function () {
         let quarter = this.value.slice(5);
         $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
             $("#removeCourseSelect").empty();
+            cb = _.sortBy(cb, 'courseName');
             for (let i in cb) {
                 $("#removeCourseSelect").append(
                     "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
@@ -299,6 +306,7 @@ $("#addCourseSuggestQuarterSelect").change(function () {
         let quarter = this.value.slice(5);
         $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
             $("#addCourseSuggestSelect").empty();
+            cb = _.sortBy(cb, 'courseName');
             for (let i in cb) {
                 $("#addCourseSuggestSelect").append(
                     "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
@@ -335,6 +343,7 @@ $("#removeCourseSuggestQuarterSelect").change(function () {
         let quarter = this.value.slice(5);
         $.post("post/v1/allCourse", { year: year, quarter: quarter }).then(cb => {
             $("#removeCourseSuggestSelect").empty();
+            cb = _.sortBy(cb, 'courseName');
             for (let i in cb) {
                 $("#removeCourseSuggestSelect").append(
                     "<option value=" + cb[i].courseID + ">" + cb[i].courseName + " - " + cb[i].tutorName +
@@ -389,6 +398,15 @@ const listCourseSuggest = () => {
                 }
             }
             Promise.all(promise).then(cb2 => {
+                let index = 0;
+                for (let i in data) {
+                    data[i].courseInfo = [];
+                    for (let j in data[i].courseID) {
+                        data[i].courseInfo.push(cb2[index]);
+                        index++;
+                    }
+                    data[i].courseInfo = _.sortBy(data[i].courseInfo, 'day');
+                }
                 for (let i in data) {
                     $("#listCourseSuggestTable thead tr").append(
                         "<th class='text-center'>" + data[i].level + "</th>"
@@ -396,10 +414,13 @@ const listCourseSuggest = () => {
                     $("#listCourseSuggestTable tbody tr").append(
                         "<td class='text-center' id='listCourseSuggestTableBody" + i + "'></td>"
                     );
-                    for (let j in data[i].courseID) {
+                    let newData = data[i].courseInfo;
+                    for (let j in newData) {
+                        let date = moment(newData[j].day).format("ddd H");
                         $("#listCourseSuggestTableBody" + i).html(
-                            $("#listCourseSuggestTableBody" + i).html() + cb2[j].courseName + "<BR>"
+                            $("#listCourseSuggestTableBody" + i).html() + newData[j].courseName + " (" + date + ")" + "<BR>"
                         );
+                        index++;
                     }
                 }
             });
