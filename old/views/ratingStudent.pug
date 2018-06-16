@@ -1,6 +1,18 @@
 extends htmlTemplate
 block head
     -const pageTitle = "Rating Student"
+    style.
+        .custom-range{
+            margin-top:12px
+        }
+        .custom-range::-webkit-slider-runnable-track {
+            height: 1rem;
+        }
+        .custom-range::-webkit-slider-thumb {
+            width: 2rem;
+            height: 2rem;
+            margin-top: -0.5rem;
+        }
 block script
     script(src="js/ratingStudent.min.js")
 block body

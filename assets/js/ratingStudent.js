@@ -48,19 +48,20 @@ addRatingInput = (crInfo) => {
     let div = $("#student-container");
     div.empty();
     let student = crInfo.student;
-    let bgcolor = "#E1F5FE";
+    let bgcolor1 = "#E1F5FE";
+    let bgcolor2 = "#FFF59D";
     for (let i in student) {
         div.append(
             "<div class='card' style='margin-bottom:8px'>" +
             "<div class='card-body'>" +
             "<div class='row'>" +
             "<div class='col-12 col-md-2'>" + student[i].nickname + " " + student[i].firstname + "</div>" +
-            "<div class='col-12 col-md-5' style=\"background-color:" + bgcolor + "\">" +
+            "<div class='col-12 col-md-5' style=\"background-color:" + bgcolor1 + ";padding-bottom:8px;padding-top:8px;\">" +
             "<label style='margin-bottom:0'><span class='fas fa-book-open'></span> Study</label>" +
             "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-std-score>2.5</label>" +
             "<input type='range' class='custom-range' min='0' max='5' step='0.5' id=" + student[i].id + "-std-range>" +
             "</div>" +
-            "<div class='col-12 col-md-5' style=\"background-color:" + bgcolor + "\">" +
+            "<div class='col-12 col-md-5' style=\"background-color:" + bgcolor2 + ";padding-bottom:8px;padding-top:8px;\">" +
             "<label style='margin-bottom:0'><span class='fas fa-crown'></span> Behavior</label>" +
             "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-bv-score>2.5</label>" +
             "<input type='range' class='custom-range' min='0' max='5' step='0.5' id=" + student[i].id + "-bv-range>" +
@@ -72,7 +73,11 @@ addRatingInput = (crInfo) => {
     }
 }
 
-$(document).on('change', '.custom-range', function () {
+// $(document).on('change', '.custom-range', function () {
+//     let str = this.id.slice(0, this.id.lastIndexOf('-'));
+//     $("#" + str + "-score").html(this.value);
+// });
+$(document).on('input', '.custom-range', function () {
     let str = this.id.slice(0, this.id.lastIndexOf('-'));
     $("#" + str + "-score").html(this.value);
 });
