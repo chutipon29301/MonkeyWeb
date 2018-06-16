@@ -70,7 +70,21 @@ router.post("/list", (req, res) => {
     RatingManager.list(parseInt(studentID)).subscribe(rating => {
         return res.status(200).send({ rating });
     }, error => {
-        console.log(error);
+        return res.status(500).send({ error });
+    });
+});
+
+router.post("/listDetail", (req, res) => {
+    let { studentID } = req.body.studentID;
+    if (!studentID) {
+        return res.status(400).send({
+            err: 0,
+            msg: "Bad Request"
+        });
+    }
+    RatingManager.listDetail(parseInt(studentID)).subscribe(rating => {
+        return res.status(200).send({ rating });
+    }, error => {
         return res.status(500).send({ error });
     });
 });

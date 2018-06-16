@@ -84,4 +84,8 @@ export class RatingManager {
             });
         });
     }
+
+    static listDetail(studentID: number): Observable<Rating[]> {
+        return Observable.fromPromise(RatingModel.find({ studentID })).map(results => results.map(result => new Rating(result)));
+    }
 }
