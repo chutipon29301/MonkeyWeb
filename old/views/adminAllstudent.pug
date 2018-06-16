@@ -59,7 +59,7 @@ block body
                         label
                             span.fas.fa-fw.fa-lg.fa-search &nbsp;
                             |Find student
-                        input.typeahead.form-control(type="text" data-provide='typeahead' autofocus)
+                        input.typeahead.form-control(type="text" data-provide='typeahead')
                 form(onsubmit="scanStudentBarcode(); return false;")
                     .form-group
                         label
@@ -100,8 +100,8 @@ block body
         .modal.fade#ratingDialog
             .modal-dialog
                 .modal-content
-                    //- .modal-header
-                        h3.modal-title Rating Detail
+                    .modal-header
+                        //- h3.modal-title Rating Detail
                         button.close(type="button" data-dismiss="modal" aria-label="Close")
                             span(aria-hidden="true") &times;
                     .modal-body
@@ -114,5 +114,5 @@ block body
                                 h4.text-center Behavior
                                 h4.text-center#modal-bv-star
                                 h4.text-center#modal-bv-score 0
-                    .modal-footer
+                    //- .modal-footer
                         button.btn.btn-outline-secondary(data-dismiss="modal") Close

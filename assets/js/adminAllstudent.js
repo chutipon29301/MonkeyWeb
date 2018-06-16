@@ -145,6 +145,7 @@ function loadSelectedMenu(config) {
                             self.location = "/adminStudentprofile";
                         }
                     });
+                    $typeahead.focus();
 
                     // for generate table data
                     position(getCookieDict().monkeyWebUser).then(quarterData => {
