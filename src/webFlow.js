@@ -1089,7 +1089,6 @@ module.exports = function (app, db, pasport) {
             a.time = moment(a.day).format("ddd H");
             return a;
         });
-        console.log(myCr);
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),

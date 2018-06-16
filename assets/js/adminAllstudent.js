@@ -278,6 +278,19 @@ async function generateStudentHtmlTable(student) {
         } else {
             remarkStr = "<span class='far fa-2x fa-times-circle' style='color:red'></span>";
         }
+        let rating = 'No rating';
+        if (student[i].rating !== undefined) {
+            let light = parseInt(student[i].rating);
+            let dark = 6 - parseInt(5 - student[i].rating);
+            rating = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= light) {
+                    rating += '<span class="fas fa-star" style="color:#FBC02D"></span>'
+                } else if (i < dark) {
+                    rating += '<span class="fas fa-star-half" style="color:#FBC02D"></span>'
+                }
+            }
+        }
         let cell0 = row.insertCell(0);
         let cell1 = row.insertCell(1);
         let cell2 = row.insertCell(2);
@@ -286,8 +299,9 @@ async function generateStudentHtmlTable(student) {
         let cell5 = row.insertCell(5);
         let cell6 = row.insertCell(6);
         let cell7 = row.insertCell(7);
-        cell0.innerHTML = "<td>" + (i + 1) + "</td>";
-        cell1.innerHTML = "<td>" + student[i].studentID + "</td>";
+        // cell0.innerHTML = "<td>" + (i + 1) + "</td>";
+        cell0.innerHTML = "<td>" + student[i].studentID + "</td>";
+        cell1.innerHTML = "<td>" + rating + "</td>";
         cell2.innerHTML = "<td>" + getLetterGrade(student[i].grade) + "</td>";
         cell3.innerHTML = "<td>" + student[i].nickname + "</td>";
         cell4.innerHTML = "<td>" + student[i].firstname + "</td>";
@@ -301,11 +315,10 @@ async function generateStudentHtmlTable(student) {
         cell7.id = remark;
 
         let clickHandler = (row) => () => {
-            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[1].innerHTML);
+            writeCookie("monkeyWebAdminAllstudentSelectedUser", row.getElementsByTagName("td")[0].innerHTML);
             self.location = "/adminStudentprofile";
         };
         cell0.onclick = clickHandler(row);
-        cell1.onclick = clickHandler(row);
         cell2.onclick = clickHandler(row);
         cell3.onclick = clickHandler(row);
         cell4.onclick = clickHandler(row);
@@ -322,7 +335,7 @@ async function generateStudentHtmlTable(student) {
             } else if (cell.id === "2") {
                 sendData = "0";
             }
-            $.post("post/v1/setRemark", { studentID: row.getElementsByTagName("td")[1].innerHTML, remark: sendData }).then(() => {
+            $.post("post/v1/setRemark", { studentID: row.getElementsByTagName("td")[0].innerHTML, remark: sendData }).then(() => {
                 let remarkStr = "";
                 if (cell.id === "" || cell.id === "0") {
                     remarkStr = "<span class='far fa-2x fa-times-circle' style='color:orange'></span>";
@@ -341,6 +354,39 @@ async function generateStudentHtmlTable(student) {
             });
         };
         cell7.onclick = changeCheckState(row, cell7);
+        let seeRatingDetail = (row) => () => {
+            $.post('v2/rating/list', { studentID: row.getElementsByTagName("td")[0].innerHTML }).then((cb) => {
+                console.log(cb.rating);
+                if (cb.rating.length > 0) {
+                    for (let i in cb.rating) {
+                        let light = parseInt(cb.rating[i].rating);
+                        let dark = 6 - parseInt(5 - cb.rating[i].rating);
+                        let rating = '';
+                        for (let i = 1; i <= 5; i++) {
+                            if (i <= light) {
+                                rating += '<span class="fas fa-star" style="color:#FBC02D"></span>'
+                            } else if (i < dark) {
+                                rating += '<span class="fas fa-star-half" style="color:#FBC02D"></span>'
+                            }
+                        }
+                        switch (cb.rating[i].type) {
+                            case 'study':
+                                $("#modal-std-score").html(cb.rating[i].rating);
+                                $("#modal-std-star").html(rating);
+                                break;
+                            case 'behavior':
+                                $("#modal-bv-score").html(cb.rating[i].rating);
+                                $("#modal-bv-star").html(rating);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    $("#ratingDialog").modal();
+                }
+            });
+        }
+        cell1.onclick = seeRatingDetail(row);
     }
 }
 

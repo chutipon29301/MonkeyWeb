@@ -81,12 +81,12 @@ $("#submit-btn").click(function () {
     let allInput = $(".custom-range");
     let body1 = {
         type: 'study',
-        score: [],
+        scores: [],
         courseID: $("#cr-select").val()
     }
     let body2 = {
         type: 'behavior',
-        score: [],
+        scores: [],
         courseID: $("#cr-select").val()
     }
     for (let i = 0; i < allInput.length; i++) {
@@ -95,13 +95,13 @@ $("#submit-btn").click(function () {
         let id = str.slice(0, str.indexOf('-'));
         switch (type) {
             case 'bv':
-                body2.score.push({
+                body2.scores.push({
                     studentID: id,
                     score: allInput[i].value
                 });
                 break;
             case 'std':
-                body1.score.push({
+                body1.scores.push({
                     studentID: id,
                     score: allInput[i].value
                 });
@@ -111,9 +111,10 @@ $("#submit-btn").click(function () {
         }
     }
     try {
-        let cb = await Promise.all([$.post('post/v2/rating/addMany', body1), $.post('post/v2/rating/addMany', body2)]);
-        alert("Rating successful.");
-        location.reload();
+        Promise.all([$.post('v2/rating/addMany', body1), $.post('v2/rating/addMany', body2)]).then(() => {
+            alert("Rating successful.");
+            location.reload();
+        });
     } catch (error) {
         alert("Rating error, try again later.");
     }

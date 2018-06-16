@@ -59,13 +59,13 @@ block body
                         label
                             span.fas.fa-fw.fa-lg.fa-search &nbsp;
                             |Find student
-                        input.typeahead.form-control(type="text" data-provide='typeahead')
+                        input.typeahead.form-control(type="text" data-provide='typeahead' autofocus)
                 form(onsubmit="scanStudentBarcode(); return false;")
                     .form-group
                         label
                             span.fas.fa-fw.fa-lg.fa-barcode
                             |Barcode
-                        input.form-control(type="number" id="studentID" autofocus)
+                        input.form-control(type="number" id="studentID")
                 label#currentStudentLabel 
                 button.btn.btn-outline-secondary.col-12(onClick="if(confirm('ยืนยันที่จะเพิ่มนักเรียนใหม่?'))createNewStudent()") Add Student
                 h1#stdCount.text-center.text-danger.mb-0 --
@@ -75,8 +75,9 @@ block body
                     table.table.table-hover
                         thead
                             tr
-                                th No.
+                                //- th No.
                                 th ID
+                                th Rating
                                 th Grade
                                 th Nickname
                                 th Name
@@ -96,3 +97,22 @@ block body
                         h6#newStudentPassword 
                     .modal-footer
                         button.btn.btn-outline-secondary(onClick="closeNewStudentDialog()") Close
+        .modal.fade#ratingDialog
+            .modal-dialog
+                .modal-content
+                    //- .modal-header
+                        h3.modal-title Rating Detail
+                        button.close(type="button" data-dismiss="modal" aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    .modal-body
+                        .row
+                            .col-6
+                                h4.text-center Study
+                                h4.text-center#modal-std-star
+                                h4.text-center#modal-std-score 0
+                            .col-6
+                                h4.text-center Behavior
+                                h4.text-center#modal-bv-star
+                                h4.text-center#modal-bv-score 0
+                    .modal-footer
+                        button.btn.btn-outline-secondary(data-dismiss="modal") Close
