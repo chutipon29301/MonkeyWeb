@@ -10,6 +10,7 @@ interface RatingInterface extends Document {
     studentID: number;
     score: number;
     tutorID: number;
+    quarterID: number;
 }
 
 let ratingSchema = new Schema({
@@ -24,7 +25,11 @@ let ratingSchema = new Schema({
     type: String,
     studentID: Number,
     score: Number,
-    tutorID: Number
+    tutorID: Number,
+    quarterID: {
+        type: Number,
+        default: null,
+    }
 });
 
 let RatingModel = mongoose.model<RatingInterface>("Rating", ratingSchema, "rating");
