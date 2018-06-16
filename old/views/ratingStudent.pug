@@ -1,0 +1,22 @@
+extends htmlTemplate
+block head
+    -const pageTitle = "Rating Student"
+block script
+    script(src="js/ratingStudent.js")
+block body
+    .container-fluid
+        .row
+            .col-12.col-md-3
+                .form-group
+                    label Course:
+                    select.form-control#cr-select
+                        option(value="0") Select course
+                        each i in myCr
+                            option(value=i._id)= i.courseName + " (" + i.time + ")"
+        .row#fetch-container
+            .col: h1.text-center Please select some course.
+        .row#form-container
+            .col#student-container
+        .row#button-container
+            .col-12
+                button.btn.btn-success.float-right#submit-btn Submit

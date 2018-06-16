@@ -1050,6 +1050,60 @@ module.exports = function (app, db, pasport) {
         }
         else return404(req, res)
     })
+
+    app.get("/ratingStudentPage", auth.isLoggedIn, async function (req, res) {
+        const gradeBitToString = function (bit) {
+            var output = "", p = false, s = false;
+            for (var i = 0; i < 6; i++) {
+                if (bit & (1 << i)) {
+                    if (p == false) {
+                        p = true;
+                        output += "P";
+                    }
+                    output += (i + 1);
+                }
+            }
+            for (var i = 0; i < 6; i++) {
+                if (bit & (1 << (i + 6))) {
+                    if (s == false) {
+                        s = true;
+                        output += "S";
+                    }
+                    output += (i + 1);
+                }
+            }
+            if (bit & (1 << 12)) output += "SAT";
+            return output;
+        };
+        let config = await configDB.findOne({});
+        let year = config.defaultQuarter.quarter.year;
+        let quarter = config.defaultQuarter.quarter.quarter;
+        let myCr = await courseDB.find({
+            year: year,
+            quarter: quarter,
+            tutor: req.user._id
+        }, { subject: 1, grade: 1, level: 1, day: 1, student: 1 }).toArray();
+        myCr = myCr.map((a) => {
+            let courseName = a.subject + gradeBitToString(a.grade) + a.level;
+            a.courseName = courseName;
+            a.time = moment(a.day).format("ddd H");
+            return a;
+        });
+        console.log(myCr);
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            myCr: myCr
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('ratingStudent', local)
+        else return404(req, res)
+    })
+
     app.all("*", return404);
 }
 
