@@ -58,15 +58,15 @@ export function app(passport: any) {
         });
     });
     
-    app.use("/rating", rating);
     app.use(passport.isLoggedIn);
-
+    
     app.use("/workflow", workflow);
     app.use("/slideshow", slideshow);
     app.use("/student", student);
     app.use("/feedback", feedback);
     app.use("/calendar", calendar);
     app.use("/tutor", tutor);
+    app.use("/rating", rating);
 
     return app;
 }

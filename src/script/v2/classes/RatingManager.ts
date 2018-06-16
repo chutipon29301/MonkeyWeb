@@ -47,7 +47,7 @@ export class Rating {
 
 export class RatingManager {
 
-    static add(score: number, studentID: number, type: string, tutorID: string, courseID?: string): Observable<Rating> {
+    static add(score: number, studentID: number, type: string, tutorID: number, courseID?: string): Observable<Rating> {
         let rating = new RatingModel({
             courseID: courseID,
             type: type,
