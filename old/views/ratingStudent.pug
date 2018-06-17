@@ -33,15 +33,15 @@ block body
                     label Student
                     input.form-control.search-std(type="text" data-provide='typeahead')
         .card.solo-blog(style='margin-bottom:8px;')
-            .card-body
+            .card-body(style='padding-top:5px;padding-bottom:5px;')
                 .row
-                    .col-12.col-md-6(style='background-color:#E1F5FE; padding:8px 15px 8px 15px; margin-top:-15px; margin-bottom:-15px;')
+                    .col-12.col-md-6(style='background-color:#E1F5FE; padding:8px 15px 8px 15px;')
                         label
                             span.fas.fa-book-open
                             |&nbsp;Study
                         label#solo-std-score.float-right 5
                         input#solo-std-range.custom-range(type='range' min='0' max='5' step='0.5')
-                    .col-12.col-md-6(style='background-color:#FFF59D; padding:8px 15px 8px 15px; margin-top:-15px; margin-bottom:-15px;')
+                    .col-12.col-md-6(style='background-color:#FFF59D; padding:8px 15px 8px 15px;')
                         label
                             span.fas.fa-crown
                             |&nbsp;Behavior
