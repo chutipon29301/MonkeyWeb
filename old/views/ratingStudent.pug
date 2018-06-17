@@ -1,6 +1,7 @@
 extends htmlTemplate
 block head
     -const pageTitle = "Rating Student"
+    link(rel="stylesheet", href="css/typeaheadjs.css")
     style.
         .custom-range{
             margin-top:12px
@@ -14,6 +15,7 @@ block head
             margin-top: -0.5rem;
         }
 block script
+    script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/ratingStudent.min.js")
 block body
     .container-fluid
@@ -22,13 +24,34 @@ block body
                 .form-group
                     label Course:
                     select.form-control#cr-select
-                        option(value="0") Select course
+                        option(value="0") Add a rating
                         each i in myCr
                             option(value=i._id)= i.courseName + " (" + i.time + ")"
-        .row#fetch-container
-            .col: h1.text-center Please select some course.
-        .row#form-container
+        .row.solo-blog
+            .col-12.col-md-4
+                .form-group
+                    label Student
+                    input.form-control.search-std(type="text" data-provide='typeahead')
+        .card.solo-blog(style='margin-bottom:8px;')
+            .card-body
+                .row
+                    .col-12.col-md-6(style='background-color:#E1F5FE; padding:8px 15px 8px 15px; margin-top:-15px; margin-bottom:-15px;')
+                        label
+                            span.fas.fa-book-open
+                            |&nbsp;Study
+                        label#solo-std-score.float-right 5
+                        input#solo-std-range.custom-range(type='range' min='0' max='5' step='0.5')
+                    .col-12.col-md-6(style='background-color:#FFF59D; padding:8px 15px 8px 15px; margin-top:-15px; margin-bottom:-15px;')
+                        label
+                            span.fas.fa-crown
+                            |&nbsp;Behavior
+                        label#solo-bv-score.float-right 5
+                        input#solo-bv-range.custom-range.solo-range(type='range' min='0' max='5' step='0.5')
+        .row.solo-blog
+            .col-12
+                button.btn.btn-success.float-right#submit-solo-btn Submit
+        .row.cr-blog
             .col#student-container
-        .row#button-container
+        .row.cr-blog
             .col-12
                 button.btn.btn-success.float-right#submit-btn Submit
