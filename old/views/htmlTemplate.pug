@@ -47,8 +47,14 @@ html(lang="en")
                                         a.dropdown-item(href="/adminAllCourse") Course
                                         a.dropdown-item(href="/adminAllHybrid") FHB
                                         a.dropdown-item(href="/adminAllskill") Skill
-                            +navLink("tutorCommentStudent","Comments")
-                            +navLink("ratingStudentPage","Rating")
+                            //- +navLink("tutorCommentStudent","Comments")
+                            //- +navLink("ratingStudentPage","Rating")
+                            li.nav-item.dropdown
+                                a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") Rating|Comment
+                                .dropdown-menu(aria-labelledby="navbarDropdown")
+                                    a.dropdown-item(href="/ratingStudentPage") Rating
+                                    a.dropdown-item(href="/tutorCommentStudent") Comment
+                                    a.dropdown-ite
                             li.nav-item.dropdown
                                 a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") CR 
                                 .dropdown-menu(aria-labelledby="navbarDropdown")
@@ -65,32 +71,29 @@ html(lang="en")
                                     if(webUser.position=="mel")
                                         a.dropdown-item(href="/checkInSummary") Manage
                             +navLink("tutorQrGenerator","QR Generator")
-                            +navLink("adminCalendar","Calendar")
+                            //- +navLink("adminCalendar","Calendar")
                             if(webUser.position!="tutor")
                                 +navLink("adminCourseRoom","Room")
                                 +navLink("workflow","Workflow")
                             //- +navLink("adminConference","Conference")
+                            +navLink("studentCheck","StudentCheck")
                         +navLink("studentDocument","เอกสาร")
                     ul.navbar-nav
                         if(webUser.position=="student")
                             li.nav-item: a.nav-link(href="/studentProfile")
                                 span.fas.fa-fw.fa-lg.fa-user-circle
-                                //- = " "+webUser.firstname+" "+webUser.lastname
                                 =" "+webUser.firstname
                         else if(webUser.position=="admin")
                             li.nav-item: a.nav-link(href="/testAdmin")
                                 span.fas.fa-fw.fa-lg.fa-user-circle
-                                //- = " "+webUser.firstname+" "+webUser.lastname
                                 =" "+webUser.firstname
                         else if(webUser.position=="dev")
                             li.nav-item: a.nav-link(href="/testAdmin")
                                 span.fas.fa-fw.fa-lg.fa-user-circle
-                                //- = " "+webUser.firstname+" "+webUser.lastname
                                 =" "+webUser.firstname
                         else
                             li.nav-item: a.nav-link(href="/tutorEditProfile")
                                 span.fas.fa-fw.fa-lg.fa-user-circle
-                                //- = " "+webUser.firstname+" "+webUser.lastname
                                 =" "+webUser.firstname
                         li.nav-item: a.nav-link(href="/login")
                             span.fas.fa-fw.fa-sign-out-alt.fa-lg
