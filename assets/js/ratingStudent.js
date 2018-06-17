@@ -55,13 +55,19 @@ addRatingInput = (crInfo) => {
             "<div class='card' style='margin-bottom:8px'>" +
             "<div class='card-body'>" +
             "<div class='row'>" +
-            "<div class='col-12 col-md-2'>" + student[i].nickname + " " + student[i].firstname + "</div>" +
-            "<div class='col-12 col-md-5' style=\"background-color:" + bgcolor1 + ";padding-bottom:8px;padding-top:8px;\">" +
+            "<div class='col-6'>" + student[i].nickname + " " + student[i].firstname + "</div>" +
+            "<div class='col-6'><div class='form-check form-check-inline float-right'>" +
+            "<input class='form-check-input' type='checkbox' value='" + student[i].id + "-check-form'>" +
+            "<label class='form-check-label'>Absent</label>" +
+            "</div></div>" +
+            "</div>" +
+            "<div class='row' style='margin-bottom:-15px; margin-top:15px;'>" +
+            "<div class='col-12 col-md-6' style=\"background-color:" + bgcolor1 + ";padding:8px 15px 8px 15px;\">" +
             "<label style='margin-bottom:0'><span class='fas fa-book-open'></span> Study</label>" +
             "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-std-score>2.5</label>" +
             "<input type='range' class='custom-range' min='0' max='5' step='0.5' id=" + student[i].id + "-std-range>" +
             "</div>" +
-            "<div class='col-12 col-md-5' style=\"background-color:" + bgcolor2 + ";padding-bottom:8px;padding-top:8px;\">" +
+            "<div class='col-12 col-md-6' style=\"background-color:" + bgcolor2 + ";padding:8px 15px 8px 15px;\">" +
             "<label style='margin-bottom:0'><span class='fas fa-crown'></span> Behavior</label>" +
             "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-bv-score>2.5</label>" +
             "<input type='range' class='custom-range' min='0' max='5' step='0.5' id=" + student[i].id + "-bv-range>" +
@@ -73,10 +79,6 @@ addRatingInput = (crInfo) => {
     }
 }
 
-// $(document).on('change', '.custom-range', function () {
-//     let str = this.id.slice(0, this.id.lastIndexOf('-'));
-//     $("#" + str + "-score").html(this.value);
-// });
 $(document).on('input', '.custom-range', function () {
     let str = this.id.slice(0, this.id.lastIndexOf('-'));
     $("#" + str + "-score").html(this.value);
@@ -84,6 +86,12 @@ $(document).on('input', '.custom-range', function () {
 
 $("#submit-btn").click(function () {
     let allInput = $(".custom-range");
+    let allDiss = $(".form-check-input:checked");
+    let notUse = [];
+    for (let i = 0; i < allDiss.length; i++) {
+        let str = allDiss[i].value;
+        notUse.push(str.slice(0, str.indexOf('-')));
+    }
     let body1 = {
         type: 'study',
         scores: [],
@@ -98,21 +106,23 @@ $("#submit-btn").click(function () {
         let str = allInput[i].id;
         let type = str.slice(str.indexOf('-') + 1, str.lastIndexOf('-'));
         let id = str.slice(0, str.indexOf('-'));
-        switch (type) {
-            case 'bv':
-                body2.scores.push({
-                    studentID: id,
-                    score: allInput[i].value
-                });
-                break;
-            case 'std':
-                body1.scores.push({
-                    studentID: id,
-                    score: allInput[i].value
-                });
-                break;
-            default:
-                break;
+        if (notUse.indexOf(id) < 0) {
+            switch (type) {
+                case 'bv':
+                    body2.scores.push({
+                        studentID: id,
+                        score: allInput[i].value
+                    });
+                    break;
+                case 'std':
+                    body1.scores.push({
+                        studentID: id,
+                        score: allInput[i].value
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
     }
     try {
