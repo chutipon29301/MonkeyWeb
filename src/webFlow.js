@@ -1103,6 +1103,20 @@ module.exports = function (app, db, pasport) {
         else return404(req, res)
     })
 
+    app.get("/studentCheck", auth.isLoggedIn, async function (req, res) {
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: await configDB.findOne({})
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('studentCheck', local)
+        else return404(req, res)
+    })
+
     app.all("*", return404);
 }
 

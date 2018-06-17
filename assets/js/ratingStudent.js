@@ -1,15 +1,16 @@
-$("#form-container").hide();
-$("#button-container").hide();
+$(".cr-blog").hide();
+getTypeaheadData();
+
 $("#cr-select").change(function () {
     if (this.value == 0) {
-        $("#form-container").hide();
-        $("#button-container").hide();
-        $("#fetch-container").show();
+        $(".cr-blog").fadeOut(400, () => {
+            $(".solo-blog").show();
+        });
     } else {
         generateStudent(this.value);
-        $("#form-container").show();
-        $("#button-container").show();
-        $("#fetch-container").hide();
+        $(".solo-blog").fadeOut(400, () => {
+            $(".cr-blog").show();
+        });
     }
 });
 
@@ -64,28 +65,29 @@ addRatingInput = (crInfo) => {
             "<div class='row' style='margin-bottom:-15px; margin-top:15px;'>" +
             "<div class='col-12 col-md-6' style=\"background-color:" + bgcolor1 + ";padding:8px 15px 8px 15px;\">" +
             "<label style='margin-bottom:0'><span class='fas fa-book-open'></span> Study</label>" +
-            "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-std-score>2.5</label>" +
-            "<input type='range' class='custom-range' min='0' max='5' step='0.5' id=" + student[i].id + "-std-range>" +
+            "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-std-score>5</label>" +
+            "<input type='range' class='custom-range cr-range' min='0' max='5' step='0.5' id=" + student[i].id + "-std-range>" +
             "</div>" +
             "<div class='col-12 col-md-6' style=\"background-color:" + bgcolor2 + ";padding:8px 15px 8px 15px;\">" +
             "<label style='margin-bottom:0'><span class='fas fa-crown'></span> Behavior</label>" +
-            "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-bv-score>2.5</label>" +
-            "<input type='range' class='custom-range' min='0' max='5' step='0.5' id=" + student[i].id + "-bv-range>" +
+            "<label style='margin-bottom:0' class='float-right' id=" + student[i].id + "-bv-score>5</label>" +
+            "<input type='range' class='custom-range cr-range' min='0' max='5' step='0.5' id=" + student[i].id + "-bv-range>" +
             "</div>" +
             "</div>" +
             "</div>" +
             "</div>"
         )
     }
+    $(".cr-range").val(5);
 }
 
-$(document).on('input', '.custom-range', function () {
+$(document).on('input', '.cr-range', function () {
     let str = this.id.slice(0, this.id.lastIndexOf('-'));
     $("#" + str + "-score").html(this.value);
 });
 
 $("#submit-btn").click(function () {
-    let allInput = $(".custom-range");
+    let allInput = $(".cr-range");
     let allDiss = $(".form-check-input:checked");
     let notUse = [];
     for (let i = 0; i < allDiss.length; i++) {
@@ -132,5 +134,56 @@ $("#submit-btn").click(function () {
         });
     } catch (error) {
         alert("Rating error, try again later.");
+    }
+});
+$("#solo-std-range").val(5);
+$("#solo-bv-range").val(5);
+$("#solo-std-range").on('input', function () {
+    $("#solo-std-score").html(this.value);
+});
+$("#solo-bv-range").on('input', function () {
+    $("#solo-bv-score").html(this.value);
+});
+
+async function getTypeaheadData() {
+    let allStd = await allStudent();
+    allStd = allStd.student;
+    let stdForSearch = allStd.map((e) => {
+        let obj = {
+            name: e.nickname + ' ' + e.firstname + ' (' + e.studentID + ')',
+            id: e.studentID
+        }
+        return obj;
+    });
+    $(".search-std").typeahead({
+        source: stdForSearch,
+        autoSelect: true
+    });
+}
+
+$("#submit-solo-btn").click(function () {
+    let stdData = $(".search-std").typeahead("getActive");
+    if (stdData) {
+        let body1 = {
+            studentID: stdData.id,
+            type: 'study',
+            score: $("#solo-std-range").val()
+        }
+        let body2 = {
+            studentID: stdData.id,
+            type: 'behavior',
+            score: $("#solo-bv-range").val()
+        }
+        try {
+            Promise.all([
+                $.post('v2/rating/add', body1),
+                $.post('v2/rating/add', body2)
+            ]).then((cb) => {
+                alert("Rating successful.");
+                location.reload();
+            });
+        } catch (error) {
+            alert("Rating error, try again later.");
+        }
     }
 });
