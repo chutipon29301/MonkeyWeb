@@ -7,13 +7,13 @@
                 th Name
                 th Level
                 th Chat
-                th Remark
+                th(onclick='clearRemark();') Remark
         tbody
             each i in student
                 tr.std-row
-                    td= ((Number(i.grade) > 6)?'S' + (Number(i.grade) - 6):'P' + Number(i.grade))
+                    td(onclick='goToStudentProfile(\"' + i.id + '\")')= ((Number(i.grade) > 6)?'S' + (Number(i.grade) - 6):'P' + Number(i.grade))
                     if i.rate != 'No rating'
-                        td
+                        td(onclick='showRating(\"' + i.id + '\")')
                             - var n = 1;
                             while n < 6
                                 if n <= Number(i.rate)
@@ -23,17 +23,21 @@
                                 - n++
                     else
                         td= i.rate
-                    td= i.name
-                    td= i.level
-                    td= i.chat
+                    td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.name
+                    td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.level
+                    td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.chat
                     case i.remark
                         when '1'
-                            td: span.far.fa-2x.fa-check-circle(style='color:blue')
+                            td(id='remark'+i.id)
+                                span.far.fa-2x.fa-check-circle(style='color:blue' onclick='changeRemark("'+i.id+'","2")')
                         when '2'
-                            td: span.far.fa-2x.fa-check-circle(style='color:green')
+                            td(id='remark'+i.id)
+                                span.far.fa-2x.fa-check-circle(style='color:green' onclick='changeRemark("'+i.id+'","0")')
                         when '3'
-                            td: span.far.fa-2x.fa-times-circle(style='color:orange')
+                            td(id='remark'+i.id)
+                                span.far.fa-2x.fa-times-circle(style='color:orange' onclick='changeRemark("'+i.id+'","1")')
                         default
-                            td: span.far.fa-2x.fa-times-circle(style='color:red')
+                            td(id='remark'+i.id)
+                                span.far.fa-2x.fa-times-circle(style='color:red' onclick='changeRemark("'+i.id+'","3")')
                 
             
