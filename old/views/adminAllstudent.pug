@@ -3,88 +3,83 @@ block head
     -const pageTitle = "All Student"
     link(rel="stylesheet", href="css/typeaheadjs.css")
 block script
+    script(src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js")
     script(src="js/bootstrap3-typeahead.min.js")
     script(src="js/adminAllstudent.min.js")
 block body
     .container-fluid
         .row
-            .col-12.col-md-3.col-xl-2#filterPanel
+            .col-12.col-md-3.col-xl-2#filter-panel
                 h1.mt-10 Student
-                form
-                    .form-group
-                        label
-                            span.fas.fa-fw.fa-lg.fa-th-large &nbsp;
-                            |Quarter
-                        select.custom-select#quarter(onChange="quarterChange()")
-                form
-                    .form-group.mb-0
-                        label
-                            span.fas.fa-fw.fa-lg.fa-filter &nbsp;
-                            |Filter
-                        select.custom-select#status(onChange="getAllStudentContent()")
-                            option(value="default") Default(Active/Drop)
-                            option(value="active") Active(Current register)
-                            option(value="dropped") Drop(ใน Q นี้,รอคืนเงิน)
-                            option(value="terminated") Terminate(ล้างตาราง,คืนเงินแล้ว)
-                            option(value="inactive") New student ID
-                            option(value="all") All
-                form
-                    .form-group.mb-0
-                        select.custom-select#stage(onChange="registrationStateChange()")
-                form
-                    .form-group.mb-0
-                        select.custom-select#grade(onChange="getAllStudentContent()")
-                            option(value="all") All Grade
-                            option(value="1") P1
-                            option(value="2") P2
-                            option(value="3") P3
-                            option(value="4") P4
-                            option(value="5") P5
-                            option(value="6") P6
-                            option(value="7") S1
-                            option(value="8") S2
-                            option(value="9") S3
-                            option(value="10") S4
-                            option(value="11") S5
-                            option(value="12") S6
-                form
-                    .form-group
-                        select.custom-select#course(onChange="getAllStudentContent()")
-                            option(value="none" ) CR or FHB
-                            option(value="cr") CR
-                            option(value="hb") FHB
-                            option(value="all" ) CR &amp; FHB
-                form
-                    .form-group
-                        label
-                            span.fas.fa-fw.fa-lg.fa-search &nbsp;
-                            |Find student
-                        input.typeahead.form-control(type="text" data-provide='typeahead')
-                form(onsubmit="scanStudentBarcode(); return false;")
+                .form-group
+                    label
+                        span.fas.fa-fw.fa-lg.fa-th-large &nbsp;
+                        |Quarter
+                    select.custom-select#quarter-select
+                        each i in quarterList
+                            if i.year == config.defaultQuarter.quarter.year && i.quarter == config.defaultQuarter.quarter.quarter
+                                option(selected value=i.year + '-' + i.quarter)= i.name
+                            else
+                                option(value=i.year + '-' + i.quarter)= i.name
+                .form-group.mb-0(hidden=(webUser.position=='tutor'))
+                    label
+                        span.fas.fa-fw.fa-lg.fa-filter &nbsp;
+                        |Filter
+                    select.custom-select.filter#status-select
+                        option(value="default") Default(Active/Drop)
+                        option(value="active") Active(Current register)
+                        option(value="dropped") Drop(ใน Q นี้,รอคืนเงิน)
+                        option(value="terminated") Terminate(ล้างตาราง,คืนเงินแล้ว)
+                        option(value="inactive") New student ID
+                        option(value="all") All
+                .form-group.mb-0(hidden=(webUser.position=='tutor'))
+                    select.custom-select.filter#state-select
+                        option(value="all") No filter
+                        option(value="allStage") Exclude unregist
+                        option(value="unregistered") Unregistered
+                        option(value="untransferred") Untransferred
+                        option(value="transferred") Transferred
+                        option(value="approved") Approved
+                        option(value="rejected") Rejected
+                        option(value="pending") Pending
+                        option(value="finished") Finished
+                .form-group.mb-0(hidden=(webUser.position=='tutor'))
+                    select.custom-select.filter#grade-select
+                        option(value="all") All Grade
+                        option(value="1") P1
+                        option(value="2") P2
+                        option(value="3") P3
+                        option(value="4") P4
+                        option(value="5") P5
+                        option(value="6") P6
+                        option(value="7") S1
+                        option(value="8") S2
+                        option(value="9") S3
+                        option(value="10") S4
+                        option(value="11") S5
+                        option(value="12") S6
+                .form-group(hidden=(webUser.position=='tutor'))
+                    select.custom-select.filter#course-select
+                        option(value="none" ) CR or FHB
+                        option(value="cr") CR
+                        option(value="hb") FHB
+                        option(value="all" ) CR &amp; FHB
+                .form-group(hidden=(webUser.position=='tutor'))
+                    label
+                        span.fas.fa-fw.fa-lg.fa-search &nbsp;
+                        |Find student
+                    input#search-input.typeahead.form-control(type="text" data-provide='typeahead')
+                form#barcode-form(hidden=(webUser.position=='tutor'))
                     .form-group
                         label
                             span.fas.fa-fw.fa-lg.fa-barcode
                             |Barcode
-                        input.form-control(type="number" id="studentID")
-                label#currentStudentLabel 
-                button.btn.btn-outline-secondary.col-12(onClick="if(confirm('ยืนยันที่จะเพิ่มนักเรียนใหม่?'))createNewStudent()") Add Student
-                h1#stdCount.text-center.text-danger.mb-0 --
+                        input#barcode-input.form-control(type="number")
+                label(hidden=(webUser.position=='tutor'))= "Current Student: " + (config.nextStudentID - 1)
+                button.btn.btn-outline-secondary.col-12(onClick="createNewStudent()" hidden=(webUser.position=='tutor')) Add Student
+                h1#std-count.text-center.text-danger.mb-0 --
                 p.text-center.text-danger people
-            .col-12.col-md-9.offset-md-3.col-xl-10.offset-xl-2.p-0
-                .table-responsive
-                    table.table.table-hover
-                        thead
-                            tr
-                                //- th No.
-                                th ID
-                                th Rating
-                                th Grade
-                                th Nickname
-                                th Name
-                                th Level
-                                th Chat
-                                th#checkTableColumm Check
-                        tbody#allStudentTable
+            #content-panel.col-12.col-md-9.offset-md-3.col-xl-10.offset-xl-2.p-0
         .modal.fade#newStudentDialog
             .modal-dialog
                 .modal-content
@@ -101,18 +96,23 @@ block body
             .modal-dialog
                 .modal-content
                     .modal-header
-                        //- h3.modal-title Rating Detail
+                        h4#ratingHeader.modal-title Total: 3
                         button.close(type="button" data-dismiss="modal" aria-label="Close")
                             span(aria-hidden="true") &times;
                     .modal-body
                         .row
                             .col-6
                                 h4.text-center Study
-                                h4.text-center#modal-std-star
-                                h4.text-center#modal-std-score 0
+                                h4.text-center#dialog-std-star(style="color:#FBC02D")
+                                h4.text-center#dialog-std-score 0
                             .col-6
                                 h4.text-center Behavior
-                                h4.text-center#modal-bv-star
-                                h4.text-center#modal-bv-score 0
-                    //- .modal-footer
-                        button.btn.btn-outline-secondary(data-dismiss="modal") Close
+                                h4.text-center#dialog-bv-star(style="color:#FBC02D")
+                                h4.text-center#dialog-bv-score 0
+                        .row#dialog-more-rating.collapse
+                            .col-6#dialog-more-std-rating
+                            .col-6#dialog-more-bv-rating
+                        .row
+                            .col-12
+                                button#dialog-go-btn.btn.btn-link(type='button') See all
+                                button#dialog-sm-btn.btn.btn-link.float-right(type='button') More

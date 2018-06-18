@@ -12,6 +12,7 @@
 //     year: 2017,
 //     quarter: 4
 // });
+clearAllCookie();
 
 
 function loginSubmit() {

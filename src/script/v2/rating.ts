@@ -75,7 +75,7 @@ router.post("/list", (req, res) => {
 });
 
 router.post("/listDetail", (req, res) => {
-    let { studentID } = req.body.studentID;
+    let { studentID } = req.body;
     if (!studentID) {
         return res.status(400).send({
             err: 0,
