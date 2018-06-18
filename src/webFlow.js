@@ -11,11 +11,12 @@ module.exports = function (app, db, pasport) {
     var configDB = db.collection("config");
     var quarterDB = db.collection("quarter");
     var auth = require('./auth.js');
-    var courseDB = db.collection('course')
-    var courseSuggestDB = db.collection('courseSuggestion')
-    var hybridDB = db.collection('hybridStudent')
-    var skillDB = db.collection('skillStudent')
-    var workflowDB = db.collection('workflow')
+    var courseDB = db.collection('course');
+    var courseSuggestDB = db.collection('courseSuggestion');
+    var hybridDB = db.collection('hybridStudent');
+    var skillDB = db.collection('skillStudent');
+    var chatDB = db.collection('chat');
+    var ratingDB = db.collection('rating');
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -892,6 +893,70 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('tutorQrGenerator', local)
         else return404(req, res)
     })
+    app.get("/ratingStudentPage", auth.isLoggedIn, async function (req, res) {
+        const gradeBitToString = function (bit) {
+            var output = "", p = false, s = false;
+            for (var i = 0; i < 6; i++) {
+                if (bit & (1 << i)) {
+                    if (p == false) {
+                        p = true;
+                        output += "P";
+                    }
+                    output += (i + 1);
+                }
+            }
+            for (var i = 0; i < 6; i++) {
+                if (bit & (1 << (i + 6))) {
+                    if (s == false) {
+                        s = true;
+                        output += "S";
+                    }
+                    output += (i + 1);
+                }
+            }
+            if (bit & (1 << 12)) output += "SAT";
+            return output;
+        };
+        let config = await configDB.findOne({});
+        let year = config.defaultQuarter.quarter.year;
+        let quarter = config.defaultQuarter.quarter.quarter;
+        let myCr = await courseDB.find({
+            year: year,
+            quarter: quarter,
+            tutor: req.user._id
+        }, { subject: 1, grade: 1, level: 1, day: 1, student: 1 }).toArray();
+        myCr = myCr.map((a) => {
+            let courseName = a.subject + gradeBitToString(a.grade) + a.level;
+            a.courseName = courseName;
+            a.time = moment(a.day).format("ddd H");
+            return a;
+        });
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            myCr: myCr
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('ratingStudent', local)
+        else return404(req, res)
+    })
+    app.get("/studentCheck", auth.isLoggedIn, async function (req, res) {
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: await configDB.findOne({})
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('studentCheck', local)
+        else return404(req, res)
+    })
     app.get("/testAdmin", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
@@ -906,6 +971,9 @@ module.exports = function (app, db, pasport) {
         else return404(req, res)
     })
     app.get("/adminAllstudent", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let quarterList = await quarterDB.find({}, { year: 1, quarter: 1, name: 1 }).toArray();
+        quarterList = quarterList.reverse();
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -913,9 +981,139 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config: await configDB.findOne({})
+            config: config,
+            quarterList: quarterList
         }
-        if (auth.authorize(req.user, 'staff', 'admin', local.config)) return res.status(200).render('adminAllstudent', local)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudent', local)
+        else return404(req, res)
+    })
+    app.get("/adminAllstudentTable", auth.isLoggedIn, async function (req, res) {
+        let selectYear = req.query.quarter.slice(0, 4);
+        let selectQ = req.query.quarter.slice(5);
+        let selectStatus = req.query.status;
+        let selectState = req.query.state;
+        let selectGrade = req.query.grade;
+        let selectCourse = req.query.course;
+        let queryBody = { position: 'student' };
+        switch (selectStatus) {
+            case 'default':
+                queryBody['student.status'] = { $in: ['active', 'dropped'] }
+                break;
+            case 'all':
+                break;
+            default:
+                queryBody['student.status'] = selectStatus;
+                break;
+        }
+        switch (selectState) {
+            case 'allStage':
+                queryBody['student.quarter'] = { year: Number(selectYear), quarter: Number(selectQ) }
+                break;
+            case 'unregistered':
+                queryBody['student.quarter'] = { $not: { $elemMatch: { year: Number(selectYear), quarter: Number(selectQ) } } }
+                break;
+            case 'all':
+                break;
+            default:
+                queryBody['student.quarter'] = { year: Number(selectYear), quarter: Number(selectQ), registrationState: selectState }
+                break;
+        }
+        if (selectGrade !== 'all') {
+            queryBody['student.grade'] = parseInt(selectGrade);
+        }
+        let allStd = (await userDB.find(queryBody).sort({ 'nickname': 1 }).toArray()).map((e) => {
+            return {
+                id: e._id,
+                name: e.nickname + ' ' + e.firstname,
+                grade: e.student.grade,
+                level: e.level,
+                remark: e.remark,
+                status: e.student.status,
+            }
+        });
+        let chatPromise = [];
+        let ratingPromise = [];
+        let crPromise = [];
+        let fhbPromise = [];
+        for (let i = 0; i < allStd.length; i++) {
+            // query chat
+            chatPromise.push(chatDB.find({ studentID: Number(allStd[i].id) }, {})
+                .sort({ _id: -1 }).limit(1).toArray());
+            // query rating
+            ratingPromise.push(ratingDB.aggregate([{
+                $match: { studentID: Number(allStd[i].id) }
+            }, {
+                $group: {
+                    _id: null,
+                    score: { $avg: '$score' }
+                }
+            }]).toArray());
+            // query course
+            crPromise.push(courseDB.findOne({
+                year: Number(selectYear),
+                quarter: Number(selectQ),
+                student: Number(allStd[i].id)
+            }, { _id: 1 }));
+            fhbPromise.push(hybridDB.findOne({
+                quarterID: selectYear + ((Number(selectQ) >= 10) ? selectQ : '0' + selectQ),
+                student: { studentID: Number(allStd[i].id) }
+            }, { _id: 1 }));
+        }
+        let [chat, rating, inCr, inFhb] = await Promise.all([
+            Promise.all(chatPromise),
+            Promise.all(ratingPromise),
+            Promise.all(crPromise),
+            Promise.all(fhbPromise),
+        ]);
+        for (let i = 0; i < allStd.length; i++) {
+            // for chat
+            if (chat[i].length > 0) {
+                let txt = '';
+                switch (chat[i][0].sender) {
+                    case 99001:
+                        txt += 'K.Mel: ' + chat[i][0].msg;
+                        break;
+                    case 99002:
+                        txt += 'GG: ' + chat[i][0].msg;
+                        break;
+                    default:
+                        txt += chat[i][0].sender + ': ' + chat[i][0].msg;
+                        break;
+                }
+                allStd[i].chat = txt;
+            } else {
+                allStd[i].chat = null;
+            }
+            // for rating
+            if (rating[i].length > 0) {
+                allStd[i].rate = rating[i][0].score;
+            } else {
+                allStd[i].rate = 'No rating';
+            }
+            // for cr
+            if (inCr[i] != null) allStd[i].hasCr = true;
+            else allStd[i].hasCr = false;
+            // for fhb
+            if (inFhb[i] != null) allStd[i].hasFhb = true;
+            else allStd[i].hasFhb = false;
+        }
+        allStd = allStd.filter(((e) => {
+            switch (selectCourse) {
+                case 'cr':
+                    return e.hasCr;
+                case 'hb':
+                    return e.hasFhb;
+                case 'all':
+                    return e.hasCr && e.hasFhb;
+                default:
+                    return true;
+            }
+        }));
+        let local = {
+            config: await configDB.findOne({}),
+            student: allStd,
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudentTable', local)
         else return404(req, res)
     })
     app.get("/adminStudentProfileQ4", auth.isLoggedIn, async function (req, res) {
@@ -1050,74 +1248,5 @@ module.exports = function (app, db, pasport) {
         }
         else return404(req, res)
     })
-
-    app.get("/ratingStudentPage", auth.isLoggedIn, async function (req, res) {
-        const gradeBitToString = function (bit) {
-            var output = "", p = false, s = false;
-            for (var i = 0; i < 6; i++) {
-                if (bit & (1 << i)) {
-                    if (p == false) {
-                        p = true;
-                        output += "P";
-                    }
-                    output += (i + 1);
-                }
-            }
-            for (var i = 0; i < 6; i++) {
-                if (bit & (1 << (i + 6))) {
-                    if (s == false) {
-                        s = true;
-                        output += "S";
-                    }
-                    output += (i + 1);
-                }
-            }
-            if (bit & (1 << 12)) output += "SAT";
-            return output;
-        };
-        let config = await configDB.findOne({});
-        let year = config.defaultQuarter.quarter.year;
-        let quarter = config.defaultQuarter.quarter.quarter;
-        let myCr = await courseDB.find({
-            year: year,
-            quarter: quarter,
-            tutor: req.user._id
-        }, { subject: 1, grade: 1, level: 1, day: 1, student: 1 }).toArray();
-        myCr = myCr.map((a) => {
-            let courseName = a.subject + gradeBitToString(a.grade) + a.level;
-            a.courseName = courseName;
-            a.time = moment(a.day).format("ddd H");
-            return a;
-        });
-        let local = {
-            webUser: {
-                userID: parseInt(req.user._id),
-                firstname: req.user.firstname,
-                lastname: req.user.lastname,
-                position: req.user.position
-            },
-            config: config,
-            myCr: myCr
-        }
-        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('ratingStudent', local)
-        else return404(req, res)
-    })
-
-    app.get("/studentCheck", auth.isLoggedIn, async function (req, res) {
-        let local = {
-            webUser: {
-                userID: parseInt(req.user._id),
-                firstname: req.user.firstname,
-                lastname: req.user.lastname,
-                position: req.user.position
-            },
-            config: await configDB.findOne({})
-        }
-        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('studentCheck', local)
-        else return404(req, res)
-    })
-
     app.all("*", return404);
 }
-
-

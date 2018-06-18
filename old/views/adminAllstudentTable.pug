@@ -1,0 +1,39 @@
+.table-responsive
+    table.table.table-hover
+        thead
+            tr
+                th Grade
+                th Rating
+                th Name
+                th Level
+                th Chat
+                th Remark
+        tbody
+            each i in student
+                tr.std-row
+                    td= ((Number(i.grade) > 6)?'S' + (Number(i.grade) - 6):'P' + Number(i.grade))
+                    if i.rate != 'No rating'
+                        td
+                            - var n = 1;
+                            while n < 6
+                                if n <= Number(i.rate)
+                                    span.fas.fa-star(style='color:#FBC02D;')
+                                else if (n - Number(i.rate)) <= 0.5
+                                    span.fas.fa-star-half(style='color:#FBC02D;')
+                                - n++
+                    else
+                        td= i.rate
+                    td= i.name
+                    td= i.level
+                    td= i.chat
+                    case i.remark
+                        when '1'
+                            td: span.far.fa-2x.fa-check-circle(style='color:blue')
+                        when '2'
+                            td: span.far.fa-2x.fa-check-circle(style='color:green')
+                        when '3'
+                            td: span.far.fa-2x.fa-times-circle(style='color:orange')
+                        default
+                            td: span.far.fa-2x.fa-times-circle(style='color:red')
+                
+            
