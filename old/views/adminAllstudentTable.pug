@@ -2,15 +2,17 @@
     table.table.table-hover
         thead
             tr
-                th Grade
+                th(onclick='changeSortBy("id");') ID
+                th(onclick='changeSortBy("grade");') Grade
                 th Rating
-                th Name
-                th Level
+                th(onclick='changeSortBy("name");') Name
+                th(onclick='changeSortBy("level");') Level
                 th Chat
                 th(onclick='clearRemark();') Remark
         tbody
             each i in student
                 tr.std-row
+                    td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.id
                     td(onclick='goToStudentProfile(\"' + i.id + '\")')= ((Number(i.grade) > 6)?'S' + (Number(i.grade) - 6):'P' + Number(i.grade))
                     if i.rate != 'No rating'
                         td(onclick='showRating(\"' + i.id + '\")')
