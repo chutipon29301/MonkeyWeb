@@ -90,7 +90,31 @@ export class RatingManager {
         });
     }
 
-    static listDetail(studentID: number): Observable<Rating[]> {
-        return Observable.fromPromise(RatingModel.find({ studentID })).map(results => results.map(result => new Rating(result)));
+    static listDetail(studentID: number): Observable<any[]> {
+
+        // return Observable.fromPromise(RatingModel.find({ studentID })).map(results => results.map(result => new Rating(result)));
+        return Observable.fromPromise(RatingModel.aggregate([
+            {
+                $match: { studentID },
+            }, {
+                $lookup: {
+                    from: 'user',
+                    localField: 'tutorID',
+                    foreignField: '_id',
+                    as: 'tutor'
+                }
+            }
+        ])).map(ratings => {
+            return ratings.map(rating => {
+                return {
+                    _id: rating._id,
+                    timestamp: rating.timestamp,
+                    courseID: rating.courseID,
+                    type: rating.type,
+                    score: rating.score,
+                    tutorName: rating.tutor[0].nicknameEn
+                };
+            });
+        });
     }
 }
