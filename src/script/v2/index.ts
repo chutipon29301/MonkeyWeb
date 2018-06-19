@@ -60,6 +60,7 @@ export function app(passport: any) {
     });
     
     app.use("/studentCheck", studentCheck);
+    app.use("/rating", rating);
     app.use(passport.isLoggedIn);
     
     app.use("/workflow", workflow);
@@ -68,7 +69,6 @@ export function app(passport: any) {
     app.use("/feedback", feedback);
     app.use("/calendar", calendar);
     app.use("/tutor", tutor);
-    app.use("/rating", rating);
 
     return app;
 }
