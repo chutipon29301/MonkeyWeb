@@ -167,15 +167,15 @@ async function showMoreRating() {
         let n = allRate.behavior[i].length;
         let sum = _.sumBy(allRate.behavior[i], function (e) { return e.score; });
         let avg = sum / n;
-        $("#dialog-more-bv-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">'
-            + drawStar(avg) + '</label><label class="float-right">' + avg + '</label>');
+        $("#dialog-more-bv-rating").append('<label>' + i + ' (' + avg + ')</label><label style="color:#FBC02D">'
+            + drawStar(avg) + '</label>');
     }
     for (let i in allRate.study) {
         let n = allRate.study[i].length;
         let sum = _.sumBy(allRate.study[i], function (e) { return e.score; });
         let avg = sum / n;
-        $("#dialog-more-std-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">'
-            + drawStar(avg) + '</label><label class="float-right">' + avg + '</label>');
+        $("#dialog-more-std-rating").append('<label>' + i + ' (' + avg + ')</label><label style="color:#FBC02D">'
+            + drawStar(avg) + '</label>');
     }
     $('#dialog-more-rating').collapse('show');
 }
