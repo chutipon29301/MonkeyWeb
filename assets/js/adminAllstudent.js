@@ -126,11 +126,11 @@ async function showRating(studentID) {
         switch (rating[i].type) {
             case 'study':
                 $("#dialog-std-star").html(drawStar(rating[i].rating));
-                $("#dialog-std-score").html(rating[i].rating);
+                $("#dialog-std-score").html(rating[i].rating.toFixed(2));
                 break;
             case 'behavior':
                 $("#dialog-bv-star").html(drawStar(rating[i].rating));
-                $("#dialog-bv-score").html(rating[i].rating);
+                $("#dialog-bv-score").html(rating[i].rating.toFixed(2));
                 break;
             default:
                 break;
@@ -166,16 +166,16 @@ async function showMoreRating() {
     for (let i in allRate.behavior) {
         let n = allRate.behavior[i].length;
         let sum = _.sumBy(allRate.behavior[i], function (e) { return e.score; });
-        let avg = sum / n;
-        $("#dialog-more-bv-rating").append('<label>' + i + ' (' + avg + ')</label><label style="color:#FBC02D">'
-            + drawStar(avg) + '</label>');
+        let avg = (sum / n).toFixed(2);
+        $("#dialog-more-bv-rating").append('<div class="row"><div class="col-12"><label>' + i +
+            ' (' + avg + ')</label><label style="color:#FBC02D">' + drawStar(avg) + '</label></div></div>');
     }
     for (let i in allRate.study) {
         let n = allRate.study[i].length;
         let sum = _.sumBy(allRate.study[i], function (e) { return e.score; });
-        let avg = sum / n;
-        $("#dialog-more-std-rating").append('<label>' + i + ' (' + avg + ')</label><label style="color:#FBC02D">'
-            + drawStar(avg) + '</label>');
+        let avg = (sum / n).toFixed(2);
+        $("#dialog-more-std-rating").append('<div class="row"><div class="col-12"><label>' + i +
+            ' (' + avg + ')</label><label style="color:#FBC02D">' + drawStar(avg) + '</label></div></div>');
     }
     $('#dialog-more-rating').collapse('show');
 }
