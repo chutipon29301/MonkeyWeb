@@ -157,30 +157,25 @@ $("#dialog-sm-btn").click(function () {
 });
 async function showMoreRating() {
     let id = Number($("#ratingHeader").html());
-    let allRate = (await $.post('v2/rating/listDetail', { studentID: id })).rating.map(((e) => {
-        return {
-            courseID: e.rating.courseID,
-            type: e.rating.type,
-            tutorID: e.rating.tutorID,
-            score: e.rating.score,
-        }
-    }));
+    let allRate = (await $.post('v2/rating/listDetail', { studentID: id })).rating;
     $("#dialog-more-bv-rating").empty();
     $("#dialog-more-std-rating").empty();
     allRate = _.groupBy(allRate, 'type');
-    allRate.behavior = _.groupBy(allRate.behavior, 'tutorID');
-    allRate.study = _.groupBy(allRate.study, 'tutorID');
+    allRate.behavior = _.groupBy(allRate.behavior, 'tutorName');
+    allRate.study = _.groupBy(allRate.study, 'tutorName');
     for (let i in allRate.behavior) {
         let n = allRate.behavior[i].length;
         let sum = _.sumBy(allRate.behavior[i], function (e) { return e.score; });
         let avg = sum / n;
-        $("#dialog-more-bv-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">' + drawStar(avg) + '</label>');
+        $("#dialog-more-bv-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">'
+            + drawStar(avg) + '</label><label class="float-right">' + avg + '</label>');
     }
     for (let i in allRate.study) {
         let n = allRate.study[i].length;
         let sum = _.sumBy(allRate.study[i], function (e) { return e.score; });
         let avg = sum / n;
-        $("#dialog-more-std-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">' + drawStar(avg) + '</label>');
+        $("#dialog-more-std-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">'
+            + drawStar(avg) + '</label><label class="float-right">' + avg + '</label>');
     }
     $('#dialog-more-rating').collapse('show');
 }
