@@ -1,3 +1,11 @@
+// sort by
+let sortBy = 'id';
+const changeSortBy = (type) => {
+    if (pos != 'tutor') {
+        sortBy = type;
+        generateTable();
+    }
+};
 // fix position in pc only
 const checkType = () => {
     if ($(document).width() > 767) {
@@ -22,6 +30,7 @@ if (sessionStorage.length > 0) {
     $("#state-select").val(sessionStorage.state);
     $("#grade-select").val(sessionStorage.grade);
     $("#course-select").val(sessionStorage.course);
+    sortBy = sessionStorage.sortBy;
 }
 generateTable();
 $('.filter').change(function () {
@@ -37,12 +46,14 @@ async function generateTable() {
     sessionStorage.setItem('state', $("#state-select").val());
     sessionStorage.setItem('grade', $("#grade-select").val());
     sessionStorage.setItem('course', $("#course-select").val());
+    sessionStorage.setItem('sortBy', sortBy);
     let body = {
         quarter: $("#quarter-select").val(),
         status: $("#status-select").val(),
         state: $("#state-select").val(),
         grade: $("#grade-select").val(),
-        course: $("#course-select").val()
+        course: $("#course-select").val(),
+        sortBy: sortBy
     }
     try {
         let table = await $.get('/adminAllstudentTable', body);

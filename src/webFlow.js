@@ -1021,7 +1021,25 @@ module.exports = function (app, db, pasport) {
         if (selectGrade !== 'all') {
             queryBody['student.grade'] = parseInt(selectGrade);
         }
-        let allStd = (await userDB.find(queryBody).sort({ 'nickname': 1 }).toArray()).map((e) => {
+        let sortBy;
+        switch (req.query.sortBy) {
+            case 'grade':
+                sortBy = { 'student.grade': 1 };
+                break;
+            case 'name':
+                sortBy = { 'nickname': 1 };
+                break;
+            case 'level':
+                sortBy = { 'level': 1 };
+                break;
+            case 'remark':
+                sortBy = { 'remark': 1 };
+                break;
+            default:
+                sortBy = { '_id': 1 };
+                break;
+        }
+        let allStd = (await userDB.find(queryBody).sort(sortBy).toArray()).map((e) => {
             return {
                 id: e._id,
                 name: e.nickname + ' ' + e.firstname,
