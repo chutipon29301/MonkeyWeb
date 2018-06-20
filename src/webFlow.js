@@ -6,6 +6,7 @@ module.exports = function (app, db, pasport) {
     // var cookieParser = require("cookie-parser");
     var moment = require("moment");
     var path = require("path");
+    var _ = require('lodash');
     var userDB = db.collection("user");
     var post = app.locals.post;
     var configDB = db.collection("config");
@@ -1021,25 +1022,7 @@ module.exports = function (app, db, pasport) {
         if (selectGrade !== 'all') {
             queryBody['student.grade'] = parseInt(selectGrade);
         }
-        let sortBy;
-        switch (req.query.sortBy) {
-            case 'grade':
-                sortBy = { 'student.grade': 1 };
-                break;
-            case 'name':
-                sortBy = { 'nickname': 1 };
-                break;
-            case 'level':
-                sortBy = { 'level': 1 };
-                break;
-            case 'remark':
-                sortBy = { 'remark': 1 };
-                break;
-            default:
-                sortBy = { '_id': 1 };
-                break;
-        }
-        let allStd = (await userDB.find(queryBody).sort(sortBy).toArray()).map((e) => {
+        let allStd = (await userDB.find(queryBody).toArray()).map((e) => {
             return {
                 id: e._id,
                 name: e.nickname + ' ' + e.firstname,
@@ -1106,7 +1089,7 @@ module.exports = function (app, db, pasport) {
             if (rating[i].length > 0) {
                 allStd[i].rate = rating[i][0].score;
             } else {
-                allStd[i].rate = 'No rating';
+                allStd[i].rate = -1;
             }
             // for cr
             if (inCr[i] != null) allStd[i].hasCr = true;
@@ -1127,6 +1110,21 @@ module.exports = function (app, db, pasport) {
                     return true;
             }
         }));
+        let sortBy = req.query.sortBy;
+        let sortType = req.query.sortType;
+        if (sortBy == 'level') {
+            if (sortType == 'asc') {
+                allStd.sort((a, b) => {
+                    return a.level.slice(0, -1) - b.level.slice(0, -1);
+                });
+            } else {
+                allStd.sort((a, b) => {
+                    return Number(b.level.slice(0, -1)) - Number(a.level.slice(0, -1));
+                });
+            }
+        } else {
+            allStd = _.orderBy(allStd, [sortBy], [sortType]);
+        }
         let local = {
             config: await configDB.findOne({}),
             student: allStd,
