@@ -122,7 +122,7 @@ function closeNewStudentDialog() {
 const drawStar = (rate) => {
     let str = '';
     for (let i = 1; i < 6; i++) {
-        if (i < rate) {
+        if (i <= rate) {
             str += '<span class="fas fa-star"></span>';
         } else if ((i - rate) <= 0.5) {
             str += '<span class="fas fa-star-half"></span>';
