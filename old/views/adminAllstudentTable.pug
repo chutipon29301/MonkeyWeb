@@ -2,20 +2,21 @@
     table.table.table-hover
         thead
             tr
-                th(onclick='changeSortBy("id");') ID
-                th(onclick='changeSortBy("grade");') Grade
-                th Rating
-                th(onclick='changeSortBy("name");') Name
-                th(onclick='changeSortBy("level");') Level
+                th.canSort(onclick='changeSortBy("id");') ID
+                th.canSort(onclick='changeSortBy("grade");') Grade
+                th.canSort(onclick='changeSortBy("rate");') Rating
+                th.canSort(onclick='changeSortBy("name");') Name
+                th.canSort(onclick='changeSortBy("level");') Level
                 th Chat
-                th(onclick='clearRemark();') Remark
+                th.clearClick(onclick='clearRemark();') Remark
         tbody
             each i in student
                 tr.std-row
                     td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.id
                     td(onclick='goToStudentProfile(\"' + i.id + '\")')= ((Number(i.grade) > 6)?'S' + (Number(i.grade) - 6):'P' + Number(i.grade))
-                    if i.rate != 'No rating'
+                    if Number(i.rate) >= 0
                         td(onclick='showRating(\"' + i.id + '\")')
+                            = i.rate.toFixed(2) + " "
                             - var n = 1;
                             while n < 6
                                 if n <= Number(i.rate)
@@ -24,7 +25,7 @@
                                     span.fas.fa-star-half(style='color:#FBC02D;')
                                 - n++
                     else
-                        td= i.rate
+                        td= 'No rating'
                     td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.name
                     td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.level
                     td(onclick='goToStudentProfile(\"' + i.id + '\")')= i.chat
