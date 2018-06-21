@@ -1,0 +1,62 @@
+extends htmlTemplate
+block head
+    - const hideNavbar = true
+    - const hideFooter = true
+    - const pageTitle = "FHB Comment"
+block script
+    script(src="js/hybridComment.js")
+block body
+    .container-fluid
+        .row
+            button.col-2.btn.btn-outline-dark
+                span.fas.fa-arrow-left
+                |&nbsp;Back
+            .col-5.p-0
+                select.custom-select
+                    option TUE
+                    option THU
+                    option SAT
+                    option SUN
+            .col-5.p-0
+                select.custom-select
+                    option 8-10
+                    option 10-12
+                    option 13-15
+                    option 15-17
+    .content-container
+        .col-2.position-fixed.p-0(style='max-height:95%;overflow-y:auto;')
+            ul.list-group.list-group-flush
+                //- gen from backend
+                -var n=0
+                while n<20
+                    li.list-group-item='สายป่าน มารีณญา'+(n+1)
+                    - n++
+                li.list-group-item.text-center: span.fas.fa-2x.fa-plus-circle
+        .col-10.offset-2.position-fixed
+            .row
+                .col-12.p-0
+                    button.btn.btn-danger.float-right Check out
+            .flex-container.d-flex.flex-row.justify-content-around(style='height:75vh')
+                .d-flex.flex-column.justify-content-around
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                .d-flex.flex-column.justify-content-around
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                .d-flex.flex-column.justify-content-around
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                .d-flex.flex-column.justify-content-around
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+                    button(style='height:100px;width:150px')
+            .row
+                .col-12.p-0
+                    button.btn.btn-success.float-right + Add comment

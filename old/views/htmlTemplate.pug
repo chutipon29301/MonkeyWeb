@@ -36,7 +36,7 @@ html(lang="en")
                         else
                             //- if(webUser.position!="tutor")
                             +navLink("adminAllStudent","All Student")
-                            if(webUser.position=="tutor")
+                            //- if(webUser.position=="tutor")
                                 +navLink("adminAllCourse","My Course")
                             //- else
                                 +navLink("adminAllCourse","All Course")
@@ -53,11 +53,12 @@ html(lang="en")
                                 a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") Rating|Comment
                                 .dropdown-menu(aria-labelledby="navbarDropdown")
                                     a.dropdown-item(href="/ratingStudentPage") Rating
+                                    a.dropdown-item(href="/hybridComment") FHB Comment
                                     a.dropdown-item(href="/tutorCommentStudent") Comment
-                                    a.dropdown-ite
                             li.nav-item.dropdown
                                 a.nav-link.dropdown-toggle(id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#") CR 
                                 .dropdown-menu(aria-labelledby="navbarDropdown")
+                                    a.dropdown-item(href="/adminAllCourse") My Course
                                     a.dropdown-item(href="/tutorCourseMaterial") CR Material
                                     if(webUser.position!="tutor")
                                         a.dropdown-item(href="/adminCourseMaterial") CR Tracking
@@ -77,7 +78,8 @@ html(lang="en")
                                 +navLink("workflow","Workflow")
                             //- +navLink("adminConference","Conference")
                             +navLink("studentCheck","StudentCheck")
-                        +navLink("studentDocument","เอกสาร")
+                        if(webUser.position!="tutor")
+                            +navLink("studentDocument","เอกสาร")
                     ul.navbar-nav
                         if(webUser.position=="student")
                             li.nav-item: a.nav-link(href="/studentProfile")
