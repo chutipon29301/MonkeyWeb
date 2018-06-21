@@ -10,6 +10,7 @@ import { router as calendar } from "./calendar";
 import { router as tutor } from "./tutor";
 import { router as rating } from "./rating";
 import { router as studentCheck } from "./studentCheck";
+import { router as hybridZone } from "./hybridZone";
 
 
 // Add user property to request object
@@ -61,6 +62,7 @@ export function app(passport: any) {
     
     app.use("/studentCheck", studentCheck);
     app.use("/rating", rating);
+    app.use("/hybridZone", hybridZone);
     app.use(passport.isLoggedIn);
     
     app.use("/workflow", workflow);
