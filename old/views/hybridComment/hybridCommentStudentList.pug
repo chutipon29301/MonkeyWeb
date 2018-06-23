@@ -1,0 +1,4 @@
+each i in studentList
+    if i.status == 'CheckIn'
+        li.student-list.list-group-item.text-center(name=i._id)= i.nickname + ' ' + i.firstname
+li#addStdBtn.list-group-item.text-center: span.fas.fa-2x.fa-plus-circle
