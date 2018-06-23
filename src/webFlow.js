@@ -18,6 +18,7 @@ module.exports = function (app, db, pasport) {
     var skillDB = db.collection('skillStudent');
     var chatDB = db.collection('chat');
     var ratingDB = db.collection('rating');
+    var hybridZoneDB = db.collection('hybridZone');
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -959,6 +960,7 @@ module.exports = function (app, db, pasport) {
         else return404(req, res)
     })
     app.get("/hybridComment", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -966,9 +968,80 @@ module.exports = function (app, db, pasport) {
                 lastname: req.user.lastname,
                 position: req.user.position
             },
-            config: await configDB.findOne({})
+            config: config
         }
-        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment', local)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridComment', local)
+        else return404(req, res)
+    })
+    app.get("/hybridCommentZoneSelect", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let date = new Date(req.query.date);
+        let zone = await hybridZoneDB.find({ date: date }, { date: 0, __v: 0, student: 0 }).toArray();
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            zone: zone
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridCommentZoneSelect', local)
+        else return404(req, res)
+    })
+    app.get("/hybridCommentAddStd", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let year = config.defaultQuarter.quarter.year;
+        let quarter = config.defaultQuarter.quarter.quarter;
+        let quarterID = year + ((quarter >= 10) ? '' + quarter : '0' + quarter);
+        let std = await hybridDB.findOne({ quarterID: quarterID, day: parseInt(req.query.date) });
+        let stdPromise = [];
+        let student = [];
+        if (std != null) {
+            for (let i in std.student) {
+                stdPromise.push(userDB.findOne({ _id: std.student[i].studentID }, { nickname: 1, firstname: 1 }));
+            }
+            let stdName = await Promise.all(stdPromise);
+            student = stdName;
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            student: student
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridCommentAddStd', local)
+        else return404(req, res)
+    })
+    app.get("/hybridCommentStudentList", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let date = new Date(req.query.date);
+        let std = (await hybridZoneDB.findOne({ date: date, zone: req.query.zone }, { student: 1 })).student;
+        let promiseStudent = [];
+        for (let i in std) {
+            promiseStudent.push(userDB.findOne({ _id: std[i]._id }, { nickname: 1, firstname: 1 }));
+        }
+        let stdName = await Promise.all(promiseStudent);
+        for (let i in std) {
+            std[i].nickname = stdName[i].nickname;
+            std[i].firstname = stdName[i].firstname;
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            studentList: std
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridCommentStudentList', local)
         else return404(req, res)
     })
     app.get("/testAdmin", auth.isLoggedIn, async function (req, res) {
@@ -998,7 +1071,7 @@ module.exports = function (app, db, pasport) {
             config: config,
             quarterList: quarterList
         }
-        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudent', local)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudent/adminAllstudent', local)
         else return404(req, res)
     })
     app.get("/adminAllstudentTable", auth.isLoggedIn, async function (req, res) {
@@ -1142,7 +1215,7 @@ module.exports = function (app, db, pasport) {
             config: await configDB.findOne({}),
             student: allStd,
         }
-        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudentTable', local)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudent/adminAllstudentTable', local)
         else return404(req, res)
     })
     app.get("/adminStudentProfileQ4", auth.isLoggedIn, async function (req, res) {
