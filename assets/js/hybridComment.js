@@ -132,3 +132,36 @@ $("#studentList").on('click', '.student-list', function () {
     $('#studentList > .student-list').removeClass('active');
     $(this).addClass('active');
 });
+// add comment
+$("#addCommentBtn").click(function () {
+    let tutorID = '99000';
+    let studentID = $(".student-list.active").attr('name');
+    if (studentID) {
+        let promise = [];
+        for (let i = 0; i < $('.select-btn').length; i++) {
+            promise.push($.post('post/addStudentComment', {
+                tutorID: tutorID,
+                studentID: studentID,
+                message: $('.select-btn')[i].name
+            }));
+        }
+        Promise.all(promise).then(() => {
+            $("#addCommentModal").modal('show');
+            setTimeout(() => {
+                $("#addCommentModal").modal('hide');
+            }, 1000);
+            $(".comment-btn").removeClass('select-btn');
+            $(".comment-btn").addClass('nonselect-btn');
+        });
+    }
+});
+// checkout
+$("#checkoutBtn").click(function () {
+    let studentID = $(".student-list.active").attr('name');
+    let date = new Date(parseInt($('#dateSelector').val()));
+    let zone = $("#zoneSelector").val();
+    $.post('v2/hybridZone/checkout', { studentID, date, zone }).then((cb) => {
+        console.log(cb);
+        genStudentList();
+    });
+});

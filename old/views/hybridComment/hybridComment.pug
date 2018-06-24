@@ -38,7 +38,7 @@ block head
             transform: scale(1.5);
         }
 block script
-    script(src="js/hybridComment.js")
+    script(src="js/hybridComment.min.js")
 block body
     .container-fluid.position-fixed
         .row
@@ -59,66 +59,66 @@ block body
                 .d-flex.flex-column.justify-content-around
                     .d-flex.flex-column
                         label ลายมือ
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ลายมือไม่ดี')
                             span.fab.fa-autoprefixer
                     .d-flex.flex-column
                         label วิธีเขียน
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='วิธีเขียนไม่ดี')
                             span.fas.fa-file-signature
                     .d-flex.flex-column
                         label ข้ามขั้น
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ทำข้ามขั้น')
                             span.fas.fa-angle-double-right
                     .d-flex.flex-column
                         label การบ้าน
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ไม่ทำการบ้านมา/ทำการบ้านไม่เสร็จ')
                             span.fab.fa-leanpub
                 .d-flex.flex-column.justify-content-around
                     .d-flex.flex-column
                         label ข้าม VDO
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ข้าม VDO')
                             span.fas.fa-fast-forward
                     .d-flex.flex-column
                         label ดู VDO นาน
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ดู VDO นาน')
                             span.fas.fa-stopwatch
                     .d-flex.flex-column
                         label ไม่ตั้งใจ
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ไม่ตั้งใจ')
                             span.fas.fa-low-vision
                     .d-flex.flex-column
                         label Flow ผิด
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ไม่ทำตาม Flow')
                             span.fas.fa-sort-numeric-down
                 .d-flex.flex-column.justify-content-around
                     .d-flex.flex-column
                         label ลืมของเก่า
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ลืมของเก่า')
                             span.far.fa-dizzy
                     .d-flex.flex-column
                         label ไม่จับหลัก
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='เรียนไม่จับหลัก')
                             span.far.fa-lightbulb
                     .d-flex.flex-column
                         label งานค้าง
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='งานค้างเยอะ')
                             span.fas.fa-file-excel
                     .d-flex.flex-column
                         label ไม่พร้อมเรียน
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ไม่พร้อมเรียน/เหม่อ')
                             span.fas.fa-procedures
                 .d-flex.flex-column.justify-content-around
                     .d-flex.flex-column
                         label นิสัย
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='นิสัยไม่ดี')
                             span.far.fa-thumbs-down
                     .d-flex.flex-column
                         label สุขอนามัย
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='สุขอนามันไม่ดี')
                             span.fas.fa-capsules
                     .d-flex.flex-column
                         label ไม่ฟังที่พูด
-                        button.btn.comment-btn.nonselect-btn(type='button')
+                        button.btn.comment-btn.nonselect-btn(type='button' name='ไม่ฟังที่พี่พูด')
                             span.fas.fa-deaf
                     .d-flex.flex-column
                         label เพิ่มเติม
@@ -126,8 +126,8 @@ block body
                             span.fas.fa-plus
             .row.p-3
                 .col-12.p-0
-                    button.btn.btn-danger.float-right Check out
-                    button.btn.btn-success.float-right + Add comment
+                    button#checkoutBtn.btn.btn-danger.float-right Check out
+                    button#addCommentBtn.btn.btn-success.float-right + Add comment
     #addZoneModal.modal.fade
         .modal-dialog
             .modal-content
@@ -154,3 +154,8 @@ block body
                 .modal-footer
                     button#addStdSubmitBtn.btn.btn-success(type='button') + Add
                     button.btn.btn-danger(type='button' data-dismiss="modal") Close
+    #addCommentModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-body
+                    h4 Comment complete.
