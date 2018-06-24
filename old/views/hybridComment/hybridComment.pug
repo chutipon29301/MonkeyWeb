@@ -159,3 +159,16 @@ block body
             .modal-content
                 .modal-body
                     h4 Comment complete.
+    #addOtherCommentModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Add custom comment
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body
+                    .form-group
+                        label Comment:
+                        input#customCommentTxt.form-control(type="text")
+                .modal-footer
+                    button#addCustomCommentSubmitBtn.btn.btn-success(type='button') + Add
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
