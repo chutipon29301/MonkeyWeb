@@ -1,7 +1,7 @@
 // back to normal web page
 $("#goback-btn").click(() => {
     if (confirm('ต้องการย้อนกลับ?')) {
-        self.location = '/adminAllStudent';
+        self.location = '/tutorCommentStudent';
     }
 });
 // add date select
@@ -38,6 +38,7 @@ const addZoneSelectOption = () => {
 addZoneSelectOption();
 $("#dateSelector").change(function () {
     addZoneSelectOption();
+    $(".student-list").remove();
 });
 // add zone method
 $("#addZoneBtn").click(() => {
@@ -131,28 +132,36 @@ $(".comment-btn").click(function () {
 $("#studentList").on('click', '.student-list', function () {
     $('#studentList > .student-list').removeClass('active');
     $(this).addClass('active');
+    $(".comment-btn").removeClass('select-btn');
+    $(".comment-btn").addClass('nonselect-btn');
 });
 // add comment
 $("#addCommentBtn").click(function () {
     let tutorID = '99000';
     let studentID = $(".student-list.active").attr('name');
     if (studentID) {
-        let promise = [];
-        for (let i = 0; i < $('.select-btn').length; i++) {
-            promise.push($.post('post/addStudentComment', {
-                tutorID: tutorID,
-                studentID: studentID,
-                message: $('.select-btn')[i].name
-            }));
+        if ($('.select-btn').length == 0) {
+            alert("Please select some comment.");
+        } else {
+            let promise = [];
+            for (let i = 0; i < $('.select-btn').length; i++) {
+                promise.push($.post('post/addStudentComment', {
+                    tutorID: tutorID,
+                    studentID: studentID,
+                    message: $('.select-btn')[i].name
+                }));
+            }
+            Promise.all(promise).then(() => {
+                $("#addCommentModal").modal('show');
+                setTimeout(() => {
+                    $("#addCommentModal").modal('hide');
+                }, 1000);
+                $(".comment-btn").removeClass('select-btn');
+                $(".comment-btn").addClass('nonselect-btn');
+            });
         }
-        Promise.all(promise).then(() => {
-            $("#addCommentModal").modal('show');
-            setTimeout(() => {
-                $("#addCommentModal").modal('hide');
-            }, 1000);
-            $(".comment-btn").removeClass('select-btn');
-            $(".comment-btn").addClass('nonselect-btn');
-        });
+    } else {
+        alert('Please select a student!');
     }
 });
 // checkout
@@ -164,4 +173,31 @@ $("#checkoutBtn").click(function () {
         console.log(cb);
         genStudentList();
     });
+});
+// add other comment
+$(".addComment-btn").click(function () {
+    let studentID = $(".student-list.active").attr('name');
+    if (studentID) {
+        $("#addOtherCommentModal").modal('show');
+    }
+});
+$("#addCustomCommentSubmitBtn").click(function () {
+    let studentID = $(".student-list.active").attr('name');
+    let text = $("#customCommentTxt").val();
+    if (text.length > 0) {
+        let tutorID = '99000';
+        $.post('post/addStudentComment', {
+            tutorID: tutorID,
+            studentID: studentID,
+            message: text
+        }).then(() => {
+            $("#addOtherCommentModal").modal('hide');
+            $("#addCommentModal").modal('show');
+            setTimeout(() => {
+                $("#addCommentModal").modal('hide');
+            }, 1000);
+        });
+    } else {
+        alert('Please input some comment.');
+    }
 });

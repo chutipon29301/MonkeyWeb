@@ -995,16 +995,31 @@ module.exports = function (app, db, pasport) {
         let year = config.defaultQuarter.quarter.year;
         let quarter = config.defaultQuarter.quarter.quarter;
         let quarterID = year + ((quarter >= 10) ? '' + quarter : '0' + quarter);
-        let std = await hybridDB.findOne({ quarterID: quarterID, day: parseInt(req.query.date) });
-        let stdPromise = [];
-        let student = [];
-        if (std != null) {
-            for (let i in std.student) {
-                stdPromise.push(userDB.findOne({ _id: std.student[i].studentID }, { nickname: 1, firstname: 1 }));
-            }
-            let stdName = await Promise.all(stdPromise);
-            student = stdName;
+        let [std, crStd] = await Promise.all([
+            hybridDB.findOne({ quarterID: quarterID, day: parseInt(req.query.date) }),
+            courseDB.find({ year: Number(year), quarter: Number(quarter), room: 0 }, { day: 1, student: 1 }).toArray()
+        ]);
+        crStd = crStd.filter((e) => {
+            let day1 = moment(Number(req.query.date));
+            let day2 = moment(Number(e.day));
+            if (day1.day() == day2.day() && day1.hour() == day2.hour()) return true;
+            return false;
+        });
+        std = std.student;
+        let allStd = [];
+        for (let i in std) {
+            allStd.push(std[i].studentID);
         }
+        for (let i in crStd) {
+            allStd = _.concat(allStd, crStd[i].student);
+        }
+        allStd = _.uniq(allStd);
+        let stdPromise = [];
+        for (let i in allStd) {
+            stdPromise.push(userDB.findOne({ _id: allStd[i] }, { nickname: 1, firstname: 1 }));
+        }
+        let student = await Promise.all(stdPromise);
+        student = _.orderBy(student, ['nickname', 'firstname'], ['asc', 'asc']);
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -1031,6 +1046,7 @@ module.exports = function (app, db, pasport) {
             std[i].nickname = stdName[i].nickname;
             std[i].firstname = stdName[i].firstname;
         }
+        std = _.orderBy(std, ['nickname', 'firstname'], ['asc', 'asc']);
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
