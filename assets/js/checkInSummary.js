@@ -192,8 +192,8 @@ async function genTableData() {
                 "<td class='text-center'>" + doneStatus + "</td>" +
                 "</tr>"
             );
-            index += 1;
         }
+        index += 1;
     }
     $mainTableBody.append(
         "<tr>" +
