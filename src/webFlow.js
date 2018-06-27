@@ -1110,7 +1110,7 @@ module.exports = function (app, db, pasport) {
         }
         switch (selectState) {
             case 'allStage':
-                queryBody['student.quarter'] = { year: Number(selectYear), quarter: Number(selectQ) }
+                queryBody['student.quarter'] = { $elemMatch: { year: Number(selectYear), quarter: Number(selectQ) } }
                 break;
             case 'unregistered':
                 queryBody['student.quarter'] = { $not: { $elemMatch: { year: Number(selectYear), quarter: Number(selectQ) } } }
@@ -1118,7 +1118,7 @@ module.exports = function (app, db, pasport) {
             case 'all':
                 break;
             default:
-                queryBody['student.quarter'] = { year: Number(selectYear), quarter: Number(selectQ), registrationState: selectState }
+                queryBody['student.quarter'] = { $elemMatch: { year: Number(selectYear), quarter: Number(selectQ), registrationState: selectState } }
                 break;
         }
         if (selectGrade !== 'all') {
