@@ -944,6 +944,9 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('ratingStudent', local)
         else return404(req, res)
     })
+    app.get('/video', auth.isLoggedIn, function (req,res) {
+        return res.status(200).render('video')
+    })
     app.get("/studentCheck", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
