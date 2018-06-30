@@ -5,4 +5,15 @@ block script
     script(type="text/javascript" src="js/sha3.js")
     script(type="text/javascript" src="js/video.js")
 block body
-    .container
+    .container-fluid
+        .row
+            .col-12
+                .form-group
+                    label(style="font-size:2em") Input StudentID:
+                    input#stdIdInput.form-control(type='Number')
+            .col-12
+                button#submitBtn.float-right.btn.btn-primary(type="button") Submit
+        .row#btn-container
+
+
+        

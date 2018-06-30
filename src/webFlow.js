@@ -944,8 +944,18 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('ratingStudent', local)
         else return404(req, res)
     })
-    app.get('/video', auth.isLoggedIn, function (req,res) {
-        return res.status(200).render('video')
+    app.get("/video", auth.isLoggedIn, async function (req, res) {
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: await configDB.findOne({})
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('video', local)
+        else return404(req, res)
     })
     app.get("/studentCheck", auth.isLoggedIn, async function (req, res) {
         let local = {
