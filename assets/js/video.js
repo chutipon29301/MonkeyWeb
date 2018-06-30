@@ -22,7 +22,8 @@ function genBtn(files) {
 $("#btn-container").on('click', '.btn', function () {
     let filename = this.innerHTML;
     $.post("post/v1/encryptRequest", {
-        body: filename + '.mp4'
+        // body: filename + '.mp4'
+        body: "{\"studentCode\":" + $("#stdIdInput").val() + ",\"videoName\":\"" + filename + ".mp4\"}",
     }).then((cb) => {
         window.location.assign("https://monkey-monkey.com/get/v1/video?v=" + cb.path);
     });
