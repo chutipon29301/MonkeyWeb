@@ -756,14 +756,14 @@ function downloadCanvas(type) {
             canvas = document.getElementById('engCover');
             text += ID + "4.png";
             break;
-        case 4:
-            canvas = document.getElementById('appRejCover1');
-            text += ID + ".png";
-            break;
-        case 5:
-            canvas = document.getElementById('appRejCover2');
-            text += ID + ".png";
-            break;
+        // case 4:
+        //     canvas = document.getElementById('appRejCover1');
+        //     text += ID + ".png";
+        //     break;
+        // case 5:
+        //     canvas = document.getElementById('appRejCover2');
+        //     text += ID + ".png";
+        //     break;
         case 6:
             canvas = document.getElementById('smCover');
             text += ID + "1sm.png";
@@ -772,10 +772,10 @@ function downloadCanvas(type) {
             canvas = document.getElementById('smCover');
             text += ID + "2sm.png";
             break;
-        case 8:
-            canvas = document.getElementById('smAppRejCover');
-            text += ID + ".png";
-            break;
+        // case 8:
+        //     canvas = document.getElementById('smAppRejCover');
+        //     text += ID + ".png";
+        //     break;
         default:
             break;
     }
