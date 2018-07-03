@@ -536,8 +536,9 @@ async function genCover(type) {
     ctx.fillStyle = "black";
     ctx.textAlign = "left";
     let allRegisteredTemp = _.union(registedData.registration.course, registedData.registration.hybrid);
+    allQ.quarter = _.orderBy(allQ.quarter, ['year', 'quarter']);
+    allQ.quarter = _.takeRight(allQ.quarter, 7);
     let diff = 0;
-    let quarterStr = '';
     for (let i in allQ.quarter) {
         let bool = i < allQ.quarter.length - 1;
         if (allRegisteredTemp.indexOf(allQ.quarter[i].quarterID) > -1) {
