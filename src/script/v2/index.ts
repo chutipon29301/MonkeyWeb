@@ -7,6 +7,7 @@ import { router as slideshow } from "./slideshow";
 import { router as student } from "./student";
 import { router as feedback } from "./feedback";
 import { router as calendar } from "./calendar";
+import { router as testScore } from "./testScore";
 import { router as tutor } from "./tutor";
 import { router as rating } from "./rating";
 import { router as studentCheck } from "./studentCheck";
@@ -59,12 +60,14 @@ export function app(passport: any) {
             process.exit(0);
         });
     });
-    
+
     app.use("/studentCheck", studentCheck);
     app.use("/rating", rating);
     app.use("/hybridZone", hybridZone);
+    app.use("/testScore", testScore);
+
     app.use(passport.isLoggedIn);
-    
+
     app.use("/workflow", workflow);
     app.use("/slideshow", slideshow);
     app.use("/student", student);
