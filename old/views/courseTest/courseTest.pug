@@ -1,0 +1,82 @@
+extends ../htmlTemplate
+block head
+    - const hideNavbar = true
+    - const hideFooter = true
+    - const pageTitle = "CR Assignment"
+    style.
+        #test-del-btn:hover {
+            color:red;
+            cursor:pointer;
+        }
+        .studentList {
+            box-shadow: 0px 0 1px;
+            display:flex;
+            flex-flow:row nowrap;
+            justify-content:space-between;
+            align-items:center;
+            height: 80px;
+            width: 80%;
+            padding: 0 16px 0 16px;
+        }
+        .studentList:hover {
+            background-color: rgba(0,0,0,0.1);
+            cursor:pointer;
+        }
+block script
+    script(src="js/courseTest.min.js")
+block body
+    .container-fluid
+        .row
+            .col-3.position-fixed.bg-light(style='height:100vh;box-shadow: 0px 0 4px;z-index: 2')           
+                button#addNewTestBtn.col.btn.btn-outline-primary.mt-3(type="button") 
+                    span.fas.fa-plus
+                    |&nbsp;Add new test
+                hr
+                #testList
+            .col-9.offset-3
+                .row#testDetail
+                    .col-12.text-center
+                        h1 Please select a test.
+    #addTestModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Add new test
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body
+                    .row
+                        .col-12
+                            .form-group
+                                label Test name:
+                                input#addTestName.form-control(type='text')
+                            .form-group
+                                label Maximum score:
+                                input#addTestScore.form-control(type='number')
+                            .form-group
+                                label Test date:
+                                input#addTestDate.form-control(type='date')
+                .modal-footer
+                    button#addTestSubmitBtn.btn.btn-success(type='button') + Add
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
+    #addStudentModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Add student score
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body
+                    .row
+                        .col-12
+                            h1 Inprogress
+                            //- .form-group
+                            //-     label Test name:
+                            //-     input#addTestName.form-control(type='text')
+                            //- .form-group
+                            //-     label Maximum score:
+                            //-     input#addTestScore.form-control(type='number')
+                            //- .form-group
+                            //-     label Test date:
+                            //-     input#addTestDate.form-control(type='date')
+                .modal-footer
+                    button#addScoreSubmitBtn.btn.btn-success(type='button') + Add
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
