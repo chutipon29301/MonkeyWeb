@@ -65,6 +65,31 @@ export class RatingManager {
         });
     }
 
+    static addSpecial(score: number, studentID: number, tutorID: number): Observable<Rating> {
+        return Observable.fromPromise(RatingModel.findOne({
+            studentID: studentID,
+            type: "mel"
+        })).flatMap(rating => {
+            if (rating) {
+                return Observable.fromPromise(rating.update({
+                    $set: {
+                        score: score
+                    }
+                }));
+            } else {
+                let newRating = new RatingModel({
+                    type: "mel",
+                    studentID: studentID,
+                    score: score,
+                    tutorID: tutorID,
+                });
+                return Observable.fromPromise(newRating.save()).map(result => {
+                    return new Rating(result)
+                });
+            }
+        })
+    }
+
     static find(id: mongoose.Types.ObjectId | string): Observable<Rating> {
         if (typeof id === "string") id = new mongoose.Types.ObjectId(id);
         return Observable.fromPromise(RatingModel.findById(id)).map(result => new Rating(result));

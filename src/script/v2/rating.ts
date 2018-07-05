@@ -12,13 +12,23 @@ router.post("/add", (req, res) => {
             msg: 'Bad Request',
         });
     }
-    RatingManager.add(score, studentID, type, req.user._id, req.body.courseID).subscribe(_ => {
-        return res.status(200).send({
-            msg: "OK"
+    if (type !== "mel") {
+        RatingManager.add(score, studentID, type, req.user._id, req.body.courseID).subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
+        }, error => {
+            return res.status(500).send(error);
         });
-    }, error => {
-        return res.status(500).send(error);
-    });
+    } else {
+        RatingManager.addSpecial(score, studentID, 99001).subscribe(_ => {
+            return res.status(200).send({
+                msg: "OK"
+            });
+        }, error => {
+            return res.status(500).send(error);
+        });
+    }
 });
 
 router.post("/addMany", (req, res) => {
