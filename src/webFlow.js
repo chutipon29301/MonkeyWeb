@@ -19,6 +19,7 @@ module.exports = function (app, db, pasport) {
     var chatDB = db.collection('chat');
     var ratingDB = db.collection('rating');
     var hybridZoneDB = db.collection('hybridZone');
+    var testScoreDB = db.collection('testScore');
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -984,6 +985,73 @@ module.exports = function (app, db, pasport) {
             config: config
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridComment', local)
+        else return404(req, res)
+    })
+    app.get("/courseTest", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTest', local)
+        else return404(req, res)
+    })
+    app.get("/courseTestList", auth.isLoggedIn, async function (req, res) {
+        let [config, testList] = await Promise.all([
+            configDB.findOne({}),
+            testScoreDB.find({}, { testName: 1 }).sort({ testName: 1 }).toArray()
+        ]);
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            testList: testList
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestList', local)
+        else return404(req, res)
+    })
+    app.get("/courseTestDetail", auth.isLoggedIn, async function (req, res) {
+        let [config, thisTest] = await Promise.all([
+            configDB.findOne({}),
+            testScoreDB.findOne({ _id: ObjectId(req.query.testID) })
+        ]);
+        let promise = [];
+        for (let i of thisTest.scores) {
+            promise.push(userDB.findOne({ _id: Number(i._id) }, { nickname: 1, firstname: 1, 'student.grade': 1 }));
+        }
+        let stdName = await Promise.all(promise);
+        for (let i = 0; i < thisTest.scores.length; i++) {
+            thisTest.scores[i] = {
+                studentID: thisTest.scores[i]._id,
+                score: thisTest.scores[i].score,
+                studentName: stdName[i].nickname + ' ' + stdName[i].firstname,
+                grade: stdName[i].student.grade
+            }
+        }
+        let testScore = thisTest.scores;
+        delete thisTest.__v;
+        delete thisTest.scores;
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            testScore: testScore,
+            testDetail: thisTest
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestDetail', local)
         else return404(req, res)
     })
     app.get("/hybridCommentZoneSelect", auth.isLoggedIn, async function (req, res) {
