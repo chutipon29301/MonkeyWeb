@@ -55,7 +55,7 @@ export class TestScore {
 
     constructor(private testScore: TestScoreInterface) { }
 
-    public addStudentScore(scores: [{ userID: number, score: number }]): Observable<TestScore> {
+    public addStudentScore(scores: [{ _id: number, score: number }]): Observable<TestScore> {
         return Observable.fromPromise(TestScoreModel.findByIdAndUpdate(this.testScore._id, {
             $push: {
                 scores: {
@@ -65,17 +65,17 @@ export class TestScore {
         })).map(result => new TestScore(result));
     }
 
-    public removeStudentScore(userID: number[]): Observable<TestScore> {
+    public removeStudentScore(_ids: number[]): Observable<TestScore> {
         return Observable.fromPromise(TestScoreModel.findByIdAndUpdate(this.testScore._id, {
             $pull: {
-                score: {
-                    $each: userID
+                scores: {
+                    _id: { $in: _ids }
                 }
             }
         })).map(result => new TestScore(result));
     }
 
-    public getID():mongoose.Types.ObjectId {
+    public getID(): mongoose.Types.ObjectId {
         return this.testScore._id;
     }
 
