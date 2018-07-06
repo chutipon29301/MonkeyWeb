@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpackReact.config.js && webpack",
-    "deploy": "webpack --config webpackReact.config.js && webpack && forever stopall && forever start -e err.log dist/bundle.js",
-    "dev": "webpack --config webpackReact.config.js && webpack --watch"
+    "build": "webpack",
+    "deploy": "webpack && forever stopall && forever start -e err.log dist/bundle.js",
+    "dev": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -45,7 +45,7 @@
     "formidable": "^1.2.1",
     "fs-extra": "^2.1.2",
     "http2": "https://github.com/node-apn/node-http2/archive/apn-2.1.4.tar.gz",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.10",
     "moment": "^2.21.0",
     "mongodb": "^2.2.30",
     "mongoose": "^5.0.7",

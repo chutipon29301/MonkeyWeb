@@ -1,3 +1,22 @@
+// sort by
+let sortBy = 'id';
+let sortType = 'asc';
+const changeSortBy = (type) => {
+    if (pos != 'tutor') {
+        if (type == sortBy) {
+            if (sortType == 'asc') {
+                sortType = 'desc';
+            } else {
+                sortType = 'asc';
+            }
+            generateTable();
+        } else {
+            sortBy = type;
+            sortType = 'asc';
+            generateTable();
+        }
+    }
+};
 // fix position in pc only
 const checkType = () => {
     if ($(document).width() > 767) {
@@ -22,6 +41,8 @@ if (sessionStorage.length > 0) {
     $("#state-select").val(sessionStorage.state);
     $("#grade-select").val(sessionStorage.grade);
     $("#course-select").val(sessionStorage.course);
+    sortBy = sessionStorage.sortBy;
+    sortType = sessionStorage.sortType;
 }
 generateTable();
 $('.filter').change(function () {
@@ -37,12 +58,16 @@ async function generateTable() {
     sessionStorage.setItem('state', $("#state-select").val());
     sessionStorage.setItem('grade', $("#grade-select").val());
     sessionStorage.setItem('course', $("#course-select").val());
+    sessionStorage.setItem('sortBy', sortBy);
+    sessionStorage.setItem('sortType', sortType);
     let body = {
         quarter: $("#quarter-select").val(),
         status: $("#status-select").val(),
         state: $("#state-select").val(),
         grade: $("#grade-select").val(),
-        course: $("#course-select").val()
+        course: $("#course-select").val(),
+        sortBy: sortBy,
+        sortType: sortType,
     }
     try {
         let table = await $.get('/adminAllstudentTable', body);
@@ -111,7 +136,7 @@ function closeNewStudentDialog() {
 const drawStar = (rate) => {
     let str = '';
     for (let i = 1; i < 6; i++) {
-        if (i < rate) {
+        if (i <= rate) {
             str += '<span class="fas fa-star"></span>';
         } else if ((i - rate) <= 0.5) {
             str += '<span class="fas fa-star-half"></span>';
@@ -126,11 +151,11 @@ async function showRating(studentID) {
         switch (rating[i].type) {
             case 'study':
                 $("#dialog-std-star").html(drawStar(rating[i].rating));
-                $("#dialog-std-score").html(rating[i].rating);
+                $("#dialog-std-score").html(rating[i].rating.toFixed(2));
                 break;
             case 'behavior':
                 $("#dialog-bv-star").html(drawStar(rating[i].rating));
-                $("#dialog-bv-score").html(rating[i].rating);
+                $("#dialog-bv-score").html(rating[i].rating.toFixed(2));
                 break;
             default:
                 break;
@@ -157,30 +182,25 @@ $("#dialog-sm-btn").click(function () {
 });
 async function showMoreRating() {
     let id = Number($("#ratingHeader").html());
-    let allRate = (await $.post('v2/rating/listDetail', { studentID: id })).rating.map(((e) => {
-        return {
-            courseID: e.rating.courseID,
-            type: e.rating.type,
-            tutorID: e.rating.tutorID,
-            score: e.rating.score,
-        }
-    }));
+    let allRate = (await $.post('v2/rating/listDetail', { studentID: id })).rating;
     $("#dialog-more-bv-rating").empty();
     $("#dialog-more-std-rating").empty();
     allRate = _.groupBy(allRate, 'type');
-    allRate.behavior = _.groupBy(allRate.behavior, 'tutorID');
-    allRate.study = _.groupBy(allRate.study, 'tutorID');
+    allRate.behavior = _.groupBy(allRate.behavior, 'tutorName');
+    allRate.study = _.groupBy(allRate.study, 'tutorName');
     for (let i in allRate.behavior) {
         let n = allRate.behavior[i].length;
         let sum = _.sumBy(allRate.behavior[i], function (e) { return e.score; });
-        let avg = sum / n;
-        $("#dialog-more-bv-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">' + drawStar(avg) + '</label>');
+        let avg = (sum / n).toFixed(2);
+        $("#dialog-more-bv-rating").append('<div class="row"><div class="col-12"><label>' + i +
+            ' (' + avg + ')</label><label style="color:#FBC02D">' + drawStar(avg) + '</label></div></div>');
     }
     for (let i in allRate.study) {
         let n = allRate.study[i].length;
         let sum = _.sumBy(allRate.study[i], function (e) { return e.score; });
-        let avg = sum / n;
-        $("#dialog-more-std-rating").append('<label>' + i + ': </label><label style="color:#FBC02D">' + drawStar(avg) + '</label>');
+        let avg = (sum / n).toFixed(2);
+        $("#dialog-more-std-rating").append('<div class="row"><div class="col-12"><label>' + i +
+            ' (' + avg + ')</label><label style="color:#FBC02D">' + drawStar(avg) + '</label></div></div>');
     }
     $('#dialog-more-rating').collapse('show');
 }

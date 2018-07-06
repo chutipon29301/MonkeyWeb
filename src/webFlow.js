@@ -6,6 +6,7 @@ module.exports = function (app, db, pasport) {
     // var cookieParser = require("cookie-parser");
     var moment = require("moment");
     var path = require("path");
+    var _ = require('lodash');
     var userDB = db.collection("user");
     var post = app.locals.post;
     var configDB = db.collection("config");
@@ -17,6 +18,8 @@ module.exports = function (app, db, pasport) {
     var skillDB = db.collection('skillStudent');
     var chatDB = db.collection('chat');
     var ratingDB = db.collection('rating');
+    var hybridZoneDB = db.collection('hybridZone');
+    var testScoreDB = db.collection('testScore');
     var getQuarter = function (year, quarter, callback) {
         if (year === undefined) {
             if (quarter === undefined) quarter = "quarter";
@@ -970,6 +973,174 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('studentCheck', local)
         else return404(req, res)
     })
+    app.get("/hybridComment", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridComment', local)
+        else return404(req, res)
+    })
+    app.get("/courseTest", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTest', local)
+        else return404(req, res)
+    })
+    app.get("/courseTestList", auth.isLoggedIn, async function (req, res) {
+        let [config, testList] = await Promise.all([
+            configDB.findOne({}),
+            testScoreDB.find({}, { testName: 1 }).sort({ testName: 1 }).toArray()
+        ]);
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            testList: testList
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestList', local)
+        else return404(req, res)
+    })
+    app.get("/courseTestDetail", auth.isLoggedIn, async function (req, res) {
+        let [config, thisTest] = await Promise.all([
+            configDB.findOne({}),
+            testScoreDB.findOne({ _id: ObjectId(req.query.testID) })
+        ]);
+        let promise = [];
+        for (let i of thisTest.scores) {
+            promise.push(userDB.findOne({ _id: Number(i._id) }, { nickname: 1, firstname: 1, 'student.grade': 1 }));
+        }
+        let stdName = await Promise.all(promise);
+        for (let i = 0; i < thisTest.scores.length; i++) {
+            thisTest.scores[i] = {
+                studentID: thisTest.scores[i]._id,
+                score: thisTest.scores[i].score,
+                studentName: stdName[i].nickname + ' ' + stdName[i].firstname,
+                grade: stdName[i].student.grade
+            }
+        }
+        let testScore = thisTest.scores;
+        delete thisTest.__v;
+        delete thisTest.scores;
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            testScore: testScore,
+            testDetail: thisTest
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestDetail', local)
+        else return404(req, res)
+    })
+    app.get("/hybridCommentZoneSelect", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let date = new Date(req.query.date);
+        let zone = await hybridZoneDB.find({ date: date }, { date: 0, __v: 0, student: 0 }).toArray();
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            zone: zone
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridCommentZoneSelect', local)
+        else return404(req, res)
+    })
+    app.get("/hybridCommentAddStd", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let year = config.defaultQuarter.quarter.year;
+        let quarter = config.defaultQuarter.quarter.quarter;
+        let quarterID = year + ((quarter >= 10) ? '' + quarter : '0' + quarter);
+        let [std, crStd] = await Promise.all([
+            hybridDB.findOne({ quarterID: quarterID, day: parseInt(req.query.date) }),
+            courseDB.find({ year: Number(year), quarter: Number(quarter), room: 0 }, { day: 1, student: 1 }).toArray()
+        ]);
+        crStd = crStd.filter((e) => {
+            let day1 = moment(Number(req.query.date));
+            let day2 = moment(Number(e.day));
+            if (day1.day() == day2.day() && day1.hour() == day2.hour()) return true;
+            return false;
+        });
+        std = std.student;
+        let allStd = [];
+        for (let i in std) {
+            allStd.push(std[i].studentID);
+        }
+        for (let i in crStd) {
+            allStd = _.concat(allStd, crStd[i].student);
+        }
+        allStd = _.uniq(allStd);
+        let stdPromise = [];
+        for (let i in allStd) {
+            stdPromise.push(userDB.findOne({ _id: allStd[i] }, { nickname: 1, firstname: 1 }));
+        }
+        let student = await Promise.all(stdPromise);
+        student = _.orderBy(student, ['nickname', 'firstname'], ['asc', 'asc']);
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            student: student
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridCommentAddStd', local)
+        else return404(req, res)
+    })
+    app.get("/hybridCommentStudentList", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let date = new Date(req.query.date);
+        let std = (await hybridZoneDB.findOne({ date: date, zone: req.query.zone }, { student: 1 })).student;
+        let promiseStudent = [];
+        for (let i in std) {
+            promiseStudent.push(userDB.findOne({ _id: std[i]._id }, { nickname: 1, firstname: 1 }));
+        }
+        let stdName = await Promise.all(promiseStudent);
+        for (let i in std) {
+            std[i].nickname = stdName[i].nickname;
+            std[i].firstname = stdName[i].firstname;
+        }
+        std = _.orderBy(std, ['nickname', 'firstname'], ['asc', 'asc']);
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            studentList: std
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('hybridComment/hybridCommentStudentList', local)
+        else return404(req, res)
+    })
     app.get("/testAdmin", auth.isLoggedIn, async function (req, res) {
         let local = {
             webUser: {
@@ -997,7 +1168,7 @@ module.exports = function (app, db, pasport) {
             config: config,
             quarterList: quarterList
         }
-        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudent', local)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudent/adminAllstudent', local)
         else return404(req, res)
     })
     app.get("/adminAllstudentTable", auth.isLoggedIn, async function (req, res) {
@@ -1020,7 +1191,7 @@ module.exports = function (app, db, pasport) {
         }
         switch (selectState) {
             case 'allStage':
-                queryBody['student.quarter'] = { year: Number(selectYear), quarter: Number(selectQ) }
+                queryBody['student.quarter'] = { $elemMatch: { year: Number(selectYear), quarter: Number(selectQ) } }
                 break;
             case 'unregistered':
                 queryBody['student.quarter'] = { $not: { $elemMatch: { year: Number(selectYear), quarter: Number(selectQ) } } }
@@ -1028,13 +1199,13 @@ module.exports = function (app, db, pasport) {
             case 'all':
                 break;
             default:
-                queryBody['student.quarter'] = { year: Number(selectYear), quarter: Number(selectQ), registrationState: selectState }
+                queryBody['student.quarter'] = { $elemMatch: { year: Number(selectYear), quarter: Number(selectQ), registrationState: selectState } }
                 break;
         }
         if (selectGrade !== 'all') {
             queryBody['student.grade'] = parseInt(selectGrade);
         }
-        let allStd = (await userDB.find(queryBody).sort({ 'nickname': 1 }).toArray()).map((e) => {
+        let allStd = (await userDB.find(queryBody).toArray()).map((e) => {
             return {
                 id: e._id,
                 name: e.nickname + ' ' + e.firstname,
@@ -1101,7 +1272,7 @@ module.exports = function (app, db, pasport) {
             if (rating[i].length > 0) {
                 allStd[i].rate = rating[i][0].score;
             } else {
-                allStd[i].rate = 'No rating';
+                allStd[i].rate = -1;
             }
             // for cr
             if (inCr[i] != null) allStd[i].hasCr = true;
@@ -1122,11 +1293,26 @@ module.exports = function (app, db, pasport) {
                     return true;
             }
         }));
+        let sortBy = req.query.sortBy;
+        let sortType = req.query.sortType;
+        if (sortBy == 'level') {
+            if (sortType == 'asc') {
+                allStd.sort((a, b) => {
+                    return a.level.slice(0, -1) - b.level.slice(0, -1);
+                });
+            } else {
+                allStd.sort((a, b) => {
+                    return Number(b.level.slice(0, -1)) - Number(a.level.slice(0, -1));
+                });
+            }
+        } else {
+            allStd = _.orderBy(allStd, [sortBy], [sortType]);
+        }
         let local = {
             config: await configDB.findOne({}),
             student: allStd,
         }
-        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudentTable', local)
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminAllstudent/adminAllstudentTable', local)
         else return404(req, res)
     })
     app.get("/adminStudentProfileQ4", auth.isLoggedIn, async function (req, res) {

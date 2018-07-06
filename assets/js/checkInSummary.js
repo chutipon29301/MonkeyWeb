@@ -158,39 +158,41 @@ async function genTableData() {
         if (allStaffName[index].subPosition !== undefined) {
             subPos = allStaffName[index].subPosition;
         }
-        sumWH = sumWH + parseFloat(allData[i].hourSum.toFixed(1));
-        sumCredit = sumCredit + parseFloat(allData[i].totalSum.toFixed(1));
-        sumAmout = sumAmout + parseInt((allData[i].totalSum * displayMultiply).toFixed(0));
-        lastTotal = lastTotal + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra);
-        $mainTableBody.append(
-            "<tr>" +
-            "<td class='text-center'>" + i + "</td>" +
-            "<td class='text-center table-info' onclick='showTutorHistory(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
-            "<td class='text-center table-primary' onclick='changeSubPos(" + i + ")'>" + subPos + "</td>" +
-            "<td class='text-center table-info' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
-            "<td class='text-center'>" + allData[i].hourSum.toFixed(1) + "</td>" +
-            "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
-            "<td class='text-center table-primary' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
-            "<td id='" + "amout" + i + "' class='text-center'>" + (allData[i].totalSum * displayMultiply).toFixed(0) + "</td>" +
-            "<td class='text-center'>" + realExtra + "</td>" +
-            "<td id='" + "total" + i + "' class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
-            "</tr>"
-        );
-        let doneStatus = "<span class='fas fa-fw fa-lg fa-times' style='color:red' onclick='addIntervalDone(\"" + i + "\")'></span>";
-        let doneClass = "";
-        if (doneTutorID !== undefined) {
-            if ($.inArray(parseInt(i), doneTutorID) > -1) {
-                doneClass = "table-success";
-                doneStatus = "<span class='fas fa-fw fa-lg fa-check' style='color:green' onclick='deleteIntervalDone(\"" + i + "\")'></span>"
+        if (subPos.toLowerCase() != 'inactive') {
+            sumWH = sumWH + parseFloat(allData[i].hourSum.toFixed(1));
+            sumCredit = sumCredit + parseFloat(allData[i].totalSum.toFixed(1));
+            sumAmout = sumAmout + parseInt((allData[i].totalSum * displayMultiply).toFixed(0));
+            lastTotal = lastTotal + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra);
+            $mainTableBody.append(
+                "<tr>" +
+                "<td class='text-center'>" + i + "</td>" +
+                "<td class='text-center table-info' onclick='showTutorHistory(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+                "<td class='text-center table-primary' onclick='changeSubPos(" + i + ")'>" + subPos + "</td>" +
+                "<td class='text-center table-info' onclick='manageFirstpage(\"" + reasonID + "\"," + i + ")'>" + reason + "</td>" +
+                "<td class='text-center'>" + allData[i].hourSum.toFixed(1) + "</td>" +
+                "<td class='text-center'>" + allData[i].totalSum.toFixed(1) + "</td>" +
+                "<td class='text-center table-primary' onclick='callEditGainModal(" + i + ")'>" + displayMultiply + "</td>" +
+                "<td id='" + "amout" + i + "' class='text-center'>" + (allData[i].totalSum * displayMultiply).toFixed(0) + "</td>" +
+                "<td class='text-center'>" + realExtra + "</td>" +
+                "<td id='" + "total" + i + "' class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
+                "</tr>"
+            );
+            let doneStatus = "<span class='fas fa-fw fa-lg fa-times' style='color:red' onclick='addIntervalDone(\"" + i + "\")'></span>";
+            let doneClass = "";
+            if (doneTutorID !== undefined) {
+                if ($.inArray(parseInt(i), doneTutorID) > -1) {
+                    doneClass = "table-success";
+                    doneStatus = "<span class='fas fa-fw fa-lg fa-check' style='color:green' onclick='deleteIntervalDone(\"" + i + "\")'></span>"
+                }
             }
+            $summaryTableBody.append(
+                "<tr class=" + doneClass + ">" +
+                "<td class='text-center' onclick='showSummaryCover(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
+                "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
+                "<td class='text-center'>" + doneStatus + "</td>" +
+                "</tr>"
+            );
         }
-        $summaryTableBody.append(
-            "<tr class=" + doneClass + ">" +
-            "<td class='text-center' onclick='showSummaryCover(" + i + ")'>" + allStaffName[index].nickname + " " + allStaffName[index].firstname + "</td>" +
-            "<td class='text-center'>" + (parseInt((allData[i].totalSum * displayMultiply).toFixed(0)) + realExtra) + "</td>" +
-            "<td class='text-center'>" + doneStatus + "</td>" +
-            "</tr>"
-        );
         index += 1;
     }
     $mainTableBody.append(

@@ -1,0 +1,174 @@
+extends ../htmlTemplate
+block head
+    - const hideNavbar = true
+    - const hideFooter = true
+    - const pageTitle = "FHB Comment"
+    style.
+        .addComment-btn {
+            border-radius:50%;
+            height:130px;
+            width:180px;
+            font-size:3em;
+        }
+        .comment-btn {
+            border-radius:50%;
+            height:130px;
+            width:180px;
+            font-size:3em;
+        }
+        .nonselect-btn {
+            background-color:white;
+            color:#FFC107;
+            border-color:#FFC107;
+            border-width:medium;
+        }
+        .select-btn {
+            background-color:#FFC107;
+            color:white;
+            border-color:#FFC107;
+            border-width:medium;
+        }
+        .disabled-btn {
+            background-color:black;
+            color:white;
+            border-color:black;
+            border-width:medium;
+        }
+        input[type=checkbox] {
+            transform: scale(1.5);
+        }
+block script
+    script(src="js/hybridComment.min.js")
+block body
+    .container-fluid.position-fixed
+        .row
+            button#goback-btn.col-3.btn.btn-outline-dark
+                span.fas.fa-arrow-left
+                |&nbsp;Back
+            .col-4.p-0
+                select#dateSelector.dateSelect.custom-select
+            .col-4.p-0
+                select#zoneSelector.custom-select
+            button#addZoneBtn.btn.btn-info.col-1.p-0 + Zone
+    .content-container
+        .col-3.position-fixed.p-0(style='max-height:95%;overflow-y:auto;margin-top:38px')
+            ul#studentList.list-group
+                li#addStdBtn.list-group-item.text-center: span.fas.fa-2x.fa-plus-circle
+        .col-9.offset-3.position-fixed(style="margin-top:38px")
+            .flex-container.d-flex.flex-row.justify-content-around(style='height:78vh')
+                .d-flex.flex-column.justify-content-around
+                    .d-flex.flex-column
+                        label Handwriting
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Handwriting')
+                            span.fas.fa-file-signature
+                    .d-flex.flex-column
+                        label Writing
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Writing')
+                            span.fas.fa-tasks
+                    .d-flex.flex-column
+                        label Skip Step
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Skip Step')
+                            span.fas.fa-share
+                    .d-flex.flex-column
+                        label Homework
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Homework')
+                            span.fab.fa-leanpub
+                .d-flex.flex-column.justify-content-around
+                    .d-flex.flex-column
+                        label VDO Step
+                        button.btn.comment-btn.nonselect-btn(type='button' name='VDO Step')
+                            span.fas.fa-fast-forward
+                    .d-flex.flex-column
+                        label VDO time
+                        button.btn.comment-btn.nonselect-btn(type='button' name='VDO time')
+                            span.fas.fa-stopwatch
+                    .d-flex.flex-column
+                        label Concentration
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Concentration')
+                            span.fas.fa-crosshairs
+                    .d-flex.flex-column
+                        label Flow
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Flow')
+                            span.fas.fa-sort-numeric-down
+                .d-flex.flex-column.justify-content-around
+                    .d-flex.flex-column
+                        label Forget
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Forget')
+                            span.far.fa-dizzy
+                    .d-flex.flex-column
+                        label Concept
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Concept')
+                            span.fas.fa-key
+                    .d-flex.flex-column
+                        label Pending
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Pending')
+                            span.fab.fa-stack-overflow
+                    .d-flex.flex-column
+                        label Unready
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Unready')
+                            span.fas.fa-procedures
+                .d-flex.flex-column.justify-content-around
+                    .d-flex.flex-column
+                        label Manner
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Manner')
+                            span.far.fa-thumbs-down
+                    .d-flex.flex-column
+                        label Hygiene
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Hygiene')
+                            span.fas.fa-capsules
+                    .d-flex.flex-column
+                        label Co-operation
+                        button.btn.comment-btn.nonselect-btn(type='button' name='Co-operation')
+                            span.far.fa-handshake
+                    .d-flex.flex-column
+                        label Others
+                        button.btn.addComment-btn.nonselect-btn(type='button')
+                            span.fas.fa-ellipsis-h
+            .row.p-3
+                .col-12.p-0
+                    button#checkoutBtn.btn.btn-danger.float-right Check out
+                    button#addCommentBtn.btn.btn-success.float-right + Add comment
+    #addZoneModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Add new zone
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body
+                    .form-group
+                        label Date
+                        select#addZoneDate.dateSelect.custom-select
+                    .form-group
+                        label Zone Name
+                        input#addZoneName.form-control(type='text')
+                .modal-footer
+                    button#addZoneSubmitBtn.btn.btn-success(type='button') + Add
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
+    #addStdModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Add student
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body#addStdModalBody
+                .modal-footer
+                    button#addStdSubmitBtn.btn.btn-success(type='button') + Add
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
+    #addCommentModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-body
+                    h4 Comment complete.
+    #addOtherCommentModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Add custom comment
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body
+                    .form-group
+                        label Comment:
+                        input#customCommentTxt.form-control(type="text")
+                .modal-footer
+                    button#addCustomCommentSubmitBtn.btn.btn-success(type='button') + Add
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
