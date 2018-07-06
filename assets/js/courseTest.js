@@ -48,14 +48,18 @@ function getBlank() {
 }
 // get test detail
 async function getTestDetail(testID) {
-    let detail = await $.get('/courseTestDetail', { testID: testID });
+    let detail = await $.get('/courseTestDetail', {
+        testID: testID
+    });
     $("#testDetail").empty();
     $("#testDetail").append(detail);
 }
 // delete test
 function deleteTest(testID) {
     if (confirm('Are you sure to delete this test?')) {
-        $.post('v2/testScore/deleteTest', { testID: testID }).then((cb) => {
+        $.post('v2/testScore/deleteTest', {
+            testID: testID
+        }).then((cb) => {
             console.log(cb);
             getBlank();
             listAllTest();
@@ -71,6 +75,11 @@ async function addStudentScore(testID) {
 // remove student
 function removeStudent(testID, studentID) {
     if (confirm('Remove student from this test?')) {
-        $.post('v2/testScore/removeStudent', { testID: testID, students: { _id: studentID } }).then((cb) => { console.log(cb); })
+        $.post('v2/testScore/removeStudent', {
+            testID: testID,
+            students: [studentID]
+        }).then((cb) => {
+            console.log(cb);
+        })
     }
 }
