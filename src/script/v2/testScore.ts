@@ -69,6 +69,6 @@ router.post("/removeStudent", (req, res) => {
         result => res.status(200).send({
             msg: "OK",
         }),
-        error => res.status(500).send({ error }),
+        error => res.status(500).send({ error: error.toString() }),
     )
 })
