@@ -1001,6 +1001,60 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTest', local)
         else return404(req, res)
     })
+    app.get("/courseTestOption", auth.isLoggedIn, async function (req, res) {
+        const gradeBitToString = function (bit) {
+            var output = "", p = false, s = false;
+            for (var i = 0; i < 6; i++) {
+                if (bit & (1 << i)) {
+                    if (p == false) {
+                        p = true;
+                        output += "P";
+                    }
+                    output += (i + 1);
+                }
+            }
+            for (var i = 0; i < 6; i++) {
+                if (bit & (1 << (i + 6))) {
+                    if (s == false) {
+                        s = true;
+                        output += "S";
+                    }
+                    output += (i + 1);
+                }
+            }
+            if (bit & (1 << 12)) output += "SAT";
+            return output;
+        };
+        let config = await configDB.findOne({});
+        let year = config.defaultQuarter.quarter.year;
+        let quarter = config.defaultQuarter.quarter.quarter;
+        let myCr = await courseDB.find({
+            year: Number(year),
+            quarter: Number(quarter),
+            tutor: Number(req.user._id)
+        },
+            {
+                subject: 1,
+                grade: 1,
+                level: 1,
+                day: 1
+            }).sort({ subject: 1 }).toArray();
+        myCr = myCr.map((e) => {
+            return { ...e, courseName: e.subject + gradeBitToString(e.grade) + e.level };
+        });
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            course: myCr
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestOption', local)
+        else return404(req, res)
+    })
     app.get("/courseTestList", auth.isLoggedIn, async function (req, res) {
         let [config, testList] = await Promise.all([
             configDB.findOne({}),

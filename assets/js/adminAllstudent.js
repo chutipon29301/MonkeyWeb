@@ -1,3 +1,4 @@
+$("#state-select").val('allStage');
 // sort by
 let sortBy = 'id';
 let sortType = 'asc';

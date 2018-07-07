@@ -160,7 +160,7 @@ async function genStudentTimeTable() {
     let timeTable = await $.post("post/v1/studentTimeTable", { studentID: ID, year: qValue.slice(0, 4), quarter: qValue.slice(4) });
     for (let i in timeTable.course) {
         let time = moment(timeTable.course[i].day);
-        $(".btn" + time.day() + "-" + time.hour()).addClass("cr").html(timeTable.course[i].courseName + " - " + timeTable.course[i].tutorName);
+        $(".btn" + time.day() + "-" + time.hour()).addClass("cr").html(timeTable.course[i].courseName.replace('Sci','S') + " - " + timeTable.course[i].tutorName);
     }
     for (let i in timeTable.hybrid) {
         let time = moment(timeTable.hybrid[i].day);

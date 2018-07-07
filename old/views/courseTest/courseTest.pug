@@ -23,6 +23,7 @@ block head
             cursor:pointer;
         }
 block script
+    script(src='https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js')
     script(src="js/courseTest.min.js")
 block body
     .container-fluid
@@ -67,16 +68,23 @@ block body
                 .modal-body
                     .row
                         .col-12
-                            h1 Inprogress
-                            //- .form-group
-                            //-     label Test name:
-                            //-     input#addTestName.form-control(type='text')
-                            //- .form-group
-                            //-     label Maximum score:
-                            //-     input#addTestScore.form-control(type='number')
-                            //- .form-group
-                            //-     label Test date:
-                            //-     input#addTestDate.form-control(type='date')
+                            .form-group
+                                select#courseSelect.custom-select
+                        .col-12#studentList
                 .modal-footer
                     button#addScoreSubmitBtn.btn.btn-success(type='button') + Add
                     button.btn.btn-danger(type='button' data-dismiss="modal") Close
+    #addStudentScoreModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Student score
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body
+                    .row
+                        .col-12
+                            .form-group
+                                input#studentScore.form-control(type="number")
+                .modal-footer
+                    button#addStudentScoreSubmitBtn.btn.btn-success(type='button') + Add
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Cancel
