@@ -1,4 +1,4 @@
-.col-9.bg-warning(style='position: fixed;height: 100px;z-index: 1;box-shadow: 0px 0 4px;')
+.col-9.bg-warning(style='position: fixed;height: 150px;z-index: 1;box-shadow: 0px 0 4px;')
     .row
         .col-10
             h1= testDetail.testName
@@ -6,7 +6,16 @@
             h4#test-del-btn.float-right.mt-3(onclick='deleteTest(\''+testDetail._id+'\')'): span.fas.fa-trash-alt
     -var date = new Date(testDetail.testDate)
     h3='Test Date: '+date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()
-div(style='width:100%;position:relative;top:140px;margin-bottom:32px;display:flex;flex-flow:column nowrap;align-items:center;justify-content: flex-start;')
+    .row
+        .col-3
+            .form-group
+                select#sortType.custom-select(onchange="getTestDetail(\'"+testDetail._id+"\')")
+                    option(value="1") sort by name
+                    option(value="2") min to max
+                    option(value="3") max to min
+        .col-9
+            button.float-right.btn.btn-light(onclick='showSummary()') Summary
+div(style='width:100%;position:relative;top:190px;margin-bottom:32px;display:flex;flex-flow:column nowrap;align-items:center;justify-content: flex-start;')
     each i in testScore
         .studentList
             h5= i.studentName

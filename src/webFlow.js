@@ -1001,21 +1001,26 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTest', local)
         else return404(req, res)
     })
-    app.get("/courseTestStudentList", auth.isLoggedIn, async function (req, res) {
-        let config = await configDB.findOne({});
-        let [myCr, existStd] = await Promise.all([
-            courseDB.findOne({ _id: req.query.courseID }, { student: 1 }),
+    app.get("/courseTestSummary", auth.isLoggedIn, async function (req, res) {
+        let [config, testDetail] = await Promise.all([
+            configDB.findOne({}),
             testScoreDB.findOne({ _id: ObjectId(req.query.testID) }, { scores: 1 })
         ]);
-        myCr = myCr.student;
-        existStd = existStd.scores.map((e) => { return e._id });
-        let allStd = _.difference(myCr, existStd);
-        let promise = [];
-        for (let i of allStd) {
-            promise.push(userDB.findOne({ _id: Number(i) }, { nickname: 1, firstname: 1 }));
+        let score = testDetail.scores.map((e) => {
+            return e.score;
+        });
+        let summary = {};
+        if (score.length > 0) {
+            summary.maxValue = _.max(score);
+            summary.minValue = _.min(score);
+            summary.meanValue = _.mean(score);
+            summary.stdValue = Math.sqrt((_.sumBy(score, (e) => { return Math.pow(e, 2) }) / score.length) - Math.pow(summary.meanValue, 2));
+        } else {
+            summary.maxValue = 'No data';
+            summary.minValue = 'No data';
+            summary.meanValue = 'No data';
+            summary.stdValue = 'No data';
         }
-        let allStdName = await Promise.all(promise);
-        allStdName = _.orderBy(allStdName, ['nickname', 'firstname'], ['asc', 'asc']);
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -1024,7 +1029,46 @@ module.exports = function (app, db, pasport) {
                 position: req.user.position
             },
             config: config,
-            allStudent: allStdName
+            summary: summary
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestSummary', local)
+        else return404(req, res)
+    })
+    app.get("/courseTestStudentList", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let allStudent;
+        if (req.query.courseID.slice(0, 5) == 'grade') {
+            let [allStd, existStd] = await Promise.all([
+                userDB.find({ position: 'student', 'student.grade': Number(req.query.courseID.slice(6)) }, { nickname: 1, firstname: 1 }).sort({ nickname: 1, firstname: 1 }).toArray(),
+                testScoreDB.findOne({ _id: ObjectId(req.query.testID) }, { scores: 1 })
+            ]);
+            allStudent = _.differenceBy(allStd, existStd.scores, (e) => {
+                return e._id;
+            });
+        } else {
+            let [myCr, existStd] = await Promise.all([
+                courseDB.findOne({ _id: req.query.courseID }, { student: 1 }),
+                testScoreDB.findOne({ _id: ObjectId(req.query.testID) }, { scores: 1 })
+            ]);
+            myCr = myCr.student;
+            existStd = existStd.scores.map((e) => { return e._id });
+            let allStd = _.difference(myCr, existStd);
+            let promise = [];
+            for (let i of allStd) {
+                promise.push(userDB.findOne({ _id: Number(i) }, { nickname: 1, firstname: 1 }));
+            }
+            let allStdName = await Promise.all(promise);
+            allStudent = _.orderBy(allStdName, ['nickname', 'firstname'], ['asc', 'asc']);
+        }
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            allStudent: allStudent
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestStudentList', local)
         else return404(req, res)
@@ -1122,6 +1166,17 @@ module.exports = function (app, db, pasport) {
         let testScore = thisTest.scores;
         delete thisTest.__v;
         delete thisTest.scores;
+        switch (req.query.sortType) {
+            case '2':
+                testScore = _.orderBy(testScore, ['score'], ['asc']);
+                break;
+            case '3':
+                testScore = _.orderBy(testScore, ['score'], ['desc']);
+                break;
+            default:
+                testScore = _.orderBy(testScore, ['studentName'], ['asc']);
+                break;
+        }
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),

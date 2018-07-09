@@ -49,11 +49,15 @@ function getBlank() {
 }
 // get test detail
 async function getTestDetail(testID) {
+    let sortType = $("#sortType").val();
+    if (sortType == undefined) sortType = '1';
     let detail = await $.get('/courseTestDetail', {
-        testID: testID
+        testID: testID,
+        sortType: sortType
     });
     $("#testDetail").empty();
     $("#testDetail").append(detail);
+    $("#sortType").val(sortType);
 }
 // delete test
 function deleteTest(testID) {
@@ -136,3 +140,11 @@ $("#addStudentScoreSubmitBtn").click(function () {
         })
     }
 });
+// show test summary
+async function showSummary() {
+    let testID = sessionStorage.getItem('testScoreTestID');
+    let summary = await $.get('/courseTestSummary', { testID: testID });
+    $("#summaryBody").empty();
+    $("#summaryBody").append(summary);
+    $("#showSummaryModal").modal('show');
+}
