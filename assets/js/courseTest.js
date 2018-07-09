@@ -68,11 +68,20 @@ function deleteTest(testID) {
     }
 }
 // add student score
-async function addStudentScore(testID) {
+function addStudentScore() {
+    getStudentInclass();
+    $("#studentList").empty();
+    $("#addStudentModal").modal('show');
+}
+async function getStudentInclass() {
     let crOption = await $.get('/courseTestOption');
     $("#courseSelect").empty();
     $("#courseSelect").append(crOption);
-    $("#addStudentModal").modal('show');
+}
+// edit student
+function editStudent(studentID) {
+    sessionStorage.setItem('testScoreStudentID', studentID);
+    $("#addStudentScoreModal").modal('show');
 }
 // remove student
 function removeStudent(testID, studentID) {
@@ -87,26 +96,18 @@ function removeStudent(testID, studentID) {
     }
 }
 // get course student
-$("#courseSelect").change(async function () {
+$("#courseSelect").change(function () {
     if (this.value != '0') {
-        let crInfo = await $.post('post/courseInfo', { courseID: this.value });
-        let promise = [];
-        for (let i of crInfo.student) {
-            promise.push(name(i));
-        }
-        let stdName = await Promise.all(promise);
-        for (let i = 0; i < crInfo.student.length; i++) {
-            crInfo.student[i] = { id: crInfo.student[i], name: stdName[i].nickname + ' ' + stdName[i].firstname };
-        }
-        crInfo.student = _.orderBy(crInfo.student, ['name'], ['asc']);
-        $("#studentList").empty();
-        for (let i of crInfo.student) {
-            $("#studentList").append(
-                '<button class="student-btn col-12 btn btn-warning my-1" name="' + i.id + '">' + i.name + '</button>'
-            );
-        }
+        generateStudentList();
     }
 });
+async function generateStudentList() {
+    let testID = sessionStorage.getItem('testScoreTestID');
+    let courseID = $("#courseSelect").val();
+    let stdList = await $.get('/courseTestStudentList', { courseID: courseID, testID: testID });
+    $("#studentList").empty();
+    $("#studentList").append(stdList);
+}
 // add score
 $("#studentList").on('click', '.student-btn', function () {
     sessionStorage.setItem('testScoreStudentID', this.name);
@@ -118,13 +119,20 @@ $("#addStudentScoreSubmitBtn").click(function () {
     let studentID = sessionStorage.getItem('testScoreStudentID');
     let score = $("#studentScore").val();
     if (score != '') {
-        $.post('v2/testScore/addStudent', {
+        $.post('v2/testScore/removeStudent', {
             testID: testID,
-            students: { _id: studentID, score: score }
-        }).then(() => {
-            getTestDetail(testID);
-            $("#addStudentScoreModal").modal('hide');
-            $("#studentScore").val('');
-        });
+            students: [studentID]
+        }).then((cb) => {
+            console.log(cb);
+            $.post('v2/testScore/addStudent', {
+                testID: testID,
+                students: { _id: studentID, score: score }
+            }).then(() => {
+                generateStudentList();
+                getTestDetail(testID);
+                $("#addStudentScoreModal").modal('hide');
+                $("#studentScore").val('');
+            });
+        })
     }
 });

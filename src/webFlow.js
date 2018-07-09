@@ -1001,6 +1001,34 @@ module.exports = function (app, db, pasport) {
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTest', local)
         else return404(req, res)
     })
+    app.get("/courseTestStudentList", auth.isLoggedIn, async function (req, res) {
+        let config = await configDB.findOne({});
+        let [myCr, existStd] = await Promise.all([
+            courseDB.findOne({ _id: req.query.courseID }, { student: 1 }),
+            testScoreDB.findOne({ _id: ObjectId(req.query.testID) }, { scores: 1 })
+        ]);
+        myCr = myCr.student;
+        existStd = existStd.scores.map((e) => { return e._id });
+        let allStd = _.difference(myCr, existStd);
+        let promise = [];
+        for (let i of allStd) {
+            promise.push(userDB.findOne({ _id: Number(i) }, { nickname: 1, firstname: 1 }));
+        }
+        let allStdName = await Promise.all(promise);
+        allStdName = _.orderBy(allStdName, ['nickname', 'firstname'], ['asc', 'asc']);
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: config,
+            allStudent: allStdName
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestStudentList', local)
+        else return404(req, res)
+    })
     app.get("/courseTestOption", auth.isLoggedIn, async function (req, res) {
         const gradeBitToString = function (bit) {
             var output = "", p = false, s = false;

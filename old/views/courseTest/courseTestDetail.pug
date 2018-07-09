@@ -3,13 +3,16 @@
         .col-10
             h1= testDetail.testName
         .col-2
-            h4#test-del-btn.float-right.mt-3(onclick='deleteTest(\''+testDetail._id+'\')'): span.fas.fa-trash
+            h4#test-del-btn.float-right.mt-3(onclick='deleteTest(\''+testDetail._id+'\')'): span.fas.fa-trash-alt
     -var date = new Date(testDetail.testDate)
     h3='Test Date: '+date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()
-div(style='width:100%;position:relative;top:140px;display:flex;flex-flow:column nowrap;align-items:center;justify-content: flex-start;')
+div(style='width:100%;position:relative;top:140px;margin-bottom:32px;display:flex;flex-flow:column nowrap;align-items:center;justify-content: flex-start;')
     each i in testScore
-        .studentList(onclick="removeStudent(\'"+testDetail._id+"\',\'"+i.studentID+"\')")
+        .studentList
             h5= i.studentName
-            h5= i.score+'/'+testDetail.maxScore
+            div(style='display:flex;flex-flow:row nowrap;align-items:center;')
+                h5= i.score+'/'+testDetail.maxScore
+                span.stdEditBtn.ml-3.fas.fa-edit(onclick="editStudent(\'"+i.studentID+"\')")
+                span.stdRemoveBtn.ml-3.far.fa-trash-alt(onclick="removeStudent(\'"+testDetail._id+"\',\'"+i.studentID+"\')")
     .studentList(style="justify-content:center;" onclick='addStudentScore(\''+testDetail._id+'\');')
             h5 + Add score
