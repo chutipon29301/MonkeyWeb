@@ -1,3 +1,5 @@
 option(value="0") Please select a course
 each i in course
     option(value=i._id)= i.courseName
+each i in [3,4,5,6,7,8,9,10,11,12]
+    option(value='grade-'+i)= (i>6)?'S'+(i-6):'P'+i

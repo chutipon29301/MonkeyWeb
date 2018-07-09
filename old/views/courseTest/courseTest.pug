@@ -101,3 +101,12 @@ block body
                 .modal-footer
                     button#addStudentScoreSubmitBtn.btn.btn-success(type='button') + Add
                     button.btn.btn-danger(type='button' data-dismiss="modal") Cancel
+    #showSummaryModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Summary
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body#summaryBody
+                .modal-footer
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
