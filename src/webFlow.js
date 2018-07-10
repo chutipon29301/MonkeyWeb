@@ -1039,7 +1039,7 @@ module.exports = function (app, db, pasport) {
         let allStudent;
         if (req.query.courseID.slice(0, 5) == 'grade') {
             let [allStd, existStd] = await Promise.all([
-                userDB.find({ position: 'student', 'student.grade': Number(req.query.courseID.slice(6)) }, { nickname: 1, firstname: 1 }).sort({ nickname: 1, firstname: 1 }).toArray(),
+                userDB.find({ position: 'student', 'student.grade': Number(req.query.courseID.slice(6)), 'student.status': 'active' }, { nickname: 1, firstname: 1 }).sort({ nickname: 1, firstname: 1 }).toArray(),
                 testScoreDB.findOne({ _id: ObjectId(req.query.testID) }, { scores: 1 })
             ]);
             allStudent = _.differenceBy(allStd, existStd.scores, (e) => {
