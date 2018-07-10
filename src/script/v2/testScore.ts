@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { TestScoreManager } from "./classes/TestScoreManager";
+import { TestScoreManager, TestScoreInterface } from "./classes/TestScoreManager";
 
 export const router = Router();
 
@@ -63,6 +63,12 @@ router.post("/list", (req, res) => {
 
 router.post("/removeStudent", (req, res) => {
     const { testID, students } = req.body;
+    if (!(testID && students)) {
+        return res.status(400).send({
+            err: -1,
+            msg: "Bad Request"
+        });
+    }
     TestScoreManager.find(testID).flatMap(
         result => result.removeStudentScore(students)
     ).subscribe(
@@ -71,4 +77,32 @@ router.post("/removeStudent", (req, res) => {
         }),
         error => res.status(500).send({ error: error.toString() }),
     )
-})
+});
+
+router.post("/editTest", (req, res) => {
+    const { testID, testDate, testName, maxScore } = req.body;
+    if (!(testID && (testDate || testName || maxScore))) {
+        return res.status(400).send({
+            err: -1,
+            msg: "Bad Request"
+        });
+    }
+    let editValue = {} as Partial<TestScoreInterface>;
+    if (testDate) {
+        editValue.testDate = new Date(testDate);
+    }
+    if (testName) {
+        editValue.testName = testName;
+    }
+    if (maxScore) {
+        editValue.maxScore = parseInt(maxScore);
+    }
+    TestScoreManager.find(testID).flatMap(test => {
+        return test.edit(editValue);
+    }).subscribe(
+        result => res.status(200).send({
+            msg: "OK",
+        }),
+        error => res.status(500).send({ error: error.toString() }),
+    );
+});

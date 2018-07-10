@@ -3,7 +3,7 @@ import { Document, Schema } from "mongoose";
 import { Observable } from "rx";
 import { UpdateResponse } from "./Constants";
 
-interface TestScoreInterface extends Document {
+export interface TestScoreInterface extends Document {
     testName: String,
     testDate: Date,
     courseID?: mongoose.Types.ObjectId,
@@ -73,6 +73,10 @@ export class TestScore {
                 }
             }
         })).map(result => new TestScore(result));
+    }
+
+    public edit(value: Partial<TestScoreInterface>): Observable<TestScore> {
+        return Observable.fromPromise(TestScoreModel.findOneAndUpdate(this.testScore._id, value)).map(res => new TestScore(res));
     }
 
     public getID(): mongoose.Types.ObjectId {
