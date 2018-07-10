@@ -8,6 +8,10 @@ block head
             color:red;
             cursor:pointer;
         }
+        #test-edit-btn:hover {
+            color:#3153C6;
+            cursor:pointer;
+        }
         .studentList {
             box-shadow: 0px 0 1px;
             display:flex;
@@ -109,4 +113,20 @@ block body
                     button.close(type='button' data-dismiss="modal"): span &times;
                 .modal-body#summaryBody
                 .modal-footer
+                    button.btn.btn-danger(type='button' data-dismiss="modal") Close
+    #editTestDetailModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title Edit test
+                    button.close(type='button' data-dismiss="modal"): span &times;
+                .modal-body
+                    .form-group
+                        label Test Name
+                        input#editTestName.form-control(type="text")
+                    .form-group
+                        label Max score
+                        input#editTestMax.form-control(type="number")
+                .modal-footer
+                    button#editTestSubmitBtn.btn.btn-success(type='button') Edit
                     button.btn.btn-danger(type='button' data-dismiss="modal") Close
