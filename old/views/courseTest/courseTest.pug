@@ -83,7 +83,7 @@ block body
                         .col-12
                             .form-group
                                 select#courseSelect.custom-select
-                        .col-12#studentList
+                        .col-12#studentList(style='overflow:auto;max-height:60vh')
                 .modal-footer
                     button#addScoreSubmitBtn.btn.btn-success(type='button') + Add
                     button.btn.btn-danger(type='button' data-dismiss="modal") Close
