@@ -95,9 +95,9 @@ module.exports = function (app, db, pasport) {
         }
         next()
     })
-    app.get('/test', function (req, res) {
-        res.status(200).render('test', {})
-    })
+    // app.get('/test', function (req, res) {
+    //     res.status(200).render('test', {})
+    // })
     app.get('/react', function (req, res) {
         res.status(200).render('reactPage', {})
     })
@@ -603,6 +603,19 @@ module.exports = function (app, db, pasport) {
             config: await configDB.findOne({})
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('adminHybridInfo', local)
+        else return404(req, res)
+    })
+    app.get("/test", auth.isLoggedIn, async function (req, res) {
+        let local = {
+            webUser: {
+                userID: parseInt(req.user._id),
+                firstname: req.user.firstname,
+                lastname: req.user.lastname,
+                position: req.user.position
+            },
+            config: await configDB.findOne({})
+        }
+        if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('test', local)
         else return404(req, res)
     })
     app.get("/adminAllskill", auth.isLoggedIn, async function (req, res) {
