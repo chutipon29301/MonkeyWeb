@@ -106,3 +106,22 @@ router.post("/editTest", (req, res) => {
         error => res.status(500).send({ error: error.toString() }),
     );
 });
+
+router.post("/editStudentScore", (req, res) => {
+    const { testID, studentID, score } = req.body;
+    if (!(testID && studentID && score)) {
+        return res.status(400).send({
+            err: -1,
+            msg: "Bad Request"
+        });
+    }
+    TestScoreManager.find(testID)
+        .flatMap(test => test.removeStudentScore([studentID]))
+        .flatMap(test => test.addStudentScore([{ _id: studentID, score: score }]))
+        .subscribe(
+            result => res.status(200).send({
+                msg: "OK",
+            }),
+            error => res.status(500).send({ error: error.toString() }),
+    );
+});
