@@ -1145,6 +1145,10 @@ module.exports = function (app, db, pasport) {
             configDB.findOne({}),
             testScoreDB.find({}, { testName: 1 }).sort({ testName: 1 }).toArray()
         ]);
+        // console.log(testList);
+        let testGroup = _.groupBy(testList, (e) => {
+            return e.testName.slice(0, e.testName.indexOf('_'));
+        });
         let local = {
             webUser: {
                 userID: parseInt(req.user._id),
@@ -1153,7 +1157,8 @@ module.exports = function (app, db, pasport) {
                 position: req.user.position
             },
             config: config,
-            testList: testList
+            // testList: testList
+            testGroup: testGroup
         }
         if (auth.authorize(req.user, 'staff', 'tutor', local.config)) return res.status(200).render('courseTest/courseTestList', local)
         else return404(req, res)
