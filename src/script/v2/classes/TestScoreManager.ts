@@ -76,7 +76,7 @@ export class TestScore {
     }
 
     public edit(value: Partial<TestScoreInterface>): Observable<TestScore> {
-        return Observable.fromPromise(TestScoreModel.findOneAndUpdate(this.testScore._id, value)).map(res => new TestScore(res));
+        return Observable.fromPromise(TestScoreModel.findByIdAndUpdate(this.testScore._id, { $set: value })).map(res => new TestScore(res));
     }
 
     public getID(): mongoose.Types.ObjectId {

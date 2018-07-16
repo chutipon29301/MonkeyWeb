@@ -33,14 +33,15 @@ $("#addTestSubmitBtn").click(function () {
 });
 // toggle test list btn
 $("#testList").on('click', 'button', function () {
-    sessionStorage.setItem('testScoreTestID', this.name.slice(5));
     getTestDetail(this.name.slice(5));
     if ($(this).hasClass('btn-outline-secondary')) {
         $('.test-list-btn').removeClass('btn-secondary').addClass('btn-outline-secondary');
         $(this).toggleClass('btn-secondary btn-outline-secondary');
     } else {
         $(this).toggleClass('btn-secondary btn-outline-secondary');
+        $(this).addClass('btn-secondary').removeClass('btn-outline-secondary');
     }
+    sessionStorage.setItem('testScoreTestID', this.name.slice(5));
 });
 // get blank page
 function getBlank() {
@@ -84,10 +85,11 @@ $("#editTestSubmitBtn").click(function () {
     let newMax = $("#editTestMax").val();
     if (confirm('Are you sure to edit this test?')) {
         let body = {
-            testID: sessionStorage.getItem('testScoreTestID'),
+            testID: $("#thisTestID").html().slice(8),
             maxScore: newMax,
             testName: newName
         };
+        console.log(body);
         $.post('v2/testScore/editTest', body).then((cb) => {
             getTestDetail(sessionStorage.getItem('testScoreTestID'));
             $("#editTestDetailModal").modal('hide');
@@ -131,7 +133,10 @@ $("#courseSelect").change(function () {
 async function generateStudentList() {
     let testID = sessionStorage.getItem('testScoreTestID');
     let courseID = $("#courseSelect").val();
-    let stdList = await $.get('/courseTestStudentList', { courseID: courseID, testID: testID });
+    let stdList = await $.get('/courseTestStudentList', {
+        courseID: courseID,
+        testID: testID
+    });
     $("#studentList").empty();
     $("#studentList").append(stdList);
 }
@@ -153,7 +158,10 @@ $("#addStudentScoreSubmitBtn").click(function () {
             console.log(cb);
             $.post('v2/testScore/addStudent', {
                 testID: testID,
-                students: { _id: studentID, score: score }
+                students: {
+                    _id: studentID,
+                    score: score
+                }
             }).then(() => {
                 generateStudentList();
                 getTestDetail(testID);
@@ -166,7 +174,9 @@ $("#addStudentScoreSubmitBtn").click(function () {
 // show test summary
 async function showSummary() {
     let testID = sessionStorage.getItem('testScoreTestID');
-    let summary = await $.get('/courseTestSummary', { testID: testID });
+    let summary = await $.get('/courseTestSummary', {
+        testID: testID
+    });
     $("#summaryBody").empty();
     $("#summaryBody").append(summary);
     $("#showSummaryModal").modal('show');

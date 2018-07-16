@@ -6,7 +6,11 @@
             h4#test-del-btn.float-right.mt-3(onclick='deleteTest(\''+testDetail._id+'\')'): span.fas.fa-trash-alt
             h4#test-edit-btn.mr-2.float-right.mt-3(onclick='editTest();'): span.fas.fa-edit
     -var date = new Date(testDetail.testDate)
-    h3='Test Date: '+date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()
+    .row
+        .col-6
+            h3='Test Date: '+date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()
+        .col-6
+            h3#thisTestID.float-right='TestID: '+ testDetail._id
     .row
         .col-3
             .form-group
