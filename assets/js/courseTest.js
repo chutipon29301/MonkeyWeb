@@ -73,27 +73,25 @@ function deleteTest(testID) {
 }
 // edit test
 function editTest() {
+    let head = $("#testTitle").html();
+    $("#editTestName").val(head.slice(0, head.indexOf('(') - 1));
+    let score = head.slice(head.indexOf('(') + 1, head.indexOf(')'));
+    $("#editTestMax").val(Number(score));
     $("#editTestDetailModal").modal('show');
 }
 $("#editTestSubmitBtn").click(function () {
     let newName = $("#editTestName").val();
     let newMax = $("#editTestMax").val();
-    if (newName == undefined && newMax == undefined) {
-        alert("Can not find new value!!!");
-    } else {
-        if (confirm('Are you sure to edit this test?')) {
-            let body = { testID: sessionStorage.getItem('testScoreTestID') };
-            if (newMax != undefined) {
-                body.maxScore = newMax;
-            } else {
-                body.testName = newName;
-            }
-            $.post('v2/testScore/editTest', body).then((cb) => {
-                console.log(cb);
-                getTestDetail(sessionStorage.getItem('testScoreTestID'));
-                $("#editTestDetailModal").modal('hide');
-            });
-        }
+    if (confirm('Are you sure to edit this test?')) {
+        let body = {
+            testID: sessionStorage.getItem('testScoreTestID'),
+            maxScore: newMax,
+            testName: newName
+        };
+        $.post('v2/testScore/editTest', body).then((cb) => {
+            getTestDetail(sessionStorage.getItem('testScoreTestID'));
+            $("#editTestDetailModal").modal('hide');
+        });
     }
 });
 // add student score

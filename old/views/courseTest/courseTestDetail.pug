@@ -1,7 +1,7 @@
 .col-9.bg-warning(style='position: fixed;height: 150px;z-index: 1;box-shadow: 0px 0 4px;')
     .row
         .col-10
-            h1= testDetail.testName
+            h1#testTitle= testDetail.testName+' ('+testDetail.maxScore+')'
         .col-2
             h4#test-del-btn.float-right.mt-3(onclick='deleteTest(\''+testDetail._id+'\')'): span.fas.fa-trash-alt
             h4#test-edit-btn.mr-2.float-right.mt-3(onclick='editTest();'): span.fas.fa-edit
