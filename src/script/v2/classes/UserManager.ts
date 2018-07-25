@@ -21,7 +21,8 @@ interface UserInterface extends Document {
 
 export interface TutorInterface extends UserInterface {
     tutor: {
-        status: String
+        status: String,
+        role: String,
     },
     subPosition: String
 }
@@ -84,7 +85,8 @@ let tutorSchema = new Schema({
     email: String,
     phone: String,
     tutor: {
-        status: String
+        status: String,
+        role: String
     },
     subPosition: String
 });
@@ -112,20 +114,26 @@ export class UserManager {
             },
             "tutor.status": "active"
         })
-        .sort({
-            _id: 1
-        }))
+            .sort({
+                _id: 1
+            }))
             .map(tutors => tutors.map(tutor => new Tutor(tutor)));
+    }
+
+    static getRole(userID: number): Observable<String> {
+        return Observable.fromPromise(TutorModel.findById(userID))
+            .map((tutor) => tutor.tutor.role);
+    }
+
+    static setRole(userID: number, role: string): Observable<Tutor> {
+        return Observable.fromPromise(TutorModel.findByIdAndUpdate(userID, { $set: { 'tutor.role': role } }))
+            .map(tutor => new Tutor(tutor));
     }
 }
 
 abstract class User<T extends UserInterface> {
 
-    protected user: T
-
-    constructor(user: T) {
-        this.user = user;
-    }
+    constructor(protected user: T) { }
 
     getID(): number {
         return this.user._id.valueOf();
